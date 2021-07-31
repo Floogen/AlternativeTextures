@@ -1,4 +1,9 @@
-﻿using StardewModdingAPI;
+﻿using AlternativeTextures.Framework.Managers;
+using AlternativeTextures.Framework.Models;
+using AlternativeTextures.Framework.Patches;
+using Harmony;
+using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using System;
 using System.Collections.Generic;
@@ -13,12 +18,16 @@ namespace AlternativeTextures
     {
         internal static IMonitor monitor;
         internal static IModHelper modHelper;
+        internal static TextureManager textureManager;
 
         public override void Entry(IModHelper helper)
         {
             // Set up the monitor and helper
             monitor = Monitor;
             modHelper = Helper;
+
+            // Create our TextureManager
+            textureManager = new TextureManager();
 
             // Hook into GameLoop events
             helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
@@ -47,7 +56,34 @@ namespace AlternativeTextures
                     continue;
                 }
 
+                // Load in the alternative textures
+                foreach (var textureFolder in textureFolders)
+                {
+                    if (!File.Exists(Path.Combine(textureFolder.FullName, "texture.json")))
+                    {
+                        Monitor.Log($"Content pack {contentPack.Manifest.Name} is missing a texture.json under {textureFolder.Name}!", LogLevel.Warn);
+                        continue;
+                    }
 
+                    AlternativeTextureModel textureModel = contentPack.ReadJsonFile<AlternativeTextureModel>(Path.Combine(textureFolder.Parent.Name, textureFolder.Name, "texture.json"));
+                    textureModel.Owner = contentPack.Manifest.UniqueID;
+                    Monitor.Log(textureModel.ToString(), LogLevel.Trace);
+
+                    // Verify we are given a texture and if so, track it
+                    if (!File.Exists(Path.Combine(textureFolder.FullName, "texture.png")))
+                    {
+                        Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: No associated texture.png given", LogLevel.Warn);
+                        continue;
+                    }
+                    else
+                    {
+                        textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(textureFolder.Parent.Name, textureFolder.Name, "texture.png"));
+                        textureModel.Texture = contentPack.LoadAsset<Texture2D>(textureModel.TileSheetPath);
+                    }
+
+                    // Cache the alternative texture
+                    textureManager.AddAlternativeTexture(textureModel);
+                }
             }
         }
     }
