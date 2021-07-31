@@ -1,0 +1,11 @@
+﻿{
+  "Name": "Alternative Textures",
+  "Author": "PeacefulEnd",
+  "Version": "REPLACE_ME_WITH_VERSION",
+  "Description": "Framework which allows the usage of different textures for placeable items in Stardew Valley.",
+  "UniqueID": "PeacefulEnd.AlternativeTextures",
+  "EntryDll": "AlternativeTextures.dll",
+  "MinimumApiVersion": "3.11.0",
+  "UpdateKeys": [ "Nexus:????" ],
+  "Dependencies": []
+}
