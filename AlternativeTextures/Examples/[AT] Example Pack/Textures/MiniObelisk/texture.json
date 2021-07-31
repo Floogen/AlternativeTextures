@@ -1,0 +1,8 @@
+{
+  "ItemName": "Mini-Obelisk",
+  "ItemId": 238,
+  "Type": "Craftable",
+  "TextureWidth": 16,
+  "TextureHeight": 32,
+  "Variations": 4
+}

@@ -52,18 +52,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlternativeTextures.cs" />
+    <Compile Include="Framework\Managers\TextureManager.cs" />
+    <Compile Include="Framework\Models\AlternativeTextureModel.cs" />
+    <Compile Include="Framework\Patches\ObjectPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Examples\[AT] Example Pack\manifest.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\MiniObelisk\texture.json" />
     <None Include="manifest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Examples\[AT] Example Pack\Textures\" />
+    <Content Include="Examples\[AT] Example Pack\Textures\MiniObelisk\texture.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\Pathoschild.Stardew.ModBuildConfig.3.3.0\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('packages\Pathoschild.Stardew.ModBuildConfig.3.3.0\build\Pathoschild.Stardew.ModBuildConfig.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
