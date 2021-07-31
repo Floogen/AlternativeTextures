@@ -1,0 +1,13 @@
+﻿{
+  "Name": "Example Pack",
+  "Author": "ExampleAuthor",
+  "Version": "1.0.0",
+  "Description": "Example pack for the Alternative Textures framework.",
+  "UniqueID": "ExampleAuthor.ExamplePack",
+  "UpdateKeys": [],
+  "Dependencies": [],
+  "ContentPackFor": {
+    "UniqueID": "PeacefulEnd.AlternativeTextures",
+    "MinimumVersion": "1.0.0"
+  }
+}
