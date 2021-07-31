@@ -29,6 +29,20 @@ namespace AlternativeTextures
             // Create our TextureManager
             textureManager = new TextureManager();
 
+            // Load our Harmony patches
+            try
+            {
+                var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
+
+                // Apply our patches
+                new ObjectPatch(monitor).Apply(harmony);
+            }
+            catch (Exception e)
+            {
+                Monitor.Log($"Issue with Harmony patching: {e}", LogLevel.Error);
+                return;
+            }
+
             // Hook into GameLoop events
             helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
         }
