@@ -1,4 +1,5 @@
-﻿using AlternativeTextures.Framework.Managers;
+﻿using AlternativeTextures.Framework.External.ContentPatcher;
+using AlternativeTextures.Framework.Managers;
 using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.Patches;
 using Harmony;
@@ -16,12 +17,15 @@ namespace AlternativeTextures
 {
     public class AlternativeTextures : Mod
     {
+        internal const string TOKEN_HEADER = "AlternativeTextures/Textures/";
+
         internal static IMonitor monitor;
         internal static IModHelper modHelper;
 
         // Managers
         internal static TextureManager textureManager;
         internal static ApiManager apiManager;
+        internal static AssetManager assetManager;
 
         public override void Entry(IModHelper helper)
         {
@@ -32,6 +36,10 @@ namespace AlternativeTextures
             // Setup our managers
             textureManager = new TextureManager(monitor);
             apiManager = new ApiManager(monitor);
+            assetManager = new AssetManager();
+
+            // Load the asset manager
+            Helper.Content.AssetLoaders.Add(assetManager);
 
             // Load our Harmony patches
             try
@@ -49,6 +57,10 @@ namespace AlternativeTextures
 
             // Hook into GameLoop events
             helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
+            helper.Events.GameLoop.DayStarted += this.OnDayStarted;
+
+            // Hook into Player events
+            helper.Events.Player.Warped += this.OnWarped;
         }
 
         private void OnGameLaunched(object sender, GameLaunchedEventArgs e)
@@ -59,8 +71,31 @@ namespace AlternativeTextures
                 apiManager.HookIntoJsonAssets(Helper);
             }
 
+            if (Helper.ModRegistry.IsLoaded("Pathoschild.ContentPatcher") && apiManager.HookIntoContentPatcher(Helper))
+            {
+                apiManager.GetContentPatcherInterface().RegisterToken(ModManifest, "Textures", new TextureToken(textureManager, assetManager));
+            }
+
             // Load any owned content packs
             this.LoadContentPacks();
+        }
+
+        private void OnDayStarted(object sender, DayStartedEventArgs e)
+        {
+            foreach (var texture in textureManager.GetAllTextures())
+            {
+                var test = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TOKEN_HEADER}{texture.GetId()}", ContentSource.GameContent);
+                textureManager.UpdateTexture(texture.GetId(), test);
+            }
+        }
+
+        private void OnWarped(object sender, WarpedEventArgs e)
+        {
+            foreach (var texture in textureManager.GetAllTextures())
+            {
+                var test = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TOKEN_HEADER}{texture.GetId()}", ContentSource.GameContent);
+                textureManager.UpdateTexture(texture.GetId(), test);
+            }
         }
 
         private void LoadContentPacks(bool isReload = false)
@@ -96,13 +131,11 @@ namespace AlternativeTextures
                         Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: No associated texture.png given", LogLevel.Warn);
                         continue;
                     }
-                    else
-                    {
-                        textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(textureFolder.Parent.Name, textureFolder.Name, "texture.png"));
-                        textureModel.Texture = contentPack.LoadAsset<Texture2D>(textureModel.TileSheetPath);
-                    }
 
-                    // Cache the alternative texture
+                    assetManager.idToAssetToken.Add(textureModel.GetId(), $"{AlternativeTextures.TOKEN_HEADER}{textureModel.GetId()}");
+
+                    textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(textureFolder.Parent.Name, textureFolder.Name, "texture.png"));
+                    textureModel.Texture = contentPack.LoadAsset<Texture2D>(textureModel.TileSheetPath);
                     textureManager.AddAlternativeTexture(textureModel);
                 }
             }

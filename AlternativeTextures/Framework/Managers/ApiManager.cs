@@ -12,6 +12,7 @@ namespace AlternativeTextures.Framework.Managers
     {
         private IMonitor _monitor;
         private IJsonAssetsApi _jsonAssetsApi;
+        private IContentPatcherApi _contentPatcherApi;
 
         public ApiManager(IMonitor monitor)
         {
@@ -32,9 +33,28 @@ namespace AlternativeTextures.Framework.Managers
             return true;
         }
 
+        internal bool HookIntoContentPatcher(IModHelper helper)
+        {
+            _contentPatcherApi = helper.ModRegistry.GetApi<IContentPatcherApi>("Pathoschild.ContentPatcher");
+
+            if (_contentPatcherApi is null)
+            {
+                _monitor.Log("Failed to hook into Pathoschild.ContentPatcher.", LogLevel.Error);
+                return false;
+            }
+
+            _monitor.Log("Successfully hooked into Pathoschild.ContentPatcher.", LogLevel.Debug);
+            return true;
+        }
+
         internal IJsonAssetsApi GetJsonAssetsApi()
         {
             return _jsonAssetsApi;
+        }
+
+        public IContentPatcherApi GetContentPatcherInterface()
+        {
+            return _contentPatcherApi;
         }
     }
 }

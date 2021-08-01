@@ -1,4 +1,5 @@
 ﻿using AlternativeTextures.Framework.Models;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using System;
@@ -23,6 +24,16 @@ namespace AlternativeTextures.Framework.Managers
         public void AddAlternativeTexture(AlternativeTextureModel model)
         {
             _alternativeTextures.Add(model);
+        }
+
+        public List<AlternativeTextureModel> GetAllTextures()
+        {
+            return _alternativeTextures;
+        }
+
+        public List<string> GetValidTextureNames()
+        {
+            return _alternativeTextures.Select(t => t.GetId()).ToList();
         }
 
         public bool DoesObjectHaveAlternativeTexture(int objectId)
@@ -65,6 +76,16 @@ namespace AlternativeTextures.Framework.Managers
             }
 
             return _alternativeTextures.First(t => t.GetId() == textureId);
+        }
+
+        public void UpdateTexture(string textureId, Texture2D texture)
+        {
+            if (!_alternativeTextures.Any(t => t.GetId() == textureId))
+            {
+                return;
+            }
+
+            _alternativeTextures.First(t => t.GetId() == textureId).Texture = texture;
         }
     }
 }

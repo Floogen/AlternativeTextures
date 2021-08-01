@@ -7,5 +7,14 @@
   "EntryDll": "AlternativeTextures.dll",
   "MinimumApiVersion": "3.11.0",
   "UpdateKeys": [ "Nexus:????" ],
-  "Dependencies": []
+  "Dependencies": [
+    {
+      "UniqueID": "spacechase0.JsonAssets",
+      "IsRequired": false
+    },
+    {
+      "UniqueID": "Pathoschild.ContentPatcher",
+      "IsRequired": false
+    }
+  ]
 }
