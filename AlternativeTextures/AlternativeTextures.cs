@@ -48,6 +48,7 @@ namespace AlternativeTextures
 
                 // Apply our patches
                 new ObjectPatch(monitor).Apply(harmony);
+                new FencePatch(monitor).Apply(harmony);
             }
             catch (Exception e)
             {
