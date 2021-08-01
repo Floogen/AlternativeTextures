@@ -132,7 +132,7 @@ namespace AlternativeTextures
                         continue;
                     }
 
-                    assetManager.idToAssetToken.Add(textureModel.GetId(), $"{AlternativeTextures.TOKEN_HEADER}{textureModel.GetId()}");
+                    //assetManager.idToAssetToken.Add(textureModel.GetId(), $"{AlternativeTextures.TOKEN_HEADER}{textureModel.GetId()}");
 
                     textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(textureFolder.Parent.Name, textureFolder.Name, "texture.png"));
                     textureModel.Texture = contentPack.LoadAsset<Texture2D>(textureModel.TileSheetPath);

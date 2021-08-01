@@ -10,17 +10,9 @@ namespace AlternativeTextures.Framework.Managers
 {
     internal class AssetManager : IAssetLoader
     {
-        internal Dictionary<string, string> idToAssetToken;
-
-        public AssetManager()
-        {
-            idToAssetToken = new Dictionary<string, string>();
-        }
-
         public bool CanLoad<T>(IAssetInfo asset)
         {
-            //return AlternativeTextures.textureManager.GetValidTextureNames().Any(i => asset.AssetNameEquals($"{AlternativeTextures.TOKEN_HEADER}{i}"));
-            return idToAssetToken.Keys.Any(i => asset.AssetNameEquals($"{AlternativeTextures.TOKEN_HEADER}{i}"));
+            return AlternativeTextures.textureManager.GetValidTextureNames().Any(id => asset.AssetNameEquals($"{AlternativeTextures.TOKEN_HEADER}{id}"));
         }
 
         public T Load<T>(IAssetInfo asset)

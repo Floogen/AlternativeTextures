@@ -74,10 +74,10 @@ namespace AlternativeTextures.Framework.External.ContentPatcher
         /// <param name="input">The input arguments, if any.</param>
         public IEnumerable<string> GetValues(string input)
         {
-            if (!IsReady() || !_assetManager.idToAssetToken.ContainsKey(input))
+            if (!IsReady() || !_textureManager.GetValidTextureNames().Any(name => name == input))
                 yield break;
 
-            yield return _assetManager.idToAssetToken[input];
+            yield return $"{AlternativeTextures.TOKEN_HEADER}{input}";
         }
     }
 }
