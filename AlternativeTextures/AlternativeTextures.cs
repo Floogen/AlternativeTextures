@@ -18,7 +18,10 @@ namespace AlternativeTextures
     {
         internal static IMonitor monitor;
         internal static IModHelper modHelper;
+
+        // Managers
         internal static TextureManager textureManager;
+        internal static ApiManager apiManager;
 
         public override void Entry(IModHelper helper)
         {
@@ -26,8 +29,9 @@ namespace AlternativeTextures
             monitor = Monitor;
             modHelper = Helper;
 
-            // Create our TextureManager
-            textureManager = new TextureManager();
+            // Setup our managers
+            textureManager = new TextureManager(monitor);
+            apiManager = new ApiManager(monitor);
 
             // Load our Harmony patches
             try
@@ -50,7 +54,10 @@ namespace AlternativeTextures
         private void OnGameLaunched(object sender, GameLaunchedEventArgs e)
         {
             // Hook into the APIs we utilize
-            // TODO: Hook into Json Asset API to match for any JA Content Pack by name
+            if (Helper.ModRegistry.IsLoaded("spacechase0.JsonAssets"))
+            {
+                apiManager.HookIntoJsonAssets(Helper);
+            }
 
             // Load any owned content packs
             this.LoadContentPacks();
