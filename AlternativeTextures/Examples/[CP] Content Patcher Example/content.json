@@ -1,0 +1,37 @@
+{
+  "Format": "1.22.0",
+  "DynamicTokens": [
+    {
+      "Name": "RandomX",
+      "Value": "0"
+    },
+    {
+      "Name": "RandomX",
+      "Value": "16",
+      "When": {
+        "Query: {{Random: true, false |key={{Time}} }} = true": true
+      }
+    }
+  ],
+  "Changes": [
+    {
+      "LogName": "Test AT Modification",
+      "Action": "EditImage",
+      "Target": "{{PeacefulEnd.AlternativeTextures/Textures:ExampleAuthor.ExampleAlternativeTexturesPack.Mini-Obelisk}}",
+      "FromFile": "assets/test_replacement.png",
+      "FromArea": {
+        "X": "{{RandomX}}",
+        "Y": "0",
+        "Width": "16",
+        "Height": "32"
+      },
+      "ToArea": {
+        "X": "0",
+        "Y": "0",
+        "Width": "16",
+        "Height": "32"
+      },
+      "Update": "OnLocationChange"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "Name": "Content Patcher Tests For Alternative Textures",
+  "Author": "ExampleAuthor",
+  "Version": "1.0.0",
+  "Description": "Tests for using Content Patcher to modify Alternative Texture packs.",
+  "UniqueID": "PeacefulEnd.ContentPatcherForAlternativeTextures",
+  "UpdateKeys": [ "Nexus:???" ],
+  "ContentPackFor": {
+    "UniqueID": "Pathoschild.ContentPatcher"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "PeacefulEnd.AlternativeTextures",
+      "IsRequired": true
+    }
+  ]
+}
