@@ -23,7 +23,7 @@ namespace AlternativeTextures.Framework.Models
 
         public string GetId()
         {
-            return String.Concat(Owner, ":", ItemName);
+            return String.Concat(Owner, ".", ItemName);
         }
 
         public override string ToString()
