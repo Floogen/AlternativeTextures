@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Examples\[AT] Example Pack\Textures\JsonAssetExampleItem\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Loom\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\WoodFence\texture.json" />
     <None Include="Examples\[CP] Content Patcher Example\content.json" />
     <None Include="Examples\[CP] Content Patcher Example\manifest.json" />
@@ -80,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Examples\[AT] Example Pack\Textures\JsonAssetExampleItem\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Loom\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\WoodFence\texture.png" />
     <Content Include="Examples\[CP] Content Patcher Example\assets\test_replacement.png" />
     <Content Include="Examples\[JA] Json Asset Example\BigCraftables\Example Item\big-craftable.png" />

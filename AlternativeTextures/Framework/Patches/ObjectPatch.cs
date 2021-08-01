@@ -55,6 +55,8 @@ namespace AlternativeTextures.Framework.Patches
                 float draw_layer = Math.Max(0f, (float)((y + 1) * 64 - 24) / 10000f) + (float)x * 1E-05f;
                 spriteBatch.Draw(textureModel.Texture, destination, new Rectangle(textureVariation * textureModel.TextureWidth, 0, textureModel.TextureWidth, textureModel.TextureHeight), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
 
+                // TODO: Add draw handling for machines (such as loom, furnace, etc.)
+
                 return false;
             }
             return true;
