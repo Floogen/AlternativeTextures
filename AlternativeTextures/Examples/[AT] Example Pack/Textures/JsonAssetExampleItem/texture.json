@@ -1,0 +1,7 @@
+{
+  "ItemName": "Alt Texture Example Item",
+  "Type": "Craftable",
+  "TextureWidth": 16,
+  "TextureHeight": 32,
+  "Variations": 3
+}

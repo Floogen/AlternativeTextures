@@ -1,0 +1,17 @@
+﻿{
+  "Name": "Alternative Textures Example For Json Assets",
+  "Author": "ExampleAuthor",
+  "Version": "1.0.0",
+  "Description": "...",
+  "UniqueID": "ExampleAuthor.ExampleJsonAssetItem",
+  "UpdateKeys": [],
+  "Dependencies": [
+    {
+      "UniqueID": "spacechase0.JsonAssets",
+      "IsRequired": true
+    }
+  ],
+  "ContentPackFor": {
+    "UniqueID": "spacechase0.JsonAssets"
+  }
+}

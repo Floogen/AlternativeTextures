@@ -60,14 +60,20 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Examples\[AT] Example Pack\Textures\JsonAssetExampleItem\texture.json" />
+    <None Include="Examples\[JA] JsonAssetExample\BigCraftables\Example Item\big-craftable.json" />
+    <None Include="Examples\[JA] JsonAssetExample\content-pack.json" />
     <None Include="Examples\[AT] Example Pack\manifest.json" />
     <None Include="Examples\[AT] Example Pack\Textures\MiniObelisk\texture.json" />
+    <None Include="Examples\[JA] JsonAssetExample\manifest.json" />
     <None Include="manifest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Examples\[AT] Example Pack\Textures\JsonAssetExampleItem\texture.png" />
+    <Content Include="Examples\[JA] JsonAssetExample\BigCraftables\Example Item\big-craftable.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\MiniObelisk\texture.png" />
   </ItemGroup>
   <ItemGroup />
