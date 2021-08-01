@@ -72,6 +72,7 @@ namespace AlternativeTextures.Framework.Patches
 
         internal static bool PlacementActionPrefix(Object __instance, ref bool __result, GameLocation location, int x, int y, Farmer who = null)
         {
+            // Used for most objects, except for those whom are converted upon placement (such as Fences)
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(__instance.name))
             {
                 var textureModel = AlternativeTextures.textureManager.GetRandomTextureModel(__instance.name);
@@ -79,7 +80,6 @@ namespace AlternativeTextures.Framework.Patches
 
                 var selectedVariation = Game1.random.Next(-1, textureModel.Variations);
                 __instance.modData["AlternativeTextureVariation"] = selectedVariation.ToString();
-                _monitor.Log($"{textureModel.Variations} | {selectedVariation}", LogLevel.Debug);
             }
 
             return true;

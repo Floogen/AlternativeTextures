@@ -69,7 +69,6 @@ namespace AlternativeTextures.Framework.Patches
 
                 var selectedVariation = Game1.random.Next(-1, textureModel.Variations);
                 __instance.modData["AlternativeTextureVariation"] = selectedVariation.ToString();
-                _monitor.Log($"{textureModel.Variations} | {selectedVariation}", LogLevel.Debug);
             }
 
             return true;
