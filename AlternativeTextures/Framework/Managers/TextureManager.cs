@@ -1,4 +1,5 @@
 ﻿using AlternativeTextures.Framework.Models;
+using StardewModdingAPI;
 using StardewValley;
 using System;
 using System.Collections.Generic;
@@ -10,10 +11,12 @@ namespace AlternativeTextures.Framework.Managers
 {
     internal class TextureManager
     {
+        private IMonitor _monitor;
         private List<AlternativeTextureModel> _alternativeTextures;
 
-        public TextureManager()
+        public TextureManager(IMonitor monitor)
         {
+            _monitor = monitor;
             _alternativeTextures = new List<AlternativeTextureModel>();
         }
 
@@ -27,6 +30,11 @@ namespace AlternativeTextures.Framework.Managers
             return _alternativeTextures.Any(t => t.ItemId == objectId);
         }
 
+        public bool DoesObjectHaveAlternativeTexture(string objectName)
+        {
+            return _alternativeTextures.Any(t => t.ItemName == objectName);
+        }
+
         public AlternativeTextureModel GetRandomTextureModel(int objectId)
         {
             if (!_alternativeTextures.Any(t => t.ItemId == objectId))
@@ -36,6 +44,17 @@ namespace AlternativeTextures.Framework.Managers
 
             var randomTexture = Game1.random.Next(_alternativeTextures.Select(t => t.ItemId == objectId).Count());
             return _alternativeTextures[randomTexture];
+        }
+
+        public AlternativeTextureModel GetRandomTextureModel(string objectName)
+        {
+            if (!_alternativeTextures.Any(t => t.ItemName == objectName))
+            {
+                return null;
+            }
+
+            var validTextures = _alternativeTextures.Where(t => t.ItemName == objectName).ToList();
+            return validTextures[Game1.random.Next(validTextures.Count())];
         }
 
         public AlternativeTextureModel GetSpecificTextureModel(string textureId)

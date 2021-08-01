@@ -17,12 +17,12 @@ namespace AlternativeTextures.Framework.Patches
 {
     internal class ObjectPatch
     {
-        private static IMonitor monitor;
+        private static IMonitor _monitor;
         private readonly Type _object = typeof(Object);
 
         internal ObjectPatch(IMonitor modMonitor)
         {
-            monitor = modMonitor;
+            _monitor = modMonitor;
         }
 
         internal void Apply(HarmonyInstance harmony)
@@ -35,14 +35,14 @@ namespace AlternativeTextures.Framework.Patches
         {
             if (__instance.modData.ContainsKey("AlternativeTextureOwner"))
             {
-                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(String.Concat(__instance.modData["AlternativeTextureOwner"], ":", __instance.parentSheetIndex));
+                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(String.Concat(__instance.modData["AlternativeTextureOwner"], ":", __instance.name));
                 if (textureModel is null)
                 {
                     return true;
                 }
 
                 var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
-                if (textureVariation == 0)
+                if (textureVariation == -1)
                 {
                     return true;
                 }
@@ -62,7 +62,7 @@ namespace AlternativeTextures.Framework.Patches
                     spriteBatch.Draw(textureModel.Texture, position + new Vector2(8.5f, 12f) * 4f, Object.getSourceRectForBigCraftable(__instance.ParentSheetIndex + 2), Color.White * alpha, (float)Game1.currentGameTime.TotalGameTime.TotalSeconds * -1.5f, new Vector2(7.5f, 15.5f), 4f, SpriteEffects.None, draw_layer + 1E-05f);
                     return false;
                 }
-                spriteBatch.Draw(textureModel.Texture, destination, new Rectangle((textureVariation - 1) * textureModel.TextureWidth, 0, textureModel.TextureWidth, textureModel.TextureHeight), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
+                spriteBatch.Draw(textureModel.Texture, destination, new Rectangle(textureVariation * textureModel.TextureWidth, 0, textureModel.TextureWidth, textureModel.TextureHeight), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
                 if (__instance.Name.Equals("Loom") && (int)__instance.minutesUntilReady > 0)
                 {
                     spriteBatch.Draw(Game1.objectSpriteSheet, __instance.getLocalPosition(Game1.viewport) + new Vector2(32f, 0f), Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, 435, 16, 16), Color.White * alpha, __instance.scale.X, new Vector2(8f, 8f), 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64) / 10000f + 0.0001f + (float)x * 1E-05f));
@@ -83,11 +83,14 @@ namespace AlternativeTextures.Framework.Patches
 
         internal static bool PlacementActionPrefix(Object __instance, ref bool __result, GameLocation location, int x, int y, Farmer who = null)
         {
-            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(__instance.parentSheetIndex))
+            if (__instance.bigCraftable && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(__instance.name))
             {
-                var textureModel = AlternativeTextures.textureManager.GetRandomTextureModel(__instance.parentSheetIndex);
+                var textureModel = AlternativeTextures.textureManager.GetRandomTextureModel(__instance.name);
                 __instance.modData["AlternativeTextureOwner"] = textureModel.Owner;
-                __instance.modData["AlternativeTextureVariation"] = Game1.random.Next(0, textureModel.Variations + 1).ToString();
+
+                var selectedVariation = Game1.random.Next(-1, textureModel.Variations);
+                __instance.modData["AlternativeTextureVariation"] = selectedVariation.ToString();
+                _monitor.Log($"{textureModel.Variations} | {selectedVariation}", LogLevel.Debug);
             }
 
             return true;
