@@ -2,7 +2,7 @@
 using AlternativeTextures.Framework.Managers;
 using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.Patches;
-using Harmony;
+using HarmonyLib;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -44,7 +44,7 @@ namespace AlternativeTextures
             // Load our Harmony patches
             try
             {
-                var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
+                var harmony = new Harmony(this.ModManifest.UniqueID);
 
                 // Apply our patches
                 new ObjectPatch(monitor).Apply(harmony);

@@ -1,5 +1,5 @@
 ﻿using AlternativeTextures;
-using Harmony;
+using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
@@ -25,7 +25,7 @@ namespace AlternativeTextures.Framework.Patches
             _monitor = modMonitor;
         }
 
-        internal void Apply(HarmonyInstance harmony)
+        internal void Apply(Harmony harmony)
         {
             harmony.Patch(AccessTools.Method(_object, nameof(Object.draw), new[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Object.drawPlacementBounds), new[] { typeof(SpriteBatch), typeof(GameLocation) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPlacementBoundsPrefix)));
