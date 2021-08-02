@@ -2,12 +2,12 @@
   "Format": "1.22.0",
   "DynamicTokens": [
     {
-      "Name": "RandomX",
+      "Name": "RandomY",
       "Value": "0"
     },
     {
-      "Name": "RandomX",
-      "Value": "16",
+      "Name": "RandomY",
+      "Value": "32",
       "When": {
         "Query: {{Random: true, false |key={{Time}} }} = true": true
       }
@@ -20,8 +20,8 @@
       "Target": "{{PeacefulEnd.AlternativeTextures/Textures:ExampleAuthor.ExampleAlternativeTexturesPack.Mini-Obelisk}}",
       "FromFile": "assets/test_replacement.png",
       "FromArea": {
-        "X": "{{RandomX}}",
-        "Y": "0",
+        "X": "0",
+        "Y": "{{RandomY}}",
         "Width": "16",
         "Height": "32"
       },
