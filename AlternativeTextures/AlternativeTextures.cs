@@ -51,6 +51,15 @@ namespace AlternativeTextures
                 new FencePatch(monitor).Apply(harmony);
                 new HoeDirtPatch(monitor).Apply(harmony);
                 new CropPatch(monitor).Apply(harmony);
+
+                /* 
+                 * TODO: Implement support for the following
+                 * - Trees
+                 * - Fruit Trees
+                 * - Giant Crop
+                 * - Grass
+                 * - Special Objects w/ aniamtion (Chest, etc.)
+                 */
             }
             catch (Exception e)
             {

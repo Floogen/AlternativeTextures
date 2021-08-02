@@ -29,8 +29,6 @@ namespace AlternativeTextures.Framework.Patches
         internal void Apply(Harmony harmony)
         {
             harmony.Patch(AccessTools.Method(_object, nameof(Crop.draw), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(Color), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
-            //harmony.Patch(AccessTools.Constructor(typeof(Crop)), postfix: new HarmonyMethod(GetType(), nameof(CropPostfix)));
-            // TODO: Harmony patch the Crop class to apply textures
         }
 
         private static bool DrawPrefix(Crop __instance, Vector2 ___origin, Vector2 ___drawPosition, SpriteBatch b, Vector2 tileLocation, Color toTint, float rotation)
