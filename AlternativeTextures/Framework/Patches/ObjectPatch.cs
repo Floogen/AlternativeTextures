@@ -36,7 +36,7 @@ namespace AlternativeTextures.Framework.Patches
         {
             if (__instance.modData.ContainsKey("AlternativeTextureOwner"))
             {
-                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(String.Concat(__instance.modData["AlternativeTextureOwner"], ".", __instance.name));
+                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureOwner"]);
                 if (textureModel is null)
                 {
                     return true;
@@ -78,7 +78,7 @@ namespace AlternativeTextures.Framework.Patches
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(__instance.name))
             {
                 var textureModel = AlternativeTextures.textureManager.GetRandomTextureModel(__instance.name);
-                __instance.modData["AlternativeTextureOwner"] = textureModel.Owner;
+                __instance.modData["AlternativeTextureOwner"] = String.Concat(textureModel.Owner, ".", __instance.name);
 
                 var selectedVariation = Game1.random.Next(-1, textureModel.Variations);
                 __instance.modData["AlternativeTextureVariation"] = selectedVariation.ToString();
