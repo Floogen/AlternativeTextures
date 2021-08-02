@@ -43,12 +43,17 @@ namespace AlternativeTextures.Framework.Managers
 
         public bool DoesObjectHaveAlternativeTexture(string objectName)
         {
-            return _alternativeTextures.Any(t => t.ItemName == objectName);
+            return _alternativeTextures.Any(t => String.Equals(t.ItemName, objectName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public bool DoesObjectHaveAlternativeTextureById(string objectId)
+        {
+            return _alternativeTextures.Any(t => String.Equals(t.GetId(), objectId, StringComparison.OrdinalIgnoreCase));
         }
 
         public AlternativeTextureModel GetRandomTextureModel(int objectId)
         {
-            if (!_alternativeTextures.Any(t => t.ItemId == objectId))
+            if (!DoesObjectHaveAlternativeTexture(objectId))
             {
                 return null;
             }
@@ -59,33 +64,33 @@ namespace AlternativeTextures.Framework.Managers
 
         public AlternativeTextureModel GetRandomTextureModel(string objectName)
         {
-            if (!_alternativeTextures.Any(t => t.ItemName == objectName))
+            if (!DoesObjectHaveAlternativeTexture(objectName))
             {
                 return null;
             }
 
-            var validTextures = _alternativeTextures.Where(t => t.ItemName == objectName).ToList();
+            var validTextures = _alternativeTextures.Where(t => String.Equals(t.ItemName, objectName, StringComparison.OrdinalIgnoreCase)).ToList();
             return validTextures[Game1.random.Next(validTextures.Count())];
         }
 
         public AlternativeTextureModel GetSpecificTextureModel(string textureId)
         {
-            if (!_alternativeTextures.Any(t => t.GetId() == textureId))
+            if (!DoesObjectHaveAlternativeTextureById(textureId))
             {
                 return null;
             }
 
-            return _alternativeTextures.First(t => t.GetId() == textureId);
+            return _alternativeTextures.First(t => String.Equals(t.GetId(), textureId, StringComparison.OrdinalIgnoreCase));
         }
 
         public void UpdateTexture(string textureId, Texture2D texture)
         {
-            if (!_alternativeTextures.Any(t => t.GetId() == textureId))
+            if (!DoesObjectHaveAlternativeTextureById(textureId))
             {
                 return;
             }
 
-            _alternativeTextures.First(t => t.GetId() == textureId).Texture = texture;
+            _alternativeTextures.First(t => String.Equals(t.GetId(), textureId, StringComparison.OrdinalIgnoreCase)).Texture = texture;
         }
     }
 }
