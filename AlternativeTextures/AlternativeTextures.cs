@@ -49,6 +49,8 @@ namespace AlternativeTextures
                 // Apply our patches
                 new ObjectPatch(monitor).Apply(harmony);
                 new FencePatch(monitor).Apply(harmony);
+                new HoeDirtPatch(monitor).Apply(harmony);
+                new CropPatch(monitor).Apply(harmony);
             }
             catch (Exception e)
             {
