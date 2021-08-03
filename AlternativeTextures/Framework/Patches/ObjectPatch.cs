@@ -29,7 +29,7 @@ namespace AlternativeTextures.Framework.Patches
         {
             harmony.Patch(AccessTools.Method(_object, nameof(Object.draw), new[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Object.drawPlacementBounds), new[] { typeof(SpriteBatch), typeof(GameLocation) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPlacementBoundsPrefix)));
-            harmony.Patch(AccessTools.Method(_object, nameof(Object.placementAction), new[] { typeof(GameLocation), typeof(int), typeof(int), typeof(Farmer) }), prefix: new HarmonyMethod(GetType(), nameof(PlacementActionPrefix)));
+            harmony.Patch(AccessTools.Method(_object, nameof(Object.placementAction), new[] { typeof(GameLocation), typeof(int), typeof(int), typeof(Farmer) }), postfix: new HarmonyMethod(GetType(), nameof(PlacementActionPrefix)));
         }
 
         private static bool DrawPrefix(Object __instance, SpriteBatch spriteBatch, int x, int y, float alpha = 1f)
@@ -71,24 +71,33 @@ namespace AlternativeTextures.Framework.Patches
             return true;
         }
 
-        internal static bool PlacementActionPrefix(Object __instance, GameLocation location, int x, int y, Farmer who = null)
+        internal static void PlacementActionPrefix(Object __instance, bool __result, GameLocation location, int x, int y, Farmer who = null)
         {
+            if (!__result)
+            {
+                return;
+            }
+
             // Used for most objects, except for those whom are converted upon placement (such as Fences)
-            var instanceName = $"{AlternativeTextureModel.TextureType.Craftable}_{__instance.name}";
+            var placedObject = location.getObjectAt(x, y);
+            if (placedObject is null)
+            {
+                return;
+            }
+
+            var instanceName = $"{AlternativeTextureModel.TextureType.Craftable}_{placedObject.name}";
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
             {
-                AssignModData(__instance, instanceName, false);
-                return true;
+                AssignModData(placedObject, instanceName, false);
+                return;
             }
 
             instanceName = $"{instanceName}_{Game1.currentSeason}";
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
             {
-                AssignModData(__instance, instanceName, true);
-                return true;
+                AssignModData(placedObject, instanceName, true);
+                return;
             }
-
-            return true;
         }
     }
 }
