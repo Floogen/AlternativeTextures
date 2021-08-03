@@ -53,10 +53,10 @@ namespace AlternativeTextures
                 new CropPatch(monitor).Apply(harmony);
                 new GrassPatch(monitor).Apply(harmony);
                 new TreePatch(monitor).Apply(harmony);
+                new FruitTreePatch(monitor).Apply(harmony);
 
                 /* 
                  * TODO: Implement support for the following
-                 * - Fruit Trees
                  * - Giant Crop
                  * - Special Objects w/ aniamtion (Chest, etc.)
                  */
