@@ -60,6 +60,7 @@
     <Compile Include="Framework\Managers\TextureManager.cs" />
     <Compile Include="Framework\Models\AlternativeTextureModel.cs" />
     <Compile Include="Framework\Patches\PatchTemplate.cs" />
+    <Compile Include="Framework\Patches\TreePatch.cs" />
     <Compile Include="Framework\Patches\GrassPatch.cs" />
     <Compile Include="Framework\Patches\HoeDirtPatch.cs" />
     <Compile Include="Framework\Patches\CropPatch.cs" />
@@ -68,6 +69,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Examples\[AT] Example Pack\Textures\TreeOakSpring\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\TreeOakSummer\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\GrassSpring\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\JsonAssetExampleItem\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\GrassSummer\texture.json" />
@@ -87,6 +90,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Examples\[AT] Example Pack\Textures\TreeOakSpring\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\TreeOakSummer\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\GrassSpring\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\JsonAssetExampleItem\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\GrassSummer\texture.png" />
