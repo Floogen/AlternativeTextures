@@ -59,6 +59,7 @@ namespace AlternativeTextures
                 new GrassPatch(monitor).Apply(harmony);
                 new TreePatch(monitor).Apply(harmony);
                 new FruitTreePatch(monitor).Apply(harmony);
+                new ResourceClumpPatch(monitor).Apply(harmony);
 
                 /* 
                  * TODO: Implement support for the following
