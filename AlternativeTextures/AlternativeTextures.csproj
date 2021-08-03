@@ -72,6 +72,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Examples\[AT] Example Pack\Textures\GiantMelon\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\TreeOakSpring\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\AppleSaplingSummer\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\TreeOakSummer\texture.json" />
@@ -95,6 +96,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Examples\[AT] Example Pack\Textures\GiantMelon\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\TreeOakSpring\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\AppleSaplingSummer\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\TreeOakSummer\texture.png" />
