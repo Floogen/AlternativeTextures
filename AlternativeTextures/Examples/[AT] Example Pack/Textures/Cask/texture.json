@@ -1,0 +1,8 @@
+{
+  "ItemName": "Cask",
+  "Type": "Craftable",
+  "Season": "Summer",
+  "TextureWidth": 16,
+  "TextureHeight": 32,
+  "Variations": 4
+}
