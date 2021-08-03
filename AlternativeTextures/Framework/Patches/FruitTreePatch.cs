@@ -123,7 +123,8 @@ namespace AlternativeTextures.Framework.Patches
         {
             if (__instance.modData.ContainsKey("AlternativeTextureName") && !String.IsNullOrEmpty(__instance.modData["AlternativeTextureSeason"]))
             {
-                __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{__instance.modData["AlternativeTextureSaplingName"]}_{Game1.GetSeasonForLocation(__instance.currentLocation)}");
+                __instance.modData["AlternativeTextureSeason"] = Game1.GetSeasonForLocation(__instance.currentLocation);
+                __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{__instance.modData["AlternativeTextureSaplingName"]}_{__instance.modData["AlternativeTextureSeason"]}");
             }
         }
 
