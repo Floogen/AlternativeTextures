@@ -27,7 +27,7 @@ namespace AlternativeTextures.Framework.Patches
         internal void Apply(Harmony harmony)
         {
             harmony.Patch(AccessTools.Method(_object, nameof(Fence.draw), new[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
-            harmony.Patch(AccessTools.Method(_object, nameof(Fence.loadFenceTexture), null), prefix: new HarmonyMethod(GetType(), nameof(LoadFenceTexturePrefix)));
+            harmony.Patch(AccessTools.Constructor(typeof(Fence), new[] { typeof(Vector2), typeof(int), typeof(bool) }), postfix: new HarmonyMethod(GetType(), nameof(FencePostfix)));
         }
 
         private static bool DrawPrefix(Fence __instance, SpriteBatch b, int x, int y, float alpha = 1f)
@@ -59,14 +59,21 @@ namespace AlternativeTextures.Framework.Patches
             return true;
         }
 
-        private static bool LoadFenceTexturePrefix(Fence __instance)
+        private static void FencePostfix(Fence __instance)
         {
-            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(__instance.name) && !__instance.modData.ContainsKey("AlternativeTextureName"))
+            var instanceName = $"{__instance.name}";
+            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
             {
-                AssignModData(__instance, __instance.name, false);
+                AssignModData(__instance, instanceName, false);
+                return;
             }
 
-            return true;
+            instanceName = $"{instanceName}_{Game1.currentSeason}";
+            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
+            {
+                AssignModData(__instance, instanceName, true);
+                return;
+            }
         }
     }
 }

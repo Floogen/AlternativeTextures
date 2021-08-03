@@ -65,18 +65,26 @@ namespace AlternativeTextures.Framework.Patches
         {
             if (__instance.modData.ContainsKey("AlternativeTextureName"))
             {
-                // TODO: Implement showing what variation will be placed?
                 __instance.modData.Remove("AlternativeTextureName");
             }
             return true;
         }
 
-        internal static bool PlacementActionPrefix(Object __instance, ref bool __result, GameLocation location, int x, int y, Farmer who = null)
+        internal static bool PlacementActionPrefix(Object __instance, GameLocation location, int x, int y, Farmer who = null)
         {
             // Used for most objects, except for those whom are converted upon placement (such as Fences)
-            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(__instance.name))
+            var instanceName = $"{__instance.name}";
+            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
             {
-                AssignModData(__instance, __instance.name, false);
+                AssignModData(__instance, instanceName, false);
+                return true;
+            }
+
+            instanceName = $"{instanceName}_{Game1.currentSeason}";
+            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
+            {
+                AssignModData(__instance, instanceName, true);
+                return true;
             }
 
             return true;
