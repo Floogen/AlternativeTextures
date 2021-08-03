@@ -47,6 +47,7 @@ namespace AlternativeTextures
                 var harmony = new Harmony(this.ModManifest.UniqueID);
 
                 // Apply our patches
+                new GameLocationPatch(monitor).Apply(harmony);
                 new ObjectPatch(monitor).Apply(harmony);
                 new FencePatch(monitor).Apply(harmony);
                 new HoeDirtPatch(monitor).Apply(harmony);
