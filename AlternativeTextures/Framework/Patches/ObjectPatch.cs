@@ -75,8 +75,6 @@ namespace AlternativeTextures.Framework.Patches
         {
             // Used for most objects, except for those whom are converted upon placement (such as Fences)
             var instanceName = $"{AlternativeTextureModel.TextureType.Craftable}_{__instance.name}";
-            _monitor.Log(instanceName, LogLevel.Debug);
-            _monitor.Log(AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName).ToString(), LogLevel.Debug);
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
             {
                 AssignModData(__instance, instanceName, false);

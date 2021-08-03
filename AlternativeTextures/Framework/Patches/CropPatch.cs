@@ -46,6 +46,7 @@ namespace AlternativeTextures.Framework.Patches
                 {
                     return true;
                 }
+
                 Vector2 position = Game1.GlobalToLocal(Game1.viewport, ___drawPosition);
                 SpriteEffects effect = (__instance.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
                 var layerDepth = (tileLocation.Y * 64f + 32f + ((!__instance.shouldDrawDarkWhenWatered() || (int)__instance.currentPhase >= __instance.phaseDays.Count - 1) ? 0f : ((tileLocation.Y * 11f + tileLocation.X * 7f) % 10f - 5f))) / 10000f / (((int)__instance.currentPhase == 0 && __instance.shouldDrawDarkWhenWatered()) ? 2f : 1f);
