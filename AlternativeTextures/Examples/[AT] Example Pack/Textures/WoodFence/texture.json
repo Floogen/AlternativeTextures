@@ -1,6 +1,7 @@
 {
   "ItemName": "Wood Fence",
   "Type": "Fence",
+  "Season": "Spring",
   "TextureWidth": 48,
   "TextureHeight": 352,
   "Variations": 2
