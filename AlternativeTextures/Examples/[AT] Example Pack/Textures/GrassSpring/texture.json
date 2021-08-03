@@ -1,6 +1,7 @@
 {
-  "ItemName": "Grass_Spring",
+  "ItemName": "Grass",
   "Type": "Grass",
+  "Season": "Spring",
   "TextureWidth": 15,
   "TextureHeight": 20,
   "Variations": 6
