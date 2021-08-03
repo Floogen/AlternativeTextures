@@ -31,7 +31,8 @@ namespace AlternativeTextures.Framework.Models
             FruitTree,
             Crop,
             GiantCrop,
-            ResourceClump
+            ResourceClump,
+            Bush
         }
 
         public string GetTextureType()
