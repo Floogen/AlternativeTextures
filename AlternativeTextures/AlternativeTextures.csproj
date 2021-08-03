@@ -64,6 +64,7 @@
     <Compile Include="Framework\Patches\GameLocationPatch.cs" />
     <Compile Include="Framework\Patches\PatchTemplate.cs" />
     <Compile Include="Framework\Patches\FruitTreePatch.cs" />
+    <Compile Include="Framework\Patches\BushPatch.cs" />
     <Compile Include="Framework\Patches\TreePatch.cs" />
     <Compile Include="Framework\Patches\GrassPatch.cs" />
     <Compile Include="Framework\Patches\HoeDirtPatch.cs" />
