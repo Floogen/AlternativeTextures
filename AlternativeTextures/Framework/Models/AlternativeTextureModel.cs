@@ -15,6 +15,7 @@ namespace AlternativeTextures.Framework.Models
         public int ItemId { get; set; } = -1;
         public ITranslationHelper Translations { get; set; }
         public string Type { get; set; }
+        public string Season { get; set; }
         public int TextureWidth { get; set; }
         public int TextureHeight { get; set; }
         public int Variations { get; set; } = 1;
@@ -23,13 +24,18 @@ namespace AlternativeTextures.Framework.Models
 
         public string GetId()
         {
-            return String.Concat(Owner, ".", ItemName);
+            return String.IsNullOrEmpty(Season) ? String.Concat(Owner, ".", ItemName) : String.Concat(Owner, ".", ItemName, "_", Season);
+        }
+
+        public string GetNameWithSeason()
+        {
+            return String.IsNullOrEmpty(Season) ? ItemName : String.Concat(ItemName, "_", Season);
         }
 
         public override string ToString()
         {
             return $"\n[\n" +
-                $"\tOwner: {Owner} | ItemName: {ItemName} | ItemId: {ItemId} | Type: {Type}\n" +
+                $"\tOwner: {Owner} | ItemName: {ItemName} | ItemId: {ItemId} | Type: {Type} | Season: {Season}\n" +
                 $"\tTextureWidth x TextureHeight: [{TextureWidth}x{TextureHeight}] | Variations: {Variations}\n";
         }
     }
