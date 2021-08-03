@@ -1,0 +1,8 @@
+{
+  "ItemName": "Apple Sapling",
+  "Type": "FruitTree",
+  "Season": "Summer",
+  "TextureWidth": 432,
+  "TextureHeight": 80,
+  "Variations": 2
+}

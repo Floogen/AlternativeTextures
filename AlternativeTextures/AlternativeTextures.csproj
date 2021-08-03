@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Examples\[AT] Example Pack\Textures\TreeOakSpring\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\AppleSaplingSummer\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\TreeOakSummer\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\GrassSpring\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\JsonAssetExampleItem\texture.json" />
@@ -92,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Examples\[AT] Example Pack\Textures\TreeOakSpring\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\AppleSaplingSummer\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\TreeOakSummer\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\GrassSpring\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\JsonAssetExampleItem\texture.png" />
