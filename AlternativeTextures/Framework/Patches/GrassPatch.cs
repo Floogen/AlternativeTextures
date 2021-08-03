@@ -1,4 +1,5 @@
 ﻿using AlternativeTextures;
+using AlternativeTextures.Framework.Models;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -63,13 +64,14 @@ namespace AlternativeTextures.Framework.Patches
         {
             if (__instance.modData.ContainsKey("AlternativeTextureName") && !String.IsNullOrEmpty(__instance.modData["AlternativeTextureSeason"]))
             {
-                __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{NAME_PREFIX}_{Game1.GetSeasonForLocation(__instance.currentLocation)}");
+                __instance.modData["AlternativeTextureSeason"] = Game1.GetSeasonForLocation(__instance.currentLocation);
+                __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Grass}_{NAME_PREFIX}_{__instance.modData["AlternativeTextureSeason"]}");
             }
         }
 
         private static void GrassPostfix(Grass __instance)
         {
-            var instanceName = $"{NAME_PREFIX}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
+            var instanceName = $"{AlternativeTextureModel.TextureType.Grass}_{NAME_PREFIX}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
             {
                 AssignModData(__instance, instanceName, true);

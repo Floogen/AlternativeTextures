@@ -1,4 +1,5 @@
 ﻿using AlternativeTextures;
+using AlternativeTextures.Framework.Models;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -124,14 +125,14 @@ namespace AlternativeTextures.Framework.Patches
             if (__instance.modData.ContainsKey("AlternativeTextureName") && !String.IsNullOrEmpty(__instance.modData["AlternativeTextureSeason"]))
             {
                 __instance.modData["AlternativeTextureSeason"] = Game1.GetSeasonForLocation(__instance.currentLocation);
-                __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{__instance.modData["AlternativeTextureSaplingName"]}_{__instance.modData["AlternativeTextureSeason"]}");
+                __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.FruitTree}_{__instance.modData["AlternativeTextureSaplingName"]}_{__instance.modData["AlternativeTextureSeason"]}");
             }
         }
 
         private static void FruitTreePostfix(FruitTree __instance, int saplingIndex)
         {
             var saplingName = Game1.objectInformation.ContainsKey(saplingIndex) ? Game1.objectInformation[saplingIndex].Split('/')[0] : String.Empty;
-            var instanceName = $"{saplingName}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
+            var instanceName = $"{AlternativeTextureModel.TextureType.FruitTree}_{saplingName}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
 
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
             {

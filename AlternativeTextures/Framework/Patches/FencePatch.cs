@@ -1,4 +1,5 @@
 ﻿using AlternativeTextures;
+using AlternativeTextures.Framework.Models;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -61,7 +62,7 @@ namespace AlternativeTextures.Framework.Patches
 
         private static void FencePostfix(Fence __instance)
         {
-            var instanceName = $"{__instance.name}";
+            var instanceName = $"{AlternativeTextureModel.TextureType.Craftable}_{__instance.name}";
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
             {
                 AssignModData(__instance, instanceName, false);

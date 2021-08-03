@@ -1,4 +1,5 @@
 ﻿using AlternativeTextures;
+using AlternativeTextures.Framework.Models;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -33,6 +34,7 @@ namespace AlternativeTextures.Framework.Patches
         private static void PlantPostfix(HoeDirt __instance, int index, int tileX, int tileY, Farmer who, bool isFertilizer, GameLocation location)
         {
             var seedName = Game1.objectInformation.ContainsKey(index) ? Game1.objectInformation[index].Split('/')[0] : String.Empty;
+            seedName = $"{AlternativeTextureModel.TextureType.Crop}_{seedName}";
 
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(seedName))
             {

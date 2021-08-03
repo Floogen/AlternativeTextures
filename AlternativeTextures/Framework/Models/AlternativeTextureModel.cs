@@ -22,14 +22,35 @@ namespace AlternativeTextures.Framework.Models
         public Texture2D Texture { get; set; }
         public string TileSheetPath { get; set; }
 
+        internal enum TextureType
+        {
+            Unknown,
+            Craftable,
+            Grass,
+            Tree,
+            FruitTree,
+            Crop,
+            GiantCrop
+        }
+
+        public string GetTextureType()
+        {
+            if (!Enum.TryParse<TextureType>(Type, true, out var textureType))
+            {
+                return TextureType.Unknown.ToString();
+            }
+
+            return textureType.ToString();
+        }
+
         public string GetId()
         {
-            return String.IsNullOrEmpty(Season) ? String.Concat(Owner, ".", ItemName) : String.Concat(Owner, ".", ItemName, "_", Season);
+            return String.Concat(Owner, ".", GetNameWithSeason());
         }
 
         public string GetNameWithSeason()
         {
-            return String.IsNullOrEmpty(Season) ? ItemName : String.Concat(ItemName, "_", Season);
+            return String.IsNullOrEmpty(Season) ? String.Concat(GetTextureType(), "_", ItemName) : String.Concat(GetTextureType(), "_", ItemName, "_", Season);
         }
 
         public override string ToString()

@@ -1,6 +1,6 @@
 {
   "ItemName": "Wood Fence",
-  "Type": "Fence",
+  "Type": "Craftable",
   "Season": "Spring",
   "TextureWidth": 48,
   "TextureHeight": 352,

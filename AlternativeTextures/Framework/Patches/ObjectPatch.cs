@@ -1,4 +1,5 @@
 ﻿using AlternativeTextures;
+using AlternativeTextures.Framework.Models;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -73,7 +74,9 @@ namespace AlternativeTextures.Framework.Patches
         internal static bool PlacementActionPrefix(Object __instance, GameLocation location, int x, int y, Farmer who = null)
         {
             // Used for most objects, except for those whom are converted upon placement (such as Fences)
-            var instanceName = $"{__instance.name}";
+            var instanceName = $"{AlternativeTextureModel.TextureType.Craftable}_{__instance.name}";
+            _monitor.Log(instanceName, LogLevel.Debug);
+            _monitor.Log(AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName).ToString(), LogLevel.Debug);
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
             {
                 AssignModData(__instance, instanceName, false);

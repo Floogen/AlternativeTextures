@@ -1,6 +1,6 @@
 {
   "ItemName": "Stone Fence",
-  "Type": "Fence",
+  "Type": "Craftable",
   "TextureWidth": 48,
   "TextureHeight": 352,
   "Variations": 2
