@@ -3,9 +3,12 @@ using AlternativeTextures.Framework.Managers;
 using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.Patches;
 using HarmonyLib;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewValley;
+using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -68,6 +71,9 @@ namespace AlternativeTextures
                 Monitor.Log($"Issue with Harmony patching: {e}", LogLevel.Error);
                 return;
             }
+
+            // Add in our debug commands
+            helper.ConsoleCommands.Add("at_spawnGiantCrop", "Spawns a giant crop based given harvest product id (e.g. Melon == 254).\n\nUsage: at_spawnGiantCrop [HARVEST_ID]", this.DebugSpawnGiantCrop);
 
             // Hook into GameLoop events
             helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
@@ -152,6 +158,56 @@ namespace AlternativeTextures
 
                     // Track the texture model
                     textureManager.AddAlternativeTexture(textureModel);
+                }
+            }
+        }
+
+        private void DebugSpawnGiantCrop(string command, string[] args)
+        {
+            if (args.Length == 0)
+            {
+                Monitor.Log($"Missing required arguments: [HARVEST_ID]", LogLevel.Warn);
+                return;
+            }
+
+            if (!(Game1.currentLocation is Farm))
+            {
+                Monitor.Log($"Command can only be used on player's farm.", LogLevel.Warn);
+                return;
+            }
+
+            var environment = Game1.currentLocation;
+            foreach (var tile in environment.terrainFeatures.Pairs.Where(t => t.Value is HoeDirt))
+            {
+                int xTile = 0;
+                int yTile = 0;
+                var hoeDirt = tile.Value as HoeDirt;
+
+                if (hoeDirt.crop is null || hoeDirt.crop.indexOfHarvest != int.Parse(args[0]))
+                {
+                    continue;
+                }
+
+                xTile = (int)tile.Key.X;
+                yTile = (int)tile.Key.Y;
+
+                if ((int.Parse(args[0]) == 276 || int.Parse(args[0]) == 190 || int.Parse(args[0]) == 254) && xTile != 0 && yTile != 0)
+                {
+                    for (int x = xTile - 1; x <= xTile + 1; x++)
+                    {
+                        for (int y2 = yTile - 1; y2 <= yTile + 1; y2++)
+                        {
+                            Vector2 v3 = new Vector2(x, y2);
+                            if (!environment.terrainFeatures.ContainsKey(v3) || !(environment.terrainFeatures[v3] is HoeDirt) || (environment.terrainFeatures[v3] as HoeDirt).crop == null)
+                            {
+                                continue;
+                            }
+
+                            (environment.terrainFeatures[v3] as HoeDirt).crop = null;
+                        }
+                    }
+
+                    (environment as Farm).resourceClumps.Add(new GiantCrop(int.Parse(args[0]), new Vector2(xTile - 1, yTile - 1)));
                 }
             }
         }
