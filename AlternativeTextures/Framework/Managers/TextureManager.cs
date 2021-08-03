@@ -43,7 +43,7 @@ namespace AlternativeTextures.Framework.Managers
 
         public bool DoesObjectHaveAlternativeTexture(string objectName)
         {
-            return _alternativeTextures.Any(t => String.Equals(t.ItemName, objectName, StringComparison.OrdinalIgnoreCase));
+            return _alternativeTextures.Any(t => String.Equals(t.GetNameWithSeason(), objectName, StringComparison.OrdinalIgnoreCase));
         }
 
         public bool DoesObjectHaveAlternativeTextureById(string objectId)
@@ -69,7 +69,7 @@ namespace AlternativeTextures.Framework.Managers
                 return null;
             }
 
-            var validTextures = _alternativeTextures.Where(t => String.Equals(t.ItemName, objectName, StringComparison.OrdinalIgnoreCase)).ToList();
+            var validTextures = _alternativeTextures.Where(t => String.Equals(t.GetNameWithSeason(), objectName, StringComparison.OrdinalIgnoreCase)).ToList();
             return validTextures[Game1.random.Next(validTextures.Count())];
         }
 

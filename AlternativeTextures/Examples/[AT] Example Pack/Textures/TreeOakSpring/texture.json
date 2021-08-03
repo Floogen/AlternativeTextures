@@ -1,6 +1,7 @@
 {
-  "ItemName": "Tree_Oak_Spring",
+  "ItemName": "Oak Tree",
   "Type": "Tree",
+  "Season": "Spring",
   "TextureWidth": 48,
   "TextureHeight": 160,
   "Variations": 2

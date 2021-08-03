@@ -121,13 +121,13 @@ namespace AlternativeTextures.Framework.Patches
         {
             if (__instance.modData.ContainsKey("AlternativeTextureName") && !String.IsNullOrEmpty(__instance.modData["AlternativeTextureSeason"]))
             {
-                __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{NAME_PREFIX}_{GetTreeTypeString(__instance)}_{Game1.currentSeason}");
+                __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{GetTreeTypeString(__instance)} {NAME_PREFIX}_{Game1.GetSeasonForLocation(__instance.currentLocation)}");
             }
         }
 
         private static void TreePostfix(Tree __instance)
         {
-            var instanceName = $"{NAME_PREFIX}_{GetTreeTypeString(__instance)}_{Game1.currentSeason}";
+            var instanceName = $"{GetTreeTypeString(__instance)} {NAME_PREFIX}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
             {
                 AssignModData(__instance, instanceName, true);
