@@ -52,6 +52,7 @@ namespace AlternativeTextures
                 new FencePatch(monitor).Apply(harmony);
                 new HoeDirtPatch(monitor).Apply(harmony);
                 new CropPatch(monitor).Apply(harmony);
+                new GiantCropPatch(monitor).Apply(harmony);
                 new GrassPatch(monitor).Apply(harmony);
                 new TreePatch(monitor).Apply(harmony);
                 new FruitTreePatch(monitor).Apply(harmony);
