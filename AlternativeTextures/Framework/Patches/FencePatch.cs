@@ -61,7 +61,7 @@ namespace AlternativeTextures.Framework.Patches
 
         private static bool LoadFenceTexturePrefix(Fence __instance)
         {
-            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(__instance.name))
+            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(__instance.name) && !__instance.modData.ContainsKey("AlternativeTextureName"))
             {
                 AssignModData(__instance, __instance.name, false);
             }
