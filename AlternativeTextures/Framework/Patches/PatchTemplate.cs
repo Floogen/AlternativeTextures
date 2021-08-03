@@ -35,7 +35,7 @@ namespace AlternativeTextures.Framework.Patches
             }
         }
 
-        internal static void AssignObjectModData(Object obj, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
+        private static void AssignObjectModData(Object obj, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
         {
             obj.modData["AlternativeTextureOwner"] = textureModel.Owner;
             obj.modData["AlternativeTextureName"] = String.Concat(textureModel.Owner, ".", textureModel.ItemName);
@@ -48,7 +48,7 @@ namespace AlternativeTextures.Framework.Patches
             obj.modData["AlternativeTextureVariation"] = variation.ToString();
         }
 
-        internal static void AssignTerrainFeatureModData(TerrainFeature terrain, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
+        private static void AssignTerrainFeatureModData(TerrainFeature terrain, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
         {
             terrain.modData["AlternativeTextureOwner"] = textureModel.Owner;
             terrain.modData["AlternativeTextureName"] = String.Concat(textureModel.Owner, ".", textureModel.ItemName);
