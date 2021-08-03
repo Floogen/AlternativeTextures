@@ -79,6 +79,7 @@
     <None Include="Examples\[AT] Example Pack\Textures\GrassSummer\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Loom\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Sunflower\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\StoneFence\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\WoodFence\texture.json" />
     <None Include="Examples\[CP] Content Patcher Example\content.json" />
     <None Include="Examples\[CP] Content Patcher Example\manifest.json" />
@@ -101,6 +102,7 @@
     <Content Include="Examples\[AT] Example Pack\Textures\GrassSummer\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Loom\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Sunflower\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\StoneFence\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\WoodFence\texture.png" />
     <Content Include="Examples\[CP] Content Patcher Example\assets\test_replacement.png" />
     <Content Include="Examples\[JA] Json Asset Example\BigCraftables\Example Item\big-craftable.png" />
