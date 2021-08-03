@@ -62,8 +62,7 @@ namespace AlternativeTextures
 
                 /* 
                  * TODO: Implement support for the following
-                 * - Giant Crop
-                 * - Special Objects w/ aniamtion (Chest, etc.)
+                 * - Special Objects w/ animation (Chest, etc.)
                  */
             }
             catch (Exception e)
