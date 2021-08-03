@@ -16,27 +16,28 @@ using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.Patches
 {
-    internal class GrassPatch
+    internal class GrassPatch : PatchTemplate
     {
-        private static IMonitor _monitor;
         private readonly Type _object = typeof(Grass);
+        private const string NAME_PREFIX = "Grass";
 
-        internal GrassPatch(IMonitor modMonitor)
+        public GrassPatch(IMonitor modMonitor) : base(modMonitor)
         {
-            _monitor = modMonitor;
+
         }
 
         internal void Apply(Harmony harmony)
         {
             harmony.Patch(AccessTools.Method(_object, nameof(Grass.draw), new[] { typeof(SpriteBatch), typeof(Vector2) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
+            harmony.Patch(AccessTools.Method(_object, nameof(Grass.seasonUpdate), new[] { typeof(bool) }), postfix: new HarmonyMethod(GetType(), nameof(SeasonUpdatePostfix)));
             harmony.Patch(AccessTools.Constructor(typeof(Grass)), postfix: new HarmonyMethod(GetType(), nameof(GrassPostfix)));
         }
 
         private static bool DrawPrefix(Grass __instance, int[] ___offset1, int[] ___offset2, int[] ___offset3, int[] ___offset4, int[] ___whichWeed, float ___shakeRotation, double[] ___shakeRandom, bool[] ___flip, SpriteBatch spriteBatch, Vector2 tileLocation)
         {
-            if (__instance.modData.ContainsKey("AlternativeTextureOwner"))
+            if (__instance.modData.ContainsKey("AlternativeTextureName"))
             {
-                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureOwner"]);
+                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
                 if (textureModel is null)
                 {
                     return true;
@@ -58,16 +59,20 @@ namespace AlternativeTextures.Framework.Patches
             return true;
         }
 
+        private static void SeasonUpdatePostfix(Grass __instance, bool onLoad)
+        {
+            if (__instance.modData.ContainsKey("AlternativeTextureName") && !String.IsNullOrEmpty(__instance.modData["AlternativeTextureSeason"]))
+            {
+                __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{NAME_PREFIX}_{Game1.currentSeason}");
+            }
+        }
+
         private static void GrassPostfix(Grass __instance)
         {
-            var instanceName = $"Grass_{Game1.currentSeason}";
+            var instanceName = $"{NAME_PREFIX}_{Game1.currentSeason}";
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
             {
-                var textureModel = AlternativeTextures.textureManager.GetRandomTextureModel(instanceName);
-                __instance.modData["AlternativeTextureOwner"] = String.Concat(textureModel.Owner, ".", instanceName);
-
-                var selectedVariation = Game1.random.Next(-1, textureModel.Variations);
-                __instance.modData["AlternativeTextureVariation"] = selectedVariation.ToString();
+                AssignTerrainFeatureModData(__instance, instanceName, true);
             }
         }
     }
