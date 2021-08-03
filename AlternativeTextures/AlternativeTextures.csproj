@@ -76,6 +76,8 @@
   <ItemGroup>
     <None Include="Examples\[AT] Example Pack\Textures\GiantMelon\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Stump\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\TeaBushSummer\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\TeaBushSpring\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\TreeOakSpring\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\AppleSaplingSummer\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\TreeOakSummer\texture.json" />
@@ -101,6 +103,8 @@
   <ItemGroup>
     <Content Include="Examples\[AT] Example Pack\Textures\GiantMelon\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Stump\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\TeaBushSummer\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\TeaBushSpring\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\TreeOakSpring\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\AppleSaplingSummer\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\TreeOakSummer\texture.png" />
