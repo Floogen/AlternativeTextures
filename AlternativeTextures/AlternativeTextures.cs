@@ -72,7 +72,8 @@ namespace AlternativeTextures
             }
 
             // Add in our debug commands
-            helper.ConsoleCommands.Add("at_spawnGiantCrop", "Spawns a giant crop based given harvest product id (e.g. Melon == 254).\n\nUsage: at_spawnGiantCrop [HARVEST_ID]", this.DebugSpawnGiantCrop);
+            helper.ConsoleCommands.Add("at_spawn_gc", "Spawns a giant crop based given harvest product id (e.g. Melon == 254).\n\nUsage: at_spawn_gc [HARVEST_ID]", this.DebugSpawnGiantCrop);
+            helper.ConsoleCommands.Add("at_spawn_rc", "Spawns a resource clump based given resource name (e.g. Stump).\n\nUsage: at_spawn_rc [RESOURCE_NAME]", this.DebugSpawnResourceClump);
 
             // Hook into GameLoop events
             helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
@@ -209,6 +210,29 @@ namespace AlternativeTextures
                     (environment as Farm).resourceClumps.Add(new GiantCrop(int.Parse(args[0]), new Vector2(xTile - 1, yTile - 1)));
                 }
             }
+        }
+
+        private void DebugSpawnResourceClump(string command, string[] args)
+        {
+            if (args.Length == 0)
+            {
+                Monitor.Log($"Missing required arguments: [RESOURCE_NAME]", LogLevel.Warn);
+                return;
+            }
+
+            if (!(Game1.currentLocation is Farm))
+            {
+                Monitor.Log($"Command can only be used on player's farm.", LogLevel.Warn);
+                return;
+            }
+
+            if (args[0].ToLower() != "stump")
+            {
+                Monitor.Log($"That resource isn't supported.", LogLevel.Warn);
+                return;
+            }
+
+            (Game1.currentLocation as Farm).resourceClumps.Add(new ResourceClump(600, 2, 2, Game1.player.getTileLocation() + new Vector2(1, 1)));
         }
     }
 }
