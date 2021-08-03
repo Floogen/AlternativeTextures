@@ -19,26 +19,26 @@ namespace AlternativeTextures.Framework.Patches
             _monitor = modMonitor;
         }
 
-        internal static void AssignModData<T>(T type, string textureModelName, bool trackSeason = false)
+        internal static void AssignModData<T>(T type, string modelName, bool trackSeason = false)
         {
-            var textureModel = AlternativeTextures.textureManager.GetRandomTextureModel(textureModelName);
+            var textureModel = AlternativeTextures.textureManager.GetRandomTextureModel(modelName);
             var selectedVariation = Game1.random.Next(-1, textureModel.Variations);
 
             switch (type)
             {
                 case Object obj:
-                    AssignObjectModData(type as Object, textureModel, selectedVariation, trackSeason);
+                    AssignObjectModData(type as Object, modelName, textureModel, selectedVariation, trackSeason);
                     return;
                 case TerrainFeature terrain:
-                    AssignTerrainFeatureModData(type as TerrainFeature, textureModel, selectedVariation, trackSeason);
+                    AssignTerrainFeatureModData(type as TerrainFeature, modelName, textureModel, selectedVariation, trackSeason);
                     return;
             }
         }
 
-        private static void AssignObjectModData(Object obj, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
+        private static void AssignObjectModData(Object obj, string modelName, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
         {
             obj.modData["AlternativeTextureOwner"] = textureModel.Owner;
-            obj.modData["AlternativeTextureName"] = String.Concat(textureModel.Owner, ".", textureModel.ItemName);
+            obj.modData["AlternativeTextureName"] = String.Concat(textureModel.Owner, ".", modelName);
 
             if (trackSeason)
             {
@@ -48,10 +48,10 @@ namespace AlternativeTextures.Framework.Patches
             obj.modData["AlternativeTextureVariation"] = variation.ToString();
         }
 
-        private static void AssignTerrainFeatureModData(TerrainFeature terrain, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
+        private static void AssignTerrainFeatureModData(TerrainFeature terrain, string modelName, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
         {
             terrain.modData["AlternativeTextureOwner"] = textureModel.Owner;
-            terrain.modData["AlternativeTextureName"] = String.Concat(textureModel.Owner, ".", textureModel.ItemName);
+            terrain.modData["AlternativeTextureName"] = String.Concat(textureModel.Owner, ".", modelName);
 
             if (trackSeason)
             {
