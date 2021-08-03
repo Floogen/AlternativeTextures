@@ -72,7 +72,7 @@ namespace AlternativeTextures.Framework.Patches
             var instanceName = $"{NAME_PREFIX}_{Game1.currentSeason}";
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
             {
-                AssignTerrainFeatureModData(__instance, instanceName, true);
+                AssignModData(__instance, instanceName, true);
             }
         }
     }

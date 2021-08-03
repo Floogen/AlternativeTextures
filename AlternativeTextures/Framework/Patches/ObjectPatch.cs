@@ -15,14 +15,13 @@ using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.Patches
 {
-    internal class ObjectPatch
+    internal class ObjectPatch : PatchTemplate
     {
-        private static IMonitor _monitor;
         private readonly Type _object = typeof(Object);
 
-        internal ObjectPatch(IMonitor modMonitor)
+        internal ObjectPatch(IMonitor modMonitor) : base(modMonitor)
         {
-            _monitor = modMonitor;
+
         }
 
         internal void Apply(Harmony harmony)
@@ -34,9 +33,9 @@ namespace AlternativeTextures.Framework.Patches
 
         private static bool DrawPrefix(Object __instance, SpriteBatch spriteBatch, int x, int y, float alpha = 1f)
         {
-            if (__instance.modData.ContainsKey("AlternativeTextureOwner"))
+            if (__instance.modData.ContainsKey("AlternativeTextureName"))
             {
-                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureOwner"]);
+                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
                 if (textureModel is null)
                 {
                     return true;
@@ -64,10 +63,10 @@ namespace AlternativeTextures.Framework.Patches
 
         internal static bool DrawPlacementBoundsPrefix(Object __instance, SpriteBatch spriteBatch, GameLocation location)
         {
-            if (__instance.modData.ContainsKey("AlternativeTextureOwner"))
+            if (__instance.modData.ContainsKey("AlternativeTextureName"))
             {
                 // TODO: Implement showing what variation will be placed?
-                __instance.modData.Remove("AlternativeTextureOwner");
+                __instance.modData.Remove("AlternativeTextureName");
             }
             return true;
         }
@@ -77,11 +76,7 @@ namespace AlternativeTextures.Framework.Patches
             // Used for most objects, except for those whom are converted upon placement (such as Fences)
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(__instance.name))
             {
-                var textureModel = AlternativeTextures.textureManager.GetRandomTextureModel(__instance.name);
-                __instance.modData["AlternativeTextureOwner"] = String.Concat(textureModel.Owner, ".", __instance.name);
-
-                var selectedVariation = Game1.random.Next(-1, textureModel.Variations);
-                __instance.modData["AlternativeTextureVariation"] = selectedVariation.ToString();
+                AssignModData(__instance, __instance.name, false);
             }
 
             return true;

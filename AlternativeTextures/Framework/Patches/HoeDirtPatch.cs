@@ -16,14 +16,13 @@ using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.Patches
 {
-    internal class HoeDirtPatch
+    internal class HoeDirtPatch : PatchTemplate
     {
-        private static IMonitor _monitor;
         private readonly Type _object = typeof(HoeDirt);
 
-        internal HoeDirtPatch(IMonitor modMonitor)
+        internal HoeDirtPatch(IMonitor modMonitor) : base(modMonitor)
         {
-            _monitor = modMonitor;
+
         }
 
         internal void Apply(Harmony harmony)
@@ -34,11 +33,11 @@ namespace AlternativeTextures.Framework.Patches
         private static void PlantPostfix(HoeDirt __instance, int index, int tileX, int tileY, Farmer who, bool isFertilizer, GameLocation location)
         {
             var seedName = Game1.objectInformation.ContainsKey(index) ? Game1.objectInformation[index].Split('/')[0] : String.Empty;
-            var textureModel = AlternativeTextures.textureManager.GetRandomTextureModel(seedName);
-            __instance.modData["AlternativeTextureOwner"] = String.Concat(textureModel.Owner, ".", seedName);
 
-            var selectedVariation = Game1.random.Next(-1, textureModel.Variations);
-            __instance.modData["AlternativeTextureVariation"] = selectedVariation.ToString();
+            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(seedName))
+            {
+                AssignModData(__instance, seedName, false);
+            }
         }
     }
 }

@@ -16,14 +16,13 @@ using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.Patches
 {
-    internal class CropPatch
+    internal class CropPatch : PatchTemplate
     {
-        private static IMonitor _monitor;
         private readonly Type _object = typeof(Crop);
 
-        internal CropPatch(IMonitor modMonitor)
+        internal CropPatch(IMonitor modMonitor) : base(modMonitor)
         {
-            _monitor = modMonitor;
+
         }
 
         internal void Apply(Harmony harmony)
@@ -34,9 +33,9 @@ namespace AlternativeTextures.Framework.Patches
         private static bool DrawPrefix(Crop __instance, Vector2 ___origin, Vector2 ___drawPosition, SpriteBatch b, Vector2 tileLocation, Color toTint, float rotation)
         {
             var hoeDirt = Game1.currentLocation.terrainFeatures[tileLocation] as HoeDirt;
-            if (hoeDirt != null && hoeDirt.modData.ContainsKey("AlternativeTextureOwner"))
+            if (hoeDirt != null && hoeDirt.modData.ContainsKey("AlternativeTextureName"))
             {
-                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(hoeDirt.modData["AlternativeTextureOwner"]);
+                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(hoeDirt.modData["AlternativeTextureName"]);
                 if (textureModel is null)
                 {
                     return true;
