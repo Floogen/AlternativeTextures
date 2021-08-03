@@ -40,7 +40,7 @@ namespace AlternativeTextures.Framework.Patches
             obj.modData["AlternativeTextureOwner"] = textureModel.Owner;
             obj.modData["AlternativeTextureName"] = String.Concat(textureModel.Owner, ".", modelName);
 
-            if (trackSeason)
+            if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
             {
                 obj.modData["AlternativeTextureSeason"] = Game1.currentSeason;
             }
@@ -53,9 +53,9 @@ namespace AlternativeTextures.Framework.Patches
             terrain.modData["AlternativeTextureOwner"] = textureModel.Owner;
             terrain.modData["AlternativeTextureName"] = String.Concat(textureModel.Owner, ".", modelName);
 
-            if (trackSeason)
+            if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
             {
-                terrain.modData["AlternativeTextureSeason"] = Game1.currentSeason;
+                terrain.modData["AlternativeTextureSeason"] = Game1.GetSeasonForLocation(terrain.currentLocation);
             }
 
             terrain.modData["AlternativeTextureVariation"] = variation.ToString();
