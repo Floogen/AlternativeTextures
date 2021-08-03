@@ -1,0 +1,7 @@
+{
+  "ItemName": "Stump",
+  "Type": "ResourceClump",
+  "TextureWidth": 32,
+  "TextureHeight": 32,
+  "Variations": 2
+}
