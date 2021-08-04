@@ -1,8 +1,8 @@
 ﻿using AlternativeTextures.Framework.External.ContentPatcher;
 using AlternativeTextures.Framework.Managers;
 using AlternativeTextures.Framework.Models;
-using AlternativeTextures.Framework.Patches;
-using AlternativeTextures.Framework.Patches.CustomObjects;
+using AlternativeTextures.Framework.Patches.AnimatedObjects;
+using AlternativeTextures.Framework.Patches.StandardObjects;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

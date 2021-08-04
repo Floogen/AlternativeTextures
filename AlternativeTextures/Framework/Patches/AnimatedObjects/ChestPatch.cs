@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Object = StardewValley.Object;
 
-namespace AlternativeTextures.Framework.Patches.CustomObjects
+namespace AlternativeTextures.Framework.Patches.AnimatedObjects
 {
     internal class ChestPatch : PatchTemplate
     {
