@@ -2,6 +2,7 @@
 using AlternativeTextures.Framework.Managers;
 using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.Patches;
+using AlternativeTextures.Framework.Patches.CustomObjects;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -61,6 +62,9 @@ namespace AlternativeTextures
                 new FruitTreePatch(monitor).Apply(harmony);
                 new ResourceClumpPatch(monitor).Apply(harmony);
                 new BushPatch(monitor).Apply(harmony);
+
+                // Start of custom objects (child classes of Object)
+                new ChestPatch(monitor).Apply(harmony);
 
                 /* 
                  * TODO: Implement support for the following
