@@ -66,6 +66,7 @@ namespace AlternativeTextures
                 // Start of custom objects (child classes of Object)
                 new ChestPatch(monitor).Apply(harmony);
                 new CrabPotPatch(monitor).Apply(harmony);
+                new IndoorPotPatch(monitor).Apply(harmony);
 
                 /* 
                  * TODO: Implement support for the following
