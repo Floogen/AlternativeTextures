@@ -19,7 +19,7 @@ namespace AlternativeTextures.Framework.Patches
             _monitor = modMonitor;
         }
 
-        internal static void AssignModData<T>(T type, string modelName, bool trackSeason = false)
+        internal static void AssignModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false)
         {
             var textureModel = AlternativeTextures.textureManager.GetRandomTextureModel(modelName);
             var selectedVariation = Game1.random.Next(-1, textureModel.Variations);
@@ -27,15 +27,15 @@ namespace AlternativeTextures.Framework.Patches
             switch (type)
             {
                 case Object obj:
-                    AssignObjectModData(type as Object, modelName, textureModel, selectedVariation, trackSeason);
+                    AssignObjectModData(obj, modelName, textureModel, selectedVariation, trackSeason, trackSheetId);
                     return;
                 case TerrainFeature terrain:
-                    AssignTerrainFeatureModData(type as TerrainFeature, modelName, textureModel, selectedVariation, trackSeason);
+                    AssignTerrainFeatureModData(terrain, modelName, textureModel, selectedVariation, trackSeason);
                     return;
             }
         }
 
-        private static void AssignObjectModData(Object obj, string modelName, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
+        private static void AssignObjectModData(Object obj, string modelName, AlternativeTextureModel textureModel, int variation, bool trackSeason = false, bool trackSheetId = false)
         {
             obj.modData["AlternativeTextureOwner"] = textureModel.Owner;
             obj.modData["AlternativeTextureName"] = String.Concat(textureModel.Owner, ".", modelName);
@@ -43,6 +43,11 @@ namespace AlternativeTextures.Framework.Patches
             if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
             {
                 obj.modData["AlternativeTextureSeason"] = Game1.currentSeason;
+            }
+
+            if (trackSheetId)
+            {
+                obj.modData["AlternativeTextureSheetId"] = obj.ParentSheetIndex.ToString();
             }
 
             obj.modData["AlternativeTextureVariation"] = variation.ToString();
