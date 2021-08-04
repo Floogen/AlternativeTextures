@@ -78,6 +78,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Examples\[AT] Example Pack\Textures\Phone\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\GardenPot\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\CrabPot\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\JunimoChest\texture.json" />
@@ -111,6 +112,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Examples\[AT] Example Pack\Textures\Phone\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\GardenPot\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\CrabPot\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\JunimoChest\texture.png" />
