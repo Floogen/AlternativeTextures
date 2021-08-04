@@ -69,9 +69,17 @@ namespace AlternativeTextures
                 new IndoorPotPatch(monitor).Apply(harmony);
                 new PhonePatch(monitor).Apply(harmony);
 
+                /*
+                 * Not supported:
+                 * - Wood Chipper
+                 */
+
+
                 /* 
-                 * TODO: Implement support for the following
-                 * - Special Objects w/ animation (Chest, etc.)
+                 * TODO: Implement the following
+                 * - Paint Roller tool
+                 * - Paint Roller UI
+                 * - Crop color overlay
                  */
             }
             catch (Exception e)
