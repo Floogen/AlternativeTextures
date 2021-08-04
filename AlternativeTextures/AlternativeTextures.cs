@@ -67,6 +67,7 @@ namespace AlternativeTextures
                 new ChestPatch(monitor).Apply(harmony);
                 new CrabPotPatch(monitor).Apply(harmony);
                 new IndoorPotPatch(monitor).Apply(harmony);
+                new PhonePatch(monitor).Apply(harmony);
 
                 /* 
                  * TODO: Implement support for the following
