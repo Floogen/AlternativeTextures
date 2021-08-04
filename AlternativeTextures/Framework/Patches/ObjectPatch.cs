@@ -29,7 +29,7 @@ namespace AlternativeTextures.Framework.Patches
         {
             harmony.Patch(AccessTools.Method(_object, nameof(Object.draw), new[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Object.drawPlacementBounds), new[] { typeof(SpriteBatch), typeof(GameLocation) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPlacementBoundsPrefix)));
-            harmony.Patch(AccessTools.Method(_object, nameof(Object.placementAction), new[] { typeof(GameLocation), typeof(int), typeof(int), typeof(Farmer) }), postfix: new HarmonyMethod(GetType(), nameof(PlacementActionPrefix)));
+            harmony.Patch(AccessTools.Method(_object, nameof(Object.placementAction), new[] { typeof(GameLocation), typeof(int), typeof(int), typeof(Farmer) }), postfix: new HarmonyMethod(GetType(), nameof(PlacementActionPostfix)));
         }
 
         private static bool DrawPrefix(Object __instance, SpriteBatch spriteBatch, int x, int y, float alpha = 1f)
@@ -71,7 +71,7 @@ namespace AlternativeTextures.Framework.Patches
             return true;
         }
 
-        internal static void PlacementActionPrefix(Object __instance, bool __result, GameLocation location, int x, int y, Farmer who = null)
+        internal static void PlacementActionPostfix(Object __instance, bool __result, GameLocation location, int x, int y, Farmer who = null)
         {
             if (!__result)
             {
