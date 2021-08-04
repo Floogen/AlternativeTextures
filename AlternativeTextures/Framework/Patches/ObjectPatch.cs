@@ -47,15 +47,37 @@ namespace AlternativeTextures.Framework.Patches
                 {
                     return true;
                 }
+                var textureOffset = textureVariation * textureModel.TextureHeight;
 
-                Vector2 scaleFactor = __instance.getScale();
-                scaleFactor *= 4f;
+                // Get the current X index for the source tile
+                var xTileOffset = __instance.modData.ContainsKey("AlternativeTextureSheetId") ? __instance.ParentSheetIndex - Int32.Parse(__instance.modData["AlternativeTextureSheetId"]) : 0;
+                if (__instance.showNextIndex)
+                {
+                    xTileOffset += 1;
+                }
+                xTileOffset *= textureModel.TextureWidth;
+
+                // Perform base game draw logic
+                Vector2 scaleFactor = __instance.getScale() * 4f;
                 Vector2 position = Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64, y * 64 - 64));
                 Rectangle destination = new Rectangle((int)(position.X - scaleFactor.X / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(position.Y - scaleFactor.Y / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(64f + scaleFactor.X), (int)(128f + scaleFactor.Y / 2f));
                 float draw_layer = Math.Max(0f, (float)((y + 1) * 64 - 24) / 10000f) + (float)x * 1E-05f;
-                spriteBatch.Draw(textureModel.Texture, destination, new Rectangle(0, textureVariation * textureModel.TextureHeight, textureModel.TextureWidth, textureModel.TextureHeight), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
 
-                // TODO: Add draw handling for machines (such as loom, furnace, etc.)
+                spriteBatch.Draw(textureModel.Texture, destination, new Rectangle(xTileOffset, textureOffset, textureModel.TextureWidth, textureModel.TextureHeight), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
+
+                // Replicate the extra draw logic from the base game
+                if (__instance.Name.Equals("Loom") && (int)__instance.minutesUntilReady > 0)
+                {
+                    spriteBatch.Draw(Game1.objectSpriteSheet, __instance.getLocalPosition(Game1.viewport) + new Vector2(32f, 0f), Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, 435, 16, 16), Color.White * alpha, __instance.scale.X, new Vector2(8f, 8f), 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64) / 10000f + 0.0001f + (float)x * 1E-05f));
+                }
+                if ((bool)__instance.isLamp && Game1.isDarkOut())
+                {
+                    spriteBatch.Draw(Game1.mouseCursors, position + new Vector2(-32f, -32f), new Rectangle(88, 1779, 32, 32), Color.White * 0.75f, 0f, Vector2.Zero, 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64 - 20) / 10000f) + (float)x / 1000000f);
+                }
+                if ((int)__instance.parentSheetIndex == 126 && (int)__instance.quality != 0)
+                {
+                    spriteBatch.Draw(FarmerRenderer.hatsTexture, position + new Vector2(-3f, -6f) * 4f, new Rectangle(((int)__instance.quality - 1) * 20 % FarmerRenderer.hatsTexture.Width, ((int)__instance.quality - 1) * 20 / FarmerRenderer.hatsTexture.Width * 20 * 4, 20, 20), Color.White * alpha, 0f, Vector2.Zero, 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64 - 20) / 10000f) + (float)x * 1E-05f);
+                }
 
                 return false;
             }
@@ -88,14 +110,14 @@ namespace AlternativeTextures.Framework.Patches
             var instanceName = $"{AlternativeTextureModel.TextureType.Craftable}_{placedObject.name}";
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
             {
-                AssignModData(placedObject, instanceName, false);
+                AssignModData(placedObject, instanceName, false, placedObject.bigCraftable);
                 return;
             }
 
             instanceName = $"{instanceName}_{Game1.currentSeason}";
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
             {
-                AssignModData(placedObject, instanceName, true);
+                AssignModData(placedObject, instanceName, true, placedObject.bigCraftable);
                 return;
             }
         }
