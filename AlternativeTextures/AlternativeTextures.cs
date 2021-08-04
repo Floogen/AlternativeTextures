@@ -40,7 +40,7 @@ namespace AlternativeTextures
             // Setup our managers
             textureManager = new TextureManager(monitor);
             apiManager = new ApiManager(monitor);
-            assetManager = new AssetManager();
+            assetManager = new AssetManager(helper);
 
             // Load the asset manager
             Helper.Content.AssetLoaders.Add(assetManager);
