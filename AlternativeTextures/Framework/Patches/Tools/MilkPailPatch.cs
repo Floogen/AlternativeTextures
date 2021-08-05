@@ -29,8 +29,9 @@ namespace AlternativeTextures.Framework.Patches.Tools
 
         internal void Apply(Harmony harmony)
         {
-            harmony.Patch(AccessTools.PropertyGetter(typeof(Tool), "DisplayName"), postfix: new HarmonyMethod(GetType(), nameof(LoadDisplayNamePostfix)));
-            harmony.Patch(AccessTools.PropertyGetter(typeof(Tool), "description"), postfix: new HarmonyMethod(GetType(), nameof(LoadDescriptionPostfix)));
+            harmony.Patch(AccessTools.PropertyGetter(typeof(Tool), nameof(Tool.DisplayName)), postfix: new HarmonyMethod(GetType(), nameof(LoadDisplayNamePostfix)));
+            harmony.Patch(AccessTools.PropertyGetter(typeof(Tool), nameof(Tool.description)), postfix: new HarmonyMethod(GetType(), nameof(LoadDescriptionPostfix)));
+            harmony.Patch(AccessTools.Method(_object, nameof(MilkPail.beginUsing), new[] { typeof(GameLocation), typeof(int), typeof(int), typeof(Farmer) }), prefix: new HarmonyMethod(GetType(), nameof(BeginUsingPrefix)));
         }
 
         private static void LoadDisplayNamePostfix(MilkPail __instance, ref string __result)
@@ -47,6 +48,29 @@ namespace AlternativeTextures.Framework.Patches.Tools
             {
                 __result = "Allows you to apply different textures to supported objects.";
             }
+        }
+
+        private static bool BeginUsingPrefix(MilkPail __instance, ref bool __result, GameLocation location, int x, int y, Farmer who)
+        {
+            if (!__instance.modData.ContainsKey("AlternativeTexturesPaintBucketFlag"))
+            {
+                return true;
+            }
+            __result = true;
+
+            var targetedObject = location.getObjectAt(x, y);
+            if (targetedObject is null || !targetedObject.modData.ContainsKey("AlternativeTextureName"))
+            {
+                who.CanMove = true;
+                who.UsingTool = false;
+                return false;
+            }
+
+            Game1.addHUDMessage(new HUDMessage($"{targetedObject.Name} has alternative textures available!", 2));
+
+            who.CanMove = true;
+            who.UsingTool = false;
+            return false;
         }
     }
 }
