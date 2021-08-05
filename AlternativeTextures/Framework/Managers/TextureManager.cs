@@ -83,6 +83,16 @@ namespace AlternativeTextures.Framework.Managers
             return _alternativeTextures.First(t => String.Equals(t.GetId(), textureId, StringComparison.OrdinalIgnoreCase));
         }
 
+        public List<AlternativeTextureModel> GetAvailableTextureModels(string objectName)
+        {
+            if (!DoesObjectHaveAlternativeTexture(objectName))
+            {
+                return new List<AlternativeTextureModel>();
+            }
+
+            return _alternativeTextures.Where(t => String.Equals(t.GetNameWithSeason(), objectName, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+
         public void UpdateTexture(string textureId, Texture2D texture)
         {
             if (!DoesObjectHaveAlternativeTextureById(textureId))
