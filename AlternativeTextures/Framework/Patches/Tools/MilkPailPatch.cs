@@ -1,5 +1,6 @@
 ﻿using AlternativeTextures;
 using AlternativeTextures.Framework.Models;
+using AlternativeTextures.Framework.UI;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -66,7 +67,17 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 return false;
             }
 
-            Game1.addHUDMessage(new HUDMessage($"{targetedObject.Name} has alternative textures available!", 2));
+            var modelName = targetedObject.modData["AlternativeTextureName"].Replace($"{targetedObject.modData["AlternativeTextureOwner"]}.", String.Empty);
+            if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName).Count == 0)
+            {
+                Game1.addHUDMessage(new HUDMessage($"{targetedObject.Name} has no alternative textures available!", 3));
+                who.CanMove = true;
+                who.UsingTool = false;
+                return false;
+            }
+
+            // Display texture menu
+            Game1.activeClickableMenu = new PaintBucketMenu(targetedObject);
 
             who.CanMove = true;
             who.UsingTool = false;
