@@ -1,14 +1,17 @@
 ﻿using AlternativeTextures.Framework.External.ContentPatcher;
 using AlternativeTextures.Framework.Managers;
 using AlternativeTextures.Framework.Models;
+using AlternativeTextures.Framework.Patches;
 using AlternativeTextures.Framework.Patches.AnimatedObjects;
 using AlternativeTextures.Framework.Patches.StandardObjects;
+using AlternativeTextures.Framework.Patches.Tools;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Menus;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
@@ -50,7 +53,7 @@ namespace AlternativeTextures
             {
                 var harmony = new Harmony(this.ModManifest.UniqueID);
 
-                // Apply our patches
+                // Apply texture override related patches
                 new GameLocationPatch(monitor).Apply(harmony);
                 new ObjectPatch(monitor).Apply(harmony);
                 new FencePatch(monitor).Apply(harmony);
@@ -63,12 +66,11 @@ namespace AlternativeTextures
                 new ResourceClumpPatch(monitor).Apply(harmony);
                 new BushPatch(monitor).Apply(harmony);
 
-                // Start of custom objects (child classes of Object)
+                // Start of animated objects
                 new ChestPatch(monitor).Apply(harmony);
                 new CrabPotPatch(monitor).Apply(harmony);
                 new IndoorPotPatch(monitor).Apply(harmony);
                 new PhonePatch(monitor).Apply(harmony);
-
                 /*
                  * Not supported:
                  * - Wood Chipper
@@ -91,6 +93,7 @@ namespace AlternativeTextures
             // Add in our debug commands
             helper.ConsoleCommands.Add("at_spawn_gc", "Spawns a giant crop based given harvest product id (e.g. Melon == 254).\n\nUsage: at_spawn_gc [HARVEST_ID]", this.DebugSpawnGiantCrop);
             helper.ConsoleCommands.Add("at_spawn_rc", "Spawns a resource clump based given resource name (e.g. Stump).\n\nUsage: at_spawn_rc [RESOURCE_NAME]", this.DebugSpawnResourceClump);
+            helper.ConsoleCommands.Add("at_paint_shop", "Shows the carpenter shop with the paint bucket for sale.\n\nUsage: at_paint_shop", this.DebugShowPaintShop);
 
             // Hook into GameLoop events
             helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
@@ -250,6 +253,11 @@ namespace AlternativeTextures
             }
 
             (Game1.currentLocation as Farm).resourceClumps.Add(new ResourceClump(600, 2, 2, Game1.player.getTileLocation() + new Vector2(1, 1)));
+        }
+
+        private void DebugShowPaintShop(string command, string[] args)
+        {
+            Game1.activeClickableMenu = new ShopMenu(Utility.getCarpenterStock(), 0, "Robin");
         }
     }
 }
