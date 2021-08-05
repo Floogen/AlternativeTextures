@@ -20,6 +20,7 @@ namespace AlternativeTextures.Framework.UI
 
         public List<ClickableTextureComponent> availableTextures = new List<ClickableTextureComponent>();
 
+        private int _startingRow = 0;
         private int _texturesPerRow = 6;
 
         public PaintBucketMenu(Object target) : base(0, 0, 832, 576, showUpperRightCloseButton: true)
@@ -54,7 +55,7 @@ namespace AlternativeTextures.Framework.UI
                     var componentId = this.availableTextures.Count();
                     var displayName = string.Concat(availableModels[m].GetId(), "_", v + 1);
                     var sourceRect = target is Fence ? this.GetFenceSourceRect(target as Fence, availableModels[m].TextureHeight, v) : new Rectangle(0, v * availableModels[m].TextureHeight, availableModels[m].TextureWidth, availableModels[m].TextureHeight);
-                    this.availableTextures.Add(new ClickableTextureComponent(displayName, new Rectangle(base.xPositionOnScreen + IClickableMenu.borderWidth + componentId % _texturesPerRow * 64 * 2, base.yPositionOnScreen + sourceRect.Height + componentId / _texturesPerRow * sourceRect.Height, 4 * sourceRect.Width, 4 * sourceRect.Height), null, displayName, availableModels[m].Texture, sourceRect, 4f, false)
+                    this.availableTextures.Add(new ClickableTextureComponent(displayName, new Rectangle(base.xPositionOnScreen + IClickableMenu.borderWidth + componentId % _texturesPerRow * 64 * 2, base.yPositionOnScreen + sourceRect.Height + componentId / _texturesPerRow * (4 * sourceRect.Height), 4 * sourceRect.Width, 4 * sourceRect.Height), null, displayName, availableModels[m].Texture, sourceRect, 4f, false)
                     {
                         item = objectWithVariation,
                         myID = componentId,
@@ -101,9 +102,14 @@ namespace AlternativeTextures.Framework.UI
                 b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.75f);
                 SpriteText.drawStringWithScrollCenteredAt(b, "Paint Bucket", base.xPositionOnScreen + base.width / 2, base.yPositionOnScreen - 64);
                 IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), base.xPositionOnScreen, base.yPositionOnScreen, base.width, base.height, Color.White, 4f);
-                foreach (ClickableTextureComponent c in this.availableTextures)
+
+                for (int row = _startingRow; row < _startingRow + 4; row++)
                 {
-                    c.draw(b, Color.White, 0.87f);
+                    int rowOffset = row * _texturesPerRow;
+                    for (int i = 0; i < _texturesPerRow && i + rowOffset < this.availableTextures.Count; i++)
+                    {
+                        this.availableTextures[i + rowOffset].draw(b, Color.White, 0.87f);
+                    }
                 }
             }
             if (!Game1.IsFading() && this.okButton != null)
