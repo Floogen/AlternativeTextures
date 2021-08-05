@@ -63,6 +63,7 @@
     <Compile Include="Framework\Patches\AnimatedObjects\IndoorPotPatch.cs" />
     <Compile Include="Framework\Patches\AnimatedObjects\CrabPotPatch.cs" />
     <Compile Include="Framework\Patches\AnimatedObjects\ChestPatch.cs" />
+    <Compile Include="Framework\Patches\UtilityPatch.cs" />
     <Compile Include="Framework\Patches\StandardObjects\ResourceClumpPatch.cs" />
     <Compile Include="Framework\Patches\StandardObjects\GiantCropPatch.cs" />
     <Compile Include="Framework\Patches\StandardObjects\GameLocationPatch.cs" />
