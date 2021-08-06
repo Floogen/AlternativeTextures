@@ -77,7 +77,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 Color tintColor = __instance.tintColor.Value;
                 if (!tintColor.Equals(Color.White) && (int)__instance.currentPhase == __instance.phaseDays.Count - 1 && !__instance.dead)
                 {
-                    b.Draw(textureModel.Texture, position, new Rectangle(___coloredSourceRect.X, textureOffset, ___coloredSourceRect.Width, ___coloredSourceRect.Height), tintColor, rotation, ___origin, 4f, effect, ___coloredLayerDepth);
+                    b.Draw(textureModel.Texture, position, new Rectangle(___coloredSourceRect.X, textureOffset, ___coloredSourceRect.Width, ___coloredSourceRect.Height), tintColor, rotation, ___origin, 4f, effect, layerDepth + 0.01f);
                 }
 
                 return false;
