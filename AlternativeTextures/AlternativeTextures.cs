@@ -150,39 +150,46 @@ namespace AlternativeTextures
             {
                 Monitor.Log($"Loading companions from pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} by {contentPack.Manifest.Author}", LogLevel.Debug);
 
-                var textureFolders = new DirectoryInfo(Path.Combine(contentPack.DirectoryPath, "Textures")).GetDirectories();
-                if (textureFolders.Count() == 0)
+                try
                 {
-                    Monitor.Log($"No sub-folders found under Textures for the content pack {contentPack.Manifest.Name}!", LogLevel.Warn);
-                    continue;
+                    var textureFolders = new DirectoryInfo(Path.Combine(contentPack.DirectoryPath, "Textures")).GetDirectories();
+                    if (textureFolders.Count() == 0)
+                    {
+                        Monitor.Log($"No sub-folders found under Textures for the content pack {contentPack.Manifest.Name}!", LogLevel.Warn);
+                        continue;
+                    }
+
+                    // Load in the alternative textures
+                    foreach (var textureFolder in textureFolders)
+                    {
+                        if (!File.Exists(Path.Combine(textureFolder.FullName, "texture.json")))
+                        {
+                            Monitor.Log($"Content pack {contentPack.Manifest.Name} is missing a texture.json under {textureFolder.Name}!", LogLevel.Warn);
+                            continue;
+                        }
+
+                        AlternativeTextureModel textureModel = contentPack.ReadJsonFile<AlternativeTextureModel>(Path.Combine(textureFolder.Parent.Name, textureFolder.Name, "texture.json"));
+                        textureModel.Owner = contentPack.Manifest.UniqueID;
+                        Monitor.Log(textureModel.ToString(), LogLevel.Trace);
+
+                        // Verify we are given a texture and if so, track it
+                        if (!File.Exists(Path.Combine(textureFolder.FullName, "texture.png")))
+                        {
+                            Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: No associated texture.png given", LogLevel.Warn);
+                            continue;
+                        }
+
+                        // Load in the texture
+                        textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(textureFolder.Parent.Name, textureFolder.Name, "texture.png"));
+                        textureModel.Texture = contentPack.LoadAsset<Texture2D>(textureModel.TileSheetPath);
+
+                        // Track the texture model
+                        textureManager.AddAlternativeTexture(textureModel);
+                    }
                 }
-
-                // Load in the alternative textures
-                foreach (var textureFolder in textureFolders)
+                catch (Exception ex)
                 {
-                    if (!File.Exists(Path.Combine(textureFolder.FullName, "texture.json")))
-                    {
-                        Monitor.Log($"Content pack {contentPack.Manifest.Name} is missing a texture.json under {textureFolder.Name}!", LogLevel.Warn);
-                        continue;
-                    }
-
-                    AlternativeTextureModel textureModel = contentPack.ReadJsonFile<AlternativeTextureModel>(Path.Combine(textureFolder.Parent.Name, textureFolder.Name, "texture.json"));
-                    textureModel.Owner = contentPack.Manifest.UniqueID;
-                    Monitor.Log(textureModel.ToString(), LogLevel.Trace);
-
-                    // Verify we are given a texture and if so, track it
-                    if (!File.Exists(Path.Combine(textureFolder.FullName, "texture.png")))
-                    {
-                        Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: No associated texture.png given", LogLevel.Warn);
-                        continue;
-                    }
-
-                    // Load in the texture
-                    textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(textureFolder.Parent.Name, textureFolder.Name, "texture.png"));
-                    textureModel.Texture = contentPack.LoadAsset<Texture2D>(textureModel.TileSheetPath);
-
-                    // Track the texture model
-                    textureManager.AddAlternativeTexture(textureModel);
+                    Monitor.Log($"Error loading content pack {contentPack.Manifest.Name}: {ex}", LogLevel.Warn);
                 }
             }
         }
