@@ -141,24 +141,17 @@ namespace AlternativeTextures.Framework.UI
                     for (int j = 0; j < 12; j++)
                     {
                         var randomColor = new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
-                        AlternativeTextures.multiplayer.broadcastSprites(Game1.currentLocation, new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Rectangle(355, 1200, 16, 16), _textureTarget.tileLocation.Value * 64f, flipped: false, 0.01f, randomColor)
+                        AlternativeTextures.multiplayer.broadcastSprites(Game1.currentLocation, new TemporaryAnimatedSprite(6, _textureTarget.tileLocation.Value * 64f, randomColor, 8, flipped: false, 50f)
                         {
-                            motion = new Vector2((float)Game1.random.Next(-10, 11) / 10f, -Game1.random.Next(5, 7)),
-                            acceleration = new Vector2(0f, (float)Game1.random.Next(13, 17) / 100f),
+                            motion = new Vector2((float)Game1.random.Next(-10, 11) / 10f, -Game1.random.Next(1, 3)),
+                            acceleration = new Vector2(0f, (float)Game1.random.Next(1, 3) / 100f),
                             accelerationChange = new Vector2(0f, -0.001f),
-                            scale = 4f,
+                            scale = 0.8f,
                             layerDepth = (_textureTarget.tileLocation.Y + 1f) * 64f / 10000f,
-                            animationLength = 11,
-                            totalNumberOfLoops = 99,
-                            interval = Game1.random.Next(20, 90),
-                            delayBeforeAnimationStart = j * 20
+                            interval = Game1.random.Next(20, 90)
                         });
-                        if (j % 6 == 0)
-                        {
-                            AlternativeTextures.multiplayer.broadcastSprites(Game1.currentLocation, new TemporaryAnimatedSprite(50, _textureTarget.tileLocation.Value * 64f, randomColor));
-                            AlternativeTextures.multiplayer.broadcastSprites(Game1.currentLocation, new TemporaryAnimatedSprite(12, _textureTarget.tileLocation.Value * 64f, Color.White));
-                        }
                     }
+                    //Game1.player.currentLocation.localSound("crit");
                     this.exitThisMenu();
                     return;
                 }
