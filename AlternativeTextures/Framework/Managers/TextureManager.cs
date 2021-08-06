@@ -23,7 +23,15 @@ namespace AlternativeTextures.Framework.Managers
 
         public void AddAlternativeTexture(AlternativeTextureModel model)
         {
-            _alternativeTextures.Add(model);
+            if (_alternativeTextures.Any(t => t.GetId() == model.GetId()))
+            {
+                var replacementIndex = _alternativeTextures.IndexOf(_alternativeTextures.First(t => t.GetId() == model.GetId()));
+                _alternativeTextures[replacementIndex] = model;
+            }
+            else
+            {
+                _alternativeTextures.Add(model);
+            }
         }
 
         public List<AlternativeTextureModel> GetAllTextures()

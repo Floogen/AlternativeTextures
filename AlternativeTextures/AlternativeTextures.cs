@@ -99,6 +99,7 @@ namespace AlternativeTextures
             helper.ConsoleCommands.Add("at_spawn_gc", "Spawns a giant crop based given harvest product id (e.g. Melon == 254).\n\nUsage: at_spawn_gc [HARVEST_ID]", this.DebugSpawnGiantCrop);
             helper.ConsoleCommands.Add("at_spawn_rc", "Spawns a resource clump based given resource name (e.g. Stump).\n\nUsage: at_spawn_rc [RESOURCE_NAME]", this.DebugSpawnResourceClump);
             helper.ConsoleCommands.Add("at_paint_shop", "Shows the carpenter shop with the paint bucket for sale.\n\nUsage: at_paint_shop", this.DebugShowPaintShop);
+            helper.ConsoleCommands.Add("at_reload", "Reloads all Alternative Texture content packs.\n\nUsage: at_reload", delegate { this.LoadContentPacks(); });
 
             // Hook into GameLoop events
             helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
@@ -143,7 +144,7 @@ namespace AlternativeTextures
             }
         }
 
-        private void LoadContentPacks(bool isReload = false)
+        private void LoadContentPacks()
         {
             // Load owned content packs
             foreach (IContentPack contentPack in Helper.ContentPacks.GetOwned())
