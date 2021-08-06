@@ -86,7 +86,6 @@ namespace AlternativeTextures
                 /* 
                  * TODO: Implement the following
                  * - Flooring
-                 * - Crop color overlay
                  */
             }
             catch (Exception e)
