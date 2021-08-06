@@ -85,7 +85,6 @@ namespace AlternativeTextures
 
                 /* 
                  * TODO: Implement the following
-                 * - Paint Roller UI
                  * - Crop color overlay
                  */
             }
