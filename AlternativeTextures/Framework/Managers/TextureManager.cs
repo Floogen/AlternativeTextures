@@ -83,14 +83,16 @@ namespace AlternativeTextures.Framework.Managers
             return _alternativeTextures.First(t => String.Equals(t.GetId(), textureId, StringComparison.OrdinalIgnoreCase));
         }
 
-        public List<AlternativeTextureModel> GetAvailableTextureModels(string objectName)
+        public List<AlternativeTextureModel> GetAvailableTextureModels(string objectName, string season)
         {
-            if (!DoesObjectHaveAlternativeTexture(objectName))
+            if (!DoesObjectHaveAlternativeTexture(objectName) && !DoesObjectHaveAlternativeTexture(String.Concat(objectName, "_", season)))
             {
                 return new List<AlternativeTextureModel>();
             }
-
-            return _alternativeTextures.Where(t => String.Equals(t.GetNameWithSeason(), objectName, StringComparison.OrdinalIgnoreCase)).ToList();
+            AlternativeTextures.monitor.Log("HERE", LogLevel.Debug);
+            var seasonalTextures = _alternativeTextures.Where(t => String.Equals(t.GetNameWithSeason(), String.Concat(objectName, "_", season), StringComparison.OrdinalIgnoreCase)).ToList();
+            seasonalTextures.AddRange(_alternativeTextures.Where(t => !seasonalTextures.Any(s => s.GetId() == t.GetId()) && String.Equals(t.GetNameWithSeason(), objectName, StringComparison.OrdinalIgnoreCase)));
+            return seasonalTextures;
         }
 
         public void UpdateTexture(string textureId, Texture2D texture)

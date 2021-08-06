@@ -28,7 +28,7 @@ namespace AlternativeTextures.Framework.UI
         private Object _textureTarget;
         private Rectangle _sourceRect;
 
-        public PaintBucketMenu(Object target) : base(0, 0, 832, 576, showUpperRightCloseButton: true)
+        public PaintBucketMenu(Object target, string modelName) : base(0, 0, 832, 576, showUpperRightCloseButton: true)
         {
             if (!target.modData.ContainsKey("AlternativeTextureOwner") || !target.modData.ContainsKey("AlternativeTextureName"))
             {
@@ -47,8 +47,7 @@ namespace AlternativeTextures.Framework.UI
             base.yPositionOnScreen = (int)topLeft.Y + 32;
 
             // Populate the texture selection components
-            var modelName = target.modData["AlternativeTextureName"].Replace($"{target.modData["AlternativeTextureOwner"]}.", String.Empty);
-            var availableModels = AlternativeTextures.textureManager.GetAvailableTextureModels(modelName);
+            var availableModels = AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation));
             for (int m = 0; m < availableModels.Count; m++)
             {
                 for (int v = 0; v < availableModels[m].Variations; v++)
@@ -57,6 +56,7 @@ namespace AlternativeTextures.Framework.UI
                     objectWithVariation.modData["AlternativeTextureOwner"] = availableModels[m].Owner;
                     objectWithVariation.modData["AlternativeTextureName"] = availableModels[m].GetId();
                     objectWithVariation.modData["AlternativeTextureVariation"] = v.ToString();
+                    objectWithVariation.modData["AlternativeTextureSeason"] = availableModels[m].Season;
 
                     this.textureOptions.Add(objectWithVariation);
                 }
@@ -67,6 +67,7 @@ namespace AlternativeTextures.Framework.UI
             vanillaObject.modData["AlternativeTextureOwner"] = "Stardew.Default";
             vanillaObject.modData["AlternativeTextureName"] = $"{vanillaObject.modData["AlternativeTextureOwner"]}.{modelName}";
             vanillaObject.modData["AlternativeTextureVariation"] = $"{-1}";
+            vanillaObject.modData["AlternativeTextureSeason"] = String.Empty;
 
             this.textureOptions.Insert(0, vanillaObject);
 

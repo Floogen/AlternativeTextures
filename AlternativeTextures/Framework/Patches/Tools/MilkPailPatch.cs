@@ -68,16 +68,21 @@ namespace AlternativeTextures.Framework.Patches.Tools
             }
 
             var modelName = targetedObject.modData["AlternativeTextureName"].Replace($"{targetedObject.modData["AlternativeTextureOwner"]}.", String.Empty);
-            if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName).Count == 0)
+            if (targetedObject.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(targetedObject.modData["AlternativeTextureSeason"]))
             {
-                Game1.addHUDMessage(new HUDMessage($"{targetedObject.Name} has no alternative textures available!", 3));
+                modelName = modelName.Replace($"_{targetedObject.modData["AlternativeTextureSeason"]}", String.Empty);
+            }
+
+            if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
+            {
+                Game1.addHUDMessage(new HUDMessage($"{modelName} has no alternative textures for this season!", 3));
                 who.CanMove = true;
                 who.UsingTool = false;
                 return false;
             }
 
             // Display texture menu
-            Game1.activeClickableMenu = new PaintBucketMenu(targetedObject);
+            Game1.activeClickableMenu = new PaintBucketMenu(targetedObject, modelName);
 
             who.CanMove = true;
             who.UsingTool = false;
