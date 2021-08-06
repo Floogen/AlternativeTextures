@@ -26,6 +26,7 @@ namespace AlternativeTextures.Framework.UI
         private int _maxRows = 4;
 
         private Object _textureTarget;
+        private Rectangle _sourceRect;
 
         public PaintBucketMenu(Object target) : base(0, 0, 832, 576, showUpperRightCloseButton: true)
         {
@@ -34,8 +35,6 @@ namespace AlternativeTextures.Framework.UI
                 this.exitThisMenu();
                 return;
             }
-
-            _textureTarget = target;
 
             // Set up menu structure
             if (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.ko || LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.fr)
@@ -55,12 +54,21 @@ namespace AlternativeTextures.Framework.UI
                 for (int v = 0; v < availableModels[m].Variations; v++)
                 {
                     var objectWithVariation = target.getOne();
+                    objectWithVariation.modData["AlternativeTextureOwner"] = availableModels[m].Owner;
                     objectWithVariation.modData["AlternativeTextureName"] = availableModels[m].GetId();
                     objectWithVariation.modData["AlternativeTextureVariation"] = v.ToString();
 
                     this.textureOptions.Add(objectWithVariation);
                 }
             }
+
+            // Add the vanilla version
+            var vanillaObject = target.getOne();
+            vanillaObject.modData["AlternativeTextureOwner"] = "Stardew.Default";
+            vanillaObject.modData["AlternativeTextureName"] = $"{vanillaObject.modData["AlternativeTextureOwner"]}.{modelName}";
+            vanillaObject.modData["AlternativeTextureVariation"] = $"{-1}";
+
+            this.textureOptions.Insert(0, vanillaObject);
 
             var sourceRect = target is Fence ? this.GetFenceSourceRect(target as Fence, availableModels.First().TextureHeight, 0) : new Rectangle(0, 0, availableModels.First().TextureWidth, availableModels.First().TextureHeight);
             for (int r = 0; r < _maxRows; r++)
@@ -78,6 +86,10 @@ namespace AlternativeTextures.Framework.UI
                     });
                 }
             }
+
+            // Cache the input object to easily reference the vanilla texture
+            _textureTarget = target;
+            _sourceRect = sourceRect;
 
             this.backButton = new ClickableTextureComponent(new Rectangle(base.xPositionOnScreen - 64, base.yPositionOnScreen + 8, 48, 44), Game1.mouseCursors, new Rectangle(352, 495, 12, 11), 4f)
             {
@@ -197,19 +209,38 @@ namespace AlternativeTextures.Framework.UI
                 for (int i = 0; i < this.availableTextures.Count; i++)
                 {
                     this.availableTextures[i].item = null;
-                    this.availableTextures[i].sourceRect = new Rectangle();
+                    this.availableTextures[i].texture = null;
 
                     var textureIndex = i + _startingRow * _texturesPerRow;
                     if (textureIndex < textureOptions.Count)
                     {
                         var target = textureOptions[textureIndex];
                         var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(target.modData["AlternativeTextureName"]);
+                        var variation = Int32.Parse(target.modData["AlternativeTextureVariation"]);
 
                         this.availableTextures[i].item = target;
-                        this.availableTextures[i].texture = textureModel.Texture;
-                        this.availableTextures[i].sourceRect = _textureTarget is Fence ? this.GetFenceSourceRect(_textureTarget as Fence, textureModel.TextureHeight, Int32.Parse(target.modData["AlternativeTextureVariation"])) : new Rectangle(0, Int32.Parse(target.modData["AlternativeTextureVariation"]) * textureModel.TextureHeight, textureModel.TextureWidth, textureModel.TextureHeight);
+                        if (variation == -1)
+                        {
+                            if (_textureTarget is Fence)
+                            {
+                                //(_textureTarget as Fence).drawInMenu(b, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), 1f, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
+
+                                this.availableTextures[i].texture = (_textureTarget as Fence).loadFenceTexture();
+                                this.availableTextures[i].sourceRect = this.GetFenceSourceRect(_textureTarget as Fence, this.availableTextures[i].sourceRect.Height, 0);
+                                this.availableTextures[i].draw(b, Color.White, 0.87f);
+                            }
+                            else
+                            {
+                                _textureTarget.drawInMenu(b, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y + 32f), 2f, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
+                            }
+                        }
+                        else
+                        {
+                            this.availableTextures[i].texture = textureModel.Texture;
+                            this.availableTextures[i].sourceRect = _textureTarget is Fence ? this.GetFenceSourceRect(_textureTarget as Fence, textureModel.TextureHeight, variation) : new Rectangle(0, variation * textureModel.TextureHeight, textureModel.TextureWidth, textureModel.TextureHeight);
+                            this.availableTextures[i].draw(b, Color.White, 0.87f);
+                        }
                     }
-                    this.availableTextures[i].draw(b, Color.White, 0.87f);
                 }
             }
 
