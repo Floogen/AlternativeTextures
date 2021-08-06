@@ -28,6 +28,7 @@ namespace AlternativeTextures
 
         internal static IMonitor monitor;
         internal static IModHelper modHelper;
+        internal static Multiplayer multiplayer;
 
         // Managers
         internal static TextureManager textureManager;
@@ -36,9 +37,10 @@ namespace AlternativeTextures
 
         public override void Entry(IModHelper helper)
         {
-            // Set up the monitor and helper
+            // Set up the monitor, helper and multiplayer
             monitor = Monitor;
-            modHelper = Helper;
+            modHelper = helper;
+            multiplayer = helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
 
             // Setup our managers
             textureManager = new TextureManager(monitor);
@@ -46,7 +48,7 @@ namespace AlternativeTextures
             assetManager = new AssetManager(helper);
 
             // Load the asset manager
-            Helper.Content.AssetLoaders.Add(assetManager);
+            helper.Content.AssetLoaders.Add(assetManager);
 
             // Load our Harmony patches
             try
