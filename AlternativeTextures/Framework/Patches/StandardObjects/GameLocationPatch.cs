@@ -41,7 +41,6 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                     obj.modData["AlternativeTextureName"] = String.Concat(obj.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Craftable}_{obj.name}_{obj.modData["AlternativeTextureSeason"]}");
                 }
             }
-
         }
     }
 }
