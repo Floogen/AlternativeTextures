@@ -108,10 +108,8 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             }
 
             var instanceName = $"{AlternativeTextureModel.TextureType.Craftable}_{placedObject.name}";
-            _monitor.Log($"HERE: {instanceName}", LogLevel.Debug);
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
             {
-                _monitor.Log("MATCHED 1", LogLevel.Debug);
                 AssignModData(placedObject, instanceName, false, placedObject.bigCraftable);
                 return;
             }
@@ -119,7 +117,6 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             instanceName = $"{instanceName}_{Game1.currentSeason}";
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
             {
-                _monitor.Log("MATCHED 2", LogLevel.Debug);
                 AssignModData(placedObject, instanceName, true, placedObject.bigCraftable);
                 return;
             }
