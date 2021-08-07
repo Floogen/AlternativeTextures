@@ -64,7 +64,7 @@ namespace AlternativeTextures.Framework.UI
 
             // Add the vanilla version
             var vanillaObject = target.getOne();
-            vanillaObject.modData["AlternativeTextureOwner"] = "Stardew.Default";
+            vanillaObject.modData["AlternativeTextureOwner"] = AlternativeTextures.DEFAULT_OWNER;
             vanillaObject.modData["AlternativeTextureName"] = $"{vanillaObject.modData["AlternativeTextureOwner"]}.{modelName}";
             vanillaObject.modData["AlternativeTextureVariation"] = $"{-1}";
             vanillaObject.modData["AlternativeTextureSeason"] = String.Empty;

@@ -25,6 +25,7 @@ namespace AlternativeTextures
     public class AlternativeTextures : Mod
     {
         internal const string TOKEN_HEADER = "AlternativeTextures/Textures/";
+        internal const string DEFAULT_OWNER = "Stardew.Default";
 
         internal static IMonitor monitor;
         internal static IModHelper modHelper;

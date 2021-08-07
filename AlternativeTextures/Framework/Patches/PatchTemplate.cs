@@ -21,7 +21,7 @@ namespace AlternativeTextures.Framework.Patches
 
         internal static void AssignDefaultModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false)
         {
-            var textureModel = new AlternativeTextureModel() { Owner = "Stardew.Default", Season = trackSeason ? Game1.currentSeason : String.Empty };
+            var textureModel = new AlternativeTextureModel() { Owner = AlternativeTextures.DEFAULT_OWNER, Season = trackSeason ? Game1.currentSeason : String.Empty };
             switch (type)
             {
                 case Object obj:
