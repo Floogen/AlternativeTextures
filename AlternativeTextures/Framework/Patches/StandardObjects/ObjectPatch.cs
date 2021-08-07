@@ -120,6 +120,8 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 AssignModData(placedObject, instanceName, true, placedObject.bigCraftable);
                 return;
             }
+
+            AssignDefaultModData(placedObject, instanceName, true, placedObject.bigCraftable);
         }
     }
 }

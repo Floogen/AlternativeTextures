@@ -19,6 +19,20 @@ namespace AlternativeTextures.Framework.Patches
             _monitor = modMonitor;
         }
 
+        internal static void AssignDefaultModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false)
+        {
+            var textureModel = new AlternativeTextureModel() { Owner = "Stardew.Default", Season = trackSeason ? Game1.currentSeason : String.Empty };
+            switch (type)
+            {
+                case Object obj:
+                    AssignObjectModData(obj, modelName, textureModel, -1, trackSeason, trackSheetId);
+                    return;
+                case TerrainFeature terrain:
+                    AssignTerrainFeatureModData(terrain, modelName, textureModel, -1, trackSeason);
+                    return;
+            }
+        }
+
         internal static void AssignModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false)
         {
             var textureModel = AlternativeTextures.textureManager.GetRandomTextureModel(modelName);

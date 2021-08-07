@@ -39,7 +39,10 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(seedName))
             {
                 AssignModData(__instance, seedName, false);
+                return;
             }
+
+            AssignDefaultModData(__instance, seedName, true);
         }
     }
 }

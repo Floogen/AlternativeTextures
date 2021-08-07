@@ -75,7 +75,10 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
             {
                 AssignModData(__instance, instanceName, true);
+                return;
             }
+
+            AssignDefaultModData(__instance, instanceName, true);
         }
     }
 }

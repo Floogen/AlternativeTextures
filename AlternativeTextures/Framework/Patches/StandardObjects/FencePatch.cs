@@ -75,6 +75,8 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 AssignModData(__instance, instanceName, true);
                 return;
             }
+
+            AssignDefaultModData(__instance, instanceName, true);
         }
     }
 }
