@@ -1,0 +1,8 @@
+{
+  "ItemName": "Scarecrow",
+  "Type": "Craftable",
+  "Season": "Winter",
+  "TextureWidth": 16,
+  "TextureHeight": 32,
+  "Variations": 5
+}

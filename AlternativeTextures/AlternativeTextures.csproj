@@ -87,6 +87,7 @@
     <None Include="Examples\[AT] Example Pack\Textures\GardenPot\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\CrabPot\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\JunimoChest\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Scarecrow\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\StoneChest\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Chest\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\GiantMelon\texture.json" />
@@ -126,6 +127,7 @@
     <Content Include="Examples\[AT] Example Pack\Textures\GardenPot\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\CrabPot\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\JunimoChest\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Scarecrow\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\StoneChest\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Chest\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\GiantMelon\texture.png" />
