@@ -85,7 +85,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             return true;
         }
 
-        private static bool DrawWithOffsetPrefix(Crop __instance, Vector2 ___origin, Vector2 ___drawPosition, SpriteBatch b, Vector2 tileLocation, Color toTint, float rotation, Vector2 offset)
+        private static bool DrawWithOffsetPrefix(Crop __instance, Vector2 ___origin, Vector2 ___drawPosition, Rectangle ___coloredSourceRect, SpriteBatch b, Vector2 tileLocation, Color toTint, float rotation, Vector2 offset)
         {
             var gardenPot = Game1.currentLocation.getObjectAtTile((int)tileLocation.X, (int)tileLocation.Y) as IndoorPot;
             if (gardenPot is null)
@@ -107,19 +107,19 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 {
                     return true;
                 }
+                var textureOffset = textureVariation * textureModel.TextureHeight;
 
                 var sourceX = ((!__instance.fullyGrown) ? ((int)(((int)__instance.phaseToShow != -1) ? __instance.phaseToShow : __instance.currentPhase) + (((int)(((int)__instance.phaseToShow != -1) ? __instance.phaseToShow : __instance.currentPhase) == 0 && ((int)tileLocation.X * 7 + (int)tileLocation.Y * 11) % 2 == 0) ? (-1) : 0) + 1) : (((int)__instance.dayOfCurrentPhase <= 0) ? 6 : 7)) * 16;
                 if ((bool)__instance.forageCrop)
                 {
-                    b.Draw(textureModel.Texture, Game1.GlobalToLocal(Game1.viewport, offset + new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f)), new Rectangle(sourceX, (textureVariation * textureModel.TextureHeight), 16, 32), Color.White, 0f, new Vector2(8f, 8f), 4f, SpriteEffects.None, (tileLocation.Y + 0.66f) * 64f / 10000f + tileLocation.X * 1E-05f);
+                    b.Draw(textureModel.Texture, Game1.GlobalToLocal(Game1.viewport, offset + new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f)), new Rectangle(sourceX, textureOffset, 16, 32), Color.White, 0f, new Vector2(8f, 8f), 4f, SpriteEffects.None, (tileLocation.Y + 0.66f) * 64f / 10000f + tileLocation.X * 1E-05f);
                     return false;
                 }
 
-                b.Draw(textureModel.Texture, Game1.GlobalToLocal(Game1.viewport, offset + new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f)), new Rectangle(sourceX, (textureVariation * textureModel.TextureHeight), 16, 32), toTint, rotation, new Vector2(8f, 24f), 4f, __instance.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (tileLocation.Y + 0.66f) * 64f / 10000f + tileLocation.X * 1E-05f);
+                b.Draw(textureModel.Texture, Game1.GlobalToLocal(Game1.viewport, offset + new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f)), new Rectangle(sourceX, textureOffset, 16, 32), toTint, rotation, new Vector2(8f, 24f), 4f, __instance.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (tileLocation.Y + 0.66f) * 64f / 10000f + tileLocation.X * 1E-05f);
                 if (!__instance.tintColor.Equals(Color.White) && (int)__instance.currentPhase == __instance.phaseDays.Count - 1 && !__instance.dead)
                 {
-                    // TODO: Handle color overlays
-                    //b.Draw(Game1.cropSpriteSheet, Game1.GlobalToLocal(Game1.viewport, offset + new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f)), new Rectangle(sourceX, (textureVariation * textureModel.TextureHeight), 16, 32), __instance.tintColor, rotation, new Vector2(8f, 24f), 4f, __instance.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (tileLocation.Y + 0.67f) * 64f / 10000f + tileLocation.X * 1E-05f);
+                    b.Draw(textureModel.Texture, Game1.GlobalToLocal(Game1.viewport, offset + new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f)), new Rectangle(___coloredSourceRect.X, textureOffset, ___coloredSourceRect.Width, ___coloredSourceRect.Height), __instance.tintColor, rotation, new Vector2(8f, 24f), 4f, __instance.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (tileLocation.Y + 0.67f) * 64f / 10000f + tileLocation.X * 1E-05f);
                 }
 
                 return false;
