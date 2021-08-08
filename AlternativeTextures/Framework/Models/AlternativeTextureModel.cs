@@ -15,7 +15,8 @@ namespace AlternativeTextures.Framework.Models
         public int ItemId { get; set; } = -1;
         public ITranslationHelper Translations { get; set; }
         public string Type { get; set; }
-        public string Season { get; set; }
+        public List<string> Seasons { get; set; } = new List<string>(); // For use by mod user to determine which seasons the texture is valid for
+        internal string Season { get; set; } // Used by framework to split the Seasons property into individual AlternativeTextureModel models
         public int TextureWidth { get; set; }
         public int TextureHeight { get; set; }
         public int Variations { get; set; } = 1;
