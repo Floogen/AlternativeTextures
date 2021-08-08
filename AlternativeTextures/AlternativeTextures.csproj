@@ -58,6 +58,7 @@
     <Compile Include="Framework\Managers\ApiManager.cs" />
     <Compile Include="Framework\Managers\AssetManager.cs" />
     <Compile Include="Framework\Managers\TextureManager.cs" />
+    <Compile Include="Framework\Models\VariationModel.cs" />
     <Compile Include="Framework\UI\PaintBucketMenu.cs" />
     <Compile Include="Framework\Models\AlternativeTextureModel.cs" />
     <Compile Include="Framework\Patches\AnimatedObjects\PhonePatch.cs" />
