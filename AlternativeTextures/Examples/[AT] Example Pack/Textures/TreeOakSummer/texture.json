@@ -1,7 +1,7 @@
 {
   "ItemName": "Oak Tree",
   "Type": "Tree",
-  "Season": "Summer",
+  "Seasons": ["Summer"],
   "TextureWidth": 48,
   "TextureHeight": 160,
   "Variations": 2

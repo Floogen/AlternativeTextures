@@ -1,7 +1,7 @@
 {
   "ItemName": "Tea Bush",
   "Type": "Bush",
-  "Season": "Spring",
+  "Seasons": ["Spring"],
   "TextureWidth": 16,
   "TextureHeight": 32,
   "Variations": 2

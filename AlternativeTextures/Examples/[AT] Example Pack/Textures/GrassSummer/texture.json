@@ -1,7 +1,7 @@
 {
   "ItemName": "Grass",
   "Type": "Grass",
-  "Season": "Summer",
+  "Seasons": ["Summer"],
   "TextureWidth": 15,
   "TextureHeight": 20,
   "Variations": 6
