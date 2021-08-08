@@ -21,7 +21,6 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
     internal class TreePatch : PatchTemplate
     {
         private readonly Type _object = typeof(Tree);
-        private const string NAME_PREFIX = "Tree";
 
         internal TreePatch(IMonitor modMonitor) : base(modMonitor)
         {
@@ -123,13 +122,13 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             if (__instance.modData.ContainsKey("AlternativeTextureName") && !String.IsNullOrEmpty(__instance.modData["AlternativeTextureSeason"]))
             {
                 __instance.modData["AlternativeTextureSeason"] = Game1.GetSeasonForLocation(__instance.currentLocation);
-                __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Tree}_{GetTreeTypeString(__instance)} {NAME_PREFIX}_{__instance.modData["AlternativeTextureSeason"]}");
+                __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Tree}_{GetTreeTypeString(__instance)}_{__instance.modData["AlternativeTextureSeason"]}");
             }
         }
 
         private static void TreePostfix(Tree __instance)
         {
-            var instanceName = $"{AlternativeTextureModel.TextureType.Tree}_{GetTreeTypeString(__instance)} {NAME_PREFIX}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
+            var instanceName = $"{AlternativeTextureModel.TextureType.Tree}_{GetTreeTypeString(__instance)}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
             {
                 AssignModData(__instance, instanceName, true);
