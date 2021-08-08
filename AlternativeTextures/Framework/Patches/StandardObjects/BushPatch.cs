@@ -78,13 +78,13 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             if (__instance.modData.ContainsKey("AlternativeTextureName") && !String.IsNullOrEmpty(__instance.modData["AlternativeTextureSeason"]))
             {
                 __instance.modData["AlternativeTextureSeason"] = Game1.GetSeasonForLocation(__instance.currentLocation);
-                __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Bush}_{GetBushTypeString(__instance)} {NAME_PREFIX}_{__instance.modData["AlternativeTextureSeason"]}");
+                __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Bush}_{GetBushTypeString(__instance)}_{__instance.modData["AlternativeTextureSeason"]}");
             }
         }
 
         private static void BushPostfix(Bush __instance)
         {
-            var instanceName = $"{AlternativeTextureModel.TextureType.Bush}_{GetBushTypeString(__instance)} {NAME_PREFIX}";
+            var instanceName = $"{AlternativeTextureModel.TextureType.Bush}_{GetBushTypeString(__instance)}";
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
             {
                 AssignModData(__instance, instanceName, false);
