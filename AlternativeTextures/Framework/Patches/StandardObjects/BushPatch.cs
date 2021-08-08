@@ -21,7 +21,6 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
     internal class BushPatch : PatchTemplate
     {
         private readonly Type _object = typeof(Bush);
-        private const string NAME_PREFIX = "Bush";
 
         internal BushPatch(IMonitor modMonitor) : base(modMonitor)
         {
