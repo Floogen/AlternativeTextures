@@ -169,28 +169,44 @@ namespace AlternativeTextures
                             continue;
                         }
 
-                        AlternativeTextureModel textureModel = contentPack.ReadJsonFile<AlternativeTextureModel>(Path.Combine(textureFolder.Parent.Name, textureFolder.Name, "texture.json"));
-                        textureModel.Owner = contentPack.Manifest.UniqueID;
-                        Monitor.Log(textureModel.ToString(), LogLevel.Trace);
-
-                        // Verify we are given a texture and if so, track it
-                        if (!File.Exists(Path.Combine(textureFolder.FullName, "texture.png")))
+                        var modelPath = Path.Combine(textureFolder.Parent.Name, textureFolder.Name, "texture.json");
+                        var seasons = contentPack.ReadJsonFile<AlternativeTextureModel>(modelPath).Seasons;
+                        for (int s = 0; s < 4; s++) // Used seasons.Count() + 1 to ensure the model is at least added once, if no season is given
                         {
-                            Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: No associated texture.png given", LogLevel.Warn);
-                            continue;
+                            if ((seasons.Count() == 0 && s > 0) || (seasons.Count() > 0 && s >= seasons.Count()))
+                            {
+                                continue;
+                            }
+
+                            // Parse the model and assign it the content pack's owner
+                            AlternativeTextureModel textureModel = contentPack.ReadJsonFile<AlternativeTextureModel>(modelPath);
+                            textureModel.Owner = contentPack.Manifest.UniqueID;
+
+                            // Verify we are given a texture and if so, track it
+                            if (!File.Exists(Path.Combine(textureFolder.FullName, "texture.png")))
+                            {
+                                Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: No associated texture.png given", LogLevel.Warn);
+                                continue;
+                            }
+
+                            // Load in the texture
+                            textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(textureFolder.Parent.Name, textureFolder.Name, "texture.png"));
+                            textureModel.Texture = contentPack.LoadAsset<Texture2D>(textureModel.TileSheetPath);
+
+                            // Set the season (if any)
+                            textureModel.Season = seasons.Count() == 0 ? String.Empty : seasons[s];
+
+                            // Track the texture model
+                            textureManager.AddAlternativeTexture(textureModel);
+
+                            // Log it
+                            Monitor.Log(textureModel.ToString(), LogLevel.Trace);
                         }
-
-                        // Load in the texture
-                        textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(textureFolder.Parent.Name, textureFolder.Name, "texture.png"));
-                        textureModel.Texture = contentPack.LoadAsset<Texture2D>(textureModel.TileSheetPath);
-
-                        // Track the texture model
-                        textureManager.AddAlternativeTexture(textureModel);
                     }
                 }
                 catch (Exception ex)
                 {
-                    Monitor.Log($"Error loading content pack {contentPack.Manifest.Name}: {ex}", LogLevel.Warn);
+                    Monitor.Log($"Error loading content pack {contentPack.Manifest.Name}: {ex}", LogLevel.Error);
                 }
             }
         }
