@@ -6,6 +6,7 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.TerrainFeatures;
 using System;
+using System.Linq;
 using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.Patches
@@ -36,7 +37,17 @@ namespace AlternativeTextures.Framework.Patches
         internal static void AssignModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false)
         {
             var textureModel = AlternativeTextures.textureManager.GetRandomTextureModel(modelName);
+
             var selectedVariation = Game1.random.Next(-1, textureModel.Variations);
+            if (textureModel.ManualVariations.Count() > 0)
+            {
+                var weightedSelection = textureModel.ManualVariations.Where(v => v.ChanceWeight >= Game1.random.NextDouble()).ToList();
+                if (weightedSelection.Count > 0)
+                {
+                    var randomWeightedSelection = Game1.random.Next(!textureModel.ManualVariations.Any(v => v.Id == -1) ? -1 : 0, weightedSelection.Count());
+                    selectedVariation = randomWeightedSelection == -1 ? -1 : weightedSelection[randomWeightedSelection].Id;
+                }
+            }
 
             switch (type)
             {
