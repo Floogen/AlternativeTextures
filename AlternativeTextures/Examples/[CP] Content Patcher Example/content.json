@@ -17,7 +17,7 @@
     {
       "LogName": "Test AT Modification",
       "Action": "EditImage",
-      "Target": "{{PeacefulEnd.AlternativeTextures/Textures:ExampleAuthor.ExampleAlternativeTexturesPack.Mini-Obelisk}}",
+      "Target": "{{PeacefulEnd.AlternativeTextures/Textures:ExampleAuthor.ExampleAlternativeTexturesPack.Mini-Obelisk_Summer}}",
       "FromFile": "assets/test_replacement.png",
       "FromArea": {
         "X": "0",
