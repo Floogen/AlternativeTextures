@@ -38,7 +38,7 @@ namespace AlternativeTextures.Framework.Models
 
         public string GetTextureType()
         {
-            if (!Enum.TryParse<TextureType>(Type, true, out var textureType))
+            if (!Enum.TryParse<TextureType>(Type.Trim(), true, out var textureType))
             {
                 return TextureType.Unknown.ToString();
             }
