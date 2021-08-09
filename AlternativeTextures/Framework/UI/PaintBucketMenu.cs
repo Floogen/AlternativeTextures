@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
@@ -17,16 +18,23 @@ namespace AlternativeTextures.Framework.UI
         public ClickableTextureComponent hovered;
         public ClickableTextureComponent forwardButton;
         public ClickableTextureComponent backButton;
+        public ClickableTextureComponent queryButton;
 
-        public List<Item> textureOptions = new List<Item>();
+        public List<Item> filteredTextureOptions = new List<Item>();
+        public List<Item> cachedTextureOptions = new List<Item>();
         public List<ClickableTextureComponent> availableTextures = new List<ClickableTextureComponent>();
+
+        // Textbox
+        private TextBox _searchBox;
+        private ClickableComponent _searchBoxCC;
+
+        private string _cachedTextBoxValue;
 
         private int _startingRow = 0;
         private int _texturesPerRow = 6;
         private int _maxRows = 4;
 
         private Object _textureTarget;
-        private Rectangle _sourceRect;
 
         public PaintBucketMenu(Object target, string modelName) : base(0, 0, 832, 576, showUpperRightCloseButton: true)
         {
@@ -58,7 +66,8 @@ namespace AlternativeTextures.Framework.UI
                     objectWithVariation.modData["AlternativeTextureVariation"] = v.ToString();
                     objectWithVariation.modData["AlternativeTextureSeason"] = availableModels[m].Season;
 
-                    this.textureOptions.Add(objectWithVariation);
+                    this.filteredTextureOptions.Add(objectWithVariation);
+                    this.cachedTextureOptions.Add(objectWithVariation);
                 }
             }
 
@@ -69,7 +78,8 @@ namespace AlternativeTextures.Framework.UI
             vanillaObject.modData["AlternativeTextureVariation"] = $"{-1}";
             vanillaObject.modData["AlternativeTextureSeason"] = String.Empty;
 
-            this.textureOptions.Insert(0, vanillaObject);
+            this.filteredTextureOptions.Insert(0, vanillaObject);
+            this.cachedTextureOptions.Insert(0, vanillaObject);
 
             var sourceRect = target is Fence ? this.GetFenceSourceRect(target as Fence, availableModels.First().TextureHeight, 0) : new Rectangle(0, 0, availableModels.First().TextureWidth, availableModels.First().TextureHeight);
             for (int r = 0; r < _maxRows; r++)
@@ -90,7 +100,6 @@ namespace AlternativeTextures.Framework.UI
 
             // Cache the input object to easily reference the vanilla texture
             _textureTarget = target;
-            _sourceRect = sourceRect;
 
             this.backButton = new ClickableTextureComponent(new Rectangle(base.xPositionOnScreen - 64, base.yPositionOnScreen + 8, 48, 44), Game1.mouseCursors, new Rectangle(352, 495, 12, 11), 4f)
             {
@@ -102,11 +111,41 @@ namespace AlternativeTextures.Framework.UI
                 myID = 9997
             };
 
+            // Textbox related
+            var xTextbox = base.xPositionOnScreen + 64 + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + 320;
+            var yTextbox = base.yPositionOnScreen - 58;
+            _searchBox = new TextBox(Game1.content.Load<Texture2D>("LooseSprites\\textBox"), null, Game1.smallFont, Game1.textColor)
+            {
+                X = xTextbox,
+                Y = yTextbox,
+                Width = 384,
+                limitWidth = false,
+                Text = String.Empty
+            };
+
+            _searchBoxCC = new ClickableComponent(new Rectangle(xTextbox, yTextbox, 192, 48), "")
+            {
+                myID = 9999,
+                upNeighborID = -99998,
+                leftNeighborID = -99998,
+                rightNeighborID = -99998,
+                downNeighborID = -99998
+            };
+            Game1.keyboardDispatcher.Subscriber = this._searchBox;
+            _searchBox.Selected = true;
+
+            this.queryButton = new ClickableTextureComponent(new Rectangle(xTextbox - 32, base.yPositionOnScreen - 48, 48, 44), Game1.mouseCursors, new Rectangle(208, 320, 16, 16), 2f)
+            {
+                myID = -1
+            };
+
+            // Call snap functions
             if (Game1.options.SnappyMenus)
             {
                 base.populateClickableComponentList();
                 this.snapToDefaultClickableComponent();
             }
+
         }
         public override void performHoverAction(int x, int y)
         {
@@ -131,6 +170,34 @@ namespace AlternativeTextures.Framework.UI
 
             this.forwardButton.tryHover(x, y, 0.2f);
             this.backButton.tryHover(x, y, 0.2f);
+        }
+
+        public override void receiveKeyPress(Keys key)
+        {
+            if (key == Keys.Escape)
+            {
+                base.receiveKeyPress(key);
+            }
+        }
+
+        public override void update(GameTime time)
+        {
+            base.update(time);
+
+            if (_searchBox.Text != _cachedTextBoxValue)
+            {
+                _startingRow = 0;
+                _cachedTextBoxValue = _searchBox.Text;
+
+                if (String.IsNullOrEmpty(_searchBox.Text))
+                {
+                    filteredTextureOptions = cachedTextureOptions;
+                }
+                else
+                {
+                    filteredTextureOptions = cachedTextureOptions.Where(i => !i.modData["AlternativeTextureName"].Contains(AlternativeTextures.DEFAULT_OWNER) && AlternativeTextures.textureManager.GetSpecificTextureModel(i.modData["AlternativeTextureName"]).HasKeyword(_searchBox.Text)).ToList();
+                }
+            }
         }
 
         public override void receiveLeftClick(int x, int y, bool playSound = false)
@@ -176,7 +243,7 @@ namespace AlternativeTextures.Framework.UI
                 Game1.playSound("shiny4");
                 return;
             }
-            if ((_maxRows + _startingRow) * _texturesPerRow < this.textureOptions.Count && this.forwardButton.containsPoint(x, y))
+            if ((_maxRows + _startingRow) * _texturesPerRow < this.filteredTextureOptions.Count && this.forwardButton.containsPoint(x, y))
             {
                 _startingRow++;
                 Game1.playSound("shiny4");
@@ -192,7 +259,7 @@ namespace AlternativeTextures.Framework.UI
                 _startingRow--;
                 Game1.playSound("shiny4");
             }
-            else if (direction < 0 && (_maxRows + _startingRow) * _texturesPerRow < this.textureOptions.Count)
+            else if (direction < 0 && (_maxRows + _startingRow) * _texturesPerRow < this.filteredTextureOptions.Count)
             {
                 _startingRow++;
                 Game1.playSound("shiny4");
@@ -204,7 +271,7 @@ namespace AlternativeTextures.Framework.UI
             if (!Game1.dialogueUp && !Game1.IsFading())
             {
                 b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.75f);
-                SpriteText.drawStringWithScrollCenteredAt(b, "Paint Bucket", base.xPositionOnScreen + base.width / 2, base.yPositionOnScreen - 64);
+                SpriteText.drawStringWithScrollCenteredAt(b, "Paint Bucket", base.xPositionOnScreen + base.width / 4, base.yPositionOnScreen - 64);
                 IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), base.xPositionOnScreen, base.yPositionOnScreen, base.width, base.height, Color.White, 4f);
 
                 for (int i = 0; i < this.availableTextures.Count; i++)
@@ -213,9 +280,9 @@ namespace AlternativeTextures.Framework.UI
                     this.availableTextures[i].texture = null;
 
                     var textureIndex = i + _startingRow * _texturesPerRow;
-                    if (textureIndex < textureOptions.Count)
+                    if (textureIndex < filteredTextureOptions.Count)
                     {
-                        var target = textureOptions[textureIndex];
+                        var target = filteredTextureOptions[textureIndex];
                         var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(target.modData["AlternativeTextureName"]);
                         var variation = Int32.Parse(target.modData["AlternativeTextureVariation"]);
 
@@ -224,8 +291,6 @@ namespace AlternativeTextures.Framework.UI
                         {
                             if (_textureTarget is Fence)
                             {
-                                //(_textureTarget as Fence).drawInMenu(b, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), 1f, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
-
                                 this.availableTextures[i].texture = (_textureTarget as Fence).loadFenceTexture();
                                 this.availableTextures[i].sourceRect = this.GetFenceSourceRect(_textureTarget as Fence, this.availableTextures[i].sourceRect.Height, 0);
                                 this.availableTextures[i].draw(b, Color.White, 0.87f);
@@ -243,6 +308,9 @@ namespace AlternativeTextures.Framework.UI
                         }
                     }
                 }
+
+                _searchBox.Draw(b);
+                queryButton.draw(b);
             }
 
             if (this.hovered != null && this.hovered.item != null)
@@ -258,7 +326,7 @@ namespace AlternativeTextures.Framework.UI
             {
                 this.backButton.draw(b);
             }
-            if ((_maxRows + _startingRow) * _texturesPerRow < this.textureOptions.Count)
+            if ((_maxRows + _startingRow) * _texturesPerRow < this.filteredTextureOptions.Count)
             {
                 this.forwardButton.draw(b);
             }
