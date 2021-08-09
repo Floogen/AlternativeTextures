@@ -108,8 +108,6 @@
     <None Include="Examples\[AT] Example Pack\Textures\StoneFence\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\WoodFence2\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\WoodFence\texture.json" />
-    <None Include="Examples\[AT] Mushroom Mini-Obelisks\manifest.json" />
-    <None Include="Examples\[AT] Mushroom Mini-Obelisks\Textures\MiniObelisk\texture.json" />
     <None Include="Examples\[CP] Content Patcher Example\content.json" />
     <None Include="Examples\[CP] Content Patcher Example\manifest.json" />
     <None Include="Examples\[JA] Json Asset Example\BigCraftables\Example Item\big-craftable.json" />
