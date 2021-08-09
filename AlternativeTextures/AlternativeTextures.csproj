@@ -83,6 +83,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Examples\[AT] Crystal Mini-Obelisks\manifest.json" />
+    <None Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furnace\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Phone\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\GardenPot\texture.json" />
@@ -121,6 +123,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furnace\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Phone\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\GardenPot\texture.png" />
@@ -146,7 +149,6 @@
     <Content Include="Examples\[AT] Example Pack\Textures\StoneFence\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\WoodFence2\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\WoodFence\texture.png" />
-    <Content Include="Examples\[AT] Mushroom Mini-Obelisks\Textures\MiniObelisk\texture.png" />
     <Content Include="Examples\[CP] Content Patcher Example\assets\test_replacement.png" />
     <Content Include="Examples\[JA] Json Asset Example\BigCraftables\Example Item\big-craftable.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\MiniObelisk\texture.png" />

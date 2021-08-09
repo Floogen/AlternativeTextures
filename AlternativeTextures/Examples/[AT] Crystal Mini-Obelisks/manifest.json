@@ -1,0 +1,13 @@
+﻿{
+  "Name": "[AT] Crystal Mini-Obelisks",
+  "Author": "PeacefulEnd",
+  "Version": "1.0.0",
+  "Description": "Crystal themed pack for Mini-Obelisks using the Alternative Textures framework.",
+  "UniqueID": "PeacefulEnd.AT.CrystalMiniObelisks",
+  "UpdateKeys": [],
+  "Dependencies": [],
+  "ContentPackFor": {
+    "UniqueID": "PeacefulEnd.AlternativeTextures",
+    "MinimumVersion": "1.0.0"
+  }
+}
