@@ -181,6 +181,7 @@ namespace AlternativeTextures
                             // Parse the model and assign it the content pack's owner
                             AlternativeTextureModel textureModel = contentPack.ReadJsonFile<AlternativeTextureModel>(modelPath);
                             textureModel.Owner = contentPack.Manifest.UniqueID;
+                            textureModel.Keywords.Add(contentPack.Manifest.UniqueID);
 
                             // Verify we are given a texture and if so, track it
                             if (!File.Exists(Path.Combine(textureFolder.FullName, "texture.png")))
