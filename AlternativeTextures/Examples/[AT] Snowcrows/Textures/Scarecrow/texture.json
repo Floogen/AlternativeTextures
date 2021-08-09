@@ -2,6 +2,7 @@
   "ItemName": "Scarecrow",
   "Type": "Craftable",
   "Seasons": [ "Winter" ],
+  "Keywords": [ "Snowpeople", "Snowman", "Snowwoman", "Snowmen", "Snowwomen" ],
   "TextureWidth": 16,
   "TextureHeight": 32,
   "Variations": 29
