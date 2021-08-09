@@ -2,6 +2,7 @@
   "ItemName": "Mini-Obelisk",
   "Type": "Craftable",
   "Seasons": [ "Summer", "Fall" ],
+  "Keywords": [ "Test" ],
   "TextureWidth": 16,
   "TextureHeight": 32,
   "Variations": 28
