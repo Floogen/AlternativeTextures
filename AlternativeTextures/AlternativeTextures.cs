@@ -171,7 +171,7 @@ namespace AlternativeTextures
 
                         var modelPath = Path.Combine(textureFolder.Parent.Name, textureFolder.Name, "texture.json");
                         var seasons = contentPack.ReadJsonFile<AlternativeTextureModel>(modelPath).Seasons;
-                        for (int s = 0; s < 4; s++) // Used seasons.Count() + 1 to ensure the model is at least added once, if no season is given
+                        for (int s = 0; s < 4; s++)
                         {
                             if ((seasons.Count() == 0 && s > 0) || (seasons.Count() > 0 && s >= seasons.Count()))
                             {
