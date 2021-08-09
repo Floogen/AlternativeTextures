@@ -57,6 +57,11 @@ namespace AlternativeTextures.Framework.Models
             return String.IsNullOrEmpty(Season) ? String.Concat(GetTextureType(), "_", ItemName) : String.Concat(GetTextureType(), "_", ItemName, "_", Season);
         }
 
+        public bool HasKeyword(string keyword)
+        {
+            return Keywords.Any(k => k.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0);
+        }
+
         public override string ToString()
         {
             return $"\n[\n" +
