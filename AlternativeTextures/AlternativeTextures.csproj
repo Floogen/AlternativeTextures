@@ -110,6 +110,9 @@
     <None Include="Examples\[AT] Example Pack\Textures\StoneFence\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\WoodFence2\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\WoodFence\texture.json" />
+    <None Include="Examples\[AT] Snowcrows\manifest.json" />
+    <None Include="Examples\[AT] Snowcrows\Textures\DeluxeScarecrow\texture.json" />
+    <None Include="Examples\[AT] Snowcrows\Textures\Scarecrow\texture.json" />
     <None Include="Examples\[CP] Content Patcher Example\content.json" />
     <None Include="Examples\[CP] Content Patcher Example\manifest.json" />
     <None Include="Examples\[JA] Json Asset Example\BigCraftables\Example Item\big-craftable.json" />
@@ -149,6 +152,8 @@
     <Content Include="Examples\[AT] Example Pack\Textures\StoneFence\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\WoodFence2\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\WoodFence\texture.png" />
+    <Content Include="Examples\[AT] Snowcrows\Textures\DeluxeScarecrow\texture.png" />
+    <Content Include="Examples\[AT] Snowcrows\Textures\Scarecrow\texture.png" />
     <Content Include="Examples\[CP] Content Patcher Example\assets\test_replacement.png" />
     <Content Include="Examples\[JA] Json Asset Example\BigCraftables\Example Item\big-craftable.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\MiniObelisk\texture.png" />

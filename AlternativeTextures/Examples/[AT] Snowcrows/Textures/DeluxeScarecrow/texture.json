@@ -1,0 +1,8 @@
+{
+  "ItemName": "Deluxe Scarecrow",
+  "Type": "Craftable",
+  "Seasons": [ "Winter" ],
+  "TextureWidth": 16,
+  "TextureHeight": 32,
+  "Variations": 29
+}
