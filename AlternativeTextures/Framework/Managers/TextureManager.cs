@@ -97,7 +97,7 @@ namespace AlternativeTextures.Framework.Managers
             {
                 return new List<AlternativeTextureModel>();
             }
-            AlternativeTextures.monitor.Log("HERE", LogLevel.Debug);
+
             var seasonalTextures = _alternativeTextures.Where(t => String.Equals(t.GetNameWithSeason(), String.Concat(objectName, "_", season), StringComparison.OrdinalIgnoreCase)).ToList();
             seasonalTextures.AddRange(_alternativeTextures.Where(t => !seasonalTextures.Any(s => s.GetId() == t.GetId()) && String.Equals(t.GetNameWithSeason(), objectName, StringComparison.OrdinalIgnoreCase)));
             return seasonalTextures;
