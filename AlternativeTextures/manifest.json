@@ -6,7 +6,7 @@
   "UniqueID": "PeacefulEnd.AlternativeTextures",
   "EntryDll": "AlternativeTextures.dll",
   "MinimumApiVersion": "3.11.0",
-  "UpdateKeys": [ "Nexus:????" ],
+  "UpdateKeys": [ "Nexus:9246" ],
   "Dependencies": [
     {
       "UniqueID": "spacechase0.JsonAssets",
