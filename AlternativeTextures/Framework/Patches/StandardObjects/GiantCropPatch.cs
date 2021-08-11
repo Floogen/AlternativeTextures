@@ -59,16 +59,31 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
         private static void GiantCropPostfix(GiantCrop __instance)
         {
-            var harvestName = Game1.objectInformation.ContainsKey(__instance.parentSheetIndex) ? Game1.objectInformation[__instance.parentSheetIndex].Split('/')[0] : String.Empty;
-            harvestName = $"{AlternativeTextureModel.TextureType.GiantCrop}_{harvestName}";
+            var instanceName = Game1.objectInformation.ContainsKey(__instance.parentSheetIndex) ? Game1.objectInformation[__instance.parentSheetIndex].Split('/')[0] : String.Empty;
+            instanceName = $"{AlternativeTextureModel.TextureType.GiantCrop}_{instanceName}";
+            var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
 
-            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(harvestName))
+            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
             {
-                AssignModData(__instance, harvestName, false);
+                var result = Game1.random.Next(2) > 0 ? AssignModData(__instance, instanceSeasonName, true) : AssignModData(__instance, instanceName, false);
                 return;
             }
+            else
+            {
+                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
+                {
+                    AssignModData(__instance, instanceName, false);
+                    return;
+                }
 
-            AssignDefaultModData(__instance, harvestName, true);
+                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
+                {
+                    AssignModData(__instance, instanceSeasonName, true);
+                    return;
+                }
+            }
+
+            AssignDefaultModData(__instance, instanceSeasonName, true);
         }
     }
 }

@@ -33,16 +33,31 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
         private static void PlantPostfix(HoeDirt __instance, int index, int tileX, int tileY, Farmer who, bool isFertilizer, GameLocation location)
         {
-            var seedName = Game1.objectInformation.ContainsKey(index) ? Game1.objectInformation[index].Split('/')[0] : String.Empty;
-            seedName = $"{AlternativeTextureModel.TextureType.Crop}_{seedName}";
+            var instanceName = Game1.objectInformation.ContainsKey(index) ? Game1.objectInformation[index].Split('/')[0] : String.Empty;
+            instanceName = $"{AlternativeTextureModel.TextureType.Crop}_{instanceName}";
+            var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
 
-            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(seedName))
+            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
             {
-                AssignModData(__instance, seedName, false);
+                var result = Game1.random.Next(2) > 0 ? AssignModData(__instance, instanceSeasonName, true) : AssignModData(__instance, instanceName, false);
                 return;
             }
+            else
+            {
+                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
+                {
+                    AssignModData(__instance, instanceName, false);
+                    return;
+                }
 
-            AssignDefaultModData(__instance, seedName, true);
+                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
+                {
+                    AssignModData(__instance, instanceSeasonName, true);
+                    return;
+                }
+            }
+
+            AssignDefaultModData(__instance, instanceSeasonName, true);
         }
     }
 }

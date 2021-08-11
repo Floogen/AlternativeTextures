@@ -132,16 +132,34 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
         private static void FruitTreePostfix(FruitTree __instance, int saplingIndex)
         {
             var saplingName = Game1.objectInformation.ContainsKey(saplingIndex) ? Game1.objectInformation[saplingIndex].Split('/')[0] : String.Empty;
-            var instanceName = $"{AlternativeTextureModel.TextureType.FruitTree}_{saplingName}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
+            var instanceName = $"{AlternativeTextureModel.TextureType.FruitTree}_{saplingName}";
+            var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
 
-            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
+            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
             {
                 __instance.modData["AlternativeTextureSaplingName"] = saplingName;
-                AssignModData(__instance, instanceName, true);
+                var result = Game1.random.Next(2) > 0 ? AssignModData(__instance, instanceSeasonName, true) : AssignModData(__instance, instanceName, false);
                 return;
             }
+            else
+            {
+                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
+                {
+                    __instance.modData["AlternativeTextureSaplingName"] = saplingName;
+                    AssignModData(__instance, instanceName, false);
+                    return;
+                }
 
-            AssignDefaultModData(__instance, instanceName, true);
+                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
+                {
+                    __instance.modData["AlternativeTextureSaplingName"] = saplingName;
+                    AssignModData(__instance, instanceSeasonName, true);
+                    return;
+                }
+            }
+
+            __instance.modData["AlternativeTextureSaplingName"] = saplingName;
+            AssignDefaultModData(__instance, instanceSeasonName, true);
         }
     }
 }

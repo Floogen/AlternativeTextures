@@ -63,20 +63,29 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
         private static void FencePostfix(Fence __instance)
         {
             var instanceName = $"{AlternativeTextureModel.TextureType.Craftable}_{__instance.name}";
-            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
+            var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
+
+            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
             {
-                AssignModData(__instance, instanceName, false);
+                var result = Game1.random.Next(2) > 0 ? AssignModData(__instance, instanceSeasonName, true) : AssignModData(__instance, instanceName, false);
                 return;
             }
-
-            instanceName = $"{instanceName}_{Game1.currentSeason}";
-            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
+            else
             {
-                AssignModData(__instance, instanceName, true);
-                return;
+                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
+                {
+                    AssignModData(__instance, instanceName, false);
+                    return;
+                }
+
+                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
+                {
+                    AssignModData(__instance, instanceSeasonName, true);
+                    return;
+                }
             }
 
-            AssignDefaultModData(__instance, instanceName, true);
+            AssignDefaultModData(__instance, instanceSeasonName, true);
         }
     }
 }

@@ -108,20 +108,29 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             }
 
             var instanceName = $"{AlternativeTextureModel.TextureType.Craftable}_{placedObject.name}";
-            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
+            var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
+
+            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
             {
-                AssignModData(placedObject, instanceName, false, placedObject.bigCraftable);
+                var result = Game1.random.Next(2) > 0 ? AssignModData(placedObject, instanceSeasonName, true, placedObject.bigCraftable) : AssignModData(placedObject, instanceName, false, placedObject.bigCraftable);
                 return;
             }
-
-            instanceName = $"{instanceName}_{Game1.currentSeason}";
-            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
+            else
             {
-                AssignModData(placedObject, instanceName, true, placedObject.bigCraftable);
-                return;
+                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
+                {
+                    AssignModData(placedObject, instanceName, false, placedObject.bigCraftable);
+                    return;
+                }
+
+                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
+                {
+                    AssignModData(placedObject, instanceSeasonName, true, placedObject.bigCraftable);
+                    return;
+                }
             }
 
-            AssignDefaultModData(placedObject, instanceName, true, placedObject.bigCraftable);
+            AssignDefaultModData(placedObject, instanceSeasonName, true, placedObject.bigCraftable);
         }
     }
 }

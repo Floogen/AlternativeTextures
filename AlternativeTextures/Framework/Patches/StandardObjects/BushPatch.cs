@@ -84,20 +84,29 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
         private static void BushPostfix(Bush __instance)
         {
             var instanceName = $"{AlternativeTextureModel.TextureType.Bush}_{GetBushTypeString(__instance)}";
-            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
+            var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
+
+            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
             {
-                AssignModData(__instance, instanceName, false);
+                var result = Game1.random.Next(2) > 0 ? AssignModData(__instance, instanceSeasonName, true) : AssignModData(__instance, instanceName, false);
                 return;
             }
-
-            instanceName = $"{instanceName}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
-            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
+            else
             {
-                AssignModData(__instance, instanceName, true);
-                return;
+                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
+                {
+                    AssignModData(__instance, instanceName, false);
+                    return;
+                }
+
+                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
+                {
+                    AssignModData(__instance, instanceSeasonName, true);
+                    return;
+                }
             }
 
-            AssignDefaultModData(__instance, instanceName, true);
+            AssignDefaultModData(__instance, instanceSeasonName, true);
         }
 
         private static string GetBushTypeString(Bush bush)
