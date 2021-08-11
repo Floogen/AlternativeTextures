@@ -20,21 +20,23 @@ namespace AlternativeTextures.Framework.Patches
             _monitor = modMonitor;
         }
 
-        internal static void AssignDefaultModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false)
+        internal static bool AssignDefaultModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false)
         {
             var textureModel = new AlternativeTextureModel() { Owner = AlternativeTextures.DEFAULT_OWNER, Season = trackSeason ? Game1.currentSeason : String.Empty };
             switch (type)
             {
                 case Object obj:
                     AssignObjectModData(obj, modelName, textureModel, -1, trackSeason, trackSheetId);
-                    return;
+                    return true;
                 case TerrainFeature terrain:
                     AssignTerrainFeatureModData(terrain, modelName, textureModel, -1, trackSeason);
-                    return;
+                    return true;
             }
+
+            return false;
         }
 
-        internal static void AssignModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false)
+        internal static bool AssignModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false)
         {
             var textureModel = AlternativeTextures.textureManager.GetRandomTextureModel(modelName);
 
@@ -53,11 +55,13 @@ namespace AlternativeTextures.Framework.Patches
             {
                 case Object obj:
                     AssignObjectModData(obj, modelName, textureModel, selectedVariation, trackSeason, trackSheetId);
-                    return;
+                    return true;
                 case TerrainFeature terrain:
                     AssignTerrainFeatureModData(terrain, modelName, textureModel, selectedVariation, trackSeason);
-                    return;
+                    return true;
             }
+
+            return false;
         }
 
         private static void AssignObjectModData(Object obj, string modelName, AlternativeTextureModel textureModel, int variation, bool trackSeason = false, bool trackSheetId = false)
