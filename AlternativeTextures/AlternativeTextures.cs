@@ -68,6 +68,7 @@ namespace AlternativeTextures
                 new FruitTreePatch(monitor).Apply(harmony);
                 new ResourceClumpPatch(monitor).Apply(harmony);
                 new BushPatch(monitor).Apply(harmony);
+                new FlooringPatch(monitor).Apply(harmony);
 
                 // Start of animated objects
                 new ChestPatch(monitor).Apply(harmony);

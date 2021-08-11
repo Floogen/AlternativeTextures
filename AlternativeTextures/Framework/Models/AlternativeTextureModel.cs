@@ -34,7 +34,8 @@ namespace AlternativeTextures.Framework.Models
             Crop,
             GiantCrop,
             ResourceClump,
-            Bush
+            Bush,
+            Flooring
         }
 
         public string GetTextureType()
