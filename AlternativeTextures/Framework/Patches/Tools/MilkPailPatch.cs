@@ -60,29 +60,63 @@ namespace AlternativeTextures.Framework.Patches.Tools
             __result = true;
 
             var targetedObject = location.getObjectAt(x, y);
-            if (targetedObject is null || !targetedObject.modData.ContainsKey("AlternativeTextureName"))
+            if (targetedObject != null && targetedObject.modData.ContainsKey("AlternativeTextureName"))
             {
+                var modelName = targetedObject.modData["AlternativeTextureName"].Replace($"{targetedObject.modData["AlternativeTextureOwner"]}.", String.Empty);
+                if (targetedObject.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(targetedObject.modData["AlternativeTextureSeason"]))
+                {
+                    modelName = modelName.Replace($"_{targetedObject.modData["AlternativeTextureSeason"]}", String.Empty);
+                }
+
+                if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
+                {
+                    Game1.addHUDMessage(new HUDMessage($"{modelName} has no alternative textures for this season!", 3));
+                    who.CanMove = true;
+                    who.UsingTool = false;
+                    return false;
+                }
+
+                // Display texture menu
+                Game1.activeClickableMenu = new PaintBucketMenu(targetedObject, modelName);
+
                 who.CanMove = true;
                 who.UsingTool = false;
                 return false;
             }
 
-            var modelName = targetedObject.modData["AlternativeTextureName"].Replace($"{targetedObject.modData["AlternativeTextureOwner"]}.", String.Empty);
-            if (targetedObject.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(targetedObject.modData["AlternativeTextureSeason"]))
+            var targetedTerrain = GetTerrainFeatureAt(location, x, y);
+            if (targetedTerrain != null && targetedTerrain.modData.ContainsKey("AlternativeTextureName") && targetedTerrain.modData.ContainsKey("AlternativeTextureSheetId"))
             {
-                modelName = modelName.Replace($"_{targetedObject.modData["AlternativeTextureSeason"]}", String.Empty);
-            }
+                var modelName = targetedTerrain.modData["AlternativeTextureName"].Replace($"{targetedTerrain.modData["AlternativeTextureOwner"]}.", String.Empty);
+                if (targetedTerrain.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(targetedTerrain.modData["AlternativeTextureSeason"]))
+                {
+                    modelName = modelName.Replace($"_{targetedTerrain.modData["AlternativeTextureSeason"]}", String.Empty);
+                }
 
-            if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
-            {
-                Game1.addHUDMessage(new HUDMessage($"{modelName} has no alternative textures for this season!", 3));
+                if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
+                {
+                    Game1.addHUDMessage(new HUDMessage($"{modelName} has no alternative textures for this season!", 3));
+                    who.CanMove = true;
+                    who.UsingTool = false;
+                    return false;
+                }
+
+                // Display texture menu
+                var terrainObj = new Object(targetedTerrain.currentTileLocation, Int32.Parse(targetedTerrain.modData["AlternativeTextureSheetId"]), 1);
+                if (terrainObj != null)
+                {
+                    foreach (string key in targetedTerrain.modData.Keys)
+                    {
+                        terrainObj.modData[key] = targetedTerrain.modData[key];
+                    }
+
+                    Game1.activeClickableMenu = new PaintBucketMenu(terrainObj, modelName, true);
+                }
+
                 who.CanMove = true;
                 who.UsingTool = false;
                 return false;
             }
-
-            // Display texture menu
-            Game1.activeClickableMenu = new PaintBucketMenu(targetedObject, modelName);
 
             who.CanMove = true;
             who.UsingTool = false;

@@ -1,9 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using AlternativeTextures.Framework.Patches;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
+using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +38,7 @@ namespace AlternativeTextures.Framework.UI
 
         private Object _textureTarget;
 
-        public PaintBucketMenu(Object target, string modelName) : base(0, 0, 832, 576, showUpperRightCloseButton: true)
+        public PaintBucketMenu(Object target, string modelName, bool isFlooring = false) : base(0, 0, 832, 576, showUpperRightCloseButton: true)
         {
             if (!target.modData.ContainsKey("AlternativeTextureOwner") || !target.modData.ContainsKey("AlternativeTextureName"))
             {
@@ -81,7 +83,7 @@ namespace AlternativeTextures.Framework.UI
             this.filteredTextureOptions.Insert(0, vanillaObject);
             this.cachedTextureOptions.Insert(0, vanillaObject);
 
-            var sourceRect = target is Fence ? this.GetFenceSourceRect(target as Fence, availableModels.First().TextureHeight, 0) : new Rectangle(0, 0, availableModels.First().TextureWidth, availableModels.First().TextureHeight);
+            var sourceRect = isFlooring ? new Rectangle(0, 0, 16, 32) : target is Fence ? this.GetFenceSourceRect(target as Fence, availableModels.First().TextureHeight, 0) : new Rectangle(0, 0, availableModels.First().TextureWidth, availableModels.First().TextureHeight);
             for (int r = 0; r < _maxRows; r++)
             {
                 for (int c = 0; c < _texturesPerRow; c++)
@@ -147,6 +149,7 @@ namespace AlternativeTextures.Framework.UI
             }
 
         }
+
         public override void performHoverAction(int x, int y)
         {
             this.hovered = null;
@@ -212,12 +215,24 @@ namespace AlternativeTextures.Framework.UI
             {
                 if (c.containsPoint(x, y) && c.item != null)
                 {
-                    _textureTarget.modData.Clear();
-                    foreach (string key in c.item.modData.Keys)
+                    if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Flooring flooring)
                     {
-                        _textureTarget.modData[key] = c.item.modData[key];
+                        flooring.modData.Clear();
+                        foreach (string key in c.item.modData.Keys)
+                        {
+                            flooring.modData[key] = c.item.modData[key];
+                        }
+                    }
+                    else
+                    {
+                        _textureTarget.modData.Clear();
+                        foreach (string key in c.item.modData.Keys)
+                        {
+                            _textureTarget.modData[key] = c.item.modData[key];
+                        }
                     }
 
+                    // Draw coloring animation
                     for (int j = 0; j < 12; j++)
                     {
                         var randomColor = new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
@@ -295,10 +310,22 @@ namespace AlternativeTextures.Framework.UI
                                 this.availableTextures[i].sourceRect = this.GetFenceSourceRect(_textureTarget as Fence, this.availableTextures[i].sourceRect.Height, 0);
                                 this.availableTextures[i].draw(b, Color.White, 0.87f);
                             }
+                            else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Flooring flooring && flooring.modData.ContainsKey("AlternativeTextureSheetId"))
+                            {
+                                this.availableTextures[i].texture = Game1.GetSeasonForLocation(flooring.currentLocation)[0] == 'w' && (flooring.currentLocation == null || !flooring.currentLocation.isGreenhouse) ? Flooring.floorsTextureWinter : Flooring.floorsTexture;
+                                this.availableTextures[i].sourceRect = this.GetFlooringSourceRect(flooring, this.availableTextures[i].sourceRect.Height, -1);
+                                this.availableTextures[i].draw(b, Color.White, 0.87f);
+                            }
                             else
                             {
                                 _textureTarget.drawInMenu(b, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y + 32f), 2f, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
                             }
+                        }
+                        else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Flooring flooring)
+                        {
+                            this.availableTextures[i].texture = textureModel.Texture;
+                            this.availableTextures[i].sourceRect = this.GetFlooringSourceRect(flooring, textureModel.TextureHeight, variation);
+                            this.availableTextures[i].draw(b, Color.White, 0.87f);
                         }
                         else
                         {
@@ -345,6 +372,47 @@ namespace AlternativeTextures.Framework.UI
             }
 
             return new Rectangle((sourceRectPosition * Fence.fencePieceWidth % fence.fenceTexture.Value.Bounds.Width), (variation * textureHeight) + (sourceRectPosition * Fence.fencePieceWidth / fence.fenceTexture.Value.Bounds.Width * Fence.fencePieceHeight), Fence.fencePieceWidth, Fence.fencePieceHeight);
+        }
+
+        private Rectangle GetFlooringSourceRect(Flooring flooring, int textureHeight, int variation)
+        {
+            int sourceRectOffset = variation == -1 ? (int)flooring.whichFloor * 4 * 64 : textureHeight * variation;
+            byte drawSum = 0;
+            Vector2 surroundingLocations = flooring.currentTileLocation;
+            surroundingLocations.X += 1f;
+            if (Game1.currentLocation.terrainFeatures.ContainsKey(surroundingLocations) && Game1.currentLocation.terrainFeatures[surroundingLocations] is Flooring)
+            {
+                drawSum = (byte)(drawSum + 2);
+            }
+            surroundingLocations.X -= 2f;
+            if (Game1.currentLocation.terrainFeatures.ContainsKey(surroundingLocations) && Game1.currentLocation.terrainFeatures[surroundingLocations] is Flooring)
+            {
+                drawSum = (byte)(drawSum + 8);
+            }
+            surroundingLocations.X += 1f;
+            surroundingLocations.Y += 1f;
+            if (Game1.currentLocation.terrainFeatures.ContainsKey(surroundingLocations) && Game1.currentLocation.terrainFeatures[surroundingLocations] is Flooring)
+            {
+                drawSum = (byte)(drawSum + 4);
+            }
+            surroundingLocations.Y -= 2f;
+            if (Game1.currentLocation.terrainFeatures.ContainsKey(surroundingLocations) && Game1.currentLocation.terrainFeatures[surroundingLocations] is Flooring)
+            {
+                drawSum = (byte)(drawSum + 1);
+            }
+
+            int sourceRectPosition = Flooring.drawGuide[drawSum];
+            if ((bool)flooring.isSteppingStone)
+            {
+                sourceRectPosition = Flooring.drawGuideList[flooring.whichView.Value];
+            }
+
+            if (variation == -1)
+            {
+                return new Rectangle((int)flooring.whichFloor % 4 * 64 + sourceRectPosition * 16 % 256, sourceRectPosition / 16 * 16 + (int)flooring.whichFloor / 4 * 64, 16, 16);
+            }
+
+            return new Rectangle(sourceRectPosition % 16 * 16, sourceRectPosition / 16 * 16 + sourceRectOffset, 16, 16);
         }
     }
 }
