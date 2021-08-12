@@ -108,16 +108,5 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
             AssignDefaultModData(__instance, instanceSeasonName, true);
         }
-
-        private static string GetBushTypeString(Bush bush)
-        {
-            switch (bush.size)
-            {
-                case 3:
-                    return "Tea";
-                default:
-                    return String.Empty;
-            }
-        }
     }
 }

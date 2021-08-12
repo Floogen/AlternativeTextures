@@ -66,6 +66,17 @@ namespace AlternativeTextures.Framework.Patches
             }
         }
 
+        internal static string GetBushTypeString(Bush bush)
+        {
+            switch (bush.size)
+            {
+                case 3:
+                    return "Tea";
+                default:
+                    return String.Empty;
+            }
+        }
+
         internal static bool AssignDefaultModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false)
         {
             var textureModel = new AlternativeTextureModel() { Owner = AlternativeTextures.DEFAULT_OWNER, Season = trackSeason ? Game1.currentSeason : String.Empty };
