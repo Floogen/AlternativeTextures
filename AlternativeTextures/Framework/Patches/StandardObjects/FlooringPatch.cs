@@ -30,8 +30,6 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
         {
             harmony.Patch(AccessTools.Method(_object, nameof(Flooring.draw), new[] { typeof(SpriteBatch), typeof(Vector2) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Flooring.seasonUpdate), new[] { typeof(bool) }), postfix: new HarmonyMethod(GetType(), nameof(SeasonUpdatePostfix)));
-            harmony.Patch(AccessTools.Constructor(typeof(Flooring)), postfix: new HarmonyMethod(GetType(), nameof(FlooringPostfix)));
-            harmony.Patch(AccessTools.Constructor(typeof(Flooring), new[] { typeof(int) }), postfix: new HarmonyMethod(GetType(), nameof(FlooringPostfix)));
         }
 
         private static bool DrawPrefix(Flooring __instance, byte ___neighborMask, SpriteBatch spriteBatch, Vector2 tileLocation)
@@ -123,34 +121,6 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 __instance.modData["AlternativeTextureSeason"] = Game1.GetSeasonForLocation(__instance.currentLocation);
                 __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Flooring}_{GetFlooringName(__instance)}_{__instance.modData["AlternativeTextureSeason"]}");
             }
-        }
-
-        private static void FlooringPostfix(Flooring __instance)
-        {
-            var instanceName = $"{AlternativeTextureModel.TextureType.Flooring}_{GetFlooringName(__instance)}";
-            var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
-
-            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
-            {
-                var result = Game1.random.Next(2) > 0 ? AssignModData(__instance, instanceSeasonName, true) : AssignModData(__instance, instanceName, false);
-                return;
-            }
-            else
-            {
-                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
-                {
-                    AssignModData(__instance, instanceName, false);
-                    return;
-                }
-
-                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
-                {
-                    AssignModData(__instance, instanceSeasonName, true);
-                    return;
-                }
-            }
-
-            AssignDefaultModData(__instance, instanceSeasonName, true);
         }
     }
 }
