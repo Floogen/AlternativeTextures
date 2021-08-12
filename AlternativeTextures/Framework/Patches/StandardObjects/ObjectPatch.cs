@@ -113,25 +113,29 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
                     if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
                     {
-                        var result = Game1.random.Next(2) > 0 ? AssignModData(flooring, instanceSeasonName, true, true) : AssignModData(flooring, instanceName, false, true);
+                        var result = Game1.random.Next(2) > 0 ? AssignModData(flooring, instanceSeasonName, true) : AssignModData(flooring, instanceName, false);
+                        flooring.modData["AlternativeTextureSheetId"] = __instance.ParentSheetIndex.ToString();
                         return;
                     }
                     else
                     {
                         if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
                         {
-                            AssignModData(flooring, instanceName, false, true);
+                            AssignModData(flooring, instanceName, false);
+                            flooring.modData["AlternativeTextureSheetId"] = __instance.ParentSheetIndex.ToString();
                             return;
                         }
 
                         if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
                         {
-                            AssignModData(flooring, instanceSeasonName, true, true);
+                            AssignModData(flooring, instanceSeasonName, true);
+                            flooring.modData["AlternativeTextureSheetId"] = __instance.ParentSheetIndex.ToString();
                             return;
                         }
                     }
 
-                    AssignDefaultModData(flooring, instanceSeasonName, true, true);
+                    flooring.modData["AlternativeTextureSheetId"] = __instance.ParentSheetIndex.ToString();
+                    AssignDefaultModData(flooring, instanceSeasonName, true);
                 }
 
                 return;
