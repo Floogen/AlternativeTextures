@@ -31,6 +31,12 @@ namespace AlternativeTextures.Framework.Patches
             return location.terrainFeatures[tile];
         }
 
+        internal static int GetFloorSheetId(Flooring floor)
+        {
+            var matchedFloor = Game1.objectInformation.Where(p => p.Value.Split('/')[0] == GetFlooringName(floor));
+            return matchedFloor.Count() == 0 ? -1 : matchedFloor.First().Key;
+        }
+
         internal static string GetFlooringName(Flooring floor)
         {
             switch (floor.whichFloor.Value)
