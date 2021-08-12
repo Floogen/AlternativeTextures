@@ -215,20 +215,20 @@ namespace AlternativeTextures.Framework.UI
             {
                 if (c.containsPoint(x, y) && c.item != null)
                 {
-                    if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Flooring flooring)
-                    {
-                        flooring.modData.Clear();
-                        foreach (string key in c.item.modData.Keys)
-                        {
-                            flooring.modData[key] = c.item.modData[key];
-                        }
-                    }
-                    else
+                    if (PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) != null)
                     {
                         _textureTarget.modData.Clear();
                         foreach (string key in c.item.modData.Keys)
                         {
                             _textureTarget.modData[key] = c.item.modData[key];
+                        }
+                    }
+                    else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Flooring flooring)
+                    {
+                        flooring.modData.Clear();
+                        foreach (string key in c.item.modData.Keys)
+                        {
+                            flooring.modData[key] = c.item.modData[key];
                         }
                     }
 
@@ -294,6 +294,7 @@ namespace AlternativeTextures.Framework.UI
                     this.availableTextures[i].item = null;
                     this.availableTextures[i].texture = null;
 
+                    // Note: The ordering of the PatchTemplate.GetObject & PatchTemplate.GetTerrainFeatureAt is import, as it prioritizes objects (like Mini-Obelisks) over terrain (like craftable paths)
                     var textureIndex = i + _startingRow * _texturesPerRow;
                     if (textureIndex < filteredTextureOptions.Count)
                     {
@@ -310,27 +311,27 @@ namespace AlternativeTextures.Framework.UI
                                 this.availableTextures[i].sourceRect = this.GetFenceSourceRect(_textureTarget as Fence, this.availableTextures[i].sourceRect.Height, 0);
                                 this.availableTextures[i].draw(b, Color.White, 0.87f);
                             }
+                            else if (PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) != null)
+                            {
+                                _textureTarget.drawInMenu(b, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y + 32f), 2f, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
+                            }
                             else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Flooring flooring)
                             {
                                 this.availableTextures[i].texture = Game1.GetSeasonForLocation(flooring.currentLocation)[0] == 'w' && (flooring.currentLocation == null || !flooring.currentLocation.isGreenhouse) ? Flooring.floorsTextureWinter : Flooring.floorsTexture;
                                 this.availableTextures[i].sourceRect = this.GetFlooringSourceRect(flooring, this.availableTextures[i].sourceRect.Height, -1);
                                 this.availableTextures[i].draw(b, Color.White, 0.87f);
                             }
-                            else
-                            {
-                                _textureTarget.drawInMenu(b, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y + 32f), 2f, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
-                            }
+                        }
+                        else if (PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) != null)
+                        {
+                            this.availableTextures[i].texture = textureModel.Texture;
+                            this.availableTextures[i].sourceRect = _textureTarget is Fence ? this.GetFenceSourceRect(_textureTarget as Fence, textureModel.TextureHeight, variation) : new Rectangle(0, variation * textureModel.TextureHeight, textureModel.TextureWidth, textureModel.TextureHeight);
+                            this.availableTextures[i].draw(b, Color.White, 0.87f);
                         }
                         else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Flooring flooring)
                         {
                             this.availableTextures[i].texture = textureModel.Texture;
                             this.availableTextures[i].sourceRect = this.GetFlooringSourceRect(flooring, textureModel.TextureHeight, variation);
-                            this.availableTextures[i].draw(b, Color.White, 0.87f);
-                        }
-                        else
-                        {
-                            this.availableTextures[i].texture = textureModel.Texture;
-                            this.availableTextures[i].sourceRect = _textureTarget is Fence ? this.GetFenceSourceRect(_textureTarget as Fence, textureModel.TextureHeight, variation) : new Rectangle(0, variation * textureModel.TextureHeight, textureModel.TextureWidth, textureModel.TextureHeight);
                             this.availableTextures[i].draw(b, Color.White, 0.87f);
                         }
                     }
