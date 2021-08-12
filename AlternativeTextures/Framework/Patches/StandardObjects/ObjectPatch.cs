@@ -105,6 +105,11 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             var placedObject = location.getObjectAt(x, y);
             if (placedObject is null)
             {
+                var terrainFeature = GetTerrainFeatureAt(location, x, y);
+                if (terrainFeature is Flooring flooring)
+                {
+                    flooring.modData["AlternativeTextureSheetId"] = __instance.ParentSheetIndex.ToString();
+                }
                 return;
             }
 
