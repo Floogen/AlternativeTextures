@@ -31,7 +31,6 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             harmony.Patch(AccessTools.Method(_object, nameof(Flooring.draw), new[] { typeof(SpriteBatch), typeof(Vector2) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Flooring.drawInMenu), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(Vector2), typeof(float), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawInMenuPrefix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Flooring.seasonUpdate), new[] { typeof(bool) }), postfix: new HarmonyMethod(GetType(), nameof(SeasonUpdatePostfix)));
-            harmony.Patch(AccessTools.Constructor(typeof(Flooring)), postfix: new HarmonyMethod(GetType(), nameof(FlooringPostfix)));
             harmony.Patch(AccessTools.Constructor(typeof(Flooring), new[] { typeof(int) }), postfix: new HarmonyMethod(GetType(), nameof(FlooringPostfix)));
         }
 
