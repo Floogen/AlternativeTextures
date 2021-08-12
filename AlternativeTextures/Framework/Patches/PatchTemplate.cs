@@ -20,6 +20,11 @@ namespace AlternativeTextures.Framework.Patches
             _monitor = modMonitor;
         }
 
+        internal static Object GetObjectAt(GameLocation location, int x, int y)
+        {
+            return location.getObjectAt(x, y);
+        }
+
         internal static TerrainFeature GetTerrainFeatureAt(GameLocation location, int x, int y)
         {
             Vector2 tile = new Vector2(x / 64, y / 64);
