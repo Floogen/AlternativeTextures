@@ -60,8 +60,15 @@ namespace AlternativeTextures.Framework.Patches.Tools
             __result = true;
 
             var targetedObject = location.getObjectAt(x, y);
-            if (targetedObject != null && targetedObject.modData.ContainsKey("AlternativeTextureName"))
+            if (targetedObject != null)
             {
+                // Assign default data if none exists
+                if (!targetedObject.modData.ContainsKey("AlternativeTextureName"))
+                {
+                    var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Craftable}_{targetedObject.name}_{Game1.currentSeason}";
+                    AssignDefaultModData(targetedObject, instanceSeasonName, true);
+                }
+
                 var modelName = targetedObject.modData["AlternativeTextureName"].Replace($"{targetedObject.modData["AlternativeTextureOwner"]}.", String.Empty);
                 if (targetedObject.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(targetedObject.modData["AlternativeTextureSeason"]))
                 {
@@ -71,34 +78,47 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
                 {
                     Game1.addHUDMessage(new HUDMessage($"{modelName} has no alternative textures for this season!", 3));
-                    who.CanMove = true;
-                    who.UsingTool = false;
-                    return false;
+                    return CancelUsing(who);
                 }
 
                 // Display texture menu
                 Game1.activeClickableMenu = new PaintBucketMenu(targetedObject, modelName);
 
-                who.CanMove = true;
-                who.UsingTool = false;
-                return false;
+                return CancelUsing(who);
             }
 
             var targetedTerrain = GetTerrainFeatureAt(location, x, y);
-            if (targetedTerrain != null && targetedTerrain.modData.ContainsKey("AlternativeTextureName") && targetedTerrain.modData.ContainsKey("AlternativeTextureSheetId"))
+            if (targetedTerrain != null)
             {
+                if (!targetedTerrain.modData.ContainsKey("AlternativeTextureName"))
+                {
+                    if (targetedTerrain is Flooring flooring)
+                    {
+                        if (GetFloorSheetId(flooring) == -1)
+                        {
+                            return CancelUsing(who);
+                        }
+
+                        var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Flooring}_{GetFlooringName(flooring)}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
+                        targetedTerrain.modData["AlternativeTextureSheetId"] = GetFloorSheetId(flooring).ToString();
+                        AssignDefaultModData(targetedTerrain, instanceSeasonName, true);
+                    }
+                    else
+                    {
+                        return CancelUsing(who);
+                    }
+                }
+
                 var modelName = targetedTerrain.modData["AlternativeTextureName"].Replace($"{targetedTerrain.modData["AlternativeTextureOwner"]}.", String.Empty);
                 if (targetedTerrain.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(targetedTerrain.modData["AlternativeTextureSeason"]))
                 {
                     modelName = modelName.Replace($"_{targetedTerrain.modData["AlternativeTextureSeason"]}", String.Empty);
                 }
 
-                if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
+                if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0 || !targetedTerrain.modData.ContainsKey("AlternativeTextureSheetId"))
                 {
                     Game1.addHUDMessage(new HUDMessage($"{modelName} has no alternative textures for this season!", 3));
-                    who.CanMove = true;
-                    who.UsingTool = false;
-                    return false;
+                    return CancelUsing(who);
                 }
 
                 // Display texture menu
@@ -113,11 +133,14 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     Game1.activeClickableMenu = new PaintBucketMenu(terrainObj, modelName, true);
                 }
 
-                who.CanMove = true;
-                who.UsingTool = false;
-                return false;
+                return CancelUsing(who);
             }
 
+            return CancelUsing(who);
+        }
+
+        private static bool CancelUsing(Farmer who)
+        {
             who.CanMove = true;
             who.UsingTool = false;
             return false;
