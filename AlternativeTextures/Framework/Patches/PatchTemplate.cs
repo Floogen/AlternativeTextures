@@ -20,6 +20,53 @@ namespace AlternativeTextures.Framework.Patches
             _monitor = modMonitor;
         }
 
+        internal static TerrainFeature GetTerrainFeatureAt(GameLocation location, int x, int y)
+        {
+            Vector2 tile = new Vector2(x / 64, y / 64);
+            if (!location.terrainFeatures.ContainsKey(tile))
+            {
+                return null;
+            }
+
+            return location.terrainFeatures[tile];
+        }
+
+        internal static string GetFlooringName(Flooring floor)
+        {
+            AlternativeTextures.monitor.Log(floor.whichFloor.Value.ToString(), LogLevel.Debug);
+            switch (floor.whichFloor.Value)
+            {
+                case 0:
+                    return "Wood Floor";
+                case 1:
+                    return "Stone Floor";
+                case 2:
+                    return "Weathered Floor";
+                case 3:
+                    return "Crystal Floor";
+                case 4:
+                    return "Straw Floor";
+                case 5:
+                    return "Gravel Path";
+                case 6:
+                    return "Wood Path";
+                case 7:
+                    return "Crystal Path";
+                case 8:
+                    return "Cobblestone Path";
+                case 9:
+                    return "Stepping Stone Path";
+                case 10:
+                    return "Straw Brick Floor";
+                case 11:
+                    return "Rustic Plank Floor";
+                case 12:
+                    return "Stone Walkway Floor";
+                default:
+                    return String.Empty;
+            }
+        }
+
         internal static bool AssignDefaultModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false)
         {
             var textureModel = new AlternativeTextureModel() { Owner = AlternativeTextures.DEFAULT_OWNER, Season = trackSeason ? Game1.currentSeason : String.Empty };

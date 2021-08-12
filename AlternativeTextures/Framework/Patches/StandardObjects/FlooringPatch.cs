@@ -152,41 +152,5 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
             AssignDefaultModData(__instance, instanceSeasonName, true);
         }
-
-        private static string GetFlooringName(Flooring floor)
-        {
-            AlternativeTextures.monitor.Log(floor.whichFloor.Value.ToString(), LogLevel.Debug);
-            switch (floor.whichFloor.Value)
-            {
-                case 0:
-                    return "Wood Floor";
-                case 1:
-                    return "Stone Floor";
-                case 2:
-                    return "Weathered Floor";
-                case 3:
-                    return "Crystal Floor";
-                case 4:
-                    return "Straw Floor";
-                case 5:
-                    return "Gravel Path";
-                case 6:
-                    return "Wood Path";
-                case 7:
-                    return "Crystal Path";
-                case 8:
-                    return "Cobblestone Path";
-                case 9:
-                    return "Stepping Stone Path";
-                case 10:
-                    return "Straw Brick Floor";
-                case 11:
-                    return "Rustic Plank Floor";
-                case 12:
-                    return "Stone Walkway Floor";
-                default:
-                    return String.Empty;
-            }
-        }
     }
 }
