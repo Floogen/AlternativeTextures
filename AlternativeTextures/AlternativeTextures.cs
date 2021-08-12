@@ -87,7 +87,7 @@ namespace AlternativeTextures
 
                 /* 
                  * TODO: Implement the following
-                 * - Flooring
+                 * - Add default modData to all valid placed objects / terrain features
                  */
             }
             catch (Exception e)
