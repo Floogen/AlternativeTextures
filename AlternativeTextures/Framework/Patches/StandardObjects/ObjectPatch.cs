@@ -105,64 +105,33 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             var placedObject = location.getObjectAt(x, y);
             if (placedObject is null)
             {
-                var terrainFeature = GetTerrainFeatureAt(location, x, y);
-                if (terrainFeature is Flooring flooring)
-                {
-                    var instanceName = $"{AlternativeTextureModel.TextureType.Flooring}_{GetFlooringName(flooring)}";
-                    var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
+                return;
+            }
 
-                    if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
-                    {
-                        var result = Game1.random.Next(2) > 0 ? AssignModData(flooring, instanceSeasonName, true) : AssignModData(flooring, instanceName, false);
-                        return;
-                    }
-                    else
-                    {
-                        if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
-                        {
-                            AssignModData(flooring, instanceName, false);
-                            return;
-                        }
+            var instanceName = $"{AlternativeTextureModel.TextureType.Craftable}_{placedObject.name}";
+            var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
 
-                        if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
-                        {
-                            AssignModData(flooring, instanceSeasonName, true);
-                            return;
-                        }
-                    }
-
-                    AssignDefaultModData(flooring, instanceSeasonName, true);
-                }
-
+            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
+            {
+                var result = Game1.random.Next(2) > 0 ? AssignModData(placedObject, instanceSeasonName, true, placedObject.bigCraftable) : AssignModData(placedObject, instanceName, false, placedObject.bigCraftable);
                 return;
             }
             else
             {
-                var instanceName = $"{AlternativeTextureModel.TextureType.Craftable}_{placedObject.name}";
-                var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
-
-                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
+                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
                 {
-                    var result = Game1.random.Next(2) > 0 ? AssignModData(placedObject, instanceSeasonName, true, placedObject.bigCraftable) : AssignModData(placedObject, instanceName, false, placedObject.bigCraftable);
+                    AssignModData(placedObject, instanceName, false, placedObject.bigCraftable);
                     return;
                 }
-                else
+
+                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
                 {
-                    if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
-                    {
-                        AssignModData(placedObject, instanceName, false, placedObject.bigCraftable);
-                        return;
-                    }
-
-                    if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
-                    {
-                        AssignModData(placedObject, instanceSeasonName, true, placedObject.bigCraftable);
-                        return;
-                    }
+                    AssignModData(placedObject, instanceSeasonName, true, placedObject.bigCraftable);
+                    return;
                 }
-
-                AssignDefaultModData(placedObject, instanceSeasonName, true, placedObject.bigCraftable);
             }
+
+            AssignDefaultModData(placedObject, instanceSeasonName, true, placedObject.bigCraftable);
         }
     }
 }
