@@ -33,7 +33,6 @@ namespace AlternativeTextures.Framework.Patches
 
         internal static string GetFlooringName(Flooring floor)
         {
-            AlternativeTextures.monitor.Log(floor.whichFloor.Value.ToString(), LogLevel.Debug);
             switch (floor.whichFloor.Value)
             {
                 case 0:
