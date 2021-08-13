@@ -10,5 +10,6 @@ namespace AlternativeTextures.Framework.Models
     {
         public int Id { get; set; }
         public float ChanceWeight { get; set; } = 1f;
+        public List<string> Keywords { get; set; } = new List<string>();
     }
 }
