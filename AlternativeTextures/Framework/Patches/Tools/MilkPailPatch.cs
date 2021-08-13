@@ -90,6 +90,11 @@ namespace AlternativeTextures.Framework.Patches.Tools
             var targetedTerrain = GetTerrainFeatureAt(location, x, y);
             if (targetedTerrain != null)
             {
+                if (targetedTerrain is HoeDirt || targetedTerrain is GiantCrop || targetedTerrain is Tree || targetedTerrain is FruitTree)
+                {
+                    Game1.addHUDMessage(new HUDMessage($"You can't put paint on that!", 3));
+                }
+
                 if (!targetedTerrain.modData.ContainsKey("AlternativeTextureName"))
                 {
                     if (targetedTerrain is Flooring flooring)
