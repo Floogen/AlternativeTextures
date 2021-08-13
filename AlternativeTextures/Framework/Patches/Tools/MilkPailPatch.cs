@@ -90,9 +90,10 @@ namespace AlternativeTextures.Framework.Patches.Tools
             var targetedTerrain = GetTerrainFeatureAt(location, x, y);
             if (targetedTerrain != null)
             {
-                if (targetedTerrain is HoeDirt || targetedTerrain is GiantCrop || targetedTerrain is Tree || targetedTerrain is FruitTree)
+                if (targetedTerrain is HoeDirt || targetedTerrain is GiantCrop || targetedTerrain is Tree || targetedTerrain is FruitTree || targetedTerrain is Grass)
                 {
                     Game1.addHUDMessage(new HUDMessage($"You can't put paint on that!", 3));
+                    return CancelUsing(who);
                 }
 
                 if (!targetedTerrain.modData.ContainsKey("AlternativeTextureName"))
