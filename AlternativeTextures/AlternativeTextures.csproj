@@ -86,6 +86,7 @@
   <ItemGroup>
     <None Include="Examples\[AT] Crystal Mini-Obelisks\manifest.json" />
     <None Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\MiniShippingBin\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furnace\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Grass\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Texture Exceptions\AutoPetter\texture.json" />
@@ -136,6 +137,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\MiniShippingBin\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furnace\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Grass\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Texture Exceptions\AutoPetter\texture.png" />
