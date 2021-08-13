@@ -58,8 +58,23 @@ namespace AlternativeTextures.Framework.Models
             return String.IsNullOrEmpty(Season) ? String.Concat(GetTextureType(), "_", ItemName) : String.Concat(GetTextureType(), "_", ItemName, "_", Season);
         }
 
-        public bool HasKeyword(string keyword)
+        public bool HasKeyword(string variationString, string keyword)
         {
+            if (!Int32.TryParse(variationString, out var variation))
+            {
+                return false;
+            }
+
+            return HasKeyword(variation, keyword);
+        }
+
+        public bool HasKeyword(int variation, string keyword)
+        {
+            if (ManualVariations.Any(v => v.Id == variation))
+            {
+                return ManualVariations.First(v => v.Id == variation).Keywords.Any(k => k.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0);
+            }
+
             return Keywords.Any(k => k.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0);
         }
 

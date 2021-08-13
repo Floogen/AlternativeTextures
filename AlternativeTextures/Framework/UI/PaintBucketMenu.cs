@@ -1,4 +1,5 @@
-﻿using AlternativeTextures.Framework.Patches;
+﻿using AlternativeTextures.Framework.Models;
+using AlternativeTextures.Framework.Patches;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -216,7 +217,7 @@ namespace AlternativeTextures.Framework.UI
                 }
                 else
                 {
-                    filteredTextureOptions = cachedTextureOptions.Where(i => !i.modData["AlternativeTextureName"].Contains(AlternativeTextures.DEFAULT_OWNER) && AlternativeTextures.textureManager.GetSpecificTextureModel(i.modData["AlternativeTextureName"]).HasKeyword(_searchBox.Text)).ToList();
+                    filteredTextureOptions = cachedTextureOptions.Where(i => !i.modData["AlternativeTextureName"].Contains(AlternativeTextures.DEFAULT_OWNER) && AlternativeTextures.textureManager.GetSpecificTextureModel(i.modData["AlternativeTextureName"]) is AlternativeTextureModel model && model.HasKeyword(i.modData["AlternativeTextureVariation"], _searchBox.Text)).ToList();
                 }
             }
         }
