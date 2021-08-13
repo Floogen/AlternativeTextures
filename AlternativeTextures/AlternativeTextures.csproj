@@ -114,7 +114,7 @@
     <None Include="Examples\[AT] Example Pack\Textures\GrassSpring\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\JsonAssetExampleItem\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\GrassSummer\texture.json" />
-    <None Include="Examples\[AT] Example Pack\Textures\Loom\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Texture Exceptions\Loom\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Sunflower\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\StoneFence\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\WoodFence2\texture.json" />
@@ -164,7 +164,7 @@
     <Content Include="Examples\[AT] Example Pack\Textures\GrassSpring\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\JsonAssetExampleItem\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\GrassSummer\texture.png" />
-    <Content Include="Examples\[AT] Example Pack\Textures\Loom\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Texture Exceptions\Loom\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Sunflower\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\StoneFence\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\WoodFence2\texture.png" />
