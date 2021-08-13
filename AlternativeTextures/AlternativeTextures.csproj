@@ -88,6 +88,7 @@
     <None Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furnace\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Grass\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Texture Exceptions\AutoPetter\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\TuboFlowers_FallWinter\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\TuboFlowers_SpringSummer\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Phone\texture.json" />
@@ -137,6 +138,7 @@
     <Content Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furnace\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Grass\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Texture Exceptions\AutoPetter\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\TuboFlowers_FallWinter\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\TuboFlowers_SpringSummer\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Phone\texture.png" />
