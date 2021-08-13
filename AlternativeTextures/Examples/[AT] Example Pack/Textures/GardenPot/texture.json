@@ -3,5 +3,20 @@
   "Type": "Craftable",
   "TextureWidth": 16,
   "TextureHeight": 32,
-  "Variations": 1
+  "Keywords": [ "Garden" ],
+  "ManualVariations": [
+    {
+      "Id": -1, // Note: -1 is the default vanilla texture. It is not required to give it, though allows user to 
+      "ChanceWeight": 0.5
+    },
+    {
+      "Id": 0,
+      "ChanceWeight": 0.1,
+      "Keywords": [ "Pink" ]
+    },
+    {
+      "Id": 1,
+      "ChanceWeight": 0.5
+    }
+  ]
 }
