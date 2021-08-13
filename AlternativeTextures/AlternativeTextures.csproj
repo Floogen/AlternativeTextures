@@ -101,6 +101,7 @@
     <None Include="Examples\[AT] Example Pack\Textures\Poppy\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\SteppingStonePath\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\StoneWalkwayFloor\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Sub Folder Example\MiniFridge\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\WoodFloor\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\TeaBushSummer\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\TeaBushSpring\texture.json" />
@@ -147,6 +148,7 @@
     <Content Include="Examples\[AT] Example Pack\Textures\Poppy\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\SteppingStonePath\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\StoneWalkwayFloor\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Sub Folder Example\MiniFridge\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\WoodFloor\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\TeaBushSummer\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\TeaBushSpring\texture.png" />
