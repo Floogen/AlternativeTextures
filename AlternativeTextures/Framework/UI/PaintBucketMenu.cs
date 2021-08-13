@@ -60,7 +60,8 @@ namespace AlternativeTextures.Framework.UI
             var availableModels = AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation));
             for (int m = 0; m < availableModels.Count; m++)
             {
-                for (int v = 0; v < availableModels[m].Variations; v++)
+                var variations = availableModels[m].ManualVariations.Where(v => v.Id != -1).Count() > 0 ? availableModels[m].ManualVariations.Where(v => v.Id != -1).Count() : availableModels[m].Variations;
+                for (int v = 0; v < variations; v++)
                 {
                     var objectWithVariation = target.getOne();
                     objectWithVariation.modData["AlternativeTextureOwner"] = availableModels[m].Owner;
