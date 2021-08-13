@@ -150,11 +150,11 @@ namespace AlternativeTextures
             // Load owned content packs
             foreach (IContentPack contentPack in Helper.ContentPacks.GetOwned())
             {
-                Monitor.Log($"Loading companions from pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} by {contentPack.Manifest.Author}", LogLevel.Debug);
+                Monitor.Log($"Loading textures from pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} by {contentPack.Manifest.Author}", LogLevel.Debug);
 
                 try
                 {
-                    var textureFolders = new DirectoryInfo(Path.Combine(contentPack.DirectoryPath, "Textures")).GetDirectories();
+                    var textureFolders = new DirectoryInfo(Path.Combine(contentPack.DirectoryPath, "Textures")).GetDirectories("*", SearchOption.AllDirectories);
                     if (textureFolders.Count() == 0)
                     {
                         Monitor.Log($"No sub-folders found under Textures for the content pack {contentPack.Manifest.Name}!", LogLevel.Warn);
@@ -166,11 +166,17 @@ namespace AlternativeTextures
                     {
                         if (!File.Exists(Path.Combine(textureFolder.FullName, "texture.json")))
                         {
-                            Monitor.Log($"Content pack {contentPack.Manifest.Name} is missing a texture.json under {textureFolder.Name}!", LogLevel.Warn);
+                            if (textureFolder.GetDirectories().Count() == 0)
+                            {
+                                Monitor.Log($"Content pack {contentPack.Manifest.Name} is missing a texture.json under {textureFolder.Name}!", LogLevel.Warn);
+                            }
+
                             continue;
                         }
 
-                        var modelPath = Path.Combine(textureFolder.Parent.Name, textureFolder.Name, "texture.json");
+
+                        var parentFolderName = textureFolder.Parent.FullName.Replace(contentPack.DirectoryPath + "\\", String.Empty);
+                        var modelPath = Path.Combine(parentFolderName, textureFolder.Name, "texture.json");
                         var seasons = contentPack.ReadJsonFile<AlternativeTextureModel>(modelPath).Seasons;
                         for (int s = 0; s < 4; s++)
                         {
@@ -192,7 +198,7 @@ namespace AlternativeTextures
                             }
 
                             // Load in the texture
-                            textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(textureFolder.Parent.Name, textureFolder.Name, "texture.png"));
+                            textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(parentFolderName, textureFolder.Name, "texture.png"));
                             textureModel.Texture = contentPack.LoadAsset<Texture2D>(textureModel.TileSheetPath);
 
                             // Set the season (if any)
