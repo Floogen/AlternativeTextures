@@ -30,6 +30,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
         {
             harmony.Patch(AccessTools.Method(_object, nameof(Object.draw), new[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Object.drawPlacementBounds), new[] { typeof(SpriteBatch), typeof(GameLocation) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPlacementBoundsPrefix)));
+            harmony.Patch(AccessTools.Method(_object, nameof(Object.DayUpdate), new[] { typeof(GameLocation) }), postfix: new HarmonyMethod(GetType(), nameof(DayUpdatePostfix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Object.placementAction), new[] { typeof(GameLocation), typeof(int), typeof(int), typeof(Farmer) }), postfix: new HarmonyMethod(GetType(), nameof(PlacementActionPostfix)));
         }
 
@@ -114,6 +115,29 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 __instance.modData.Remove("AlternativeTextureName");
             }
             return true;
+        }
+
+        internal static void DayUpdatePostfix(Object __instance, GameLocation location)
+        {
+            if (__instance.modData.ContainsKey("AlternativeTextureName"))
+            {
+                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
+                if (textureModel is null)
+                {
+                    return;
+                }
+
+                var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
+                if (textureVariation == -1)
+                {
+                    return;
+                }
+
+                if (__instance.modData.ContainsKey("AlternativeTextureSheetId") && __instance.ParentSheetIndex != Int32.Parse(__instance.modData["AlternativeTextureSheetId"]))
+                {
+                    __instance.modData["AlternativeTextureSheetId"] = __instance.ParentSheetIndex.ToString();
+                }
+            }
         }
 
         internal static void PlacementActionPostfix(Object __instance, bool __result, GameLocation location, int x, int y, Farmer who = null)
