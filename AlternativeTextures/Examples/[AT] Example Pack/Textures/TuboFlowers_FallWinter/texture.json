@@ -1,0 +1,8 @@
+{
+  "ItemName": "Tub o' Flowers",
+  "Type": "Craftable",
+  "TextureWidth": 16,
+  "TextureHeight": 32,
+  "Seasons": [ "Fall", "Winter" ],
+  "Variations": 2
+}

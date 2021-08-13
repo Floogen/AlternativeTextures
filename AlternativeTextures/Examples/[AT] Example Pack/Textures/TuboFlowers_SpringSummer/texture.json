@@ -3,5 +3,6 @@
   "Type": "Craftable",
   "TextureWidth": 16,
   "TextureHeight": 32,
+  "Seasons": [ "Spring", "Summer" ],
   "Variations": 2
 }
