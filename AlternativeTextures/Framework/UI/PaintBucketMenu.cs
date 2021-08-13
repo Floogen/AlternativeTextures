@@ -60,17 +60,34 @@ namespace AlternativeTextures.Framework.UI
             var availableModels = AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation));
             for (int m = 0; m < availableModels.Count; m++)
             {
-                var variations = availableModels[m].ManualVariations.Where(v => v.Id != -1).Count() > 0 ? availableModels[m].ManualVariations.Where(v => v.Id != -1).Count() : availableModels[m].Variations;
-                for (int v = 0; v < variations; v++)
+                var manualVariations = availableModels[m].ManualVariations.Where(v => v.Id != -1).ToList();
+                if (manualVariations.Count() > 0)
                 {
-                    var objectWithVariation = target.getOne();
-                    objectWithVariation.modData["AlternativeTextureOwner"] = availableModels[m].Owner;
-                    objectWithVariation.modData["AlternativeTextureName"] = availableModels[m].GetId();
-                    objectWithVariation.modData["AlternativeTextureVariation"] = v.ToString();
-                    objectWithVariation.modData["AlternativeTextureSeason"] = availableModels[m].Season;
+                    for (int v = 0; v < manualVariations.Count(); v++)
+                    {
+                        var objectWithVariation = target.getOne();
+                        objectWithVariation.modData["AlternativeTextureOwner"] = availableModels[m].Owner;
+                        objectWithVariation.modData["AlternativeTextureName"] = availableModels[m].GetId();
+                        objectWithVariation.modData["AlternativeTextureVariation"] = manualVariations[v].Id.ToString();
+                        objectWithVariation.modData["AlternativeTextureSeason"] = availableModels[m].Season;
 
-                    this.filteredTextureOptions.Add(objectWithVariation);
-                    this.cachedTextureOptions.Add(objectWithVariation);
+                        this.filteredTextureOptions.Add(objectWithVariation);
+                        this.cachedTextureOptions.Add(objectWithVariation);
+                    }
+                }
+                else
+                {
+                    for (int v = 0; v < availableModels[m].Variations; v++)
+                    {
+                        var objectWithVariation = target.getOne();
+                        objectWithVariation.modData["AlternativeTextureOwner"] = availableModels[m].Owner;
+                        objectWithVariation.modData["AlternativeTextureName"] = availableModels[m].GetId();
+                        objectWithVariation.modData["AlternativeTextureVariation"] = v.ToString();
+                        objectWithVariation.modData["AlternativeTextureSeason"] = availableModels[m].Season;
+
+                        this.filteredTextureOptions.Add(objectWithVariation);
+                        this.cachedTextureOptions.Add(objectWithVariation);
+                    }
                 }
             }
 
