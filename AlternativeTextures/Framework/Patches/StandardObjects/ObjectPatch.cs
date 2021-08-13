@@ -59,18 +59,27 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 }
                 xTileOffset *= textureModel.TextureWidth;
 
-                // Perform base game draw logic
+                // Get required draw values
                 Vector2 scaleFactor = __instance.getScale() * 4f;
                 Vector2 position = Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64, y * 64 - 64));
                 Rectangle destination = new Rectangle((int)(position.X - scaleFactor.X / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(position.Y - scaleFactor.Y / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(64f + scaleFactor.X), (int)(128f + scaleFactor.Y / 2f));
                 float draw_layer = Math.Max(0f, (float)((y + 1) * 64 - 24) / 10000f) + (float)x * 1E-05f;
 
+
+                // Handle outliers for draw
+                if ((int)__instance.parentSheetIndex == 272)
+                {
+                    spriteBatch.Draw(textureModel.Texture, destination, new Rectangle(16, textureOffset, 16, 32), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
+                    spriteBatch.Draw(textureModel.Texture, position + new Vector2(8.5f, 12f) * 4f, new Rectangle(32, textureOffset, 16, 32), Color.White * alpha, (float)Game1.currentGameTime.TotalGameTime.TotalSeconds * -1.5f, new Vector2(7.5f, 15.5f), 4f, SpriteEffects.None, draw_layer + 1E-05f);
+                    return false;
+                }
+
+                // Perform base game draw logic
                 spriteBatch.Draw(textureModel.Texture, destination, new Rectangle(xTileOffset, textureOffset, textureModel.TextureWidth, textureModel.TextureHeight), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
 
                 // Replicate the extra draw logic from the base game
                 if (__instance.Name.Equals("Loom") && (int)__instance.minutesUntilReady > 0)
                 {
-                    AlternativeTextures.monitor.Log($"{32}, {textureOffset}", LogLevel.Debug);
                     spriteBatch.Draw(textureModel.Texture, __instance.getLocalPosition(Game1.viewport) + new Vector2(32f, 0f), new Rectangle(32, textureOffset, 16, 16), Color.White * alpha, __instance.scale.X, new Vector2(8f, 8f), 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64) / 10000f + 0.0001f + (float)x * 1E-05f));
                 }
                 if ((bool)__instance.isLamp && Game1.isDarkOut())
