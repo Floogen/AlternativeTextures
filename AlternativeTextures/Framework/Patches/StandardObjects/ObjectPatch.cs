@@ -69,7 +69,8 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 // Replicate the extra draw logic from the base game
                 if (__instance.Name.Equals("Loom") && (int)__instance.minutesUntilReady > 0)
                 {
-                    spriteBatch.Draw(Game1.objectSpriteSheet, __instance.getLocalPosition(Game1.viewport) + new Vector2(32f, 0f), Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, 435, 16, 16), Color.White * alpha, __instance.scale.X, new Vector2(8f, 8f), 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64) / 10000f + 0.0001f + (float)x * 1E-05f));
+                    AlternativeTextures.monitor.Log($"{32}, {textureOffset}", LogLevel.Debug);
+                    spriteBatch.Draw(textureModel.Texture, __instance.getLocalPosition(Game1.viewport) + new Vector2(32f, 0f), new Rectangle(32, textureOffset, 16, 16), Color.White * alpha, __instance.scale.X, new Vector2(8f, 8f), 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64) / 10000f + 0.0001f + (float)x * 1E-05f));
                 }
                 if ((bool)__instance.isLamp && Game1.isDarkOut())
                 {
