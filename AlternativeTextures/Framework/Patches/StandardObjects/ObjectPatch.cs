@@ -67,7 +67,11 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
 
                 // Handle outliers for draw
-                if ((int)__instance.parentSheetIndex == 272)
+                if (__instance.ParentSheetIndex == 105 || __instance.ParentSheetIndex == 264)
+                {
+                    draw_layer = Math.Max(0f, (float)((y + 1) * 64 + 2) / 10000f) + (float)x / 1000000f;
+                }
+                if (__instance.ParentSheetIndex == 272)
                 {
                     spriteBatch.Draw(textureModel.Texture, destination, new Rectangle(16, textureOffset, 16, 32), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
                     spriteBatch.Draw(textureModel.Texture, position + new Vector2(8.5f, 12f) * 4f, new Rectangle(32, textureOffset, 16, 32), Color.White * alpha, (float)Game1.currentGameTime.TotalGameTime.TotalSeconds * -1.5f, new Vector2(7.5f, 15.5f), 4f, SpriteEffects.None, draw_layer + 1E-05f);
