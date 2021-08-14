@@ -89,6 +89,8 @@
     <None Include="Examples\[AT] Example Pack\Textures\MiniShippingBin\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furnace\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Grass\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Sub Folder Example\HeavyTapper\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Sub Folder Example\Tapper\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Texture Exceptions\AutoPetter\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\TuboFlowers_FallWinter\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\TuboFlowers_SpringSummer\texture.json" />
@@ -140,6 +142,8 @@
     <Content Include="Examples\[AT] Example Pack\Textures\MiniShippingBin\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furnace\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Grass\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Sub Folder Example\HeavyTapper\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Sub Folder Example\Tapper\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Texture Exceptions\AutoPetter\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\TuboFlowers_FallWinter\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\TuboFlowers_SpringSummer\texture.png" />

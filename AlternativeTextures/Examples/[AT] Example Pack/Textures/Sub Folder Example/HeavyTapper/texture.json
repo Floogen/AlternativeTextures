@@ -1,0 +1,23 @@
+{
+  "ItemName": "Heavy Tapper",
+  "Type": "Craftable",
+  "TextureWidth": 16,
+  "TextureHeight": 32,
+  "Keywords": [ "Heavy Tapper" ],
+  "ManualVariations": [
+    {
+      "Id": -1, // Note: -1 is the default vanilla texture. It is not required to give it, though allows user to 
+      "ChanceWeight": 0.5
+    },
+    {
+      "Id": 0,
+      "ChanceWeight": 0.5,
+      "Keywords": [ "Pink" ]
+    },
+    {
+      "Id": 1,
+      "ChanceWeight": 0.5,
+      "Keywords": [ "Blue" ]
+    }
+  ]
+}
