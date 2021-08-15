@@ -327,7 +327,7 @@ namespace AlternativeTextures.Framework.UI
                             if (_textureTarget is Fence)
                             {
                                 this.availableTextures[i].texture = (_textureTarget as Fence).loadFenceTexture();
-                                this.availableTextures[i].sourceRect = this.GetFenceSourceRect(_textureTarget as Fence, this.availableTextures[i].sourceRect.Height, 0);
+                                this.availableTextures[i].sourceRect = this.GetFenceSourceRect(_textureTarget as Fence, this.availableTextures[i].sourceRect.Height, -1);
                                 this.availableTextures[i].draw(b, Color.White, 0.87f);
                             }
                             else if (PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) != null)
@@ -385,13 +385,36 @@ namespace AlternativeTextures.Framework.UI
         private Rectangle GetFenceSourceRect(Fence fence, int textureHeight, int variation)
         {
             int sourceRectPosition = 1;
+            var textureOffset = variation == -1 ? 0 : variation * textureHeight;
             if ((float)fence.health > 1f || fence.repairQueued.Value)
             {
                 int drawSum = fence.getDrawSum(Game1.currentLocation);
                 sourceRectPosition = Fence.fenceDrawGuide[drawSum];
+
+                var gateOffset = fence.isGate && variation != -1 ? 128 : 0;
+                if ((bool)fence.isGate)
+                {
+                    Vector2 offset = new Vector2(0f, 0f);
+                    switch (drawSum)
+                    {
+                        case 10:
+                            return new Rectangle(((int)fence.gatePosition == 88) ? 24 : 0, textureOffset + (192 - gateOffset) + 16, 24, 32);
+                        case 100:
+                            return new Rectangle(((int)fence.gatePosition == 88) ? 24 : 0, textureOffset + (240 - gateOffset) + 16, 24, 32);
+                        case 1000:
+                            return new Rectangle(((int)fence.gatePosition == 88) ? 24 : 0, textureOffset + (288 - gateOffset), 24, 32);
+                        case 500:
+                            return new Rectangle(((int)fence.gatePosition == 88) ? 24 : 0, textureOffset + (320 - gateOffset), 24, 32);
+                        case 110:
+                            return new Rectangle(((int)fence.gatePosition == 88) ? 24 : 0, textureOffset + (128 - gateOffset), 24, 32);
+                        case 1500:
+                            return new Rectangle(((int)fence.gatePosition == 88) ? 16 : 0, textureOffset + (160 - gateOffset), 16, 16);
+                    }
+                    sourceRectPosition = 5;
+                }
             }
 
-            return new Rectangle((sourceRectPosition * Fence.fencePieceWidth % fence.fenceTexture.Value.Bounds.Width), (variation * textureHeight) + (sourceRectPosition * Fence.fencePieceWidth / fence.fenceTexture.Value.Bounds.Width * Fence.fencePieceHeight), Fence.fencePieceWidth, Fence.fencePieceHeight);
+            return new Rectangle((sourceRectPosition * Fence.fencePieceWidth % fence.fenceTexture.Value.Bounds.Width), textureOffset + (sourceRectPosition * Fence.fencePieceWidth / fence.fenceTexture.Value.Bounds.Width * Fence.fencePieceHeight), Fence.fencePieceWidth, Fence.fencePieceHeight);
         }
 
         private Rectangle GetFlooringSourceRect(Flooring flooring, int textureHeight, int variation)
