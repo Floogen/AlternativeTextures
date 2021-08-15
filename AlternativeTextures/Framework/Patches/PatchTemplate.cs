@@ -20,6 +20,28 @@ namespace AlternativeTextures.Framework.Patches
             _monitor = modMonitor;
         }
 
+        internal static string GetObjectName(Object obj)
+        {
+            if (obj.bigCraftable)
+            {
+                if (!Game1.bigCraftablesInformation.ContainsKey(obj.parentSheetIndex))
+                {
+                    return obj.name;
+                }
+
+                return Game1.bigCraftablesInformation[obj.parentSheetIndex].Split('/')[0];
+            }
+            else
+            {
+                if (!Game1.objectInformation.ContainsKey(obj.parentSheetIndex))
+                {
+                    return obj.name;
+                }
+
+                return Game1.objectInformation[obj.parentSheetIndex].Split('/')[0];
+            }
+        }
+
         internal static Object GetObjectAt(GameLocation location, int x, int y)
         {
             return location.getObjectAt(x, y);
