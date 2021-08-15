@@ -189,6 +189,9 @@ namespace AlternativeTextures
                             AlternativeTextureModel textureModel = contentPack.ReadJsonFile<AlternativeTextureModel>(modelPath);
                             textureModel.Owner = contentPack.Manifest.UniqueID;
 
+                            // Override Grass Alternative Texture pack ItemNames to always be Grass, in order to be compatible with translations 
+                            textureModel.ItemName = textureModel.GetTextureType() == "Grass" ? "Grass" : textureModel.ItemName;
+
                             // Add the UniqueId to the top-level Keywords
                             textureModel.Keywords.Add(contentPack.Manifest.UniqueID);
 
