@@ -28,7 +28,6 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
         internal void Apply(Harmony harmony)
         {
             harmony.Patch(AccessTools.Method(_object, nameof(Fence.draw), new[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
-            harmony.Patch(AccessTools.Constructor(typeof(Fence), new[] { typeof(Vector2), typeof(int), typeof(bool) }), postfix: new HarmonyMethod(GetType(), nameof(FencePostfix)));
         }
 
         private static bool DrawPrefix(Fence __instance, SpriteBatch b, int x, int y, float alpha = 1f)
@@ -58,34 +57,6 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 return false;
             }
             return true;
-        }
-
-        private static void FencePostfix(Fence __instance)
-        {
-            var instanceName = $"{AlternativeTextureModel.TextureType.Craftable}_{__instance.name}";
-            var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
-
-            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
-            {
-                var result = Game1.random.Next(2) > 0 ? AssignModData(__instance, instanceSeasonName, true) : AssignModData(__instance, instanceName, false);
-                return;
-            }
-            else
-            {
-                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
-                {
-                    AssignModData(__instance, instanceName, false);
-                    return;
-                }
-
-                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
-                {
-                    AssignModData(__instance, instanceSeasonName, true);
-                    return;
-                }
-            }
-
-            AssignDefaultModData(__instance, instanceSeasonName, true);
         }
     }
 }
