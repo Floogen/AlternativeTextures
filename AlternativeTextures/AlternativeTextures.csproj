@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="AlternativeTextures.cs" />
     <Compile Include="Framework\External\ContentPatcher\TextureToken.cs" />
+    <Compile Include="Framework\Interfaces\API\Api.cs" />
     <Compile Include="Framework\Interfaces\IContentPatcherApi.cs" />
     <Compile Include="Framework\Interfaces\IJsonAssetsApi.cs" />
     <Compile Include="Framework\Managers\ApiManager.cs" />

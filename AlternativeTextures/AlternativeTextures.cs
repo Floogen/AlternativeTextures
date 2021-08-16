@@ -1,4 +1,5 @@
 ﻿using AlternativeTextures.Framework.External.ContentPatcher;
+using AlternativeTextures.Framework.Interfaces.API;
 using AlternativeTextures.Framework.Managers;
 using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.Patches;
@@ -111,6 +112,11 @@ namespace AlternativeTextures
 
             // Hook into Player events
             helper.Events.Player.Warped += this.OnWarped;
+        }
+
+        public override object GetApi()
+        {
+            return new Api(this);
         }
 
         private void OnGameLaunched(object sender, GameLaunchedEventArgs e)
