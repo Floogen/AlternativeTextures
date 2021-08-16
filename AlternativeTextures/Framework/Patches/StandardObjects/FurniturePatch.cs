@@ -136,27 +136,21 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
         {
             if (Game1.activeClickableMenu is PaintBucketMenu)
             {
+                var texture = Furniture.furnitureTexture;
+                var sourceRect = __instance.sourceRect.Value;
+                sourceRect.X += sourceRect.Width * ___sourceIndexOffset.Value;
+
                 var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
-                if (textureModel is null || Int32.Parse(__instance.modData["AlternativeTextureVariation"]) == -1)
+                if (textureModel != null && Int32.Parse(__instance.modData["AlternativeTextureVariation"]) != -1)
                 {
-                    var sourceRect = __instance.sourceRect.Value;
-                    sourceRect.X += sourceRect.Width * ___sourceIndexOffset.Value;
-
-                    spriteBatch.Draw(Furniture.furnitureTexture, location + new Vector2(32f, 32f), sourceRect, color * transparency, 0f, new Vector2(sourceRect.Width / 2, sourceRect.Height / 2), 1f * GetScaleSize(sourceRect) * scaleSize, SpriteEffects.None, layerDepth);
-
-                    return false;
+                    texture = textureModel.Texture;
+                    sourceRect.X = __instance.sourceRect.X - __instance.defaultSourceRect.X;
+                    sourceRect.Y = Int32.Parse(__instance.modData["AlternativeTextureVariation"]) * textureModel.TextureHeight;
                 }
-                else
-                {
-                    var textureOffset = Int32.Parse(__instance.modData["AlternativeTextureVariation"]) * textureModel.TextureHeight;
 
-                    var sourceRect = __instance.sourceRect.Value;
-                    sourceRect.X -= __instance.defaultSourceRect.X;
-                    sourceRect.Y = textureOffset;
-                    spriteBatch.Draw(textureModel.Texture, location + new Vector2(32f, 32f), sourceRect, color * transparency, 0f, new Vector2(sourceRect.Width / 2, sourceRect.Height / 2), 1f * GetScaleSize(sourceRect) * scaleSize, SpriteEffects.None, layerDepth);
+                spriteBatch.Draw(texture, location + new Vector2(32f, 32f), sourceRect, color * transparency, 0f, new Vector2(sourceRect.Width / 2, sourceRect.Height / 2), 1f * GetScaleSize(sourceRect) * scaleSize, SpriteEffects.None, layerDepth);
 
-                    return false;
-                }
+                return false;
             }
             return true;
         }
@@ -185,13 +179,9 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             {
                 return 1f;
             }
-            if (tilesWide <= 2)
+            if (tilesHigh >= 2)
             {
-                return 2f;
-            }
-            if (tilesWide <= 4)
-            {
-                return 1f;
+                return 1.5f;
             }
             return 0.1f;
         }
