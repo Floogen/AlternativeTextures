@@ -34,7 +34,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
         private static bool LowPriorityLeftClickPrefix(GameLocation __instance, ref bool __result, int x, int y, Farmer who)
         {
-            if (who.CurrentTool is GenericTool && who.CurrentTool.modData.ContainsKey("AlternativeTexturesPaintBucketFlag"))
+            if (who.CurrentTool is GenericTool && who.CurrentTool.modData.ContainsKey(AlternativeTextures.PAINT_BUCKET_FLAG))
             {
                 __result = false;
                 return false;

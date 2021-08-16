@@ -35,7 +35,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
 
         private static bool DrawInMenuPrefix(Tool __instance, SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber, Color color, bool drawShadow)
         {
-            if (__instance.modData.ContainsKey("AlternativeTexturesPaintBucketFlag"))
+            if (__instance.modData.ContainsKey(AlternativeTextures.PAINT_BUCKET_FLAG))
             {
                 spriteBatch.Draw(AlternativeTextures.assetManager.GetPaintBucketTexture(), location + new Vector2(32f, 32f), new Rectangle(0, 0, 16, 16), color * transparency, 0f, new Vector2(8f, 8f), 4f * scaleSize, SpriteEffects.None, layerDepth);
 
@@ -48,7 +48,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
 
         private static bool BeginUsingPrefix(Tool __instance, ref bool __result, GameLocation location, int x, int y, Farmer who)
         {
-            if (!__instance.modData.ContainsKey("AlternativeTexturesPaintBucketFlag"))
+            if (!__instance.modData.ContainsKey(AlternativeTextures.PAINT_BUCKET_FLAG))
             {
                 return true;
             }

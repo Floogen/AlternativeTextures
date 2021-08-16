@@ -6,6 +6,7 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
+using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,14 @@ namespace AlternativeTextures.Framework.Patches
         internal PatchTemplate(IMonitor modMonitor)
         {
             _monitor = modMonitor;
+        }
+
+        internal static GenericTool GetPaintBucketTool()
+        {
+            var paintBucket = new GenericTool("Paint Bucket", "Allows you to apply different textures to supported objects.", -1, 6, 6);
+            paintBucket.modData[AlternativeTextures.PAINT_BUCKET_FLAG] = true.ToString();
+
+            return paintBucket;
         }
 
         internal static string GetObjectName(Object obj)

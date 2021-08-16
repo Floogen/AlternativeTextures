@@ -8,11 +8,15 @@ using AlternativeTextures.Framework.Patches.Tools;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Menus;
+using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
+using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,6 +30,9 @@ namespace AlternativeTextures
     {
         internal const string TOKEN_HEADER = "AlternativeTextures/Textures/";
         internal const string DEFAULT_OWNER = "Stardew.Default";
+        internal const string TOOL_CONVERSION_COMPATIBILITY = "AlternativeTextures.HasConvertedMilkPails";
+        internal const string PAINT_BUCKET_FLAG = "AlternativeTextures.PaintBucketFlag";
+        internal const string OLD_PAINT_BUCKET_FLAG = "AlternativeTexturesPaintBucketFlag";
 
         internal static IMonitor monitor;
         internal static IModHelper modHelper;
@@ -130,10 +137,19 @@ namespace AlternativeTextures
 
         private void OnDayStarted(object sender, DayStartedEventArgs e)
         {
+            // Loadd all available textures to account for any Content Patcher's OnDayStart updates
             foreach (var texture in textureManager.GetAllTextures())
             {
                 var test = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TOKEN_HEADER}{texture.GetId()}", ContentSource.GameContent);
                 textureManager.UpdateTexture(texture.GetId(), test);
+            }
+
+            // Backwards compatibility logic
+            if (!Game1.player.modData.ContainsKey(TOOL_CONVERSION_COMPATIBILITY))
+            {
+                Monitor.Log($"Converting old Paint Buckets into generic tools...", LogLevel.Debug);
+                Game1.player.modData[TOOL_CONVERSION_COMPATIBILITY] = true.ToString();
+                ConvertPaintBucketsToGenericTools(Game1.player);
             }
         }
 
@@ -307,6 +323,70 @@ namespace AlternativeTextures
         private void DebugShowPaintShop(string command, string[] args)
         {
             Game1.activeClickableMenu = new ShopMenu(Utility.getCarpenterStock(), 0, "Robin");
+        }
+
+        private void ConvertPaintBucketsToGenericTools(Farmer who)
+        {
+            // Check player's inventory first
+            for (int i = 0; i < (int)who.maxItems; i++)
+            {
+                if (who.items[i] is MilkPail milkPail && milkPail.modData.ContainsKey(OLD_PAINT_BUCKET_FLAG))
+                {
+                    who.items[i] = PatchTemplate.GetPaintBucketTool();
+                }
+            }
+
+            foreach (var location in Game1.locations)
+            {
+                ConvertStoredPaintBucketsToGenericTools(who, location);
+
+                if (location is BuildableGameLocation)
+                {
+                    foreach (var building in (location as BuildableGameLocation).buildings)
+                    {
+                        GameLocation indoorLocation = building.indoors.Value;
+                        if (indoorLocation is null)
+                        {
+                            continue;
+                        }
+
+                        ConvertStoredPaintBucketsToGenericTools(who, indoorLocation);
+                    }
+                }
+            }
+        }
+
+        private void ConvertStoredPaintBucketsToGenericTools(Farmer who, GameLocation location)
+        {
+            foreach (var chest in location.Objects.Pairs.Where(p => p.Value is Chest).Select(p => p.Value as Chest).ToList())
+            {
+                if (chest.isEmpty())
+                {
+                    continue;
+                }
+
+                if (chest.SpecialChestType == Chest.SpecialChestTypes.JunimoChest)
+                {
+                    NetObjectList<Item> actual_items = chest.GetItemsForPlayer(who.UniqueMultiplayerID);
+                    for (int j = actual_items.Count - 1; j >= 0; j--)
+                    {
+                        if (actual_items[j] is MilkPail milkPail && milkPail.modData.ContainsKey(OLD_PAINT_BUCKET_FLAG))
+                        {
+                            actual_items[j] = PatchTemplate.GetPaintBucketTool();
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = chest.items.Count - 1; i >= 0; i--)
+                    {
+                        if (chest.items[i] is MilkPail milkPail && milkPail.modData.ContainsKey(OLD_PAINT_BUCKET_FLAG))
+                        {
+                            chest.items[i] = PatchTemplate.GetPaintBucketTool();
+                        }
+                    }
+                }
+            }
         }
     }
 }

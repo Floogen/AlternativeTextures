@@ -34,10 +34,7 @@ namespace AlternativeTextures.Framework.Patches
 
         private static void GetCarpenterStockPostFix(Utility __instance, ref Dictionary<ISalable, int[]> __result)
         {
-            var paintBucket = new GenericTool("Paint Bucket", "Allows you to apply different textures to supported objects.", -1, 6, 6);
-            paintBucket.modData["AlternativeTexturesPaintBucketFlag"] = true.ToString();
-
-            __result.Add(paintBucket, new int[2] { 500, 1 });
+            __result.Add(GetPaintBucketTool(), new int[2] { 500, 1 });
         }
     }
 }
