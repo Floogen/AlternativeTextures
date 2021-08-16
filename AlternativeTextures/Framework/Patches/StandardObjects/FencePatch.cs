@@ -28,6 +28,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
         internal void Apply(Harmony harmony)
         {
             harmony.Patch(AccessTools.Method(_object, nameof(Fence.draw), new[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
+            harmony.Patch(AccessTools.Method(_object, nameof(Fence.performObjectDropInAction), new[] { typeof(Item), typeof(bool), typeof(Farmer) }), postfix: new HarmonyMethod(GetType(), nameof(PerformObjectDropInActionPostfix)));
         }
 
         private static bool DrawPrefix(Fence __instance, SpriteBatch b, int x, int y, float alpha = 1f)
@@ -136,6 +137,38 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 return false;
             }
             return true;
+        }
+
+        private static void PerformObjectDropInActionPostfix(Fence __instance, bool __result, Item dropIn, bool probe, Farmer who)
+        {
+            // Assign Gate modData to this fence (if applicable)
+            if (dropIn.parentSheetIndex == 325 && __result)
+            {
+                var instanceName = $"{AlternativeTextureModel.TextureType.Craftable}_{Game1.objectInformation[dropIn.parentSheetIndex].Split('/')[0]}";
+                var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
+
+                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
+                {
+                    var result = Game1.random.Next(2) > 0 ? AssignModData(__instance, instanceSeasonName, true, __instance.bigCraftable) : AssignModData(__instance, instanceName, false, __instance.bigCraftable);
+                    return;
+                }
+                else
+                {
+                    if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
+                    {
+                        AssignModData(__instance, instanceName, false, __instance.bigCraftable);
+                        return;
+                    }
+
+                    if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
+                    {
+                        AssignModData(__instance, instanceSeasonName, true, __instance.bigCraftable);
+                        return;
+                    }
+                }
+
+                AssignDefaultModData(__instance, instanceSeasonName, true, __instance.bigCraftable);
+            }
         }
     }
 }
