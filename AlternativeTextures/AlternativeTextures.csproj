@@ -91,6 +91,7 @@
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\NeedlepointFlower\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\OakChair\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\Calendar\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Furniture\StrawberryDoubleBed\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\TotemPole\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\OakTable\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\OakDresser\texture.json" />
@@ -154,6 +155,7 @@
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\NeedlepointFlower\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\OakChair\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\Calendar\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Furniture\StrawberryDoubleBed\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\TotemPole\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\OakTable\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\OakDresser\texture.png" />
