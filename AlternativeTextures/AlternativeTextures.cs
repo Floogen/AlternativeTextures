@@ -70,6 +70,7 @@ namespace AlternativeTextures
                 new BushPatch(monitor).Apply(harmony);
                 new FlooringPatch(monitor).Apply(harmony);
                 new FurniturePatch(monitor).Apply(harmony);
+                new BedFurniturePatch(monitor).Apply(harmony);
 
                 // Start of animated objects
                 new ChestPatch(monitor).Apply(harmony);
@@ -88,7 +89,7 @@ namespace AlternativeTextures
 
                 /* 
                  * TODO: Implement the following
-                 * - Add default modData to all valid placed objects / terrain features
+                 * - FishTankFurniture
                  */
             }
             catch (Exception e)
