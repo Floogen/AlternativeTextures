@@ -140,8 +140,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 var sourceRect = __instance.sourceRect.Value;
                 sourceRect.X += sourceRect.Width * ___sourceIndexOffset.Value;
 
-                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
-                if (textureModel != null && Int32.Parse(__instance.modData["AlternativeTextureVariation"]) != -1)
+                if (__instance.modData.ContainsKey("AlternativeTextureName") && AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]) is AlternativeTextureModel textureModel && Int32.Parse(__instance.modData["AlternativeTextureVariation"]) != -1)
                 {
                     texture = textureModel.Texture;
                     sourceRect.X = __instance.sourceRect.X - __instance.defaultSourceRect.X;
