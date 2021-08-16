@@ -46,9 +46,9 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                     return true;
                 }
                 int sourceRectPosition = 1;
+                int drawSum = __instance.getDrawSum(Game1.currentLocation);
                 if ((float)__instance.health > 1f || __instance.repairQueued.Value)
                 {
-                    int drawSum = __instance.getDrawSum(Game1.currentLocation);
                     sourceRectPosition = Fence.fenceDrawGuide[drawSum];
                 }
 
@@ -57,7 +57,6 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 if ((bool)__instance.isGate)
                 {
                     Vector2 offset = new Vector2(0f, 0f);
-                    int drawSum = __instance.getDrawSum(Game1.currentLocation);
                     switch (drawSum)
                     {
                         case 10:
@@ -81,6 +80,55 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                             return false;
                     }
                     sourceRectPosition = 5;
+                }
+                else if (__instance.heldObject.Value != null)
+                {
+                    Vector2 offset2 = Vector2.Zero;
+                    switch (drawSum)
+                    {
+                        case 10:
+                            if (__instance.whichType.Value == 2)
+                            {
+                                offset2.X = -4f;
+                            }
+                            else if (__instance.whichType.Value == 3)
+                            {
+                                offset2.X = 8f;
+                            }
+                            else
+                            {
+                                offset2.X = 0f;
+                            }
+                            break;
+                        case 100:
+                            if (__instance.whichType.Value == 2)
+                            {
+                                offset2.X = 0f;
+                            }
+                            else if (__instance.whichType.Value == 3)
+                            {
+                                offset2.X = -8f;
+                            }
+                            else
+                            {
+                                offset2.X = -4f;
+                            }
+                            break;
+                    }
+                    if ((int)__instance.whichType == 2)
+                    {
+                        offset2.Y = 16f;
+                    }
+                    else if ((int)__instance.whichType == 3)
+                    {
+                        offset2.Y -= 8f;
+                    }
+                    if ((int)__instance.whichType == 3)
+                    {
+                        offset2.X -= 2f;
+                    }
+
+                    __instance.heldObject.Value.draw(b, x * 64 + (int)offset2.X, (y - 1) * 64 - 16 + (int)offset2.Y, (float)(y * 64 + 64) / 10000f, 1f);
                 }
 
                 b.Draw(textureModel.Texture, Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64, y * 64 - 64)), new Rectangle((sourceRectPosition * Fence.fencePieceWidth % __instance.fenceTexture.Value.Bounds.Width), textureOffset + (sourceRectPosition * Fence.fencePieceWidth / __instance.fenceTexture.Value.Bounds.Width * Fence.fencePieceHeight), Fence.fencePieceWidth, Fence.fencePieceHeight), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, (float)(y * 64 + 32) / 10000f);
