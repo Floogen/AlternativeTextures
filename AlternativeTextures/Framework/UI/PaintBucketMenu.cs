@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
+using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
@@ -72,6 +73,12 @@ namespace AlternativeTextures.Framework.UI
                         objectWithVariation.modData["AlternativeTextureVariation"] = manualVariations[v].Id.ToString();
                         objectWithVariation.modData["AlternativeTextureSeason"] = availableModels[m].Season;
 
+                        if (target is Furniture furniture)
+                        {
+                            (objectWithVariation as Furniture).currentRotation.Value = furniture.currentRotation;
+                            (objectWithVariation as Furniture).updateRotation();
+                        }
+
                         this.filteredTextureOptions.Add(objectWithVariation);
                         this.cachedTextureOptions.Add(objectWithVariation);
                     }
@@ -86,6 +93,12 @@ namespace AlternativeTextures.Framework.UI
                         objectWithVariation.modData["AlternativeTextureVariation"] = v.ToString();
                         objectWithVariation.modData["AlternativeTextureSeason"] = availableModels[m].Season;
 
+                        if (target is Furniture furniture)
+                        {
+                            (objectWithVariation as Furniture).currentRotation.Value = furniture.currentRotation;
+                            (objectWithVariation as Furniture).updateRotation();
+                        }
+
                         this.filteredTextureOptions.Add(objectWithVariation);
                         this.cachedTextureOptions.Add(objectWithVariation);
                     }
@@ -99,10 +112,16 @@ namespace AlternativeTextures.Framework.UI
             vanillaObject.modData["AlternativeTextureVariation"] = $"{-1}";
             vanillaObject.modData["AlternativeTextureSeason"] = String.Empty;
 
+            if (target is Furniture)
+            {
+                (vanillaObject as Furniture).currentRotation.Value = (target as Furniture).currentRotation;
+                (vanillaObject as Furniture).updateRotation();
+            }
+
             this.filteredTextureOptions.Insert(0, vanillaObject);
             this.cachedTextureOptions.Insert(0, vanillaObject);
 
-            var sourceRect = isFlooring ? new Rectangle(0, 0, 16, 32) : target is Fence ? this.GetFenceSourceRect(target as Fence, availableModels.First().TextureHeight, 0) : new Rectangle(0, 0, availableModels.First().TextureWidth, availableModels.First().TextureHeight);
+            var sourceRect = isFlooring ? new Rectangle(0, 0, 16, 32) : GetSourceRectangle(target, availableModels.First().TextureWidth, availableModels.First().TextureHeight, -1);
             for (int r = 0; r < _maxRows; r++)
             {
                 for (int c = 0; c < _texturesPerRow; c++)
@@ -332,7 +351,7 @@ namespace AlternativeTextures.Framework.UI
                             }
                             else if (PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) != null)
                             {
-                                _textureTarget.drawInMenu(b, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y + 32f), 2f, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
+                                this.availableTextures[i].item.drawInMenu(b, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y + 32f), 2f, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
                             }
                             else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Flooring flooring)
                             {
@@ -341,10 +360,14 @@ namespace AlternativeTextures.Framework.UI
                                 this.availableTextures[i].draw(b, Color.White, 0.87f);
                             }
                         }
+                        else if (PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Furniture)
+                        {
+                            this.availableTextures[i].item.drawInMenu(b, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y + 32f), 2f, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
+                        }
                         else if (PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) != null)
                         {
                             this.availableTextures[i].texture = textureModel.Texture;
-                            this.availableTextures[i].sourceRect = _textureTarget is Fence ? this.GetFenceSourceRect(_textureTarget as Fence, textureModel.TextureHeight, variation) : new Rectangle(0, variation * textureModel.TextureHeight, textureModel.TextureWidth, textureModel.TextureHeight);
+                            this.availableTextures[i].sourceRect = GetSourceRectangle(_textureTarget, textureModel.TextureWidth, textureModel.TextureHeight, variation);
                             this.availableTextures[i].draw(b, Color.White, 0.87f);
                         }
                         else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Flooring flooring)
@@ -380,6 +403,24 @@ namespace AlternativeTextures.Framework.UI
 
             Game1.mouseCursorTransparency = 1f;
             base.drawMouse(b);
+        }
+
+        private Rectangle GetSourceRectangle(Object target, int textureWidth, int textureHeight, int variation)
+        {
+            var textureOffset = variation > 0 ? textureHeight * variation : 0;
+            var sourceRect = new Rectangle(0, textureOffset, textureWidth, textureHeight);
+            if (target is Fence fence)
+            {
+                sourceRect = this.GetFenceSourceRect(fence, textureHeight, variation);
+            }
+            else if (target is Furniture furniture)
+            {
+                sourceRect = furniture.sourceRect.Value;
+                sourceRect.X -= furniture.defaultSourceRect.X;
+                sourceRect.Y = textureOffset;
+            }
+
+            return sourceRect;
         }
 
         private Rectangle GetFenceSourceRect(Fence fence, int textureHeight, int variation)
