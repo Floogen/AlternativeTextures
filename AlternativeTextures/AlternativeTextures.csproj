@@ -91,6 +91,9 @@
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\NeedlepointFlower\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\OakChair\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\Calendar\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Furniture\DeluxeFishTank\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Furniture\ModernFishTank\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Furniture\SmallFishTank\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\StrawberryDoubleBed\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\TotemPole\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\OakTable\texture.json" />
@@ -155,6 +158,9 @@
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\NeedlepointFlower\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\OakChair\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\Calendar\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Furniture\DeluxeFishTank\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Furniture\ModernFishTank\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Furniture\SmallFishTank\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\StrawberryDoubleBed\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\TotemPole\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\OakTable\texture.png" />
