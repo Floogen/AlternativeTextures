@@ -87,6 +87,7 @@
   <ItemGroup>
     <None Include="Examples\[AT] Crystal Mini-Obelisks\manifest.json" />
     <None Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Furniture\DarkRug\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Gate Examples\Gate2\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Gate Examples\Gate1\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\MiniShippingBin\texture.json" />
@@ -142,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Furniture\DarkRug\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Gate Examples\Gate2\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Gate Examples\Gate1\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\MiniShippingBin\texture.png" />
