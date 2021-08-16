@@ -420,6 +420,10 @@ namespace AlternativeTextures.Framework.UI
                 sourceRect.Y = textureOffset;
             }
 
+            if (sourceRect.Width > 32)
+            {
+                sourceRect.Width = 32;
+            }
             return sourceRect;
         }
 
