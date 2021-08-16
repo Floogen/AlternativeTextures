@@ -63,7 +63,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 sourceRect.Y = textureOffset;
                 if (Furniture.isDrawingLocationFurniture)
                 {
-                    if (__instance.HasSittingFarmers() && __instance.currentRotation > 0)
+                    if (__instance.HasSittingFarmers() && __instance.sourceRect.Right <= Furniture.furnitureFrontTexture.Width && __instance.sourceRect.Bottom <= Furniture.furnitureFrontTexture.Height)
                     {
                         spriteBatch.Draw(textureModel.Texture, Game1.GlobalToLocal(Game1.viewport, ___drawPosition + ((__instance.shakeTimer > 0) ? new Vector2(Game1.random.Next(-1, 2), Game1.random.Next(-1, 2)) : Vector2.Zero)), sourceRect, Color.White * alpha, 0f, Vector2.Zero, 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (float)(__instance.boundingBox.Value.Top + 16) / 10000f);
 
