@@ -35,7 +35,8 @@ namespace AlternativeTextures.Framework.Models
             GiantCrop,
             ResourceClump,
             Bush,
-            Flooring
+            Flooring,
+            Furniture
         }
 
         public string GetTextureType()
