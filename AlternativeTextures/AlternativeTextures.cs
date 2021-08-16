@@ -85,7 +85,6 @@ namespace AlternativeTextures
                 // Paint tool related patches
                 new UtilityPatch(monitor).Apply(harmony);
                 new ToolPatch(monitor).Apply(harmony);
-                new MilkPailPatch(monitor).Apply(harmony);
 
                 /* 
                  * TODO: Implement the following

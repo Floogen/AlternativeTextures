@@ -75,7 +75,6 @@
     <Compile Include="Framework\Patches\PatchTemplate.cs" />
     <Compile Include="Framework\Patches\StandardObjects\FruitTreePatch.cs" />
     <Compile Include="Framework\Patches\StandardObjects\BushPatch.cs" />
-    <Compile Include="Framework\Patches\Tools\MilkPailPatch.cs" />
     <Compile Include="Framework\Patches\Tools\ToolPatch.cs" />
     <Compile Include="Framework\Patches\StandardObjects\TreePatch.cs" />
     <Compile Include="Framework\Patches\StandardObjects\GrassPatch.cs" />
