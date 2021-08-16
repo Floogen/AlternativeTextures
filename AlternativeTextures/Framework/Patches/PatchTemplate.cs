@@ -4,8 +4,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Object = StardewValley.Object;
 
@@ -30,6 +32,16 @@ namespace AlternativeTextures.Framework.Patches
                 }
 
                 return Game1.bigCraftablesInformation[obj.parentSheetIndex].Split('/')[0];
+            }
+            else if (obj is Furniture)
+            {
+                var dataSheet = Game1.content.LoadBase<Dictionary<int, string>>("Data\\Furniture");
+                if (!dataSheet.ContainsKey(obj.parentSheetIndex))
+                {
+                    return obj.name;
+                }
+
+                return dataSheet[obj.parentSheetIndex].Split('/')[0];
             }
             else
             {
