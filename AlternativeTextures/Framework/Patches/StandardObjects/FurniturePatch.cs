@@ -58,19 +58,22 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                     return true;
                 }
 
-                Rectangle drawn_source_rect = __instance.sourceRect.Value;
-                drawn_source_rect.X -= __instance.defaultSourceRect.X;
-                drawn_source_rect.Y = textureOffset;
+                Rectangle sourceRect = __instance.sourceRect.Value;
+                sourceRect.X -= __instance.defaultSourceRect.X;
+                sourceRect.Y = textureOffset;
                 if (Furniture.isDrawingLocationFurniture)
                 {
-                    if (__instance.HasSittingFarmers() && __instance.sourceRect.Right <= Furniture.furnitureFrontTexture.Width && __instance.sourceRect.Bottom <= Furniture.furnitureFrontTexture.Height)
+                    if (__instance.HasSittingFarmers() && __instance.currentRotation > 0)
                     {
-                        spriteBatch.Draw(textureModel.Texture, Game1.GlobalToLocal(Game1.viewport, ___drawPosition + ((__instance.shakeTimer > 0) ? new Vector2(Game1.random.Next(-1, 2), Game1.random.Next(-1, 2)) : Vector2.Zero)), drawn_source_rect, Color.White * alpha, 0f, Vector2.Zero, 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (float)(__instance.boundingBox.Value.Top + 16) / 10000f);
-                        spriteBatch.Draw(Furniture.furnitureFrontTexture, Game1.GlobalToLocal(Game1.viewport, ___drawPosition + ((__instance.shakeTimer > 0) ? new Vector2(Game1.random.Next(-1, 2), Game1.random.Next(-1, 2)) : Vector2.Zero)), drawn_source_rect, Color.White * alpha, 0f, Vector2.Zero, 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (float)(__instance.boundingBox.Value.Bottom - 8) / 10000f);
+                        spriteBatch.Draw(textureModel.Texture, Game1.GlobalToLocal(Game1.viewport, ___drawPosition + ((__instance.shakeTimer > 0) ? new Vector2(Game1.random.Next(-1, 2), Game1.random.Next(-1, 2)) : Vector2.Zero)), sourceRect, Color.White * alpha, 0f, Vector2.Zero, 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (float)(__instance.boundingBox.Value.Top + 16) / 10000f);
+
+                        var rotationSourceRect = sourceRect;
+                        rotationSourceRect.Y += textureModel.TextureHeight / 2;
+                        spriteBatch.Draw(textureModel.Texture, Game1.GlobalToLocal(Game1.viewport, ___drawPosition + ((__instance.shakeTimer > 0) ? new Vector2(Game1.random.Next(-1, 2), Game1.random.Next(-1, 2)) : Vector2.Zero)), rotationSourceRect, Color.White * alpha, 0f, Vector2.Zero, 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (float)(__instance.boundingBox.Value.Bottom - 8) / 10000f);
                     }
                     else
                     {
-                        spriteBatch.Draw(textureModel.Texture, Game1.GlobalToLocal(Game1.viewport, ___drawPosition + ((__instance.shakeTimer > 0) ? new Vector2(Game1.random.Next(-1, 2), Game1.random.Next(-1, 2)) : Vector2.Zero)), drawn_source_rect, Color.White * alpha, 0f, Vector2.Zero, 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, ((int)__instance.furniture_type == 12) ? (2E-09f + __instance.tileLocation.Y / 100000f) : ((float)(__instance.boundingBox.Value.Bottom - (((int)__instance.furniture_type == 6 || (int)__instance.furniture_type == 17 || (int)__instance.furniture_type == 13) ? 48 : 8)) / 10000f));
+                        spriteBatch.Draw(textureModel.Texture, Game1.GlobalToLocal(Game1.viewport, ___drawPosition + ((__instance.shakeTimer > 0) ? new Vector2(Game1.random.Next(-1, 2), Game1.random.Next(-1, 2)) : Vector2.Zero)), sourceRect, Color.White * alpha, 0f, Vector2.Zero, 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, ((int)__instance.furniture_type == 12) ? (2E-09f + __instance.tileLocation.Y / 100000f) : ((float)(__instance.boundingBox.Value.Bottom - (((int)__instance.furniture_type == 6 || (int)__instance.furniture_type == 17 || (int)__instance.furniture_type == 13) ? 48 : 8)) / 10000f));
                     }
                 }
                 else
@@ -122,10 +125,10 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 var textureOffset = textureVariation * textureModel.TextureHeight;
 
                 // Replicate the base draw
-                Rectangle drawn_source_rect = __instance.sourceRect.Value;
-                drawn_source_rect.X -= __instance.defaultSourceRect.X;
-                drawn_source_rect.Y = textureOffset;
-                spriteBatch.Draw(textureModel.Texture, location, drawn_source_rect, Color.White * alpha, 0f, Vector2.Zero, 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, layerDepth);
+                Rectangle sourceRect = __instance.sourceRect.Value;
+                sourceRect.X -= __instance.defaultSourceRect.X;
+                sourceRect.Y = textureOffset;
+                spriteBatch.Draw(textureModel.Texture, location, sourceRect, Color.White * alpha, 0f, Vector2.Zero, 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, layerDepth);
 
                 return false;
             }
@@ -178,9 +181,13 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             {
                 return 1f;
             }
-            if (tilesHigh >= 2)
+            if (tilesWide <= 2)
             {
                 return 1.5f;
+            }
+            if (tilesWide <= 4)
+            {
+                return 1f;
             }
             return 0.1f;
         }
