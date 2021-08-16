@@ -88,6 +88,7 @@
     <None Include="Examples\[AT] Crystal Mini-Obelisks\manifest.json" />
     <None Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\BrownCouch\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Furniture\OakChair\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\OakTable\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\OakDresser\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\DarkRug\texture.json" />
@@ -147,6 +148,7 @@
   <ItemGroup>
     <Content Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\BrownCouch\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Furniture\OakChair\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\OakTable\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\OakDresser\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\DarkRug\texture.png" />
