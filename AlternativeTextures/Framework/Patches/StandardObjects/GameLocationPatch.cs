@@ -50,8 +50,13 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 var obj = __instance.objects.Pairs.ElementAt(k).Value;
                 if (obj.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(obj.modData["AlternativeTextureSeason"]) && !String.Equals(obj.modData["AlternativeTextureSeason"], Game1.currentSeason, StringComparison.OrdinalIgnoreCase))
                 {
+                    var instanceName = GetObjectName(obj);
+                    if (obj is Fence fence && fence.isGate)
+                    {
+                        instanceName = Game1.objectInformation[325].Split('/')[0];
+                    }
                     obj.modData["AlternativeTextureSeason"] = Game1.currentSeason;
-                    obj.modData["AlternativeTextureName"] = String.Concat(obj.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Craftable}_{GetObjectName(obj)}_{obj.modData["AlternativeTextureSeason"]}");
+                    obj.modData["AlternativeTextureName"] = String.Concat(obj.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Craftable}_{instanceName}_{obj.modData["AlternativeTextureSeason"]}");
                 }
             }
         }
