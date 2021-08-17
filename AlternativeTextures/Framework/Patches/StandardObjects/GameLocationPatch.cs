@@ -51,7 +51,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 if (obj.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(obj.modData["AlternativeTextureSeason"]) && !String.Equals(obj.modData["AlternativeTextureSeason"], Game1.currentSeason, StringComparison.OrdinalIgnoreCase))
                 {
                     obj.modData["AlternativeTextureSeason"] = Game1.currentSeason;
-                    obj.modData["AlternativeTextureName"] = String.Concat(obj.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Craftable}_{obj.name}_{obj.modData["AlternativeTextureSeason"]}");
+                    obj.modData["AlternativeTextureName"] = String.Concat(obj.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Craftable}_{GetObjectName(obj)}_{obj.modData["AlternativeTextureSeason"]}");
                 }
             }
         }
