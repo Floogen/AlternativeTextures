@@ -168,6 +168,30 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 if (terrainFeature is Flooring flooring)
                 {
                     flooring.modData["AlternativeTextureSheetId"] = __instance.ParentSheetIndex.ToString();
+
+                    var flooringName = $"{AlternativeTextureModel.TextureType.Flooring}_{GetFlooringName(flooring)}";
+                    var flooringSeasonName = $"{flooringName}_{Game1.currentSeason}";
+                    if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(flooringName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(flooringSeasonName))
+                    {
+                        var result = Game1.random.Next(2) > 0 ? AssignModData(flooring, flooringSeasonName, true) : AssignModData(flooring, flooringName, false);
+                        return;
+                    }
+                    else
+                    {
+                        if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(flooringName))
+                        {
+                            AssignModData(flooring, flooringName, false);
+                            return;
+                        }
+
+                        if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(flooringSeasonName))
+                        {
+                            AssignModData(flooring, flooringSeasonName, true);
+                            return;
+                        }
+                    }
+
+                    AssignDefaultModData(flooring, flooringSeasonName, true);
                 }
                 return;
             }
