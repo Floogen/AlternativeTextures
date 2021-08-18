@@ -142,6 +142,7 @@ namespace AlternativeTextures
                                 var modelType = AlternativeTextureModel.TextureType.Flooring;
                                 if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}")
                                 {
+                                    flooring.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
                                     flooring.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
                                     flooring.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
                                 }
@@ -160,6 +161,7 @@ namespace AlternativeTextures
                             var modelType = placedObject is Furniture ? AlternativeTextureModel.TextureType.Furniture : AlternativeTextureModel.TextureType.Craftable;
                             if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}")
                             {
+                                placedObject.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
                                 placedObject.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
                                 placedObject.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
                             }
@@ -195,6 +197,7 @@ namespace AlternativeTextures
 
                             Game1.addHUDMessage(new HUDMessage($"Texture copied!", 2) { timeLeft = 1000 });
                             tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}";
+                            tool.modData["AlternativeTextureOwner"] = flooring.modData["AlternativeTextureOwner"];
                             tool.modData["AlternativeTextureName"] = flooring.modData["AlternativeTextureName"];
                             tool.modData["AlternativeTextureVariation"] = flooring.modData["AlternativeTextureVariation"];
                         }
@@ -222,6 +225,7 @@ namespace AlternativeTextures
 
                         Game1.addHUDMessage(new HUDMessage($"Texture copied!", 2));
                         tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}";
+                        tool.modData["AlternativeTextureOwner"] = placedObject.modData["AlternativeTextureOwner"];
                         tool.modData["AlternativeTextureName"] = placedObject.modData["AlternativeTextureName"];
                         tool.modData["AlternativeTextureVariation"] = placedObject.modData["AlternativeTextureVariation"];
                     }
