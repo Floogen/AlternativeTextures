@@ -62,6 +62,10 @@ namespace AlternativeTextures.Framework.Patches
             }
             else
             {
+                if (obj is Fence fence && fence.isGate)
+                {
+                    return Game1.objectInformation[325].Split('/')[0];
+                }
                 if (!Game1.objectInformation.ContainsKey(obj.parentSheetIndex))
                 {
                     return obj.name;
