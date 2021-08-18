@@ -126,11 +126,9 @@ namespace AlternativeTextures
 
                 if (e.Held.Contains(SButton.MouseLeft))
                 {
-                    Helper.Input.Suppress(SButton.MouseLeft);
-
                     if (String.IsNullOrEmpty(tool.modData[PAINT_BRUSH_FLAG]))
                     {
-                        Game1.addHUDMessage(new HUDMessage($"The brush doesn't have a copied texture! Right click on an object to copy a texture.", 3));
+                        Game1.addHUDMessage(new HUDMessage($"The brush doesn't have a copied texture! Right click on an object to copy a texture.", 3) { timeLeft = 1000 });
                     }
                     else
                     {
@@ -149,12 +147,12 @@ namespace AlternativeTextures
                                 }
                                 else
                                 {
-                                    Game1.addHUDMessage(new HUDMessage($"The copied texture {tool.modData[PAINT_BRUSH_FLAG]} isn't valid for this object!", 3));
+                                    Game1.addHUDMessage(new HUDMessage($"The copied texture {tool.modData[PAINT_BRUSH_FLAG]} isn't valid for this object!", 3) { timeLeft = 1000 });
                                 }
                             }
                             else if (terrainFeature != null)
                             {
-                                Game1.addHUDMessage(new HUDMessage($"You can't paint that!", 3));
+                                Game1.addHUDMessage(new HUDMessage($"You can't paint that!", 3) { timeLeft = 1000 });
                             }
                         }
                         else
@@ -167,15 +165,13 @@ namespace AlternativeTextures
                             }
                             else
                             {
-                                Game1.addHUDMessage(new HUDMessage($"The copied texture {tool.modData[PAINT_BRUSH_FLAG]} isn't valid for this object!", 3));
+                                Game1.addHUDMessage(new HUDMessage($"The copied texture {tool.modData[PAINT_BRUSH_FLAG]} isn't valid for this object!", 3) { timeLeft = 1000 });
                             }
                         }
                     }
                 }
                 else if (e.Held.Contains(SButton.MouseRight))
                 {
-                    Helper.Input.Suppress(SButton.MouseRight);
-
                     // Verify that a supported object exists at the tile
                     var placedObject = Game1.currentLocation.getObjectAt(xTile, yTile);
                     if (placedObject is null)
@@ -197,7 +193,7 @@ namespace AlternativeTextures
                                 PatchTemplate.AssignDefaultModData(flooring, instanceSeasonName, true);
                             }
 
-                            Game1.addHUDMessage(new HUDMessage($"Texture copied!", 2));
+                            Game1.addHUDMessage(new HUDMessage($"Texture copied!", 2) { timeLeft = 1000 });
                             tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}";
                             tool.modData["AlternativeTextureName"] = flooring.modData["AlternativeTextureName"];
                             tool.modData["AlternativeTextureVariation"] = flooring.modData["AlternativeTextureVariation"];
@@ -207,7 +203,11 @@ namespace AlternativeTextures
                             tool.modData[PAINT_BRUSH_FLAG] = String.Empty;
                             if (terrainFeature != null)
                             {
-                                Game1.addHUDMessage(new HUDMessage($"The brush doesn't support copying textures from this object.", 3) { timeLeft = 1500 });
+                                Game1.addHUDMessage(new HUDMessage($"The brush doesn't support copying textures from this object.", 3) { timeLeft = 1000 });
+                            }
+                            else
+                            {
+                                Game1.addHUDMessage(new HUDMessage($"Cleared brush!", 2) { timeLeft = 1000 });
                             }
                         }
                     }
