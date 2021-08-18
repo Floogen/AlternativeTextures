@@ -13,6 +13,8 @@ namespace AlternativeTextures.Framework.Managers
     {
         internal string assetFolderPath;
         private Texture2D _paintBucketTexture;
+        private Texture2D _paintBrushEmptyTexture;
+        private Texture2D _paintBrushFilledTexture;
 
         public AssetManager(IModHelper helper)
         {
@@ -21,6 +23,8 @@ namespace AlternativeTextures.Framework.Managers
 
             // Load in the assets
             _paintBucketTexture = helper.Content.Load<Texture2D>(Path.Combine(assetFolderPath, "PaintBucket.png"));
+            _paintBrushEmptyTexture = helper.Content.Load<Texture2D>(Path.Combine(assetFolderPath, "PaintBrushEmpty.png"));
+            _paintBrushFilledTexture = helper.Content.Load<Texture2D>(Path.Combine(assetFolderPath, "PaintBrushFilled.png"));
         }
 
         public bool CanLoad<T>(IAssetInfo asset)
@@ -37,6 +41,16 @@ namespace AlternativeTextures.Framework.Managers
         internal Texture2D GetPaintBucketTexture()
         {
             return _paintBucketTexture;
+        }
+
+        internal Texture2D GetPaintBrushEmptyTexture()
+        {
+            return _paintBrushEmptyTexture;
+        }
+
+        internal Texture2D GetPaintBrushFilledTexture()
+        {
+            return _paintBrushFilledTexture;
         }
     }
 }

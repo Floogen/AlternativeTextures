@@ -209,6 +209,12 @@
     <Content Include="Examples\[CP] Content Patcher Example\assets\test_replacement.png" />
     <Content Include="Examples\[JA] Json Asset Example\BigCraftables\Example Item\big-craftable.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\MiniObelisk\texture.png" />
+    <Content Include="Framework\Assets\PaintBrushEmpty.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Framework\Assets\PaintBrushFilled.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Framework\Assets\PaintBucket.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
