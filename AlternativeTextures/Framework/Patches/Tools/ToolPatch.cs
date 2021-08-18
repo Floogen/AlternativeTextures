@@ -59,7 +59,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 // Assign default data if none exists
                 if (!targetedObject.modData.ContainsKey("AlternativeTextureName"))
                 {
-                    var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Craftable}_{targetedObject.name}_{Game1.currentSeason}";
+                    var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Craftable}_{GetObjectName(targetedObject)}_{Game1.currentSeason}";
                     AssignDefaultModData(targetedObject, instanceSeasonName, true);
                 }
 
