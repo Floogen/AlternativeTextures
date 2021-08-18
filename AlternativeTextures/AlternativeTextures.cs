@@ -33,6 +33,7 @@ namespace AlternativeTextures
         internal const string TOOL_CONVERSION_COMPATIBILITY = "AlternativeTextures.HasConvertedMilkPails";
         internal const string PAINT_BUCKET_FLAG = "AlternativeTextures.PaintBucketFlag";
         internal const string OLD_PAINT_BUCKET_FLAG = "AlternativeTexturesPaintBucketFlag";
+        internal const string PAINT_BRUSH_FLAG = "AlternativeTextures.PaintBrushFlag";
 
         internal static IMonitor monitor;
         internal static IModHelper modHelper;

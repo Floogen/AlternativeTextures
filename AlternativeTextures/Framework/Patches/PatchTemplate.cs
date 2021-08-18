@@ -31,6 +31,14 @@ namespace AlternativeTextures.Framework.Patches
             return paintBucket;
         }
 
+        internal static GenericTool GetPaintBrushTool()
+        {
+            var paintBucket = new GenericTool("Paint Brush", "Allows you to copy a texture and apply it other objects of the same type.", -1, 6, 6);
+            paintBucket.modData[AlternativeTextures.PAINT_BRUSH_FLAG] = null;
+
+            return paintBucket;
+        }
+
         internal static string GetObjectName(Object obj)
         {
             if (obj.bigCraftable)
