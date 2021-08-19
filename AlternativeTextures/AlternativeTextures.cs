@@ -176,7 +176,7 @@ namespace AlternativeTextures
                         PatchTemplate.AssignDefaultModData(placedObject, instanceSeasonName, true);
                     }
 
-                    Game1.addHUDMessage(new HUDMessage($"Texture copied!", 2));
+                    Game1.addHUDMessage(new HUDMessage($"Texture copied!", 2) { timeLeft = 1000 });
                     tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}";
                     tool.modData["AlternativeTextureOwner"] = placedObject.modData["AlternativeTextureOwner"];
                     tool.modData["AlternativeTextureName"] = placedObject.modData["AlternativeTextureName"];
