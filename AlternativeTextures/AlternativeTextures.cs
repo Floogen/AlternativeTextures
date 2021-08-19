@@ -291,7 +291,7 @@ namespace AlternativeTextures
                 textureManager.UpdateTexture(texture.GetId(), loadedTexture);
             }
 
-            foreach (var tool in assetManager.toolNames)
+            foreach (var tool in assetManager.toolNames.ToList())
             {
                 var loadedTexture = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TOOL_TOKEN_HEADER}{tool.Key}", ContentSource.GameContent);
                 assetManager.toolNames[tool.Key] = loadedTexture;
