@@ -162,7 +162,7 @@ namespace AlternativeTextures
                         tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
                         if (terrainFeature != null)
                         {
-                            Game1.addHUDMessage(new HUDMessage($"The brush doesn't support copying textures from this object.", 3) { timeLeft = 1000 });
+                            Game1.addHUDMessage(new HUDMessage($"The brush doesn't support copying textures from this object.", 3) { timeLeft = 2000 });
                         }
                         else
                         {
@@ -198,7 +198,7 @@ namespace AlternativeTextures
 
                 if (String.IsNullOrEmpty(tool.modData[PAINT_BRUSH_FLAG]))
                 {
-                    Game1.addHUDMessage(new HUDMessage($"The brush doesn't have a copied texture! Right click on an object to copy a texture.", 3) { timeLeft = 1000 });
+                    Game1.addHUDMessage(new HUDMessage($"The brush doesn't have a copied texture! Right click on an object to copy a texture.", 3) { timeLeft = 2000 });
                 }
                 else
                 {
@@ -218,12 +218,12 @@ namespace AlternativeTextures
                             }
                             else
                             {
-                                Game1.addHUDMessage(new HUDMessage($"The copied texture {tool.modData[PAINT_BRUSH_FLAG]} isn't valid for this object!", 3) { timeLeft = 1000 });
+                                Game1.addHUDMessage(new HUDMessage($"The copied texture {tool.modData[PAINT_BRUSH_FLAG]} isn't valid for this object!", 3) { timeLeft = 2000 });
                             }
                         }
                         else if (terrainFeature != null)
                         {
-                            Game1.addHUDMessage(new HUDMessage($"You can't paint that!", 3) { timeLeft = 1000 });
+                            Game1.addHUDMessage(new HUDMessage($"You can't paint that!", 3) { timeLeft = 2000 });
                         }
                     }
                     else
@@ -237,7 +237,7 @@ namespace AlternativeTextures
                         }
                         else
                         {
-                            Game1.addHUDMessage(new HUDMessage($"The copied texture {tool.modData[PAINT_BRUSH_FLAG]} isn't valid for this object!", 3) { timeLeft = 1000 });
+                            Game1.addHUDMessage(new HUDMessage($"The copied texture {tool.modData[PAINT_BRUSH_FLAG]} isn't valid for this object!", 3) { timeLeft = 2000 });
                         }
                     }
                 }
