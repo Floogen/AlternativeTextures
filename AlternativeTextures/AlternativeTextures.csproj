@@ -207,6 +207,7 @@
     <Content Include="Examples\[AT] Example Pack\Textures\WoodFence\texture.png" />
     <Content Include="Examples\[AT] Snowcrows\Textures\DeluxeScarecrow\texture.png" />
     <Content Include="Examples\[AT] Snowcrows\Textures\Scarecrow\texture.png" />
+    <Content Include="Examples\[CP] Content Patcher Example\assets\alt_paint_bucket.png" />
     <Content Include="Examples\[CP] Content Patcher Example\assets\test_replacement.png" />
     <Content Include="Examples\[JA] Json Asset Example\BigCraftables\Example Item\big-craftable.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\MiniObelisk\texture.png" />
