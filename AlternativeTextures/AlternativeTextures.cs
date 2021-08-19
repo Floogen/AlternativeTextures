@@ -28,7 +28,7 @@ namespace AlternativeTextures
 {
     public class AlternativeTextures : Mod
     {
-        internal const string TOKEN_HEADER = "AlternativeTextures/Textures/";
+        internal const string TEXTURE_TOKEN_HEADER = "AlternativeTextures/Textures/";
         internal const string DEFAULT_OWNER = "Stardew.Default";
         internal const string TOOL_CONVERSION_COMPATIBILITY = "AlternativeTextures.HasConvertedMilkPails";
         internal const string PAINT_BUCKET_FLAG = "AlternativeTextures.PaintBucketFlag";
@@ -263,12 +263,8 @@ namespace AlternativeTextures
 
         private void OnDayStarted(object sender, DayStartedEventArgs e)
         {
-            // Loadd all available textures to account for any Content Patcher's OnDayStart updates
-            foreach (var texture in textureManager.GetAllTextures())
-            {
-                var test = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TOKEN_HEADER}{texture.GetId()}", ContentSource.GameContent);
-                textureManager.UpdateTexture(texture.GetId(), test);
-            }
+            // Load all available textures to account for any Content Patcher's OnDayStart updates
+            UpdateTextures();
 
             // Backwards compatibility logic
             if (!Game1.player.modData.ContainsKey(TOOL_CONVERSION_COMPATIBILITY))
@@ -281,10 +277,17 @@ namespace AlternativeTextures
 
         private void OnWarped(object sender, WarpedEventArgs e)
         {
+            // Load all available textures to account for any Content Patcher's OnWarped updates
+            UpdateTextures();
+        }
+
+        private void UpdateTextures()
+        {
             foreach (var texture in textureManager.GetAllTextures())
             {
-                var test = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TOKEN_HEADER}{texture.GetId()}", ContentSource.GameContent);
-                textureManager.UpdateTexture(texture.GetId(), test);
+                var loadedTexture = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{texture.GetId()}", ContentSource.GameContent);
+                textureManager.UpdateTexture(texture.GetId(), loadedTexture);
+            }
             }
         }
 

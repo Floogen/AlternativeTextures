@@ -29,12 +29,12 @@ namespace AlternativeTextures.Framework.Managers
 
         public bool CanLoad<T>(IAssetInfo asset)
         {
-            return AlternativeTextures.textureManager.GetValidTextureNames().Any(id => asset.AssetNameEquals($"{AlternativeTextures.TOKEN_HEADER}{id}"));
+            return AlternativeTextures.textureManager.GetValidTextureNames().Any(id => asset.AssetNameEquals($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{id}"));
         }
 
         public T Load<T>(IAssetInfo asset)
         {
-            var textureModel = AlternativeTextures.textureManager.GetAllTextures().First(t => asset.AssetNameEquals($"{AlternativeTextures.TOKEN_HEADER}{t.GetId()}"));
+            var textureModel = AlternativeTextures.textureManager.GetAllTextures().First(t => asset.AssetNameEquals($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{t.GetId()}"));
             return (T)(object)textureModel.Texture;
         }
 

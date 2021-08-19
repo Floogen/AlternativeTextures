@@ -77,7 +77,7 @@ namespace AlternativeTextures.Framework.External.ContentPatcher
             if (!IsReady() || !_textureManager.GetValidTextureNames().Any(name => name == input))
                 yield break;
 
-            yield return $"{AlternativeTextures.TOKEN_HEADER}{input}";
+            yield return $"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{input}";
         }
     }
 }
