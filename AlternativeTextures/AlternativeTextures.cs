@@ -29,6 +29,7 @@ namespace AlternativeTextures
     public class AlternativeTextures : Mod
     {
         internal const string TEXTURE_TOKEN_HEADER = "AlternativeTextures/Textures/";
+        internal const string TOOL_TOKEN_HEADER = "AlternativeTextures/Tools/";
         internal const string DEFAULT_OWNER = "Stardew.Default";
         internal const string TOOL_CONVERSION_COMPATIBILITY = "AlternativeTextures.HasConvertedMilkPails";
         internal const string PAINT_BUCKET_FLAG = "AlternativeTextures.PaintBucketFlag";
@@ -255,6 +256,7 @@ namespace AlternativeTextures
             if (Helper.ModRegistry.IsLoaded("Pathoschild.ContentPatcher") && apiManager.HookIntoContentPatcher(Helper))
             {
                 apiManager.GetContentPatcherInterface().RegisterToken(ModManifest, "Textures", new TextureToken(textureManager, assetManager));
+                apiManager.GetContentPatcherInterface().RegisterToken(ModManifest, "Tools", new ToolToken(textureManager, assetManager));
             }
 
             // Load any owned content packs
@@ -288,6 +290,11 @@ namespace AlternativeTextures
                 var loadedTexture = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{texture.GetId()}", ContentSource.GameContent);
                 textureManager.UpdateTexture(texture.GetId(), loadedTexture);
             }
+
+            foreach (var tool in assetManager.toolNames)
+            {
+                var loadedTexture = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TOOL_TOKEN_HEADER}{tool.Key}", ContentSource.GameContent);
+                assetManager.toolNames[tool.Key] = loadedTexture;
             }
         }
 

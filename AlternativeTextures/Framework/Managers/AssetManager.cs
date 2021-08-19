@@ -12,6 +12,8 @@ namespace AlternativeTextures.Framework.Managers
     internal class AssetManager : IAssetLoader
     {
         internal string assetFolderPath;
+        internal Dictionary<string, Texture2D> toolNames = new Dictionary<string, Texture2D>();
+
         private Texture2D _paintBucketTexture;
         private Texture2D _paintBrushEmptyTexture;
         private Texture2D _paintBrushFilledTexture;
@@ -25,15 +27,29 @@ namespace AlternativeTextures.Framework.Managers
             _paintBucketTexture = helper.Content.Load<Texture2D>(Path.Combine(assetFolderPath, "PaintBucket.png"));
             _paintBrushEmptyTexture = helper.Content.Load<Texture2D>(Path.Combine(assetFolderPath, "PaintBrushEmpty.png"));
             _paintBrushFilledTexture = helper.Content.Load<Texture2D>(Path.Combine(assetFolderPath, "PaintBrushFilled.png"));
+
+            // Setup toolNames
+            toolNames.Add("PaintBucket", _paintBucketTexture);
+            toolNames.Add("PaintBrush_Empty", _paintBrushEmptyTexture);
+            toolNames.Add("PaintBrush_Filled", _paintBrushFilledTexture);
         }
 
         public bool CanLoad<T>(IAssetInfo asset)
         {
+            if (toolNames.Any(n => asset.AssetNameEquals($"{AlternativeTextures.TOOL_TOKEN_HEADER}{n.Key}")))
+            {
+                return true;
+            }
             return AlternativeTextures.textureManager.GetValidTextureNames().Any(id => asset.AssetNameEquals($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{id}"));
         }
 
         public T Load<T>(IAssetInfo asset)
         {
+            if (toolNames.Any(n => asset.AssetNameEquals($"{AlternativeTextures.TOOL_TOKEN_HEADER}{n.Key}")))
+            {
+                return (T)(object)toolNames.First(n => asset.AssetNameEquals($"{AlternativeTextures.TOOL_TOKEN_HEADER}{n.Key}")).Value;
+            }
+
             var textureModel = AlternativeTextures.textureManager.GetAllTextures().First(t => asset.AssetNameEquals($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{t.GetId()}"));
             return (T)(object)textureModel.Texture;
         }
