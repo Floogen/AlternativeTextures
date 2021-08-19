@@ -44,13 +44,18 @@ namespace AlternativeTextures.Framework.Patches.Tools
 
             if (__instance.modData.ContainsKey(AlternativeTextures.PAINT_BRUSH_FLAG))
             {
+                var scale = __instance.modData.ContainsKey(AlternativeTextures.PAINT_BRUSH_SCALE) ? float.Parse(__instance.modData[AlternativeTextures.PAINT_BRUSH_SCALE]) : 1f;
                 var texture = AlternativeTextures.assetManager.GetPaintBrushEmptyTexture();
                 if (!String.IsNullOrEmpty(__instance.modData[AlternativeTextures.PAINT_BRUSH_FLAG]))
                 {
                     texture = AlternativeTextures.assetManager.GetPaintBrushFilledTexture();
                 }
-                spriteBatch.Draw(texture, location + new Vector2(32f, 32f), new Rectangle(0, 0, 16, 16), color * transparency, 0f, new Vector2(8f, 8f), 4f * scaleSize, SpriteEffects.None, layerDepth);
+                spriteBatch.Draw(texture, location + new Vector2(32f, 32f), new Rectangle(0, 0, 16, 16), color * transparency, 0f, new Vector2(8f, 8f), 4f * (scaleSize + scale), SpriteEffects.None, layerDepth);
 
+                if (scale > 0f)
+                {
+                    __instance.modData[AlternativeTextures.PAINT_BRUSH_SCALE] = (scale -= 0.01f).ToString();
+                }
                 return false;
             }
 

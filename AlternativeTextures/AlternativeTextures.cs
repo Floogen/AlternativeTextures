@@ -34,6 +34,7 @@ namespace AlternativeTextures
         internal const string PAINT_BUCKET_FLAG = "AlternativeTextures.PaintBucketFlag";
         internal const string OLD_PAINT_BUCKET_FLAG = "AlternativeTexturesPaintBucketFlag";
         internal const string PAINT_BRUSH_FLAG = "AlternativeTextures.PaintBrushFlag";
+        internal const string PAINT_BRUSH_SCALE = "AlternativeTextures.PaintBrushScale";
 
         internal static IMonitor monitor;
         internal static IModHelper modHelper;
@@ -150,6 +151,7 @@ namespace AlternativeTextures
 
                         Game1.addHUDMessage(new HUDMessage($"Texture copied!", 2) { timeLeft = 1000 });
                         tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}";
+                        tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
                         tool.modData["AlternativeTextureOwner"] = flooring.modData["AlternativeTextureOwner"];
                         tool.modData["AlternativeTextureName"] = flooring.modData["AlternativeTextureName"];
                         tool.modData["AlternativeTextureVariation"] = flooring.modData["AlternativeTextureVariation"];
@@ -157,6 +159,7 @@ namespace AlternativeTextures
                     else
                     {
                         tool.modData[PAINT_BRUSH_FLAG] = String.Empty;
+                        tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
                         if (terrainFeature != null)
                         {
                             Game1.addHUDMessage(new HUDMessage($"The brush doesn't support copying textures from this object.", 3) { timeLeft = 1000 });
@@ -178,6 +181,7 @@ namespace AlternativeTextures
 
                     Game1.addHUDMessage(new HUDMessage($"Texture copied!", 2) { timeLeft = 1000 });
                     tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}";
+                    tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
                     tool.modData["AlternativeTextureOwner"] = placedObject.modData["AlternativeTextureOwner"];
                     tool.modData["AlternativeTextureName"] = placedObject.modData["AlternativeTextureName"];
                     tool.modData["AlternativeTextureVariation"] = placedObject.modData["AlternativeTextureVariation"];
