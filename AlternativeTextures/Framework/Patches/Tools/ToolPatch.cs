@@ -44,7 +44,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
 
             if (__instance.modData.ContainsKey(AlternativeTextures.PAINT_BRUSH_FLAG))
             {
-                var scale = __instance.modData.ContainsKey(AlternativeTextures.PAINT_BRUSH_SCALE) ? float.Parse(__instance.modData[AlternativeTextures.PAINT_BRUSH_SCALE]) : 1f;
+                var scale = __instance.modData.ContainsKey(AlternativeTextures.PAINT_BRUSH_SCALE) ? float.Parse(__instance.modData[AlternativeTextures.PAINT_BRUSH_SCALE]) : 0f;
                 var texture = AlternativeTextures.assetManager.GetPaintBrushEmptyTexture();
                 if (!String.IsNullOrEmpty(__instance.modData[AlternativeTextures.PAINT_BRUSH_FLAG]))
                 {
