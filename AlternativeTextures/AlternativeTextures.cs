@@ -81,6 +81,7 @@ namespace AlternativeTextures
                 new FlooringPatch(monitor).Apply(harmony);
                 new FurniturePatch(monitor).Apply(harmony);
                 new BedFurniturePatch(monitor).Apply(harmony);
+                new FishTankFurniturePatch(monitor).Apply(harmony);
 
                 // Start of animated objects
                 new ChestPatch(monitor).Apply(harmony);
