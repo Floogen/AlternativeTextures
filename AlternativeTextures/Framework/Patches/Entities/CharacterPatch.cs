@@ -34,7 +34,6 @@ namespace AlternativeTextures.Framework.Patches.Entities
 
         private static bool DrawPrefix(Child __instance, SpriteBatch b)
         {
-            _monitor.Log(__instance.modData.ContainsKey("AlternativeTextureName").ToString(), LogLevel.Debug);
             if (__instance.modData.ContainsKey("AlternativeTextureName"))
             {
                 var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
