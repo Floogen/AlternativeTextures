@@ -90,6 +90,8 @@
     <None Include="Examples\[AT] Crystal Mini-Obelisks\manifest.json" />
     <None Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\BrownCouch\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Furniture\OrnateLamp\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Furniture\SmallWindow\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\NeedlepointFlower\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\OakChair\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\Calendar\texture.json" />
@@ -157,6 +159,8 @@
   <ItemGroup>
     <Content Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\BrownCouch\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Furniture\OrnateLamp\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Furniture\SmallWindow\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\NeedlepointFlower\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\OakChair\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\Calendar\texture.png" />
