@@ -106,6 +106,7 @@ namespace AlternativeTextures
             // Add in our debug commands
             helper.ConsoleCommands.Add("at_spawn_gc", "Spawns a giant crop based given harvest product id (e.g. Melon == 254).\n\nUsage: at_spawn_gc [HARVEST_ID]", this.DebugSpawnGiantCrop);
             helper.ConsoleCommands.Add("at_spawn_rc", "Spawns a resource clump based given resource name (e.g. Stump).\n\nUsage: at_spawn_rc [RESOURCE_NAME]", this.DebugSpawnResourceClump);
+            helper.ConsoleCommands.Add("at_spawn_child", "Spawns a child. Potentially buggy / gamebreaking, do not use. \n\nUsage: at_spawn_child [IS_MALE] [SKIN_TONE]", this.DebugSpawnChild);
             helper.ConsoleCommands.Add("at_paint_shop", "Shows the carpenter shop with the paint bucket for sale.\n\nUsage: at_paint_shop", this.DebugShowPaintShop);
             helper.ConsoleCommands.Add("at_reload", "Reloads all Alternative Texture content packs.\n\nUsage: at_reload", delegate { this.LoadContentPacks(); });
 
@@ -455,6 +456,32 @@ namespace AlternativeTextures
             }
 
             (Game1.currentLocation as Farm).resourceClumps.Add(new ResourceClump(600, 2, 2, Game1.player.getTileLocation() + new Vector2(1, 1)));
+        }
+
+        private void DebugSpawnChild(string command, string[] args)
+        {
+            if (args.Length < 2)
+            {
+                Monitor.Log($"Missing required arguments: [IS_MALE] [SKIN_TONE]", LogLevel.Warn);
+                return;
+            }
+
+            var isMale = false;
+            if (args[0].ToLower() == "true")
+            {
+                isMale = true;
+            }
+
+            var hasDarkSkin = false;
+            if (args[1].ToLower() == "dark")
+            {
+                hasDarkSkin = true;
+            }
+
+            var child = new Child("Test", isMale, hasDarkSkin, Game1.player);
+            child.Position = Game1.player.Position;
+            child.Age = 3;
+            Game1.currentLocation.characters.Add(child);
         }
 
         private void DebugShowPaintShop(string command, string[] args)
