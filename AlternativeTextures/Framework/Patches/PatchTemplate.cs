@@ -154,6 +154,9 @@ namespace AlternativeTextures.Framework.Patches
                 case TerrainFeature terrain:
                     AssignTerrainFeatureModData(terrain, modelName, textureModel, -1, trackSeason);
                     return true;
+                case Character character:
+                    AssignCharacterModData(character, modelName, textureModel, -1, trackSeason);
+                    return true;
             }
 
             return false;
@@ -181,6 +184,9 @@ namespace AlternativeTextures.Framework.Patches
                     return true;
                 case TerrainFeature terrain:
                     AssignTerrainFeatureModData(terrain, modelName, textureModel, selectedVariation, trackSeason);
+                    return true;
+                case Character character:
+                    AssignCharacterModData(character, modelName, textureModel, selectedVariation, trackSeason);
                     return true;
             }
 
@@ -216,6 +222,19 @@ namespace AlternativeTextures.Framework.Patches
             }
 
             terrain.modData["AlternativeTextureVariation"] = variation.ToString();
+        }
+
+        private static void AssignCharacterModData(Character character, string modelName, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
+        {
+            character.modData["AlternativeTextureOwner"] = textureModel.Owner;
+            character.modData["AlternativeTextureName"] = String.Concat(textureModel.Owner, ".", modelName);
+
+            if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
+            {
+                character.modData["AlternativeTextureSeason"] = Game1.GetSeasonForLocation(character.currentLocation);
+            }
+
+            character.modData["AlternativeTextureVariation"] = variation.ToString();
         }
     }
 }
