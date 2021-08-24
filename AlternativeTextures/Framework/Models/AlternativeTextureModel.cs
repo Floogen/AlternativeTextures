@@ -36,7 +36,8 @@ namespace AlternativeTextures.Framework.Models
             ResourceClump,
             Bush,
             Flooring,
-            Furniture
+            Furniture,
+            Toddler
         }
 
         public string GetTextureType()
