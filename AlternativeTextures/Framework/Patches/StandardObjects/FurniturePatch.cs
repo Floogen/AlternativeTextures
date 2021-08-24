@@ -60,6 +60,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
                 Rectangle sourceRect = __instance.sourceRect.Value;
                 sourceRect.X -= __instance.defaultSourceRect.X;
+                sourceRect.X += ___sourceIndexOffset * sourceRect.Width;
                 sourceRect.Y = textureOffset;
                 if (Furniture.isDrawingLocationFurniture)
                 {
