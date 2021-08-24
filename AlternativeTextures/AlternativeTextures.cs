@@ -3,6 +3,7 @@ using AlternativeTextures.Framework.Managers;
 using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.Patches;
 using AlternativeTextures.Framework.Patches.AnimatedObjects;
+using AlternativeTextures.Framework.Patches.Entities;
 using AlternativeTextures.Framework.Patches.StandardObjects;
 using AlternativeTextures.Framework.Patches.Tools;
 using HarmonyLib;
@@ -12,6 +13,7 @@ using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Characters;
 using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Objects;
@@ -92,6 +94,10 @@ namespace AlternativeTextures
                  * Not supported:
                  * - Wood Chipper
                  */
+
+                // Start of entity patches
+                new CharacterPatch(monitor).Apply(harmony);
+                new ChildPatch(monitor).Apply(harmony);
 
                 // Paint tool related patches
                 new UtilityPatch(monitor).Apply(harmony);

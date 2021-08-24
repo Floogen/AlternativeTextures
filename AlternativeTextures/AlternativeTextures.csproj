@@ -60,6 +60,8 @@
     <Compile Include="Framework\Managers\AssetManager.cs" />
     <Compile Include="Framework\Managers\TextureManager.cs" />
     <Compile Include="Framework\Models\VariationModel.cs" />
+    <Compile Include="Framework\Patches\Entities\ChildPatch.cs" />
+    <Compile Include="Framework\Patches\Entities\CharacterPatch.cs" />
     <Compile Include="Framework\Patches\StandardObjects\FishTankFurniturePatch.cs" />
     <Compile Include="Framework\Patches\StandardObjects\BedFurniturePatch.cs" />
     <Compile Include="Framework\Patches\StandardObjects\FurniturePatch.cs" />
