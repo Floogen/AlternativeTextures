@@ -196,7 +196,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 // Assign default data if none exists
                 if (!character.modData.ContainsKey("AlternativeTextureName"))
                 {
-                    var modelType = character is Child ? AlternativeTextureModel.TextureType.Toddler : AlternativeTextureModel.TextureType.Character;
+                    var modelType = AlternativeTextureModel.TextureType.Character;
                     var instanceSeasonName = $"{modelType}_{GetCharacterName(character)}_{Game1.currentSeason}";
                     AssignDefaultModData(character, instanceSeasonName, true);
                 }

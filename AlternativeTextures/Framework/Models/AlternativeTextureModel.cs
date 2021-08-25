@@ -37,8 +37,7 @@ namespace AlternativeTextures.Framework.Models
             Bush,
             Flooring,
             Furniture,
-            Character,
-            Toddler
+            Character
         }
 
         public string GetTextureType()
