@@ -38,6 +38,7 @@ namespace AlternativeTextures
         internal const string OLD_PAINT_BUCKET_FLAG = "AlternativeTexturesPaintBucketFlag";
         internal const string PAINT_BRUSH_FLAG = "AlternativeTextures.PaintBrushFlag";
         internal const string PAINT_BRUSH_SCALE = "AlternativeTextures.PaintBrushScale";
+        internal const string SCISSORS_FLAG = "AlternativeTextures.ScissorsFlag";
 
         internal static IMonitor monitor;
         internal static IModHelper modHelper;

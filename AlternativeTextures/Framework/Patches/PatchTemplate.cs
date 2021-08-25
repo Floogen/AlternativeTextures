@@ -31,12 +31,20 @@ namespace AlternativeTextures.Framework.Patches
             return paintBucket;
         }
 
+        internal static GenericTool GetScissorsTool()
+        {
+            var scissors = new GenericTool("Scissors", "Allows you to apply different textures to entities.", -1, 6, 6);
+            scissors.modData[AlternativeTextures.SCISSORS_FLAG] = true.ToString();
+
+            return scissors;
+        }
+
         internal static GenericTool GetPaintBrushTool()
         {
-            var paintBucket = new GenericTool("Paint Brush", "Allows you to copy a texture and apply it other objects of the same type.", -1, 6, 6);
-            paintBucket.modData[AlternativeTextures.PAINT_BRUSH_FLAG] = null;
+            var paintBrush = new GenericTool("Paint Brush", "Allows you to copy a texture and apply it other objects of the same type.", -1, 6, 6);
+            paintBrush.modData[AlternativeTextures.PAINT_BRUSH_FLAG] = null;
 
-            return paintBucket;
+            return paintBrush;
         }
 
         internal static string GetObjectName(Object obj)

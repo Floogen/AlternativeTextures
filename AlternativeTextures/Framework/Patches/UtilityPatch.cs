@@ -35,6 +35,7 @@ namespace AlternativeTextures.Framework.Patches
         private static void GetCarpenterStockPostFix(Utility __instance, ref Dictionary<ISalable, int[]> __result)
         {
             __result.Add(GetPaintBucketTool(), new int[2] { 500, 1 });
+            __result.Add(GetScissorsTool(), new int[2] { 500, 1 });
             __result.Add(GetPaintBrushTool(), new int[2] { 500, 1 });
         }
     }
