@@ -37,6 +37,7 @@ namespace AlternativeTextures.Framework.Models
             Bush,
             Flooring,
             Furniture,
+            Character,
             Toddler
         }
 
