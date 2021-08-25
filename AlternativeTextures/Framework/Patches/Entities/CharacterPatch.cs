@@ -29,7 +29,21 @@ namespace AlternativeTextures.Framework.Patches.Entities
 
         internal void Apply(Harmony harmony)
         {
+            harmony.Patch(AccessTools.Method(_entity, nameof(Character.update), new[] { typeof(GameTime), typeof(GameLocation) }), postfix: new HarmonyMethod(GetType(), nameof(UpdatePostfix)));
             harmony.Patch(AccessTools.Method(_entity, nameof(Character.draw), new[] { typeof(SpriteBatch) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
+        }
+
+        private static void UpdatePostfix(Character __instance, GameTime time, GameLocation location)
+        {
+            if (__instance is Child child && child.Age >= 3 && child.modData.ContainsKey("AlternativeTextureName") && !child.modData["AlternativeTextureName"].Contains(ChildPatch.TODDLER_NAME_PREFIX))
+            {
+                child.modData["AlternativeTextureName"] = String.Concat(child.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(child)}");
+                if (child.modData.ContainsKey("AlternativeTextureSeason"))
+                {
+                    child.modData["AlternativeTextureSeason"] = Game1.GetSeasonForLocation(location);
+                    child.modData["AlternativeTextureName"] = String.Concat(child.modData["AlternativeTextureName"], "_", child.modData["AlternativeTextureSeason"]);
+                }
+            }
         }
 
         private static bool DrawPrefix(Character __instance, SpriteBatch b)
