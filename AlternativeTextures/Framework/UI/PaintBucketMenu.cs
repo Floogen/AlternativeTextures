@@ -32,6 +32,7 @@ namespace AlternativeTextures.Framework.UI
         private TextBox _searchBox;
         private ClickableComponent _searchBoxCC;
 
+        private string _title;
         private string _cachedTextBoxValue;
 
         private int _startingRow = 0;
@@ -40,13 +41,14 @@ namespace AlternativeTextures.Framework.UI
 
         private Object _textureTarget;
 
-        public PaintBucketMenu(Object target, string modelName, bool isFlooring = false) : base(0, 0, 832, 576, showUpperRightCloseButton: true)
+        public PaintBucketMenu(Object target, string modelName, string uiTitle = "Paint Bucket", bool isFlooring = false, bool isCharacter = false) : base(0, 0, 832, 576, showUpperRightCloseButton: true)
         {
             if (!target.modData.ContainsKey("AlternativeTextureOwner") || !target.modData.ContainsKey("AlternativeTextureName"))
             {
                 this.exitThisMenu();
                 return;
             }
+            _title = uiTitle;
 
             // Set up menu structure
             if (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.ko || LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.fr)
@@ -121,7 +123,7 @@ namespace AlternativeTextures.Framework.UI
             this.filteredTextureOptions.Insert(0, vanillaObject);
             this.cachedTextureOptions.Insert(0, vanillaObject);
 
-            var sourceRect = isFlooring ? new Rectangle(0, 0, 16, 32) : GetSourceRectangle(target, availableModels.First().TextureWidth, availableModels.First().TextureHeight, -1);
+            var sourceRect = isFlooring ? new Rectangle(0, 0, 16, 32) : isCharacter ? new Rectangle(0, 0, 32, 32) : GetSourceRectangle(target, availableModels.First().TextureWidth, availableModels.First().TextureHeight, -1);
             for (int r = 0; r < _maxRows; r++)
             {
                 for (int c = 0; c < _texturesPerRow; c++)
@@ -253,7 +255,15 @@ namespace AlternativeTextures.Framework.UI
             {
                 if (c.containsPoint(x, y) && c.item != null)
                 {
-                    if (PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) != null)
+                    if (PatchTemplate.GetCharacterAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Character character && character != null)
+                    {
+                        character.modData.Clear();
+                        foreach (string key in c.item.modData.Keys)
+                        {
+                            character.modData[key] = c.item.modData[key];
+                        }
+                    }
+                    else if (PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) != null)
                     {
                         _textureTarget.modData.Clear();
                         foreach (string key in c.item.modData.Keys)
@@ -324,7 +334,7 @@ namespace AlternativeTextures.Framework.UI
             if (!Game1.dialogueUp && !Game1.IsFading())
             {
                 b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.75f);
-                SpriteText.drawStringWithScrollCenteredAt(b, "Paint Bucket", base.xPositionOnScreen + base.width / 4, base.yPositionOnScreen - 64);
+                SpriteText.drawStringWithScrollCenteredAt(b, _title, base.xPositionOnScreen + base.width / 4, base.yPositionOnScreen - 64);
                 IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), base.xPositionOnScreen, base.yPositionOnScreen, base.width, base.height, Color.White, 4f);
 
                 for (int i = 0; i < this.availableTextures.Count; i++)
@@ -349,6 +359,13 @@ namespace AlternativeTextures.Framework.UI
                                 this.availableTextures[i].sourceRect = this.GetFenceSourceRect(_textureTarget as Fence, this.availableTextures[i].sourceRect.Height, -1);
                                 this.availableTextures[i].draw(b, Color.White, 0.87f);
                             }
+                            else if (PatchTemplate.GetCharacterAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Character character && character != null)
+                            {
+                                character.Sprite.loadedTexture = String.Empty;
+                                this.availableTextures[i].texture = character.Sprite.Texture;
+                                this.availableTextures[i].sourceRect = character.Sprite.SourceRect;
+                                this.availableTextures[i].draw(b, Color.White, 0.87f);
+                            }
                             else if (PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) != null)
                             {
                                 this.availableTextures[i].item.drawInMenu(b, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y + 32f), 2f, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
@@ -359,6 +376,12 @@ namespace AlternativeTextures.Framework.UI
                                 this.availableTextures[i].sourceRect = this.GetFlooringSourceRect(flooring, this.availableTextures[i].sourceRect.Height, -1);
                                 this.availableTextures[i].draw(b, Color.White, 0.87f);
                             }
+                        }
+                        else if (PatchTemplate.GetCharacterAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Character character && character != null)
+                        {
+                            this.availableTextures[i].texture = textureModel.Texture;
+                            this.availableTextures[i].sourceRect = GetCharacterSourceRectangle(character, textureModel.TextureWidth, textureModel.TextureHeight, variation);
+                            this.availableTextures[i].draw(b, Color.White, 0.87f);
                         }
                         else if (PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Furniture)
                         {
@@ -373,7 +396,7 @@ namespace AlternativeTextures.Framework.UI
                         else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Flooring flooring)
                         {
                             this.availableTextures[i].texture = textureModel.Texture;
-                            this.availableTextures[i].sourceRect = this.GetFlooringSourceRect(flooring, textureModel.TextureHeight, variation);
+                            this.availableTextures[i].sourceRect = GetFlooringSourceRect(flooring, textureModel.TextureHeight, variation);
                             this.availableTextures[i].draw(b, Color.White, 0.87f);
                         }
                     }
@@ -501,6 +524,15 @@ namespace AlternativeTextures.Framework.UI
             }
 
             return new Rectangle(sourceRectPosition % 16 * 16, sourceRectPosition / 16 * 16 + sourceRectOffset, 16, 16);
+        }
+
+        private Rectangle GetCharacterSourceRectangle(Character character, int textureWidth, int textureHeight, int variation)
+        {
+            int sourceRectOffset = textureHeight * variation;
+            var sourceRect = character.Sprite.sourceRect;
+
+            sourceRect.Y = sourceRectOffset + (character.Sprite.currentFrame * character.Sprite.SpriteWidth / character.Sprite.Texture.Width * character.Sprite.SpriteHeight);
+            return sourceRect;
         }
     }
 }

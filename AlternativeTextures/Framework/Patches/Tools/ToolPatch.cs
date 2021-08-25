@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Characters;
 using StardewValley.Locations;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
@@ -42,6 +43,13 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 return false;
             }
 
+            if (__instance.modData.ContainsKey(AlternativeTextures.SCISSORS_FLAG))
+            {
+                spriteBatch.Draw(AlternativeTextures.assetManager.GetScissorsTexture(), location + new Vector2(32f, 32f), new Rectangle(0, 0, 16, 16), color * transparency, 0f, new Vector2(8f, 8f), 4f * scaleSize, SpriteEffects.None, layerDepth);
+
+                return false;
+            }
+
             if (__instance.modData.ContainsKey(AlternativeTextures.PAINT_BRUSH_FLAG))
             {
                 var scale = __instance.modData.ContainsKey(AlternativeTextures.PAINT_BRUSH_SCALE) ? float.Parse(__instance.modData[AlternativeTextures.PAINT_BRUSH_SCALE]) : 0f;
@@ -68,6 +76,12 @@ namespace AlternativeTextures.Framework.Patches.Tools
             {
                 __result = true;
                 return UsePaintBucket(location, x, y, who);
+            }
+
+            if (__instance.modData.ContainsKey(AlternativeTextures.SCISSORS_FLAG))
+            {
+                __result = true;
+                return UseScissors(location, x, y, who);
             }
 
             if (__instance.modData.ContainsKey(AlternativeTextures.PAINT_BRUSH_FLAG))
@@ -159,12 +173,53 @@ namespace AlternativeTextures.Framework.Patches.Tools
                         terrainObj.modData[key] = targetedTerrain.modData[key];
                     }
 
-                    Game1.activeClickableMenu = new PaintBucketMenu(terrainObj, modelName, true);
+                    Game1.activeClickableMenu = new PaintBucketMenu(terrainObj, modelName, isFlooring: true);
                 }
 
                 return CancelUsing(who);
             }
 
+            return CancelUsing(who);
+        }
+
+        private static bool UseScissors(GameLocation location, int x, int y, Farmer who)
+        {
+            var character = GetCharacterAt(location, x, y);
+            if (character != null)
+            {
+                // Assign default data if none exists
+                if (!character.modData.ContainsKey("AlternativeTextureName"))
+                {
+                    var modelType = character is Child ? AlternativeTextureModel.TextureType.Toddler : AlternativeTextureModel.TextureType.Character;
+                    var instanceSeasonName = $"{modelType}_{GetCharacterName(character)}_{Game1.currentSeason}";
+                    AssignDefaultModData(character, instanceSeasonName, true);
+                }
+
+                var modelName = character.modData["AlternativeTextureName"].Replace($"{character.modData["AlternativeTextureOwner"]}.", String.Empty);
+                if (character.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(character.modData["AlternativeTextureSeason"]))
+                {
+                    modelName = modelName.Replace($"_{character.modData["AlternativeTextureSeason"]}", String.Empty);
+                }
+
+                if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
+                {
+                    Game1.addHUDMessage(new HUDMessage($"{modelName} has no alternative textures for this season!", 3));
+                    return CancelUsing(who);
+                }
+
+                // Display texture menu
+                var obj = new Object(100, 1, isRecipe: false, -1)
+                {
+                    Name = character.Name,
+                    Type = String.Empty,
+                    displayName = character.displayName,
+                    TileLocation = character.getTileLocation(),
+                    modData = character.modData
+                };
+                Game1.activeClickableMenu = new PaintBucketMenu(obj, modelName, uiTitle: "Scissors", isCharacter: true);
+
+                return CancelUsing(who);
+            }
             return CancelUsing(who);
         }
 

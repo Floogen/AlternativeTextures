@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Characters;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using StardewValley.Tools;
@@ -83,6 +84,16 @@ namespace AlternativeTextures.Framework.Patches
             }
         }
 
+        internal static string GetCharacterName(Character character)
+        {
+            if (character is Child child)
+            {
+                return $"{(child.Gender == 0 ? "Male" : "Female")}_{(child.darkSkinned ? "Dark" : "Light")}";
+            }
+
+            return character.name;
+        }
+
         internal static Object GetObjectAt(GameLocation location, int x, int y)
         {
             return location.getObjectAt(x, y);
@@ -97,6 +108,10 @@ namespace AlternativeTextures.Framework.Patches
             }
 
             return location.terrainFeatures[tile];
+        }
+        internal static Character GetCharacterAt(GameLocation location, int x, int y)
+        {
+            return location.isCharacterAtTile(new Vector2(x / 64, y / 64));
         }
 
         internal static int GetFloorSheetId(Flooring floor)
