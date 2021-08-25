@@ -1,4 +1,5 @@
 ﻿using AlternativeTextures.Framework.Models;
+using AlternativeTextures.Framework.Patches.Entities;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -88,7 +89,11 @@ namespace AlternativeTextures.Framework.Patches
         {
             if (character is Child child)
             {
-                return $"{(child.Gender == 0 ? "Male" : "Female")}_{(child.darkSkinned ? "Dark" : "Light")}";
+                if (child.Age >= 3)
+                {
+                    return $"{ChildPatch.TODDLER_NAME_PREFIX}_{(child.Gender == 0 ? "Male" : "Female")}_{(child.darkSkinned ? "Dark" : "Light")}";
+                }
+                return $"{ChildPatch.BABY_NAME_PREFIX}_{(child.darkSkinned ? "Dark" : "Light")}";
             }
 
             return character.name;

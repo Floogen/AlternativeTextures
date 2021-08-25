@@ -21,6 +21,8 @@ namespace AlternativeTextures.Framework.Patches.Entities
     internal class ChildPatch : PatchTemplate
     {
         private readonly Type _entity = typeof(Child);
+        internal const string BABY_NAME_PREFIX = "Baby";
+        internal const string TODDLER_NAME_PREFIX = "Toddler";
 
         internal ChildPatch(IMonitor modMonitor) : base(modMonitor)
         {
@@ -34,7 +36,7 @@ namespace AlternativeTextures.Framework.Patches.Entities
 
         private static void ChildPostfix(Child __instance, string name, bool isMale, bool isDarkSkinned, Farmer parent)
         {
-            var instanceName = $"{AlternativeTextureModel.TextureType.Toddler}_{(isMale ? "Male" : "Female")}_{(isDarkSkinned ? "Dark" : "Light")}";
+            var instanceName = $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(__instance)}";
             var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
 
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
