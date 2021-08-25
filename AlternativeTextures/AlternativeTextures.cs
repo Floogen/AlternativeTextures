@@ -114,6 +114,7 @@ namespace AlternativeTextures
             helper.ConsoleCommands.Add("at_spawn_gc", "Spawns a giant crop based given harvest product id (e.g. Melon == 254).\n\nUsage: at_spawn_gc [HARVEST_ID]", this.DebugSpawnGiantCrop);
             helper.ConsoleCommands.Add("at_spawn_rc", "Spawns a resource clump based given resource name (e.g. Stump).\n\nUsage: at_spawn_rc [RESOURCE_NAME]", this.DebugSpawnResourceClump);
             helper.ConsoleCommands.Add("at_spawn_child", "Spawns a child. Potentially buggy / gamebreaking, do not use. \n\nUsage: at_spawn_child [AGE] [IS_MALE] [SKIN_TONE]", this.DebugSpawnChild);
+            helper.ConsoleCommands.Add("at_set_age", "Sets age for all children in location. Potentially buggy / gamebreaking, do not use. \n\nUsage: at_set_age [AGE]", this.DebugSetAge);
             helper.ConsoleCommands.Add("at_paint_shop", "Shows the carpenter shop with the paint bucket for sale.\n\nUsage: at_paint_shop", this.DebugShowPaintShop);
             helper.ConsoleCommands.Add("at_reload", "Reloads all Alternative Texture content packs.\n\nUsage: at_reload", delegate { this.LoadContentPacks(); });
 
@@ -490,6 +491,27 @@ namespace AlternativeTextures
             child.Position = Game1.player.Position;
             child.Age = age;
             Game1.currentLocation.characters.Add(child);
+        }
+
+        private void DebugSetAge(string command, string[] args)
+        {
+            if (args.Length == 0)
+            {
+                Monitor.Log($"Missing required arguments: [AGE]", LogLevel.Warn);
+                return;
+            }
+
+            var age = -1;
+            if (!int.TryParse(args[0], out age))
+            {
+                Monitor.Log($"Invalid number given: {args[0]}", LogLevel.Warn);
+                return;
+            }
+
+            foreach (var child in Game1.currentLocation.characters.Where(c => c is Child))
+            {
+                child.Age = 3;
+            }
         }
 
         private void DebugShowPaintShop(string command, string[] args)
