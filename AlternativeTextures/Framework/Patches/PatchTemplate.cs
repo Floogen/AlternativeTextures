@@ -155,6 +155,29 @@ namespace AlternativeTextures.Framework.Patches
             }
         }
 
+        internal static string GetTreeTypeString(Tree tree)
+        {
+            switch (tree.treeType.Value)
+            {
+                case Tree.bushyTree:
+                    return "Oak";
+                case Tree.leafyTree:
+                    return "Maple";
+                case Tree.pineTree:
+                    return "Pine";
+                case Tree.mahoganyTree:
+                    return "Mahogany";
+                case Tree.mushroomTree:
+                    return "Mushroom";
+                case Tree.palmTree:
+                    return "Palm_1";
+                case Tree.palmTree2:
+                    return "Palm_2";
+                default:
+                    return String.Empty;
+            }
+        }
+
         internal static string GetBushTypeString(Bush bush)
         {
             switch (bush.size)

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static AlternativeTextures.Framework.Models.AlternativeTextureModel;
 using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.UI
@@ -40,8 +41,9 @@ namespace AlternativeTextures.Framework.UI
         private int _maxRows = 4;
 
         private Object _textureTarget;
+        private TextureType _textureType;
 
-        public PaintBucketMenu(Object target, string modelName, string uiTitle = "Paint Bucket", bool isFlooring = false, bool isCharacter = false) : base(0, 0, 832, 576, showUpperRightCloseButton: true)
+        public PaintBucketMenu(Object target, string modelName, string uiTitle = "Paint Bucket") : base(0, 0, 832, 576, showUpperRightCloseButton: true)
         {
             if (!target.modData.ContainsKey("AlternativeTextureOwner") || !target.modData.ContainsKey("AlternativeTextureName"))
             {
@@ -123,13 +125,41 @@ namespace AlternativeTextures.Framework.UI
             this.filteredTextureOptions.Insert(0, vanillaObject);
             this.cachedTextureOptions.Insert(0, vanillaObject);
 
-            var sourceRect = isFlooring ? new Rectangle(0, 0, 16, 32) : isCharacter ? new Rectangle(0, 0, 32, 32) : GetSourceRectangle(target, availableModels.First().TextureWidth, availableModels.First().TextureHeight, -1);
+            _textureType = TextureType.Unknown;
+
+            var widthOffsetScale = 2;
+            var sourceRect = GetSourceRectangle(target, availableModels.First().TextureWidth, availableModels.First().TextureHeight, -1);
+            if (Enum.TryParse<TextureType>(target.Type, out _textureType))
+            {
+                switch (_textureType)
+                {
+                    case TextureType.Flooring:
+                        sourceRect = new Rectangle(0, 0, 16, 32);
+                        break;
+                    case TextureType.Character:
+                        sourceRect = new Rectangle(0, 0, 32, 32);
+                        break;
+                    case TextureType.Tree:
+                        _maxRows = 1;
+                        _texturesPerRow = 3;
+                        widthOffsetScale = 4;
+                        sourceRect = new Rectangle(0, 0, 48, 96);
+                        break;
+                    case TextureType.FruitTree:
+                        _maxRows = 1;
+                        _texturesPerRow = 3;
+                        widthOffsetScale = 4;
+                        sourceRect = new Rectangle(0, 0, 48, 80);
+                        break;
+                }
+            }
+
             for (int r = 0; r < _maxRows; r++)
             {
                 for (int c = 0; c < _texturesPerRow; c++)
                 {
                     var componentId = c + r * _texturesPerRow;
-                    this.availableTextures.Add(new ClickableTextureComponent(new Rectangle(base.xPositionOnScreen + IClickableMenu.borderWidth + componentId % _texturesPerRow * 64 * 2, base.yPositionOnScreen + sourceRect.Height + componentId / _texturesPerRow * (4 * sourceRect.Height), 4 * sourceRect.Width, 4 * sourceRect.Height), availableModels.First().Texture, new Rectangle(), 4f, false)
+                    this.availableTextures.Add(new ClickableTextureComponent(new Rectangle(base.xPositionOnScreen + IClickableMenu.borderWidth + componentId % _texturesPerRow * 64 * widthOffsetScale, base.yPositionOnScreen + sourceRect.Height + componentId / _texturesPerRow * (4 * sourceRect.Height), 4 * sourceRect.Width, 4 * sourceRect.Height), availableModels.First().Texture, new Rectangle(), 4f, false)
                     {
                         myID = componentId,
                         downNeighborID = componentId + _texturesPerRow,
@@ -255,9 +285,8 @@ namespace AlternativeTextures.Framework.UI
             {
                 if (c.containsPoint(x, y) && c.item != null)
                 {
-                    if (PatchTemplate.GetCharacterAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Character character && character != null)
+                    if (_textureType is TextureType.Character && PatchTemplate.GetCharacterAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Character character && character != null)
                     {
-                        character.modData.Clear();
                         foreach (string key in c.item.modData.Keys)
                         {
                             character.modData[key] = c.item.modData[key];
@@ -265,18 +294,16 @@ namespace AlternativeTextures.Framework.UI
                     }
                     else if (PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) != null)
                     {
-                        _textureTarget.modData.Clear();
                         foreach (string key in c.item.modData.Keys)
                         {
                             _textureTarget.modData[key] = c.item.modData[key];
                         }
                     }
-                    else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Flooring flooring)
+                    else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is TerrainFeature feature)
                     {
-                        flooring.modData.Clear();
                         foreach (string key in c.item.modData.Keys)
                         {
-                            flooring.modData[key] = c.item.modData[key];
+                            feature.modData[key] = c.item.modData[key];
                         }
                     }
 
@@ -359,7 +386,7 @@ namespace AlternativeTextures.Framework.UI
                                 this.availableTextures[i].sourceRect = this.GetFenceSourceRect(_textureTarget as Fence, this.availableTextures[i].sourceRect.Height, -1);
                                 this.availableTextures[i].draw(b, Color.White, 0.87f);
                             }
-                            else if (PatchTemplate.GetCharacterAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Character character && character != null)
+                            else if (_textureType is TextureType.Character && PatchTemplate.GetCharacterAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Character character && character != null)
                             {
                                 character.Sprite.loadedTexture = String.Empty;
                                 this.availableTextures[i].texture = character.Sprite.Texture;
@@ -370,6 +397,18 @@ namespace AlternativeTextures.Framework.UI
                             {
                                 this.availableTextures[i].item.drawInMenu(b, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y + 32f), 2f, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
                             }
+                            else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Tree tree)
+                            {
+                                this.availableTextures[i].texture = tree.texture.Value;
+                                this.availableTextures[i].sourceRect = GetTreeSourceRect(tree, 0, 0);
+                                this.availableTextures[i].draw(b, Color.White, 0.87f);
+                            }
+                            else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is FruitTree fruitTree)
+                            {
+                                this.availableTextures[i].texture = FruitTree.texture;
+                                this.availableTextures[i].sourceRect = GetFruitTreeSourceRect(fruitTree, 0, -1);
+                                this.availableTextures[i].draw(b, Color.White, 0.87f);
+                            }
                             else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Flooring flooring)
                             {
                                 this.availableTextures[i].texture = Game1.GetSeasonForLocation(flooring.currentLocation)[0] == 'w' && (flooring.currentLocation == null || !flooring.currentLocation.isGreenhouse) ? Flooring.floorsTextureWinter : Flooring.floorsTexture;
@@ -377,7 +416,7 @@ namespace AlternativeTextures.Framework.UI
                                 this.availableTextures[i].draw(b, Color.White, 0.87f);
                             }
                         }
-                        else if (PatchTemplate.GetCharacterAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Character character && character != null)
+                        else if (_textureType is TextureType.Character && PatchTemplate.GetCharacterAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Character character && character != null)
                         {
                             this.availableTextures[i].texture = textureModel.Texture;
                             this.availableTextures[i].sourceRect = GetCharacterSourceRectangle(character, textureModel.TextureWidth, textureModel.TextureHeight, variation);
@@ -391,6 +430,18 @@ namespace AlternativeTextures.Framework.UI
                         {
                             this.availableTextures[i].texture = textureModel.Texture;
                             this.availableTextures[i].sourceRect = GetSourceRectangle(_textureTarget, textureModel.TextureWidth, textureModel.TextureHeight, variation);
+                            this.availableTextures[i].draw(b, Color.White, 0.87f);
+                        }
+                        else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Tree tree)
+                        {
+                            this.availableTextures[i].texture = textureModel.Texture;
+                            this.availableTextures[i].sourceRect = GetTreeSourceRect(tree, textureModel.TextureHeight, variation);
+                            this.availableTextures[i].draw(b, Color.White, 0.87f);
+                        }
+                        else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is FruitTree fruitTree)
+                        {
+                            this.availableTextures[i].texture = textureModel.Texture;
+                            this.availableTextures[i].sourceRect = GetFruitTreeSourceRect(fruitTree, textureModel.TextureHeight, variation);
                             this.availableTextures[i].draw(b, Color.White, 0.87f);
                         }
                         else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Flooring flooring)
@@ -524,6 +575,40 @@ namespace AlternativeTextures.Framework.UI
             }
 
             return new Rectangle(sourceRectPosition % 16 * 16, sourceRectPosition / 16 * 16 + sourceRectOffset, 16, 16);
+        }
+
+        private Rectangle GetTreeSourceRect(Tree tree, int textureHeight, int variation)
+        {
+            int sourceRectOffset = textureHeight * variation;
+            Rectangle source_rect = tree.treeTopSourceRect;
+            if (tree.treeType.Value == 9)
+            {
+                if (tree.hasSeed.Value)
+                {
+                    source_rect.X = 48;
+                }
+                else
+                {
+                    source_rect.X = 0;
+                }
+            }
+
+            source_rect.Y += sourceRectOffset;
+            return source_rect;
+        }
+
+        private Rectangle GetFruitTreeSourceRect(FruitTree fruitTree, int textureHeight, int variation)
+        {
+            if (variation == -1)
+            {
+                return new Rectangle((12 + (fruitTree.greenHouseTree ? 1 : Utility.getSeasonNumber(Game1.GetSeasonForLocation(Game1.currentLocation))) * 3) * 16, (int)fruitTree.treeType * 5 * 16, 48, 80);
+            }
+
+            int sourceRectOffset = textureHeight * variation;
+            Rectangle source_rect = new Rectangle((12 + (fruitTree.greenHouseTree ? 1 : Utility.getSeasonNumber(Game1.GetSeasonForLocation(Game1.currentLocation))) * 3) * 16, 0, 48, 80);
+
+            source_rect.Y += sourceRectOffset;
+            return source_rect;
         }
 
         private Rectangle GetCharacterSourceRectangle(Character character, int textureWidth, int textureHeight, int variation)

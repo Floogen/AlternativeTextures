@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static AlternativeTextures.Framework.Models.AlternativeTextureModel;
 using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.Patches.Tools
@@ -127,7 +128,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
             var targetedTerrain = GetTerrainFeatureAt(location, x, y);
             if (targetedTerrain != null)
             {
-                if (targetedTerrain is HoeDirt || targetedTerrain is GiantCrop || targetedTerrain is Tree || targetedTerrain is FruitTree || targetedTerrain is Grass)
+                if (targetedTerrain is HoeDirt || targetedTerrain is GiantCrop || targetedTerrain is Grass)
                 {
                     Game1.addHUDMessage(new HUDMessage($"You can't put paint on that!", 3));
                     return CancelUsing(who);
@@ -137,13 +138,21 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 {
                     if (targetedTerrain is Flooring flooring)
                     {
-                        if (GetFloorSheetId(flooring) == -1)
-                        {
-                            return CancelUsing(who);
-                        }
-
                         var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Flooring}_{GetFlooringName(flooring)}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
-                        targetedTerrain.modData["AlternativeTextureSheetId"] = GetFloorSheetId(flooring).ToString();
+                        AssignDefaultModData(targetedTerrain, instanceSeasonName, true);
+                    }
+                    else if (targetedTerrain is Tree tree)
+                    {
+                        var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Tree}_{GetTreeTypeString(tree)}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
+                        AssignDefaultModData(targetedTerrain, instanceSeasonName, true);
+                    }
+                    else if (targetedTerrain is FruitTree fruitTree)
+                    {
+                        Dictionary<int, string> data = Game1.content.Load<Dictionary<int, string>>("Data\\fruitTrees");
+                        var saplingIndex = data.FirstOrDefault(d => int.Parse(d.Value.Split('/')[0]) == fruitTree.treeType).Key;
+                        var saplingName = Game1.objectInformation.ContainsKey(saplingIndex) ? Game1.objectInformation[saplingIndex].Split('/')[0] : String.Empty;
+
+                        var instanceSeasonName = $"{AlternativeTextureModel.TextureType.FruitTree}_{saplingName}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
                         AssignDefaultModData(targetedTerrain, instanceSeasonName, true);
                     }
                     else
@@ -158,23 +167,20 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     modelName = modelName.Replace($"_{targetedTerrain.modData["AlternativeTextureSeason"]}", String.Empty);
                 }
 
-                if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0 || !targetedTerrain.modData.ContainsKey("AlternativeTextureSheetId"))
+                if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
                 {
                     Game1.addHUDMessage(new HUDMessage($"{modelName} has no alternative textures for this season!", 3));
                     return CancelUsing(who);
                 }
 
                 // Display texture menu
-                var terrainObj = new Object(targetedTerrain.currentTileLocation, Int32.Parse(targetedTerrain.modData["AlternativeTextureSheetId"]), 1);
-                if (terrainObj != null)
+                var terrainObj = new Object(100, 1, isRecipe: false, -1)
                 {
-                    foreach (string key in targetedTerrain.modData.Keys)
-                    {
-                        terrainObj.modData[key] = targetedTerrain.modData[key];
-                    }
-
-                    Game1.activeClickableMenu = new PaintBucketMenu(terrainObj, modelName, isFlooring: true);
-                }
+                    Type = GetTextureType(targetedTerrain).ToString(),
+                    TileLocation = targetedTerrain.currentTileLocation,
+                    modData = targetedTerrain.modData
+                };
+                Game1.activeClickableMenu = new PaintBucketMenu(terrainObj, modelName);
 
                 return CancelUsing(who);
             }
@@ -211,12 +217,12 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 var obj = new Object(100, 1, isRecipe: false, -1)
                 {
                     Name = character.Name,
-                    Type = String.Empty,
+                    Type = GetTextureType(character).ToString(),
                     displayName = character.displayName,
                     TileLocation = character.getTileLocation(),
                     modData = character.modData
                 };
-                Game1.activeClickableMenu = new PaintBucketMenu(obj, modelName, uiTitle: "Scissors", isCharacter: true);
+                Game1.activeClickableMenu = new PaintBucketMenu(obj, modelName, uiTitle: "Scissors");
 
                 return CancelUsing(who);
             }
@@ -228,6 +234,23 @@ namespace AlternativeTextures.Framework.Patches.Tools
             who.CanMove = true;
             who.UsingTool = false;
             return false;
+        }
+
+        private static TextureType GetTextureType(object obj)
+        {
+            switch (obj)
+            {
+                case Character character:
+                    return TextureType.Character;
+                case Flooring floor:
+                    return TextureType.Flooring;
+                case Tree tree:
+                    return TextureType.Tree;
+                case FruitTree fruitTree:
+                    return TextureType.FruitTree;
+                default:
+                    return TextureType.Unknown;
+            }
         }
     }
 }

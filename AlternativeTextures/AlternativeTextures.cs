@@ -148,14 +148,8 @@ namespace AlternativeTextures
                         var modelType = AlternativeTextureModel.TextureType.Flooring;
                         if (!flooring.modData.ContainsKey("AlternativeTextureName") || !flooring.modData.ContainsKey("AlternativeTextureVariation"))
                         {
-                            if (PatchTemplate.GetFloorSheetId(flooring) == -1)
-                            {
-                                return;
-                            }
-
                             // Assign default modData
                             var instanceSeasonName = $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
-                            flooring.modData["AlternativeTextureSheetId"] = PatchTemplate.GetFloorSheetId(flooring).ToString();
                             PatchTemplate.AssignDefaultModData(flooring, instanceSeasonName, true);
                         }
 
