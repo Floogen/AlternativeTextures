@@ -32,29 +32,29 @@ namespace AlternativeTextures.Framework.Patches.Entities
             harmony.Patch(AccessTools.Method(_entity, nameof(Character.draw), new[] { typeof(SpriteBatch) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
         }
 
-        private static bool DrawPrefix(Child __instance, SpriteBatch b)
+        private static bool DrawPrefix(Character __instance, SpriteBatch b)
         {
             if (__instance.modData.ContainsKey("AlternativeTextureName"))
             {
                 var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
                 if (textureModel is null)
                 {
+                    __instance.Sprite.loadedTexture = String.Empty;
                     return true;
                 }
 
                 var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
                 if (textureVariation == -1)
                 {
+                    __instance.Sprite.loadedTexture = String.Empty;
                     return true;
                 }
                 var textureOffset = textureVariation * textureModel.TextureHeight;
 
                 __instance.Sprite.spriteTexture = textureModel.Texture;
-                __instance.Sprite.loadedTexture = "AlternativeTexture";
-                __instance.Sprite.textureName.Value = "AlternativeTexture";
-
                 __instance.Sprite.sourceRect.Y = textureOffset + (__instance.Sprite.currentFrame * __instance.Sprite.SpriteWidth / __instance.Sprite.Texture.Width * __instance.Sprite.SpriteHeight);
             }
+
             return true;
         }
     }
