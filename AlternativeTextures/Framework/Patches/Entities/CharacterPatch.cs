@@ -41,7 +41,7 @@ namespace AlternativeTextures.Framework.Patches.Entities
             if (__instance is Child child && child.Age >= 3 && child.modData.ContainsKey("AlternativeTextureName") && !child.modData["AlternativeTextureName"].Contains(CharacterPatch.TODDLER_NAME_PREFIX))
             {
                 child.modData["AlternativeTextureName"] = String.Concat(child.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(child)}");
-                if (child.modData.ContainsKey("AlternativeTextureSeason"))
+                if (child.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(__instance.modData["AlternativeTextureSeason"]))
                 {
                     child.modData["AlternativeTextureSeason"] = Game1.GetSeasonForLocation(location);
                     child.modData["AlternativeTextureName"] = String.Concat(child.modData["AlternativeTextureName"], "_", child.modData["AlternativeTextureSeason"]);
