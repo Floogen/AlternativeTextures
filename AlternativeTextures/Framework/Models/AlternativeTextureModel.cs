@@ -52,12 +52,27 @@ namespace AlternativeTextures.Framework.Models
 
         public string GetId()
         {
-            return String.Concat(Owner, ".", GetNameWithSeason());
+            StringBuilder builder = new StringBuilder();
+            builder.Append(Owner);
+            builder.Append(".");
+            builder.Append(GetNameWithSeason());
+            return builder.ToString();
         }
 
         public string GetNameWithSeason()
         {
-            return String.IsNullOrEmpty(Season) ? String.Concat(GetTextureType(), "_", ItemName) : String.Concat(GetTextureType(), "_", ItemName, "_", Season);
+            StringBuilder builder = new StringBuilder();
+            builder.Append(Type);
+            builder.Append("_");
+            builder.Append(ItemName);
+
+            if (!String.IsNullOrEmpty(Season))
+            {
+                builder.Append("_");
+                builder.Append(Season);
+            }
+
+            return builder.ToString();
         }
 
         public bool HasKeyword(string variationString, string keyword)
