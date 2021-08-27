@@ -6,6 +6,7 @@ using AlternativeTextures.Framework.Patches.AnimatedObjects;
 using AlternativeTextures.Framework.Patches.Entities;
 using AlternativeTextures.Framework.Patches.StandardObjects;
 using AlternativeTextures.Framework.Patches.Tools;
+using AlternativeTextures.Framework.Utilities;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -49,6 +50,12 @@ namespace AlternativeTextures
         internal static ApiManager apiManager;
         internal static AssetManager assetManager;
 
+        // Utilities
+        internal static FpsCounter fpsCounter;
+
+        // Debugging flags
+        private bool _displayFPS = false;
+
         public override void Entry(IModHelper helper)
         {
             // Set up the monitor, helper and multiplayer
@@ -60,6 +67,9 @@ namespace AlternativeTextures
             textureManager = new TextureManager(monitor);
             apiManager = new ApiManager(monitor);
             assetManager = new AssetManager(helper);
+
+            // Setup our utilities
+            fpsCounter = new FpsCounter();
 
             // Load the asset manager
             helper.Content.AssetLoaders.Add(assetManager);
@@ -116,6 +126,7 @@ namespace AlternativeTextures
             helper.ConsoleCommands.Add("at_spawn_rc", "Spawns a resource clump based given resource name (e.g. Stump).\n\nUsage: at_spawn_rc [RESOURCE_NAME]", this.DebugSpawnResourceClump);
             helper.ConsoleCommands.Add("at_spawn_child", "Spawns a child. Potentially buggy / gamebreaking, do not use. \n\nUsage: at_spawn_child [AGE] [IS_MALE] [SKIN_TONE]", this.DebugSpawnChild);
             helper.ConsoleCommands.Add("at_set_age", "Sets age for all children in location. Potentially buggy / gamebreaking, do not use. \n\nUsage: at_set_age [AGE]", this.DebugSetAge);
+            helper.ConsoleCommands.Add("at_display_fps", "Displays FPS counter. Use again to disable. \n\nUsage: at_display_fps", delegate { _displayFPS = !_displayFPS; });
             helper.ConsoleCommands.Add("at_paint_shop", "Shows the carpenter shop with the paint bucket for sale.\n\nUsage: at_paint_shop", this.DebugShowPaintShop);
             helper.ConsoleCommands.Add("at_reload", "Reloads all Alternative Texture content packs.\n\nUsage: at_reload", delegate { this.LoadContentPacks(); });
 
@@ -129,6 +140,19 @@ namespace AlternativeTextures
             // Hook into Input events
             helper.Events.Input.ButtonsChanged += OnButtonChanged;
             helper.Events.Input.ButtonPressed += OnButtonPressed;
+
+            // Hook into Display events
+            helper.Events.Display.Rendered += OnDisplayRendered;
+        }
+
+        private void OnDisplayRendered(object sender, RenderedEventArgs e)
+        {
+            if (!_displayFPS)
+            {
+                return;
+            }
+
+            fpsCounter.OnRendered(sender, e);
         }
 
         private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
