@@ -62,13 +62,20 @@ namespace AlternativeTextures.Framework.Patches.Entities
 
         private static void UpdateWhenCurrentLocationPostfix(FarmAnimal __instance, GameTime time, GameLocation location)
         {
-            if (__instance.age >= __instance.ageWhenMature && __instance.modData.ContainsKey("AlternativeTextureName") && CaseInsensitiveContains(__instance.modData["AlternativeTextureName"], CharacterPatch.BABY_NAME_PREFIX))
+            if (!__instance.modData.ContainsKey("AlternativeTextureName"))
             {
-                __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(__instance)}");
+                return;
+            }
+
+            var instanceName = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(__instance)}");
+            var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
+            if (__instance.modData["AlternativeTextureName"].ToLower() != instanceName && __instance.modData["AlternativeTextureName"].ToLower() != instanceSeasonName)
+            {
+                __instance.modData["AlternativeTextureName"] = instanceName;
                 if (__instance.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(__instance.modData["AlternativeTextureSeason"]))
                 {
                     __instance.modData["AlternativeTextureSeason"] = Game1.GetSeasonForLocation(location);
-                    __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureName"], "_", __instance.modData["AlternativeTextureSeason"]);
+                    __instance.modData["AlternativeTextureName"] = instanceSeasonName;
                 }
             }
         }

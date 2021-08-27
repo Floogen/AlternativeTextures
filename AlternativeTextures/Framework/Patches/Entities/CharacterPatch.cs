@@ -38,7 +38,14 @@ namespace AlternativeTextures.Framework.Patches.Entities
 
         private static void UpdatePostfix(Character __instance, GameTime time, GameLocation location)
         {
-            if (__instance is Child child && child.Age >= 3 && child.modData.ContainsKey("AlternativeTextureName") && !CaseInsensitiveContains(child.modData["AlternativeTextureName"], CharacterPatch.BABY_NAME_PREFIX))
+            if (!__instance.modData.ContainsKey("AlternativeTextureName"))
+            {
+                return;
+            }
+
+            var instanceName = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(__instance)}");
+            var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
+            if (__instance is Child child && child.modData["AlternativeTextureName"].ToLower() != instanceName && child.modData["AlternativeTextureName"].ToLower() != instanceSeasonName)
             {
                 child.modData["AlternativeTextureName"] = String.Concat(child.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(child)}");
                 if (child.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(__instance.modData["AlternativeTextureSeason"]))
