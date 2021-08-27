@@ -92,6 +92,8 @@
   <ItemGroup>
     <None Include="Examples\[AT] Crystal Mini-Obelisks\manifest.json" />
     <None Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Entities\BabyWhiteChicken\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Entities\WhiteChicken\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Baby\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Toddler\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\BrownCouch\texture.json" />
@@ -163,6 +165,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Entities\BabyWhiteChicken\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Entities\WhiteChicken\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Baby\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Toddler\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\BrownCouch\texture.png" />
