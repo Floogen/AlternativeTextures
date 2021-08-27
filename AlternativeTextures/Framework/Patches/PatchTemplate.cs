@@ -95,6 +95,7 @@ namespace AlternativeTextures.Framework.Patches
                 }
                 return $"{CharacterPatch.BABY_NAME_PREFIX}_{(child.darkSkinned ? "Dark" : "Light")}";
             }
+
             if (character is FarmAnimal animal)
             {
                 var animalName = animal.type.Value;
@@ -130,11 +131,12 @@ namespace AlternativeTextures.Framework.Patches
         internal static Character GetCharacterAt(GameLocation location, int x, int y)
         {
             var tileLocation = new Vector2(x / 64, y / 64);
+            var rectangle = new Rectangle(x, y, 64, 64);
             if (location is Farm farm)
             {
                 foreach (var animal in farm.animals.Values)
                 {
-                    if (animal.getTileLocation().Equals(tileLocation))
+                    if (animal.GetBoundingBox().Intersects(rectangle))
                     {
                         return animal;
                     }
@@ -144,7 +146,7 @@ namespace AlternativeTextures.Framework.Patches
             {
                 foreach (var animal in animalHouse.animals.Values)
                 {
-                    if (animal.getTileLocation().Equals(tileLocation))
+                    if (animal.GetBoundingBox().Intersects(rectangle))
                     {
                         return animal;
                     }
