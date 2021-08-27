@@ -98,6 +98,7 @@
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Cows\BrownCow\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Sheep\BabySheep\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Sheep\ShearedSheep\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Sheep\WinterSheep\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Sheep\Sheep\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Humans\Children\Baby\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Humans\Children\Toddler\texture.json" />
@@ -176,6 +177,7 @@
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Cows\BrownCow\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Sheep\BabySheep\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Sheep\ShearedSheep\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Sheep\WinterSheep\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Sheep\Sheep\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Humans\Children\Baby\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Humans\Children\Toddler\texture.png" />
