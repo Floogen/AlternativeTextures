@@ -94,6 +94,8 @@
     <None Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Chickens\BabyWhiteChicken\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Chickens\WhiteChicken\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Cows\BabyBrownCow\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Cows\BrownCow\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Sheep\BabySheep\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Sheep\ShearedSheep\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Sheep\Sheep\texture.json" />
@@ -170,6 +172,8 @@
     <Content Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Chickens\BabyWhiteChicken\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Chickens\WhiteChicken\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Cows\BabyBrownCow\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Cows\BrownCow\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Sheep\BabySheep\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Sheep\ShearedSheep\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Sheep\Sheep\texture.png" />
