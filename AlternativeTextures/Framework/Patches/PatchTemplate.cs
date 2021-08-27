@@ -95,6 +95,19 @@ namespace AlternativeTextures.Framework.Patches
                 }
                 return $"{CharacterPatch.BABY_NAME_PREFIX}_{(child.darkSkinned ? "Dark" : "Light")}";
             }
+            if (character is FarmAnimal animal)
+            {
+                var animalName = animal.type.Value;
+                if (animal.age < animal.ageWhenMature)
+                {
+                    animalName = "Baby" + (animal.type.Value.Equals("Duck") ? "White Chicken" : animal.type.Value);
+                }
+                else if (animal.showDifferentTextureWhenReadyForHarvest && animal.currentProduce <= 0)
+                {
+                    animalName = "Sheared" + animalName;
+                }
+                return animalName;
+            }
 
             return character.name;
         }
@@ -116,7 +129,29 @@ namespace AlternativeTextures.Framework.Patches
         }
         internal static Character GetCharacterAt(GameLocation location, int x, int y)
         {
-            return location.isCharacterAtTile(new Vector2(x / 64, y / 64));
+            var tileLocation = new Vector2(x / 64, y / 64);
+            if (location is Farm farm)
+            {
+                foreach (var animal in farm.animals.Values)
+                {
+                    if (animal.getTileLocation().Equals(tileLocation))
+                    {
+                        return animal;
+                    }
+                }
+            }
+            if (location is AnimalHouse animalHouse)
+            {
+                foreach (var animal in animalHouse.animals.Values)
+                {
+                    if (animal.getTileLocation().Equals(tileLocation))
+                    {
+                        return animal;
+                    }
+                }
+            }
+
+            return location.isCharacterAtTile(tileLocation);
         }
 
         internal static int GetFloorSheetId(Flooring floor)
