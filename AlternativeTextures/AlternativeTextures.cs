@@ -99,6 +99,7 @@ namespace AlternativeTextures
                 // Start of entity patches
                 new CharacterPatch(monitor).Apply(harmony);
                 new ChildPatch(monitor).Apply(harmony);
+                new FarmAnimalPatch(monitor).Apply(harmony);
 
                 // Paint tool related patches
                 new UtilityPatch(monitor).Apply(harmony);
