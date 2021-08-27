@@ -49,6 +49,11 @@ namespace AlternativeTextures.Framework.Patches
             return paintBrush;
         }
 
+        internal static bool CaseInsensitiveContains(string target, string value)
+        {
+            return target.ToLower().Contains(value.ToLower());
+        }
+
         internal static string GetObjectName(Object obj)
         {
             if (obj.bigCraftable)

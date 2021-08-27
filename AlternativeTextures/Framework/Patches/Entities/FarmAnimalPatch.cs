@@ -62,7 +62,7 @@ namespace AlternativeTextures.Framework.Patches.Entities
 
         private static void UpdateWhenCurrentLocationPostfix(FarmAnimal __instance, GameTime time, GameLocation location)
         {
-            if (__instance.age >= __instance.ageWhenMature && __instance.modData.ContainsKey("AlternativeTextureName") && __instance.modData["AlternativeTextureName"].Contains(CharacterPatch.BABY_NAME_PREFIX))
+            if (__instance.age >= __instance.ageWhenMature && __instance.modData.ContainsKey("AlternativeTextureName") && CaseInsensitiveContains(__instance.modData["AlternativeTextureName"], CharacterPatch.BABY_NAME_PREFIX))
             {
                 __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(__instance)}");
                 if (__instance.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(__instance.modData["AlternativeTextureSeason"]))
