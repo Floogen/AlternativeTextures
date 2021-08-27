@@ -91,9 +91,9 @@ namespace AlternativeTextures.Framework.Patches
             {
                 if (child.Age >= 3)
                 {
-                    return $"{ChildPatch.TODDLER_NAME_PREFIX}_{(child.Gender == 0 ? "Male" : "Female")}_{(child.darkSkinned ? "Dark" : "Light")}";
+                    return $"{CharacterPatch.TODDLER_NAME_PREFIX}_{(child.Gender == 0 ? "Male" : "Female")}_{(child.darkSkinned ? "Dark" : "Light")}";
                 }
-                return $"{ChildPatch.BABY_NAME_PREFIX}_{(child.darkSkinned ? "Dark" : "Light")}";
+                return $"{CharacterPatch.BABY_NAME_PREFIX}_{(child.darkSkinned ? "Dark" : "Light")}";
             }
 
             return character.name;

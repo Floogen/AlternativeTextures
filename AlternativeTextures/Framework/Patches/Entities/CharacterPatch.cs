@@ -22,6 +22,9 @@ namespace AlternativeTextures.Framework.Patches.Entities
     {
         private readonly Type _entity = typeof(Character);
 
+        internal const string BABY_NAME_PREFIX = "Baby";
+        internal const string TODDLER_NAME_PREFIX = "Toddler";
+
         internal CharacterPatch(IMonitor modMonitor) : base(modMonitor)
         {
 
@@ -35,7 +38,7 @@ namespace AlternativeTextures.Framework.Patches.Entities
 
         private static void UpdatePostfix(Character __instance, GameTime time, GameLocation location)
         {
-            if (__instance is Child child && child.Age >= 3 && child.modData.ContainsKey("AlternativeTextureName") && !child.modData["AlternativeTextureName"].Contains(ChildPatch.TODDLER_NAME_PREFIX))
+            if (__instance is Child child && child.Age >= 3 && child.modData.ContainsKey("AlternativeTextureName") && !child.modData["AlternativeTextureName"].Contains(CharacterPatch.TODDLER_NAME_PREFIX))
             {
                 child.modData["AlternativeTextureName"] = String.Concat(child.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(child)}");
                 if (child.modData.ContainsKey("AlternativeTextureSeason"))

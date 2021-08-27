@@ -21,8 +21,6 @@ namespace AlternativeTextures.Framework.Patches.Entities
     internal class ChildPatch : PatchTemplate
     {
         private readonly Type _entity = typeof(Child);
-        internal const string BABY_NAME_PREFIX = "Baby";
-        internal const string TODDLER_NAME_PREFIX = "Toddler";
 
         internal ChildPatch(IMonitor modMonitor) : base(modMonitor)
         {
