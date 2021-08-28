@@ -285,7 +285,7 @@ namespace AlternativeTextures.Framework.Patches.Entities
             return true;
         }
 
-        private static void HorsePostfix(FarmAnimal __instance, Guid horseId, int xTile, int yTile)
+        private static void HorsePostfix(Horse __instance, Guid horseId, int xTile, int yTile)
         {
             var instanceName = $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(__instance)}";
             var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
