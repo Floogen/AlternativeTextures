@@ -8,7 +8,7 @@ namespace AlternativeTextures.Framework.Interfaces.API
 {
     public interface IApi
     {
-        void AddAlternativeTexture(AlternativeTextureModel model);
+        void AddAlternativeTexture(AlternativeTextureModel model, string owner, string tileSheetPath);
     }
 
     public class Api : IApi
