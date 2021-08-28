@@ -398,6 +398,10 @@ namespace AlternativeTextures
                             // Set the season (if any)
                             textureModel.Season = seasons.Count() == 0 ? String.Empty : seasons[s];
 
+                            // Set the ModelName and TextureId
+                            textureModel.ModelName = String.IsNullOrEmpty(textureModel.Season) ? String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName) : String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName, "_", textureModel.Season);
+                            textureModel.TextureId = String.Concat(textureModel.Owner, ".", textureModel.ModelName);
+
                             // Track the texture model
                             textureManager.AddAlternativeTexture(textureModel);
 

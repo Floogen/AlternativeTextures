@@ -18,6 +18,8 @@ namespace AlternativeTextures.Framework.Models
         public List<string> Keywords { get; set; } = new List<string>();
         public List<string> Seasons { get; set; } = new List<string>(); // For use by mod user to determine which seasons the texture is valid for
         internal string Season { get; set; } // Used by framework to split the Seasons property into individual AlternativeTextureModel models
+        internal string TextureId { get; set; }
+        internal string ModelName { get; set; }
         public int TextureWidth { get; set; }
         public int TextureHeight { get; set; }
         public int Variations { get; set; } = 1;
@@ -53,27 +55,12 @@ namespace AlternativeTextures.Framework.Models
 
         public string GetId()
         {
-            StringBuilder builder = new StringBuilder();
-            builder.Append(Owner);
-            builder.Append(".");
-            builder.Append(GetNameWithSeason());
-            return builder.ToString();
+            return TextureId;
         }
 
         public string GetNameWithSeason()
         {
-            StringBuilder builder = new StringBuilder();
-            builder.Append(Type);
-            builder.Append("_");
-            builder.Append(ItemName);
-
-            if (!String.IsNullOrEmpty(Season))
-            {
-                builder.Append("_");
-                builder.Append(Season);
-            }
-
-            return builder.ToString();
+            return ModelName;
         }
 
         public bool HasKeyword(string variationString, string keyword)
