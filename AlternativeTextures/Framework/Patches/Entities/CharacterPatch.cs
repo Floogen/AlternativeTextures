@@ -12,6 +12,7 @@ using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Object = StardewValley.Object;
@@ -34,6 +35,8 @@ namespace AlternativeTextures.Framework.Patches.Entities
         {
             harmony.Patch(AccessTools.Method(_entity, nameof(Character.update), new[] { typeof(GameTime), typeof(GameLocation) }), postfix: new HarmonyMethod(GetType(), nameof(UpdatePostfix)));
             harmony.Patch(AccessTools.Method(_entity, nameof(Character.draw), new[] { typeof(SpriteBatch) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
+
+            harmony.CreateReversePatcher(AccessTools.Method(_entity, nameof(Character.draw), new[] { typeof(SpriteBatch) }), new HarmonyMethod(GetType(), nameof(DrawReversePatch))).Patch();
         }
 
         private static void UpdatePostfix(Character __instance, GameTime time, GameLocation location)
@@ -80,6 +83,11 @@ namespace AlternativeTextures.Framework.Patches.Entities
             }
 
             return true;
+        }
+
+        public static void DrawReversePatch(Character __instance, SpriteBatch b)
+        {
+            new NotImplementedException("It's a stub!");
         }
     }
 }

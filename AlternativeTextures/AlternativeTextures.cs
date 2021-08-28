@@ -110,6 +110,7 @@ namespace AlternativeTextures
                 new CharacterPatch(monitor).Apply(harmony);
                 new ChildPatch(monitor).Apply(harmony);
                 new FarmAnimalPatch(monitor).Apply(harmony);
+                new HorsePatch(monitor).Apply(harmony);
 
                 // Paint tool related patches
                 new UtilityPatch(monitor).Apply(harmony);

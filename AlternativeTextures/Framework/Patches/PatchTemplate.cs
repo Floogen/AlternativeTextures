@@ -110,6 +110,11 @@ namespace AlternativeTextures.Framework.Patches
                 return animalName;
             }
 
+            if (character is Horse horse)
+            {
+                return "Horse";
+            }
+
             return character.name;
         }
 
@@ -150,6 +155,14 @@ namespace AlternativeTextures.Framework.Patches
                     {
                         return animal;
                     }
+                }
+            }
+
+            foreach (var horse in location.characters.Where(c => c is Horse))
+            {
+                if ((horse as Horse).GetBoundingBox().Intersects(rectangle))
+                {
+                    return horse;
                 }
             }
 
