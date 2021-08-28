@@ -153,28 +153,5 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
             AssignDefaultModData(__instance, instanceSeasonName, true);
         }
-
-        private static string GetTreeTypeString(Tree tree)
-        {
-            switch (tree.treeType.Value)
-            {
-                case Tree.bushyTree:
-                    return "Oak";
-                case Tree.leafyTree:
-                    return "Maple";
-                case Tree.pineTree:
-                    return "Pine";
-                case Tree.mahoganyTree:
-                    return "Mahogany";
-                case Tree.mushroomTree:
-                    return "Mushroom";
-                case Tree.palmTree:
-                    return "Palm_1";
-                case Tree.palmTree2:
-                    return "Palm_2";
-                default:
-                    return String.Empty;
-            }
-        }
     }
 }

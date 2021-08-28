@@ -1,9 +1,11 @@
 ﻿using AlternativeTextures.Framework.Models;
+using AlternativeTextures.Framework.Patches.Entities;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Characters;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using StardewValley.Tools;
@@ -31,6 +33,22 @@ namespace AlternativeTextures.Framework.Patches
             return paintBucket;
         }
 
+        internal static GenericTool GetScissorsTool()
+        {
+            var scissors = new GenericTool("Scissors", "Allows you to apply different textures to entities.", -1, 6, 6);
+            scissors.modData[AlternativeTextures.SCISSORS_FLAG] = true.ToString();
+
+            return scissors;
+        }
+
+        internal static GenericTool GetPaintBrushTool()
+        {
+            var paintBrush = new GenericTool("Paint Brush", "Allows you to copy a texture and apply it other objects of the same type.", -1, 6, 6);
+            paintBrush.modData[AlternativeTextures.PAINT_BRUSH_FLAG] = null;
+
+            return paintBrush;
+        }
+
         internal static string GetObjectName(Object obj)
         {
             if (obj.bigCraftable)
@@ -54,6 +72,10 @@ namespace AlternativeTextures.Framework.Patches
             }
             else
             {
+                if (obj is Fence fence && fence.isGate)
+                {
+                    return Game1.objectInformation[325].Split('/')[0];
+                }
                 if (!Game1.objectInformation.ContainsKey(obj.parentSheetIndex))
                 {
                     return obj.name;
@@ -61,6 +83,39 @@ namespace AlternativeTextures.Framework.Patches
 
                 return Game1.objectInformation[obj.parentSheetIndex].Split('/')[0];
             }
+        }
+
+        internal static string GetCharacterName(Character character)
+        {
+            if (character is Child child)
+            {
+                if (child.Age >= 3)
+                {
+                    return $"{CharacterPatch.TODDLER_NAME_PREFIX}_{(child.Gender == 0 ? "Male" : "Female")}_{(child.darkSkinned ? "Dark" : "Light")}";
+                }
+                return $"{CharacterPatch.BABY_NAME_PREFIX}_{(child.darkSkinned ? "Dark" : "Light")}";
+            }
+
+            if (character is FarmAnimal animal)
+            {
+                var animalName = animal.type.Value;
+                if (animal.age < animal.ageWhenMature)
+                {
+                    animalName = "Baby" + (animal.type.Value.Equals("Duck") ? "White Chicken" : animal.type.Value);
+                }
+                else if (animal.showDifferentTextureWhenReadyForHarvest && animal.currentProduce <= 0)
+                {
+                    animalName = "Sheared" + animalName;
+                }
+                return animalName;
+            }
+
+            if (character is Horse horse)
+            {
+                return "Horse";
+            }
+
+            return character.name;
         }
 
         internal static Object GetObjectAt(GameLocation location, int x, int y)
@@ -77,6 +132,41 @@ namespace AlternativeTextures.Framework.Patches
             }
 
             return location.terrainFeatures[tile];
+        }
+        internal static Character GetCharacterAt(GameLocation location, int x, int y)
+        {
+            var tileLocation = new Vector2(x / 64, y / 64);
+            var rectangle = new Rectangle(x, y, 64, 64);
+            if (location is Farm farm)
+            {
+                foreach (var animal in farm.animals.Values)
+                {
+                    if (animal.GetBoundingBox().Intersects(rectangle))
+                    {
+                        return animal;
+                    }
+                }
+            }
+            if (location is AnimalHouse animalHouse)
+            {
+                foreach (var animal in animalHouse.animals.Values)
+                {
+                    if (animal.GetBoundingBox().Intersects(rectangle))
+                    {
+                        return animal;
+                    }
+                }
+            }
+
+            foreach (var horse in location.characters.Where(c => c is Horse))
+            {
+                if ((horse as Horse).GetBoundingBox().Intersects(rectangle))
+                {
+                    return horse;
+                }
+            }
+
+            return location.isCharacterAtTile(tileLocation);
         }
 
         internal static int GetFloorSheetId(Flooring floor)
@@ -120,6 +210,29 @@ namespace AlternativeTextures.Framework.Patches
             }
         }
 
+        internal static string GetTreeTypeString(Tree tree)
+        {
+            switch (tree.treeType.Value)
+            {
+                case Tree.bushyTree:
+                    return "Oak";
+                case Tree.leafyTree:
+                    return "Maple";
+                case Tree.pineTree:
+                    return "Pine";
+                case Tree.mahoganyTree:
+                    return "Mahogany";
+                case Tree.mushroomTree:
+                    return "Mushroom";
+                case Tree.palmTree:
+                    return "Palm_1";
+                case Tree.palmTree2:
+                    return "Palm_2";
+                default:
+                    return String.Empty;
+            }
+        }
+
         internal static string GetBushTypeString(Bush bush)
         {
             switch (bush.size)
@@ -141,6 +254,9 @@ namespace AlternativeTextures.Framework.Patches
                     return true;
                 case TerrainFeature terrain:
                     AssignTerrainFeatureModData(terrain, modelName, textureModel, -1, trackSeason);
+                    return true;
+                case Character character:
+                    AssignCharacterModData(character, modelName, textureModel, -1, trackSeason);
                     return true;
             }
 
@@ -169,6 +285,9 @@ namespace AlternativeTextures.Framework.Patches
                     return true;
                 case TerrainFeature terrain:
                     AssignTerrainFeatureModData(terrain, modelName, textureModel, selectedVariation, trackSeason);
+                    return true;
+                case Character character:
+                    AssignCharacterModData(character, modelName, textureModel, selectedVariation, trackSeason);
                     return true;
             }
 
@@ -204,6 +323,19 @@ namespace AlternativeTextures.Framework.Patches
             }
 
             terrain.modData["AlternativeTextureVariation"] = variation.ToString();
+        }
+
+        private static void AssignCharacterModData(Character character, string modelName, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
+        {
+            character.modData["AlternativeTextureOwner"] = textureModel.Owner;
+            character.modData["AlternativeTextureName"] = String.Concat(textureModel.Owner, ".", modelName);
+
+            if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
+            {
+                character.modData["AlternativeTextureSeason"] = Game1.GetSeasonForLocation(character.currentLocation);
+            }
+
+            character.modData["AlternativeTextureVariation"] = variation.ToString();
         }
     }
 }
