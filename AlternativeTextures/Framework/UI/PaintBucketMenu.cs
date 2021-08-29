@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
+using StardewValley.Buildings;
 using StardewValley.Menus;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
@@ -39,6 +40,8 @@ namespace AlternativeTextures.Framework.UI
         private int _startingRow = 0;
         private int _texturesPerRow = 6;
         private int _maxRows = 4;
+
+        private const float FURNITURE_SCALE = 3f;
 
         private Object _textureTarget;
         private TextureType _textureType;
@@ -151,6 +154,12 @@ namespace AlternativeTextures.Framework.UI
                         widthOffsetScale = 4;
                         sourceRect = new Rectangle(0, 0, 48, 80);
                         break;
+                    case TextureType.Building:
+                        _maxRows = 1;
+                        _texturesPerRow = 3;
+                        widthOffsetScale = 4;
+                        sourceRect = new Rectangle(0, 0, 48, 80);
+                        break;
                 }
             }
 
@@ -237,7 +246,7 @@ namespace AlternativeTextures.Framework.UI
                 }
                 else
                 {
-                    c.scale = Math.Max(4f, c.scale - 0.025f);
+                    c.scale = Math.Max(_textureType == TextureType.Building ? FURNITURE_SCALE : 4f, c.scale - 0.025f);
                 }
             }
 
@@ -304,6 +313,13 @@ namespace AlternativeTextures.Framework.UI
                         foreach (string key in c.item.modData.Keys)
                         {
                             feature.modData[key] = c.item.modData[key];
+                        }
+                    }
+                    else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Building building)
+                    {
+                        foreach (string key in c.item.modData.Keys)
+                        {
+                            building.modData[key] = c.item.modData[key];
                         }
                     }
 
@@ -397,6 +413,13 @@ namespace AlternativeTextures.Framework.UI
                             {
                                 this.availableTextures[i].item.drawInMenu(b, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y + 32f), 2f, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
                             }
+                            else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Building building)
+                            {
+                                this.availableTextures[i].texture = building.texture.Value;
+                                this.availableTextures[i].sourceRect = building.getSourceRectForMenu();
+                                this.availableTextures[i].draw(b, Color.White, 0.87f);
+                                this.availableTextures[i].scale = FURNITURE_SCALE;
+                            }
                             else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Tree tree)
                             {
                                 this.availableTextures[i].texture = tree.texture.Value;
@@ -431,6 +454,13 @@ namespace AlternativeTextures.Framework.UI
                             this.availableTextures[i].texture = textureModel.Texture;
                             this.availableTextures[i].sourceRect = GetSourceRectangle(_textureTarget, textureModel.TextureWidth, textureModel.TextureHeight, variation);
                             this.availableTextures[i].draw(b, Color.White, 0.87f);
+                        }
+                        else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Building building)
+                        {
+                            this.availableTextures[i].texture = textureModel.Texture;
+                            this.availableTextures[i].sourceRect = GetBuildingSourceRect(building, textureModel.TextureHeight, variation);
+                            this.availableTextures[i].draw(b, Color.White, 0.87f);
+                            this.availableTextures[i].scale = FURNITURE_SCALE;
                         }
                         else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Tree tree)
                         {
@@ -618,6 +648,15 @@ namespace AlternativeTextures.Framework.UI
 
             sourceRect.Y = sourceRectOffset + (character.Sprite.currentFrame * character.Sprite.SpriteWidth / character.Sprite.Texture.Width * character.Sprite.SpriteHeight);
             return sourceRect;
+        }
+
+        private Rectangle GetBuildingSourceRect(Building building, int textureHeight, int variation)
+        {
+            int sourceRectOffset = textureHeight * variation;
+            Rectangle source_rect = building.getSourceRectForMenu();
+
+            source_rect.Y += sourceRectOffset;
+            return source_rect;
         }
     }
 }
