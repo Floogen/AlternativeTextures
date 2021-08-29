@@ -1,5 +1,6 @@
 ﻿using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.Patches;
+using AlternativeTextures.Framework.Patches.Buildings;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -415,6 +416,7 @@ namespace AlternativeTextures.Framework.UI
                             }
                             else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Building building)
                             {
+                                BuildingPatch.ResetTextureReversePatch(building);
                                 this.availableTextures[i].texture = building.texture.Value;
                                 this.availableTextures[i].sourceRect = building.getSourceRectForMenu();
                                 this.availableTextures[i].draw(b, Color.White, 0.87f);
@@ -457,8 +459,8 @@ namespace AlternativeTextures.Framework.UI
                         }
                         else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Building building)
                         {
-                            this.availableTextures[i].texture = textureModel.Texture;
-                            this.availableTextures[i].sourceRect = GetBuildingSourceRect(building, textureModel.TextureHeight, variation);
+                            this.availableTextures[i].texture = BuildingPatch.GetBuildingTextureWithPaint(building, textureModel, variation);
+                            this.availableTextures[i].sourceRect = building.getSourceRectForMenu();
                             this.availableTextures[i].draw(b, Color.White, 0.87f);
                             this.availableTextures[i].scale = FURNITURE_SCALE;
                         }
