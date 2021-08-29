@@ -61,6 +61,80 @@ namespace AlternativeTextures.Framework.Patches.Buildings
             ResetTexturePrefix(__instance);
         }
 
+        internal static void CondensedDrawInMenu(Building building, Texture2D texture, SpriteBatch b, int x, int y, float scale, float alpha = 1f)
+        {
+            switch (building)
+            {
+                case Barn barn:
+                    //building.drawShadow(b, x, y);
+                    b.Draw(texture, new Vector2(x, y) + new Vector2(building.animalDoor.X, building.animalDoor.Y + 3) * 16f * scale, new Rectangle(64, 112, 32, 16), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0.888f);
+                    b.Draw(texture, new Vector2(x, y) + new Vector2(building.animalDoor.X, (float)building.animalDoor.Y + 2.25f) * 16f * scale, new Rectangle(0, 112, 32, 16), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, (float)(((int)building.tileY + (int)building.tilesHigh - 1) * 64) / 10000f - 1E-07f);
+                    b.Draw(texture, new Vector2(x, y), new Rectangle(0, 0, 112, 112), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
+                    return;
+                case Coop coop:
+                    //building.drawShadow(b, x, y);
+                    b.Draw(texture, new Vector2(x, y) + new Vector2(building.animalDoor.X, building.animalDoor.Y + 4) * 16f * scale, new Rectangle(16, 112, 16, 16), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 1E-06f);
+                    b.Draw(texture, new Vector2(x, y) + new Vector2(building.animalDoor.X, (float)building.animalDoor.Y + 3.5f) * 16f * scale, new Rectangle(0, 112, 16, 15), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, (float)(((int)building.tileY + (int)building.tilesHigh) * 64) / 10000f - 1E-07f);
+                    b.Draw(texture, new Vector2(x, y), new Rectangle(0, 0, 96, 112), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
+                    return;
+                case FishPond fishPond:
+                    y += 32;
+                    //building.drawShadow(b, x, y);
+                    b.Draw(texture, new Vector2(x, y), new Rectangle(0, 80, 80, 80), new Color(60, 126, 150) * alpha, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 1f);
+                    for (int yWater = building.tileY; yWater < (int)building.tileY + 5; yWater++)
+                    {
+                        for (int xWater = building.tileX; xWater < (int)building.tileX + 4; xWater++)
+                        {
+                            bool num = yWater == (int)building.tileY + 4;
+                            bool topY = yWater == (int)building.tileY;
+                            if (num)
+                            {
+                                b.Draw(Game1.mouseCursors, new Vector2(x + xWater * 64 + 32, y + (yWater + 1) * 64 - (int)Game1.currentLocation.waterPosition - 32), new Rectangle(Game1.currentLocation.waterAnimationIndex * 64, 2064 + (((xWater + yWater) % 2 != 0) ? ((!Game1.currentLocation.waterTileFlip) ? 128 : 0) : (Game1.currentLocation.waterTileFlip ? 128 : 0)), 64, 32 + (int)Game1.currentLocation.waterPosition - 5), Game1.currentLocation.waterColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
+                            }
+                            else
+                            {
+                                b.Draw(Game1.mouseCursors, new Vector2(x + xWater * 64 + 32, y + yWater * 64 + 32 - (int)((!topY) ? Game1.currentLocation.waterPosition : 0f)), new Rectangle(Game1.currentLocation.waterAnimationIndex * 64, 2064 + (((xWater + yWater) % 2 != 0) ? ((!Game1.currentLocation.waterTileFlip) ? 128 : 0) : (Game1.currentLocation.waterTileFlip ? 128 : 0)) + (topY ? ((int)Game1.currentLocation.waterPosition) : 0), 64, 64 + (topY ? ((int)(0f - Game1.currentLocation.waterPosition)) : 0)), Game1.currentLocation.waterColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
+                            }
+                        }
+                    }
+                    b.Draw(texture, new Vector2(x, y), new Rectangle(0, 0, 80, 80), building.color.Value * alpha, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 1f);
+                    b.Draw(texture, new Vector2(x + 64, y + 44 + ((Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 2500.0 < 1250.0) ? 4 : 0)), new Rectangle(16, 160, 48, 7), building.color.Value * alpha, 0f, Vector2.Zero, scale, SpriteEffects.None, 1f);
+                    b.Draw(texture, new Vector2(x, y - 128), new Rectangle(80, 0, 80, 48), building.color.Value * alpha, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 1f);
+                    return;
+                case GreenhouseBuilding greenhouse:
+                    Rectangle rectangle = building.getSourceRect();
+                    y += 336;
+                    int amount_to_trim = 22;
+                    rectangle.Height -= amount_to_trim;
+                    rectangle.Y += amount_to_trim / 2;
+                    b.Draw(texture, new Vector2(x, y), rectangle, building.color, 0f, new Vector2(0f, rectangle.Height / 2), scale, SpriteEffects.None, 0.89f);
+                    return;
+                case JunimoHut junimoHut:
+                    //building.drawShadow(b, x, y);
+                    b.Draw(texture, new Vector2(x, y), new Rectangle(0, 0, 48, 64), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
+                    return;
+                case Mill mill:
+                    b.Draw(texture, new Vector2(x, y), building.getSourceRectForMenu(), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
+                    b.Draw(texture, new Vector2(x + 32, y + 4), new Rectangle(64 + (int)Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 800 / 89 * 32 % 160, (int)Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 800 / 89 * 32 / 160 * 32, 32, 32), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.9f);
+                    return;
+                case ShippingBin shippingBin:
+                case Stable stable:
+                default:
+                    if ((int)building.tilesWide <= 8)
+                    {
+                        //building.drawShadow(b, x, y);
+                        b.Draw(texture, new Vector2(x, y), building.getSourceRect(), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
+                    }
+                    else
+                    {
+                        int xOffset = 108;
+                        int yOffset = 28;
+                        b.Draw(texture, new Vector2(x + xOffset, y + yOffset), new Rectangle(building.getSourceRect().Width / 2 - 64, building.getSourceRect().Height - 136 - 2, 122, 138), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
+                    }
+                    return;
+            }
+        }
+
         private static bool ResetTexturePrefix(Building __instance)
         {
             if (__instance.modData.ContainsKey("AlternativeTextureName"))
