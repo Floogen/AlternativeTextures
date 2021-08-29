@@ -129,7 +129,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
                         TileLocation = new Vector2(targetedBuilding.tileX, targetedBuilding.tileY),
                         modData = targetedBuilding.modData
                     };
-                    Game1.activeClickableMenu = new PaintBucketMenu(buildingObj, modelName);
+                    Game1.activeClickableMenu = new PaintBucketMenu(buildingObj, modelName, textureTileWidth: targetedBuilding.tilesWide);
 
                     return CancelUsing(who);
                 }

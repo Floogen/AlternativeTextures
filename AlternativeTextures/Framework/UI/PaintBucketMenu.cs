@@ -47,7 +47,7 @@ namespace AlternativeTextures.Framework.UI
         private Object _textureTarget;
         private TextureType _textureType;
 
-        public PaintBucketMenu(Object target, string modelName, string uiTitle = "Paint Bucket") : base(0, 0, 832, 576, showUpperRightCloseButton: true)
+        public PaintBucketMenu(Object target, string modelName, string uiTitle = "Paint Bucket", int textureTileWidth = -1) : base(0, 0, 832, 576, showUpperRightCloseButton: true)
         {
             if (!target.modData.ContainsKey("AlternativeTextureOwner") || !target.modData.ContainsKey("AlternativeTextureName"))
             {
