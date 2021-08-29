@@ -3,6 +3,7 @@ using AlternativeTextures.Framework.Managers;
 using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.Patches;
 using AlternativeTextures.Framework.Patches.AnimatedObjects;
+using AlternativeTextures.Framework.Patches.Buildings;
 using AlternativeTextures.Framework.Patches.Entities;
 using AlternativeTextures.Framework.Patches.StandardObjects;
 using AlternativeTextures.Framework.Patches.Tools;
@@ -111,6 +112,9 @@ namespace AlternativeTextures
                 new ChildPatch(monitor).Apply(harmony);
                 new FarmAnimalPatch(monitor).Apply(harmony);
                 new HorsePatch(monitor).Apply(harmony);
+
+                // Start of building patches
+                new BuildingPatch(monitor).Apply(harmony);
 
                 // Paint tool related patches
                 new UtilityPatch(monitor).Apply(harmony);
