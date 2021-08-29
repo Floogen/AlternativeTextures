@@ -15,7 +15,7 @@
   ],
   "Changes": [
     {
-      "LogName": "Test AT Modification",
+      "LogName": "Test AT Pack Modification",
       "Action": "EditImage",
       "Target": "{{PeacefulEnd.AlternativeTextures/Textures:ExampleAuthor.ExampleAlternativeTexturesPack.Mini-Obelisk_Summer}}",
       "FromFile": "assets/test_replacement.png",
@@ -32,6 +32,25 @@
         "Height": "32"
       },
       "Update": "OnLocationChange"
+    },
+    {
+      "LogName": "Test AT Tool Modification",
+      "Action": "EditImage",
+      "Target": "{{PeacefulEnd.AlternativeTextures/Tools:PaintBucket}}",
+      "FromFile": "assets/alt_paint_bucket.png",
+      "FromArea": {
+        "X": "0",
+        "Y": "0",
+        "Width": "16",
+        "Height": "16"
+      },
+      "ToArea": {
+        "X": "0",
+        "Y": "0",
+        "Width": "16",
+        "Height": "16"
+      },
+      "Update": "OnDayStart"
     }
   ]
 }

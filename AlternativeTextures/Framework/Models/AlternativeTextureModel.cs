@@ -14,9 +14,12 @@ namespace AlternativeTextures.Framework.Models
         public string ItemName { get; set; }
         internal int ItemId { get; set; } = -1;
         public string Type { get; set; }
+        public bool EnableContentPatcherCheck { get; set; }
         public List<string> Keywords { get; set; } = new List<string>();
         public List<string> Seasons { get; set; } = new List<string>(); // For use by mod user to determine which seasons the texture is valid for
         internal string Season { get; set; } // Used by framework to split the Seasons property into individual AlternativeTextureModel models
+        internal string TextureId { get; set; }
+        internal string ModelName { get; set; }
         public int TextureWidth { get; set; }
         public int TextureHeight { get; set; }
         public int Variations { get; set; } = 1;
@@ -36,7 +39,8 @@ namespace AlternativeTextures.Framework.Models
             ResourceClump,
             Bush,
             Flooring,
-            Furniture
+            Furniture,
+            Character
         }
 
         public AlternativeTextureModel ShallowCopy()
@@ -56,12 +60,12 @@ namespace AlternativeTextures.Framework.Models
 
         public string GetId()
         {
-            return String.Concat(Owner, ".", GetNameWithSeason());
+            return TextureId;
         }
 
         public string GetNameWithSeason()
         {
-            return String.IsNullOrEmpty(Season) ? String.Concat(GetTextureType(), "_", ItemName) : String.Concat(GetTextureType(), "_", ItemName, "_", Season);
+            return ModelName;
         }
 
         public bool HasKeyword(string variationString, string keyword)

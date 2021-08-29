@@ -1,0 +1,8 @@
+{
+  "ItemName": "Sheep",
+  "Type": "Character",
+  "Seasons": [ "Winter" ],
+  "TextureWidth": 128,
+  "TextureHeight": 160,
+  "Variations": 1
+}

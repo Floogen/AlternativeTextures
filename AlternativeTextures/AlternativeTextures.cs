@@ -4,8 +4,10 @@ using AlternativeTextures.Framework.Managers;
 using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.Patches;
 using AlternativeTextures.Framework.Patches.AnimatedObjects;
+using AlternativeTextures.Framework.Patches.Entities;
 using AlternativeTextures.Framework.Patches.StandardObjects;
 using AlternativeTextures.Framework.Patches.Tools;
+using AlternativeTextures.Framework.Utilities;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,6 +15,7 @@ using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Characters;
 using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Objects;
@@ -29,11 +32,15 @@ namespace AlternativeTextures
 {
     public class AlternativeTextures : Mod
     {
-        internal const string TOKEN_HEADER = "AlternativeTextures/Textures/";
+        internal const string TEXTURE_TOKEN_HEADER = "AlternativeTextures/Textures/";
+        internal const string TOOL_TOKEN_HEADER = "AlternativeTextures/Tools/";
         internal const string DEFAULT_OWNER = "Stardew.Default";
         internal const string TOOL_CONVERSION_COMPATIBILITY = "AlternativeTextures.HasConvertedMilkPails";
         internal const string PAINT_BUCKET_FLAG = "AlternativeTextures.PaintBucketFlag";
         internal const string OLD_PAINT_BUCKET_FLAG = "AlternativeTexturesPaintBucketFlag";
+        internal const string PAINT_BRUSH_FLAG = "AlternativeTextures.PaintBrushFlag";
+        internal const string PAINT_BRUSH_SCALE = "AlternativeTextures.PaintBrushScale";
+        internal const string SCISSORS_FLAG = "AlternativeTextures.ScissorsFlag";
 
         internal static IMonitor monitor;
         internal static IModHelper modHelper;
@@ -43,6 +50,12 @@ namespace AlternativeTextures
         internal static TextureManager textureManager;
         internal static ApiManager apiManager;
         internal static AssetManager assetManager;
+
+        // Utilities
+        internal static FpsCounter fpsCounter;
+
+        // Debugging flags
+        private bool _displayFPS = false;
 
         public override void Entry(IModHelper helper)
         {
@@ -55,6 +68,9 @@ namespace AlternativeTextures
             textureManager = new TextureManager(monitor);
             apiManager = new ApiManager(monitor);
             assetManager = new AssetManager(helper);
+
+            // Setup our utilities
+            fpsCounter = new FpsCounter();
 
             // Load the asset manager
             helper.Content.AssetLoaders.Add(assetManager);
@@ -79,6 +95,7 @@ namespace AlternativeTextures
                 new FlooringPatch(monitor).Apply(harmony);
                 new FurniturePatch(monitor).Apply(harmony);
                 new BedFurniturePatch(monitor).Apply(harmony);
+                new FishTankFurniturePatch(monitor).Apply(harmony);
 
                 // Start of animated objects
                 new ChestPatch(monitor).Apply(harmony);
@@ -89,6 +106,12 @@ namespace AlternativeTextures
                  * Not supported:
                  * - Wood Chipper
                  */
+
+                // Start of entity patches
+                new CharacterPatch(monitor).Apply(harmony);
+                new ChildPatch(monitor).Apply(harmony);
+                new FarmAnimalPatch(monitor).Apply(harmony);
+                new HorsePatch(monitor).Apply(harmony);
 
                 // Paint tool related patches
                 new UtilityPatch(monitor).Apply(harmony);
@@ -103,6 +126,9 @@ namespace AlternativeTextures
             // Add in our debug commands
             helper.ConsoleCommands.Add("at_spawn_gc", "Spawns a giant crop based given harvest product id (e.g. Melon == 254).\n\nUsage: at_spawn_gc [HARVEST_ID]", this.DebugSpawnGiantCrop);
             helper.ConsoleCommands.Add("at_spawn_rc", "Spawns a resource clump based given resource name (e.g. Stump).\n\nUsage: at_spawn_rc [RESOURCE_NAME]", this.DebugSpawnResourceClump);
+            helper.ConsoleCommands.Add("at_spawn_child", "Spawns a child. Potentially buggy / gamebreaking, do not use. \n\nUsage: at_spawn_child [AGE] [IS_MALE] [SKIN_TONE]", this.DebugSpawnChild);
+            helper.ConsoleCommands.Add("at_set_age", "Sets age for all children in location. Potentially buggy / gamebreaking, do not use. \n\nUsage: at_set_age [AGE]", this.DebugSetAge);
+            helper.ConsoleCommands.Add("at_display_fps", "Displays FPS counter. Use again to disable. \n\nUsage: at_display_fps", delegate { _displayFPS = !_displayFPS; });
             helper.ConsoleCommands.Add("at_paint_shop", "Shows the carpenter shop with the paint bucket for sale.\n\nUsage: at_paint_shop", this.DebugShowPaintShop);
             helper.ConsoleCommands.Add("at_reload", "Reloads all Alternative Texture content packs.\n\nUsage: at_reload", delegate { this.LoadContentPacks(); });
 
@@ -112,6 +138,142 @@ namespace AlternativeTextures
 
             // Hook into Player events
             helper.Events.Player.Warped += this.OnWarped;
+
+            // Hook into Input events
+            helper.Events.Input.ButtonsChanged += OnButtonChanged;
+            helper.Events.Input.ButtonPressed += OnButtonPressed;
+
+            // Hook into Display events
+            helper.Events.Display.Rendered += OnDisplayRendered;
+        }
+
+        private void OnDisplayRendered(object sender, RenderedEventArgs e)
+        {
+            if (!_displayFPS)
+            {
+                return;
+            }
+
+            fpsCounter.OnRendered(sender, e);
+        }
+
+        private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
+        {
+            if (Game1.activeClickableMenu is null && Game1.player.CurrentTool is GenericTool tool && tool.modData.ContainsKey(PAINT_BRUSH_FLAG) && e.Button is SButton.MouseRight)
+            {
+                Helper.Input.Suppress(e.Button);
+
+                var xTile = (int)e.Cursor.Tile.X * 64;
+                var yTile = (int)e.Cursor.Tile.Y * 64;
+
+                // Verify that a supported object exists at the tile
+                var placedObject = Game1.currentLocation.getObjectAt(xTile, yTile);
+                if (placedObject is null)
+                {
+                    var terrainFeature = PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, xTile, yTile);
+                    if (terrainFeature is Flooring flooring)
+                    {
+                        var modelType = AlternativeTextureModel.TextureType.Flooring;
+                        if (!flooring.modData.ContainsKey("AlternativeTextureName") || !flooring.modData.ContainsKey("AlternativeTextureVariation"))
+                        {
+                            // Assign default modData
+                            var instanceSeasonName = $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
+                            PatchTemplate.AssignDefaultModData(flooring, instanceSeasonName, true);
+                        }
+
+                        Game1.addHUDMessage(new HUDMessage($"Texture copied!", 2) { timeLeft = 1000 });
+                        tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}";
+                        tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
+                        tool.modData["AlternativeTextureOwner"] = flooring.modData["AlternativeTextureOwner"];
+                        tool.modData["AlternativeTextureName"] = flooring.modData["AlternativeTextureName"];
+                        tool.modData["AlternativeTextureVariation"] = flooring.modData["AlternativeTextureVariation"];
+                    }
+                    else
+                    {
+                        tool.modData[PAINT_BRUSH_FLAG] = String.Empty;
+                        tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
+                        if (terrainFeature != null)
+                        {
+                            Game1.addHUDMessage(new HUDMessage($"The brush doesn't support copying textures from this object.", 3) { timeLeft = 2000 });
+                        }
+                        else
+                        {
+                            Game1.addHUDMessage(new HUDMessage($"Cleared brush!", 2) { timeLeft = 1000 });
+                        }
+                    }
+                }
+                else
+                {
+                    var modelType = placedObject is Furniture ? AlternativeTextureModel.TextureType.Furniture : AlternativeTextureModel.TextureType.Craftable;
+                    if (!placedObject.modData.ContainsKey("AlternativeTextureName") || !placedObject.modData.ContainsKey("AlternativeTextureVariation"))
+                    {
+                        var instanceSeasonName = $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}_{Game1.currentSeason}";
+                        PatchTemplate.AssignDefaultModData(placedObject, instanceSeasonName, true);
+                    }
+
+                    Game1.addHUDMessage(new HUDMessage($"Texture copied!", 2) { timeLeft = 1000 });
+                    tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}";
+                    tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
+                    tool.modData["AlternativeTextureOwner"] = placedObject.modData["AlternativeTextureOwner"];
+                    tool.modData["AlternativeTextureName"] = placedObject.modData["AlternativeTextureName"];
+                    tool.modData["AlternativeTextureVariation"] = placedObject.modData["AlternativeTextureVariation"];
+                }
+            }
+        }
+
+        private void OnButtonChanged(object sender, ButtonsChangedEventArgs e)
+        {
+            if (Game1.activeClickableMenu is null && Game1.player.CurrentTool is GenericTool tool && tool.modData.ContainsKey(PAINT_BRUSH_FLAG) && e.Held.Contains(SButton.MouseLeft))
+            {
+                var xTile = (int)e.Cursor.Tile.X * 64;
+                var yTile = (int)e.Cursor.Tile.Y * 64;
+
+                if (String.IsNullOrEmpty(tool.modData[PAINT_BRUSH_FLAG]))
+                {
+                    Game1.addHUDMessage(new HUDMessage($"The brush doesn't have a copied texture! Right click on an object to copy a texture.", 3) { timeLeft = 2000 });
+                }
+                else
+                {
+                    // Verify that a supported object exists at the tile
+                    var placedObject = Game1.currentLocation.getObjectAt(xTile, yTile);
+                    if (placedObject is null)
+                    {
+                        var terrainFeature = PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, xTile, yTile);
+                        if (terrainFeature is Flooring flooring)
+                        {
+                            var modelType = AlternativeTextureModel.TextureType.Flooring;
+                            if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}")
+                            {
+                                flooring.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
+                                flooring.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
+                                flooring.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
+                            }
+                            else
+                            {
+                                Game1.addHUDMessage(new HUDMessage($"The copied texture {tool.modData[PAINT_BRUSH_FLAG]} isn't valid for this object!", 3) { timeLeft = 2000 });
+                            }
+                        }
+                        else if (terrainFeature != null)
+                        {
+                            Game1.addHUDMessage(new HUDMessage($"You can't paint that!", 3) { timeLeft = 2000 });
+                        }
+                    }
+                    else
+                    {
+                        var modelType = placedObject is Furniture ? AlternativeTextureModel.TextureType.Furniture : AlternativeTextureModel.TextureType.Craftable;
+                        if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}")
+                        {
+                            placedObject.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
+                            placedObject.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
+                            placedObject.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
+                        }
+                        else
+                        {
+                            Game1.addHUDMessage(new HUDMessage($"The copied texture {tool.modData[PAINT_BRUSH_FLAG]} isn't valid for this object!", 3) { timeLeft = 2000 });
+                        }
+                    }
+                }
+            }
         }
 
         public override object GetApi()
@@ -130,6 +292,7 @@ namespace AlternativeTextures
             if (Helper.ModRegistry.IsLoaded("Pathoschild.ContentPatcher") && apiManager.HookIntoContentPatcher(Helper))
             {
                 apiManager.GetContentPatcherInterface().RegisterToken(ModManifest, "Textures", new TextureToken(textureManager, assetManager));
+                apiManager.GetContentPatcherInterface().RegisterToken(ModManifest, "Tools", new ToolToken(textureManager, assetManager));
             }
 
             // Load any owned content packs
@@ -138,12 +301,8 @@ namespace AlternativeTextures
 
         private void OnDayStarted(object sender, DayStartedEventArgs e)
         {
-            // Loadd all available textures to account for any Content Patcher's OnDayStart updates
-            foreach (var texture in textureManager.GetAllTextures())
-            {
-                var test = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TOKEN_HEADER}{texture.GetId()}", ContentSource.GameContent);
-                textureManager.UpdateTexture(texture.GetId(), test);
-            }
+            // Load all available textures to account for any Content Patcher's OnDayStart updates
+            UpdateTextures();
 
             // Backwards compatibility logic
             if (!Game1.player.modData.ContainsKey(TOOL_CONVERSION_COMPATIBILITY))
@@ -156,10 +315,22 @@ namespace AlternativeTextures
 
         private void OnWarped(object sender, WarpedEventArgs e)
         {
-            foreach (var texture in textureManager.GetAllTextures())
+            // Load all available textures to account for any Content Patcher's OnWarped updates
+            UpdateTextures();
+        }
+
+        private void UpdateTextures()
+        {
+            foreach (var texture in textureManager.GetAllTextures().Where(t => t.EnableContentPatcherCheck))
             {
-                var test = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TOKEN_HEADER}{texture.GetId()}", ContentSource.GameContent);
-                textureManager.UpdateTexture(texture.GetId(), test);
+                var loadedTexture = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{texture.GetId()}", ContentSource.GameContent);
+                textureManager.UpdateTexture(texture.GetId(), loadedTexture);
+            }
+
+            foreach (var tool in assetManager.toolNames.ToList())
+            {
+                var loadedTexture = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TOOL_TOKEN_HEADER}{tool.Key}", ContentSource.GameContent);
+                assetManager.toolNames[tool.Key] = loadedTexture;
             }
         }
 
@@ -206,9 +377,10 @@ namespace AlternativeTextures
                             // Parse the model and assign it the content pack's owner
                             AlternativeTextureModel textureModel = contentPack.ReadJsonFile<AlternativeTextureModel>(modelPath);
                             textureModel.Owner = contentPack.Manifest.UniqueID;
+                            textureModel.Type = textureModel.GetTextureType();
 
                             // Override Grass Alternative Texture pack ItemNames to always be Grass, in order to be compatible with translations 
-                            textureModel.ItemName = textureModel.GetTextureType() == "Grass" ? "Grass" : textureModel.ItemName;
+                            textureModel.ItemName = textureModel.Type == "Grass" ? "Grass" : textureModel.ItemName;
 
                             // Add the UniqueId to the top-level Keywords
                             textureModel.Keywords.Add(contentPack.Manifest.UniqueID);
@@ -232,6 +404,10 @@ namespace AlternativeTextures
 
                             // Set the season (if any)
                             textureModel.Season = seasons.Count() == 0 ? String.Empty : seasons[s];
+
+                            // Set the ModelName and TextureId
+                            textureModel.ModelName = String.IsNullOrEmpty(textureModel.Season) ? String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName) : String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName, "_", textureModel.Season);
+                            textureModel.TextureId = String.Concat(textureModel.Owner, ".", textureModel.ModelName);
 
                             // Track the texture model
                             textureManager.AddAlternativeTexture(textureModel);
@@ -319,6 +495,60 @@ namespace AlternativeTextures
             }
 
             (Game1.currentLocation as Farm).resourceClumps.Add(new ResourceClump(600, 2, 2, Game1.player.getTileLocation() + new Vector2(1, 1)));
+        }
+
+        private void DebugSpawnChild(string command, string[] args)
+        {
+            if (args.Length < 2)
+            {
+                Monitor.Log($"Missing required arguments: [AGE] [IS_MALE] [SKIN_TONE]", LogLevel.Warn);
+                return;
+            }
+
+            var age = -1;
+            if (!int.TryParse(args[0], out age) || age < 0)
+            {
+                Monitor.Log($"Invalid number given: {args[0]}", LogLevel.Warn);
+                return;
+            }
+
+            var isMale = false;
+            if (args[1].ToLower() == "true")
+            {
+                isMale = true;
+            }
+
+            var hasDarkSkin = false;
+            if (args[2].ToLower() == "dark")
+            {
+                hasDarkSkin = true;
+            }
+
+            var child = new Child("Test", isMale, hasDarkSkin, Game1.player);
+            child.Position = Game1.player.Position;
+            child.Age = age;
+            Game1.currentLocation.characters.Add(child);
+        }
+
+        private void DebugSetAge(string command, string[] args)
+        {
+            if (args.Length == 0)
+            {
+                Monitor.Log($"Missing required arguments: [AGE]", LogLevel.Warn);
+                return;
+            }
+
+            var age = -1;
+            if (!int.TryParse(args[0], out age))
+            {
+                Monitor.Log($"Invalid number given: {args[0]}", LogLevel.Warn);
+                return;
+            }
+
+            foreach (var child in Game1.currentLocation.characters.Where(c => c is Child))
+            {
+                child.Age = 3;
+            }
         }
 
         private void DebugShowPaintShop(string command, string[] args)

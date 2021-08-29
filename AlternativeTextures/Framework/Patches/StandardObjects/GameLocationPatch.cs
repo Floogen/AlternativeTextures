@@ -34,7 +34,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
         private static bool LowPriorityLeftClickPrefix(GameLocation __instance, ref bool __result, int x, int y, Farmer who)
         {
-            if (who.CurrentTool is GenericTool && who.CurrentTool.modData.ContainsKey(AlternativeTextures.PAINT_BUCKET_FLAG))
+            if (who.CurrentTool is GenericTool tool && (tool.modData.ContainsKey(AlternativeTextures.PAINT_BUCKET_FLAG) || tool.modData.ContainsKey(AlternativeTextures.PAINT_BRUSH_FLAG)))
             {
                 __result = false;
                 return false;
@@ -57,6 +57,33 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                     }
                     obj.modData["AlternativeTextureSeason"] = Game1.currentSeason;
                     obj.modData["AlternativeTextureName"] = String.Concat(obj.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Craftable}_{instanceName}_{obj.modData["AlternativeTextureSeason"]}");
+                }
+            }
+
+            for (int k = __instance.characters.Count() - 1; k >= 0; k--)
+            {
+                var character = __instance.characters.ElementAt(k);
+                if (character.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(character.modData["AlternativeTextureSeason"]) && !String.Equals(character.modData["AlternativeTextureSeason"], Game1.currentSeason, StringComparison.OrdinalIgnoreCase))
+                {
+                    var instanceName = GetCharacterName(character);
+                    character.modData["AlternativeTextureSeason"] = Game1.currentSeason;
+                    character.modData["AlternativeTextureName"] = String.Concat(character.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Character}_{instanceName}_{character.modData["AlternativeTextureSeason"]}");
+                }
+            }
+
+            // Check for animals, if __instance is an applicable location
+            if (__instance is Farm || __instance is AnimalHouse)
+            {
+                var animals = __instance is Farm farm ? farm.animals.Values : (__instance as AnimalHouse).animals.Values;
+                for (int k = animals.Count() - 1; k >= 0; k--)
+                {
+                    var farmAnimal = animals.ElementAt(k);
+                    if (farmAnimal.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(farmAnimal.modData["AlternativeTextureSeason"]) && !String.Equals(farmAnimal.modData["AlternativeTextureSeason"], Game1.currentSeason, StringComparison.OrdinalIgnoreCase))
+                    {
+                        var instanceName = GetCharacterName(farmAnimal);
+                        farmAnimal.modData["AlternativeTextureSeason"] = Game1.currentSeason;
+                        farmAnimal.modData["AlternativeTextureName"] = String.Concat(farmAnimal.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Character}_{instanceName}_{farmAnimal.modData["AlternativeTextureSeason"]}");
+                    }
                 }
             }
         }
