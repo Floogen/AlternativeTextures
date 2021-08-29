@@ -2,6 +2,7 @@
 using StardewModdingAPI;
 using System;
 using System.Linq;
+using Microsoft.Xna.Framework.Graphics;
 
 
 namespace AlternativeTextures.Framework.Interfaces.API
@@ -41,6 +42,7 @@ namespace AlternativeTextures.Framework.Interfaces.API
 
             model.Owner = owner;
             model.TileSheetPath = tileSheetPath;
+            model.Texture = _framework.Helper.Content.Load<Texture2D>(model.TileSheetPath, ContentSource.GameContent);
 
             var seasons = model.Seasons;
             for (int s = 0; s < 4; s++)
@@ -67,6 +69,10 @@ namespace AlternativeTextures.Framework.Interfaces.API
 
                 // Set the season (if any)
                 textureModel.Season = seasons.Count() == 0 ? String.Empty : seasons[s];
+
+                // Set the ModelName and TextureId
+                textureModel.ModelName = String.IsNullOrEmpty(textureModel.Season) ? String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName) : String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName, "_", textureModel.Season);
+                textureModel.TextureId = String.Concat(textureModel.Owner, ".", textureModel.ModelName);
 
                 // Track the texture model
                 AlternativeTextures.textureManager.AddAlternativeTexture(textureModel);

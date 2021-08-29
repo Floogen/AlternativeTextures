@@ -12,6 +12,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Framework\Assets" />
+    <Content Include="Framework\Assets\PaintBrushEmpty.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Framework\Assets\PaintBrushFilled.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Framework\Assets\PaintBucket.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Framework\Assets\Scissors.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>
