@@ -89,6 +89,7 @@
     <Compile Include="Framework\Patches\StandardObjects\CropPatch.cs" />
     <Compile Include="Framework\Patches\StandardObjects\FencePatch.cs" />
     <Compile Include="Framework\Patches\StandardObjects\ObjectPatch.cs" />
+    <Compile Include="Framework\Utilities\Extensions\TextureExtension.cs" />
     <Compile Include="Framework\Utilities\FpsCounter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
