@@ -116,7 +116,6 @@ namespace AlternativeTextures.Framework.Patches.Tools
                         modelName = modelName.Replace($"_{targetedBuilding.modData["AlternativeTextureSeason"]}", String.Empty);
                     }
 
-                    _monitor.Log(modelName, LogLevel.Debug);
                     if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
                     {
                         Game1.addHUDMessage(new HUDMessage($"{modelName} has no alternative textures for this season!", 3));
