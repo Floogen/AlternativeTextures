@@ -42,6 +42,7 @@ namespace AlternativeTextures.Framework.Interfaces.API
 
             model.Owner = owner;
             model.TileSheetPath = tileSheetPath;
+            model.Type = model.GetTextureType();
             model.Texture = _framework.Helper.Content.Load<Texture2D>(model.TileSheetPath, ContentSource.GameContent);
 
             var seasons = model.Seasons;
