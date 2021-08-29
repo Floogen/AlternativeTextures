@@ -124,6 +124,17 @@ namespace AlternativeTextures.Framework.Patches
             return location.getObjectAt(x, y);
         }
 
+        internal static Building GetBuildingAt(GameLocation location, int x, int y)
+        {
+            Vector2 tile = new Vector2(x / 64, y / 64);
+            if (location is Farm farm && farm.buildings.FirstOrDefault(b => b.occupiesTile(tile)) is Building building && building != null)
+            {
+                return building;
+            }
+
+            return null;
+        }
+
         internal static TerrainFeature GetTerrainFeatureAt(GameLocation location, int x, int y)
         {
             Vector2 tile = new Vector2(x / 64, y / 64);
