@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Buildings;
 using StardewValley.Characters;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
@@ -133,6 +134,7 @@ namespace AlternativeTextures.Framework.Patches
 
             return location.terrainFeatures[tile];
         }
+
         internal static Character GetCharacterAt(GameLocation location, int x, int y)
         {
             var tileLocation = new Vector2(x / 64, y / 64);
@@ -258,6 +260,9 @@ namespace AlternativeTextures.Framework.Patches
                 case Character character:
                     AssignCharacterModData(character, modelName, textureModel, -1, trackSeason);
                     return true;
+                case Building building:
+                    AssignBuildingModData(building, modelName, textureModel, -1, trackSeason);
+                    return true;
             }
 
             return false;
@@ -288,6 +293,9 @@ namespace AlternativeTextures.Framework.Patches
                     return true;
                 case Character character:
                     AssignCharacterModData(character, modelName, textureModel, selectedVariation, trackSeason);
+                    return true;
+                case Building building:
+                    AssignBuildingModData(building, modelName, textureModel, selectedVariation, trackSeason);
                     return true;
             }
 
@@ -336,6 +344,19 @@ namespace AlternativeTextures.Framework.Patches
             }
 
             character.modData["AlternativeTextureVariation"] = variation.ToString();
+        }
+
+        private static void AssignBuildingModData(Building building, string modelName, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
+        {
+            building.modData["AlternativeTextureOwner"] = textureModel.Owner;
+            building.modData["AlternativeTextureName"] = String.Concat(textureModel.Owner, ".", modelName);
+
+            if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
+            {
+                building.modData["AlternativeTextureSeason"] = Game1.currentSeason;
+            }
+
+            building.modData["AlternativeTextureVariation"] = variation.ToString();
         }
     }
 }
