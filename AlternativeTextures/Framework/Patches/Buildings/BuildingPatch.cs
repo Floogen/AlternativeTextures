@@ -1,5 +1,6 @@
 ﻿using AlternativeTextures;
 using AlternativeTextures.Framework.Models;
+using AlternativeTextures.Framework.Utilities.Extensions;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -34,6 +35,8 @@ namespace AlternativeTextures.Framework.Patches.Buildings
             harmony.Patch(AccessTools.Method(_entity, nameof(Building.Update), new[] { typeof(GameTime) }), postfix: new HarmonyMethod(GetType(), nameof(UpdatePostfix)));
             harmony.Patch(AccessTools.Method(_entity, nameof(Building.resetTexture), null), prefix: new HarmonyMethod(GetType(), nameof(ResetTexturePrefix)));
             harmony.Patch(AccessTools.Constructor(_entity, new[] { typeof(BluePrint), typeof(Vector2) }), postfix: new HarmonyMethod(GetType(), nameof(BuildingPostfix)));
+
+            harmony.CreateReversePatcher(AccessTools.Method(_entity, nameof(Building.resetTexture), null), new HarmonyMethod(GetType(), nameof(ResetTextureReversePatch))).Patch();
         }
 
         private static void UpdatePostfix(Building __instance, GameTime time)
@@ -65,30 +68,20 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                 var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
                 if (textureModel is null)
                 {
-                    return true;
+                    BuildingPatch.ResetTextureReversePatch(__instance);
+                    return false;
                 }
 
                 var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
                 if (textureVariation == -1)
                 {
-                    return true;
+                    BuildingPatch.ResetTextureReversePatch(__instance);
+                    return false;
                 }
-                var textureOffset = textureVariation * textureModel.TextureHeight;
 
                 __instance.texture = new Lazy<Texture2D>(delegate
                 {
-                    var texture2D = textureModel.Texture;
-                    if (__instance.paintedTexture != null)
-                    {
-                        __instance.paintedTexture.Dispose();
-                        __instance.paintedTexture = null;
-                    }
-                    __instance.paintedTexture = GetPaintedOverlay(__instance, textureModel.TextureWidth / 2, textureOffset, texture2D, __instance.netBuildingPaintColor.Value);
-                    if (__instance.paintedTexture != null)
-                    {
-                        texture2D = __instance.paintedTexture;
-                    }
-                    return textureModel.Texture;
+                    return GetBuildingTextureWithPaint(__instance, textureModel, textureVariation);
                 });
                 return false;
             }
@@ -96,15 +89,32 @@ namespace AlternativeTextures.Framework.Patches.Buildings
             return true;
         }
 
-        private static Texture2D GetPaintedOverlay(Building building, int maskXOffset, int maskYOffset, Texture2D base_texture, BuildingPaintColor color)
+        internal static Texture2D GetBuildingTextureWithPaint(Building building, AlternativeTextureModel textureModel, int textureVariation)
+        {
+            var textureOffset = textureVariation * textureModel.TextureHeight;
+            var texture2D = textureModel.Texture.CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(0, textureOffset, textureModel.TextureWidth / 2, textureModel.TextureHeight));
+            if (building.paintedTexture != null)
+            {
+                building.paintedTexture = null;
+            }
+
+            var paintedTexture2D = textureModel.Texture.CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(textureModel.TextureWidth / 2, textureOffset, textureModel.TextureWidth / 2, textureModel.TextureHeight));
+            building.paintedTexture = GetPaintedOverlay(building, texture2D, paintedTexture2D, building.netBuildingPaintColor.Value);
+            if (building.paintedTexture != null)
+            {
+                texture2D = building.paintedTexture;
+            }
+
+            return texture2D;
+        }
+
+        private static Texture2D GetPaintedOverlay(Building building, Texture2D base_texture, Texture2D paint_mask_texture, BuildingPaintColor color)
         {
             List<List<int>> paint_indices = null;
             try
             {
-                Texture2D paint_mask_texture = base_texture;
-                Rectangle mask_bounds = new Rectangle(maskXOffset, maskYOffset, building.getSourceRect().Width, building.getSourceRect().Height);
-                Color[] mask_pixels = new Color[mask_bounds.Width * mask_bounds.Height];
-                paint_mask_texture.GetData(0, mask_bounds, mask_pixels, 0, mask_bounds.Width * mask_bounds.Height);
+                Color[] mask_pixels = new Color[paint_mask_texture.Width * paint_mask_texture.Height];
+                paint_mask_texture.GetData(mask_pixels);
                 paint_indices = new List<List<int>>();
                 for (int j = 0; j < 3; j++)
                 {
@@ -229,6 +239,11 @@ namespace AlternativeTextures.Framework.Patches.Buildings
             }
 
             AssignDefaultModData(__instance, instanceSeasonName, true);
+        }
+
+        public static void ResetTextureReversePatch(Building __instance)
+        {
+            new NotImplementedException("It's a stub!");
         }
     }
 }
