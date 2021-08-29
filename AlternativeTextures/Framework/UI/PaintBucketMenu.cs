@@ -41,8 +41,7 @@ namespace AlternativeTextures.Framework.UI
         private int _startingRow = 0;
         private int _texturesPerRow = 6;
         private int _maxRows = 4;
-
-        private const float FURNITURE_SCALE = 3f;
+        private float _buildingScale = 3f;
 
         private Object _textureTarget;
         private TextureType _textureType;
@@ -131,6 +130,7 @@ namespace AlternativeTextures.Framework.UI
 
             _textureType = TextureType.Unknown;
 
+            var drawingScale = 4f;
             var widthOffsetScale = 2;
             var sourceRect = GetSourceRectangle(target, availableModels.First().TextureWidth, availableModels.First().TextureHeight, -1);
             if (Enum.TryParse<TextureType>(target.Type, out _textureType))
@@ -160,6 +160,15 @@ namespace AlternativeTextures.Framework.UI
                         _texturesPerRow = 3;
                         widthOffsetScale = 4;
                         sourceRect = new Rectangle(0, 0, 48, 80);
+
+                        switch (textureTileWidth)
+                        {
+                            case int w when textureTileWidth > 4:
+                                _buildingScale = 2f;
+                                break;
+                        }
+
+                        drawingScale = _buildingScale;
                         break;
                 }
             }
@@ -169,7 +178,7 @@ namespace AlternativeTextures.Framework.UI
                 for (int c = 0; c < _texturesPerRow; c++)
                 {
                     var componentId = c + r * _texturesPerRow;
-                    this.availableTextures.Add(new ClickableTextureComponent(new Rectangle(base.xPositionOnScreen + IClickableMenu.borderWidth + componentId % _texturesPerRow * 64 * widthOffsetScale, base.yPositionOnScreen + sourceRect.Height + componentId / _texturesPerRow * (4 * sourceRect.Height), 4 * sourceRect.Width, 4 * sourceRect.Height), availableModels.First().Texture, new Rectangle(), 4f, false)
+                    this.availableTextures.Add(new ClickableTextureComponent(new Rectangle(base.xPositionOnScreen + IClickableMenu.borderWidth + componentId % _texturesPerRow * 64 * widthOffsetScale, base.yPositionOnScreen + sourceRect.Height + componentId / _texturesPerRow * (4 * sourceRect.Height), 4 * sourceRect.Width, 4 * sourceRect.Height), availableModels.First().Texture, new Rectangle(), drawingScale, false)
                     {
                         myID = componentId,
                         downNeighborID = componentId + _texturesPerRow,
@@ -238,16 +247,17 @@ namespace AlternativeTextures.Framework.UI
                 return;
             }
 
+            var maxScale = _textureType == TextureType.Building ? _buildingScale : 4f;
             foreach (ClickableTextureComponent c in this.availableTextures)
             {
                 if (c.containsPoint(x, y))
                 {
-                    c.scale = Math.Min(c.scale + 0.05f, 4.1f);
+                    c.scale = Math.Min(c.scale + 0.05f, maxScale + 0.1f);
                     this.hovered = c;
                 }
                 else
                 {
-                    c.scale = Math.Max(_textureType == TextureType.Building ? FURNITURE_SCALE : 4f, c.scale - 0.025f);
+                    c.scale = Math.Max(maxScale, c.scale - 0.025f);
                 }
             }
 
@@ -417,10 +427,7 @@ namespace AlternativeTextures.Framework.UI
                             else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Building building)
                             {
                                 BuildingPatch.ResetTextureReversePatch(building);
-                                this.availableTextures[i].texture = building.texture.Value;
-                                this.availableTextures[i].sourceRect = building.getSourceRectForMenu();
-                                this.availableTextures[i].draw(b, Color.White, 0.87f);
-                                this.availableTextures[i].scale = FURNITURE_SCALE;
+                                BuildingPatch.CondensedDrawInMenu(building, building.texture.Value, b, this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y, _buildingScale);
                             }
                             else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Tree tree)
                             {
@@ -459,10 +466,7 @@ namespace AlternativeTextures.Framework.UI
                         }
                         else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Building building)
                         {
-                            this.availableTextures[i].texture = BuildingPatch.GetBuildingTextureWithPaint(building, textureModel, variation);
-                            this.availableTextures[i].sourceRect = building.getSourceRectForMenu();
-                            this.availableTextures[i].draw(b, Color.White, 0.87f);
-                            this.availableTextures[i].scale = FURNITURE_SCALE;
+                            BuildingPatch.CondensedDrawInMenu(building, BuildingPatch.GetBuildingTextureWithPaint(building, textureModel, variation), b, this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y, _buildingScale);
                         }
                         else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Tree tree)
                         {
@@ -650,15 +654,6 @@ namespace AlternativeTextures.Framework.UI
 
             sourceRect.Y = sourceRectOffset + (character.Sprite.currentFrame * character.Sprite.SpriteWidth / character.Sprite.Texture.Width * character.Sprite.SpriteHeight);
             return sourceRect;
-        }
-
-        private Rectangle GetBuildingSourceRect(Building building, int textureHeight, int variation)
-        {
-            int sourceRectOffset = textureHeight * variation;
-            Rectangle source_rect = building.getSourceRectForMenu();
-
-            source_rect.Y += sourceRectOffset;
-            return source_rect;
         }
     }
 }
