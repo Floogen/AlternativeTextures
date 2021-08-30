@@ -141,17 +141,17 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             if (Game1.activeClickableMenu is PaintBucketMenu)
             {
                 var texture = Furniture.furnitureTexture;
-                var sourceRect = __instance.sourceRect.Value;
-                sourceRect.X += sourceRect.Width * ___sourceIndexOffset.Value;
+                var sourceRect = __instance.rotations > 1 ? __instance.sourceRect.Value : __instance.defaultSourceRect.Value;
 
                 if (__instance.modData.ContainsKey("AlternativeTextureName") && AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]) is AlternativeTextureModel textureModel && Int32.Parse(__instance.modData["AlternativeTextureVariation"]) != -1)
                 {
                     texture = textureModel.Texture;
-                    sourceRect.X = __instance.sourceRect.X - __instance.defaultSourceRect.X;
+                    sourceRect.X = Math.Max(0, __instance.sourceRect.X - __instance.defaultSourceRect.X);
                     sourceRect.Y = Int32.Parse(__instance.modData["AlternativeTextureVariation"]) * textureModel.TextureHeight;
                 }
 
-                spriteBatch.Draw(texture, location + new Vector2(32f, 32f), sourceRect, color * transparency, 0f, new Vector2(sourceRect.Width / 2, sourceRect.Height / 2), 1f * GetScaleSize(sourceRect) * scaleSize, SpriteEffects.None, layerDepth);
+                sourceRect.X += sourceRect.Width * ___sourceIndexOffset.Value;
+                spriteBatch.Draw(texture, location + new Vector2(32f, 32f), sourceRect, color * transparency, 0f, new Vector2(sourceRect.Width / 2, sourceRect.Height / 2), 1f * GetScaleSize(sourceRect) * scaleSize, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, layerDepth);
 
                 return false;
             }
