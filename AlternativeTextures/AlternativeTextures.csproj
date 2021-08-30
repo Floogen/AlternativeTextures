@@ -102,6 +102,7 @@
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\FishPond\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\Greenhouse\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\Mill\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Buildings\DesertObelisk\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\SlimeHutch\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\Silo\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\Well\texture.json" />
@@ -192,6 +193,7 @@
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\FishPond\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\Greenhouse\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\Mill\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Buildings\DesertObelisk\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\SlimeHutch\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\Silo\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\Well\texture.png" />
