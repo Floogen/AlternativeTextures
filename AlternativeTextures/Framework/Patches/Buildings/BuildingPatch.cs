@@ -120,17 +120,8 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                 case ShippingBin shippingBin:
                 case Stable stable:
                 default:
-                    if ((int)building.tilesWide <= 8)
-                    {
-                        //building.drawShadow(b, x, y);
-                        b.Draw(texture, new Vector2(x, y), building.getSourceRect(), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
-                    }
-                    else
-                    {
-                        int xOffset = 108;
-                        int yOffset = 28;
-                        b.Draw(texture, new Vector2(x + xOffset, y + yOffset), new Rectangle(building.getSourceRect().Width / 2 - 64, building.getSourceRect().Height - 136 - 2, 122, 138), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
-                    }
+                    //building.drawShadow(b, x, y);
+                    b.Draw(texture, new Vector2(x, y), building.getSourceRect(), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
 
                     if (building is ShippingBin)
                     {
