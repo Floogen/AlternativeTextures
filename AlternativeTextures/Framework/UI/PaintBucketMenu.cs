@@ -155,6 +155,17 @@ namespace AlternativeTextures.Framework.UI
                         widthOffsetScale = 4;
                         sourceRect = new Rectangle(0, 0, 48, 80);
                         break;
+                    case TextureType.Furniture:
+                        if (sourceRect.Height >= 64)
+                        {
+                            _maxRows = 2;
+                        }
+                        else if (sourceRect.Height <= 16)
+                        {
+                            sourceRect.Height = 32;
+                        }
+
+                        break;
                     case TextureType.Building:
                         _maxRows = 1;
                         _texturesPerRow = 3;
