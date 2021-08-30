@@ -141,8 +141,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 // Assign default data if none exists
                 if (!targetedObject.modData.ContainsKey("AlternativeTextureName"))
                 {
-                    var modelType = targetedObject is Furniture ? AlternativeTextureModel.TextureType.Furniture : AlternativeTextureModel.TextureType.Craftable;
-                    var instanceSeasonName = $"{modelType}_{GetObjectName(targetedObject)}_{Game1.currentSeason}";
+                    var instanceSeasonName = $"{GetTextureType(targetedObject)}_{GetObjectName(targetedObject)}_{Game1.currentSeason}";
                     AssignDefaultModData(targetedObject, instanceSeasonName, true);
                 }
 
@@ -159,6 +158,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 }
 
                 // Display texture menu
+                targetedObject.Type = GetTextureType(targetedObject).ToString();
                 Game1.activeClickableMenu = new PaintBucketMenu(targetedObject, modelName);
 
                 return CancelUsing(who);
@@ -289,6 +289,10 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     return TextureType.FruitTree;
                 case Building building:
                     return TextureType.Building;
+                case Furniture furniture:
+                    return TextureType.Furniture;
+                case Object craftable:
+                    return TextureType.Craftable;
                 default:
                     return TextureType.Unknown;
             }
