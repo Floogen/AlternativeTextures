@@ -104,6 +104,7 @@
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\Mill\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\SlimeHutch\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\Silo\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Buildings\Well\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\Stable\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Chickens\BabyWhiteChicken\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Chickens\WhiteChicken\texture.json" />
@@ -193,6 +194,7 @@
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\Mill\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\SlimeHutch\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\Silo\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Buildings\Well\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\Stable\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Chickens\BabyWhiteChicken\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Chickens\WhiteChicken\texture.png" />
