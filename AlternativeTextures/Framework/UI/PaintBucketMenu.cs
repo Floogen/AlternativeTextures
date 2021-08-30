@@ -159,7 +159,7 @@ namespace AlternativeTextures.Framework.UI
                         _maxRows = 1;
                         _texturesPerRow = 3;
                         widthOffsetScale = 4;
-                        sourceRect = new Rectangle(0, 0, 48, 80);
+                        sourceRect = new Rectangle(0, 0, 48, 160);
 
                         switch (textureTileWidth)
                         {
@@ -168,7 +168,6 @@ namespace AlternativeTextures.Framework.UI
                                 break;
                             case int w when w >= 8:
                                 _buildingScale = 1f;
-                                sourceRect.Height = 160;
                                 break;
                         }
 
