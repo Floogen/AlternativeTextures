@@ -163,8 +163,12 @@ namespace AlternativeTextures.Framework.UI
 
                         switch (textureTileWidth)
                         {
-                            case int w when textureTileWidth > 4:
+                            case int w when w > 4 && w < 8:
                                 _buildingScale = 2f;
+                                break;
+                            case int w when w >= 8:
+                                _buildingScale = 1f;
+                                sourceRect.Height = 160;
                                 break;
                         }
 
