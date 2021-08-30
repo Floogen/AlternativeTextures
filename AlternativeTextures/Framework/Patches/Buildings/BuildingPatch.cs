@@ -131,6 +131,11 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                         int yOffset = 28;
                         b.Draw(texture, new Vector2(x + xOffset, y + yOffset), new Rectangle(building.getSourceRect().Width / 2 - 64, building.getSourceRect().Height - 136 - 2, 122, 138), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
                     }
+
+                    if (building is ShippingBin)
+                    {
+                        b.Draw(Game1.mouseCursors, new Vector2(x + 4, y - 20), new Rectangle(134, 226, 30, 25), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 1f);
+                    }
                     return;
             }
         }
@@ -165,18 +170,22 @@ namespace AlternativeTextures.Framework.Patches.Buildings
 
         internal static Texture2D GetBuildingTextureWithPaint(Building building, AlternativeTextureModel textureModel, int textureVariation)
         {
-            var textureOffset = textureVariation * textureModel.TextureHeight;
-            var texture2D = textureModel.Texture.CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(0, textureOffset, textureModel.TextureWidth / 2, textureModel.TextureHeight));
+            var yOffset = textureVariation * textureModel.TextureHeight;
+            var texture2D = textureModel.Texture.CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(0, yOffset, building.tilesWide * 16, textureModel.TextureHeight));
             if (building.paintedTexture != null)
             {
                 building.paintedTexture = null;
             }
 
-            var paintedTexture2D = textureModel.Texture.CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(textureModel.TextureWidth / 2, textureOffset, textureModel.TextureWidth / 2, textureModel.TextureHeight));
-            building.paintedTexture = GetPaintedOverlay(building, texture2D, paintedTexture2D, building.netBuildingPaintColor.Value);
-            if (building.paintedTexture != null)
+            var xOffset = building.tilesWide * 16;
+            if (xOffset * 2 <= textureModel.Texture.Width)
             {
-                texture2D = building.paintedTexture;
+                var paintedTexture2D = textureModel.Texture.CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(xOffset, yOffset, xOffset, textureModel.TextureHeight));
+                building.paintedTexture = GetPaintedOverlay(building, texture2D, paintedTexture2D, building.netBuildingPaintColor.Value);
+                if (building.paintedTexture != null)
+                {
+                    texture2D = building.paintedTexture;
+                }
             }
 
             return texture2D;
