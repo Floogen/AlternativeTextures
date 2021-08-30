@@ -98,6 +98,7 @@
     <None Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\DeluxeCoop\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\DeluxeBarn\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Buildings\Silo\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\Stable\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Chickens\BabyWhiteChicken\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Chickens\WhiteChicken\texture.json" />
@@ -181,6 +182,7 @@
     <Content Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\DeluxeCoop\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\DeluxeBarn\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Buildings\Silo\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\Stable\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Chickens\BabyWhiteChicken\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Chickens\WhiteChicken\texture.png" />
