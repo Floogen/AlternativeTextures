@@ -1,0 +1,7 @@
+{
+  "ItemName": "Cat",
+  "Type": "Character",
+  "TextureWidth": 128,
+  "TextureHeight": 256,
+  "Variations": 2
+}
