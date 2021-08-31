@@ -119,6 +119,7 @@
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Sheep\Sheep\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Humans\Children\Baby\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Humans\Children\Toddler\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Entities\Pets\Dog\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Pets\Cat\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\BrownCouch\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\OrnateLamp\texture.json" />
@@ -211,6 +212,7 @@
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Sheep\Sheep\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Humans\Children\Baby\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Humans\Children\Toddler\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Entities\Pets\Dog\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Pets\Cat\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\BrownCouch\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\OrnateLamp\texture.png" />
