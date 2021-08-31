@@ -112,6 +112,7 @@ namespace AlternativeTextures
                 new ChildPatch(monitor).Apply(harmony);
                 new FarmAnimalPatch(monitor).Apply(harmony);
                 new HorsePatch(monitor).Apply(harmony);
+                new PetPatch(monitor).Apply(harmony);
 
                 // Start of building patches
                 new BuildingPatch(monitor).Apply(harmony);

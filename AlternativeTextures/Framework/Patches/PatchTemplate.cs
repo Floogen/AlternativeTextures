@@ -116,6 +116,11 @@ namespace AlternativeTextures.Framework.Patches
                 return "Horse";
             }
 
+            if (character is Pet pet)
+            {
+                return pet is Cat ? "Cat" : "Dog";
+            }
+
             return character.name;
         }
 
@@ -171,11 +176,16 @@ namespace AlternativeTextures.Framework.Patches
                 }
             }
 
-            foreach (var horse in location.characters.Where(c => c is Horse))
+            foreach (var specialCharacter in location.characters.Where(c => c is Horse || c is Pet))
             {
-                if ((horse as Horse).GetBoundingBox().Intersects(rectangle))
+                if (specialCharacter is Horse horse && horse.GetBoundingBox().Intersects(rectangle))
                 {
                     return horse;
+                }
+
+                if (specialCharacter is Pet pet && pet.GetBoundingBox().Intersects(rectangle))
+                {
+                    return pet;
                 }
             }
 
