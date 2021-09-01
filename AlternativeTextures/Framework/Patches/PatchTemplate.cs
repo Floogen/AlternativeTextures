@@ -276,8 +276,29 @@ namespace AlternativeTextures.Framework.Patches
             }
         }
 
+        internal static bool HasCachedTextureName<T>(T type, bool probe = false)
+        {
+            if (type is Object obj && obj.modData.ContainsKey("AlternativeTextureNameCached"))
+            {
+                if (!probe)
+                {
+                    obj.modData["AlternativeTextureName"] = obj.modData["AlternativeTextureNameCached"];
+                    obj.modData.Remove("AlternativeTextureNameCached");
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
         internal static bool AssignDefaultModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false)
         {
+            if (HasCachedTextureName(type))
+            {
+                return false;
+            }
+
             var textureModel = new AlternativeTextureModel() { Owner = AlternativeTextures.DEFAULT_OWNER, Season = trackSeason ? Game1.currentSeason : String.Empty };
             switch (type)
             {
@@ -300,6 +321,11 @@ namespace AlternativeTextures.Framework.Patches
 
         internal static bool AssignModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false)
         {
+            if (HasCachedTextureName(type))
+            {
+                return false;
+            }
+
             var textureModel = AlternativeTextures.textureManager.GetRandomTextureModel(modelName);
 
             var selectedVariation = Game1.random.Next(-1, textureModel.Variations);
