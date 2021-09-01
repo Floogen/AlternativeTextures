@@ -135,7 +135,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 }
             }
 
-            var targetedObject = location.getObjectAt(x, y);
+            var targetedObject = GetObjectAt(location, x, y);
             if (targetedObject != null)
             {
                 // Assign default data if none exists
