@@ -126,6 +126,15 @@ namespace AlternativeTextures.Framework.Patches
 
         internal static Object GetObjectAt(GameLocation location, int x, int y)
         {
+            // If object is furniture and currently has something on top of it, check that instead
+            foreach (var furniture in location.furniture.Where(c => c.heldObject.Value != null))
+            {
+                if (furniture.boundingBox.Value.Contains(x, y))
+                {
+                    return furniture.heldObject.Value;
+                }
+            }
+
             return location.getObjectAt(x, y);
         }
 
