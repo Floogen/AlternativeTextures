@@ -102,12 +102,8 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                     b.Draw(texture, new Vector2(x, y - 128), new Rectangle(80, 0, 80, 48), building.color.Value * alpha, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 1f);
                     return;
                 case GreenhouseBuilding greenhouse:
-                    Rectangle rectangle = building.getSourceRect();
-                    y += 336;
-                    int amount_to_trim = 22;
-                    rectangle.Height -= amount_to_trim;
-                    rectangle.Y += amount_to_trim / 2;
-                    b.Draw(texture, new Vector2(x, y), rectangle, building.color, 0f, new Vector2(0f, rectangle.Height / 2), scale, SpriteEffects.None, 0.89f);
+                    Rectangle rectangle = greenhouse.getSourceRect();
+                    b.Draw(texture, new Vector2(x, y + 128), rectangle, building.color, 0f, new Vector2(0f, rectangle.Height / 2), scale, SpriteEffects.None, 0.89f);
                     return;
                 case JunimoHut junimoHut:
                     //building.drawShadow(b, x, y);
