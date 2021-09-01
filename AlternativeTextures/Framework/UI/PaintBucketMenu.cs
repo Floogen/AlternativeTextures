@@ -434,9 +434,15 @@ namespace AlternativeTextures.Framework.UI
                                 this.availableTextures[i].sourceRect = character.Sprite.SourceRect;
                                 this.availableTextures[i].draw(b, Color.White, 0.87f);
                             }
+                            else if (_textureType is TextureType.Craftable && PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) != null)
+                            {
+                                this.availableTextures[i].texture = _textureTarget.bigCraftable ? Game1.bigCraftableSpriteSheet : Game1.objectSpriteSheet;
+                                this.availableTextures[i].sourceRect = _textureTarget.bigCraftable ? Object.getSourceRectForBigCraftable(_textureTarget.parentSheetIndex) : GameLocation.getSourceRectForObject(_textureTarget.ParentSheetIndex);
+                                this.availableTextures[i].draw(b, Color.White, 0.87f);
+                            }
                             else if (PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) != null)
                             {
-                                this.availableTextures[i].item.drawInMenu(b, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y + 32f), 2f, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
+                                this.availableTextures[i].item.drawInMenu(b, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y + 32f), 2, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
                             }
                             else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Building building)
                             {
