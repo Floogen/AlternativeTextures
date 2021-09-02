@@ -432,6 +432,7 @@ namespace AlternativeTextures
                                 }
 
                                 stitchedTexture.SetData(pixels);
+                                textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(parentFolderName, textureFolder.Name, Path.GetFileName(textureFilePaths.First())));
                                 textureModel.Texture = stitchedTexture;
                             }
                             else
