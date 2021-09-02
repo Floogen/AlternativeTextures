@@ -32,10 +32,16 @@ namespace AlternativeTextures
 {
     public class AlternativeTextures : Mod
     {
+        // Core modData keys
         internal const string TEXTURE_TOKEN_HEADER = "AlternativeTextures/Textures/";
         internal const string TOOL_TOKEN_HEADER = "AlternativeTextures/Tools/";
         internal const string DEFAULT_OWNER = "Stardew.Default";
+
+        // Compatibility keys
         internal const string TOOL_CONVERSION_COMPATIBILITY = "AlternativeTextures.HasConvertedMilkPails";
+        internal const string TYPE_FIX_COMPATIBILITY = "AlternativeTextures.HasFixedBadObjectTyping";
+
+        // Tool related keys
         internal const string PAINT_BUCKET_FLAG = "AlternativeTextures.PaintBucketFlag";
         internal const string OLD_PAINT_BUCKET_FLAG = "AlternativeTexturesPaintBucketFlag";
         internal const string PAINT_BRUSH_FLAG = "AlternativeTextures.PaintBrushFlag";
@@ -309,6 +315,12 @@ namespace AlternativeTextures
                 Monitor.Log($"Converting old Paint Buckets into generic tools...", LogLevel.Debug);
                 Game1.player.modData[TOOL_CONVERSION_COMPATIBILITY] = true.ToString();
                 ConvertPaintBucketsToGenericTools(Game1.player);
+            }
+            if (!Game1.player.modData.ContainsKey(TYPE_FIX_COMPATIBILITY))
+            {
+                Monitor.Log($"Fixing bad object and bigcraftable typings...", LogLevel.Debug);
+                Game1.player.modData[TYPE_FIX_COMPATIBILITY] = true.ToString();
+                FixBadObjectTyping();
             }
         }
 
@@ -612,6 +624,59 @@ namespace AlternativeTextures
                         if (chest.items[i] is MilkPail milkPail && milkPail.modData.ContainsKey(OLD_PAINT_BUCKET_FLAG))
                         {
                             chest.items[i] = PatchTemplate.GetPaintBucketTool();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void FixBadObjectTyping()
+        {
+            foreach (var location in Game1.locations)
+            {
+                ConvertBadTypedObjectToNormalType(location);
+
+                if (location is BuildableGameLocation)
+                {
+                    foreach (var building in (location as BuildableGameLocation).buildings)
+                    {
+                        GameLocation indoorLocation = building.indoors.Value;
+                        if (indoorLocation is null)
+                        {
+                            continue;
+                        }
+
+                        ConvertBadTypedObjectToNormalType(indoorLocation);
+                    }
+                }
+            }
+        }
+
+        private void ConvertBadTypedObjectToNormalType(GameLocation location)
+        {
+            foreach (var obj in location.objects.Values.Where(o => o.modData.ContainsKey("AlternativeTextureName")))
+            {
+                if (obj.Type == "Craftable" || obj.Type == "Unknown")
+                {
+                    if (obj.bigCraftable && Game1.bigCraftablesInformation.TryGetValue(obj.parentSheetIndex, out var bigObjectInfo))
+                    {
+                        string[] objectInfoArray = bigObjectInfo.Split('/');
+                        string[] typeAndCategory = objectInfoArray[3].Split(' ');
+                        obj.type.Value = typeAndCategory[0];
+
+                        if (typeAndCategory.Length > 1)
+                        {
+                            obj.Category = Convert.ToInt32(typeAndCategory[1]);
+                        }
+                    }
+                    else if (!obj.bigCraftable && Game1.objectInformation.TryGetValue(obj.parentSheetIndex, out var objectInfo))
+                    {
+                        string[] objectInfoArray = objectInfo.Split('/');
+                        string[] typeAndCategory = objectInfoArray[3].Split(' ');
+                        obj.type.Value = typeAndCategory[0];
+                        if (typeAndCategory.Length > 1)
+                        {
+                            obj.Category = Convert.ToInt32(typeAndCategory[1]);
                         }
                     }
                 }
