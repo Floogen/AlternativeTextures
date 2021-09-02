@@ -63,7 +63,7 @@ namespace AlternativeTextures.Framework.UI
 
             Vector2 topLeft = Utility.getTopLeftPositionForCenteringOnScreen(base.width, base.height);
             base.xPositionOnScreen = (int)topLeft.X;
-            base.yPositionOnScreen = (int)topLeft.Y + 32;
+            base.yPositionOnScreen = (int)topLeft.Y;
 
             // Populate the texture selection components
             var availableModels = AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation));
@@ -510,14 +510,15 @@ namespace AlternativeTextures.Framework.UI
                 queryButton.draw(b);
             }
 
+            var hoverDisplayName = "Hover over an item to see its texture name!";
             if (this.hovered != null && this.hovered.item != null)
             {
-                if (this.hovered.item.modData.ContainsKey("AlternativeTextureName") && this.hovered.item.modData.ContainsKey("AlternativeTextureVariation"))
+                if (this.hovered.item.modData.ContainsKey("AlternativeTextureOwner") && this.hovered.item.modData.ContainsKey("AlternativeTextureVariation"))
                 {
-                    var displayName = String.Concat(this.hovered.item.modData["AlternativeTextureName"], "_", Int32.Parse(this.hovered.item.modData["AlternativeTextureVariation"]) + 1);
-                    IClickableMenu.drawHoverText(b, Game1.parseText(displayName, Game1.dialogueFont, 320), Game1.dialogueFont);
+                    hoverDisplayName = String.Concat(this.hovered.item.modData["AlternativeTextureOwner"], " > ", Int32.Parse(this.hovered.item.modData["AlternativeTextureVariation"]) + 1);
                 }
             }
+            SpriteText.drawStringWithScrollCenteredAt(b, hoverDisplayName, Game1.uiViewport.Width / 2, base.yPositionOnScreen + base.height + 16, "Hover over an item to see its texture name!");
 
             if (_startingRow > 0)
             {
