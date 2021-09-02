@@ -404,13 +404,42 @@ namespace AlternativeTextures
                             // Verify we are given a texture and if so, track it
                             if (!File.Exists(Path.Combine(textureFolder.FullName, "texture.png")))
                             {
-                                Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: No associated texture.png given", LogLevel.Warn);
-                                continue;
-                            }
+                                // No texture.png found, may be using split texture files (texture_1.png, texture_2.png, etc.)
+                                var textureFilePaths = Directory.GetFiles(textureFolder.FullName, "texture_*.png").OrderBy(t => t);
+                                if (textureFilePaths.Count() == 0)
+                                {
+                                    Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: No associated texture.png or split textures (texture_1.png, texture_2.png, etc.) given", LogLevel.Warn);
+                                    continue;
+                                }
 
-                            // Load in the texture
-                            textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(parentFolderName, textureFolder.Name, "texture.png"));
-                            textureModel.Texture = contentPack.LoadAsset<Texture2D>(textureModel.TileSheetPath);
+                                // Load in the first texture_#.png to get its dimensions for creating stitchedTexture
+                                Texture2D baseTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(parentFolderName, textureFolder.Name, Path.GetFileName(textureFilePaths.First())));
+                                Texture2D stitchedTexture = new Texture2D(Game1.graphics.GraphicsDevice, baseTexture.Width, baseTexture.Height * textureFilePaths.Count());
+
+                                // Now stitch together the split textures into a single texture
+                                Color[] pixels = new Color[stitchedTexture.Width * stitchedTexture.Height];
+                                for (int x = 0; x < textureFilePaths.Count(); x++)
+                                {
+                                    var offset = x * baseTexture.Width * baseTexture.Height;
+                                    var subTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(parentFolderName, textureFolder.Name, Path.GetFileName(textureFilePaths.ElementAt(x))));
+
+                                    Color[] subPixels = new Color[subTexture.Width * subTexture.Height];
+                                    subTexture.GetData(subPixels);
+                                    for (int i = 0; i < subPixels.Length; i++)
+                                    {
+                                        pixels[i + offset] = subPixels[i];
+                                    }
+                                }
+
+                                stitchedTexture.SetData(pixels);
+                                textureModel.Texture = stitchedTexture;
+                            }
+                            else
+                            {
+                                // Load in the single vertical texture
+                                textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(parentFolderName, textureFolder.Name, "texture.png"));
+                                textureModel.Texture = contentPack.LoadAsset<Texture2D>(textureModel.TileSheetPath);
+                            }
 
                             // Set the season (if any)
                             textureModel.Season = seasons.Count() == 0 ? String.Empty : seasons[s];
