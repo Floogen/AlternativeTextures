@@ -274,28 +274,5 @@ namespace AlternativeTextures.Framework.Patches.Tools
             who.UsingTool = false;
             return false;
         }
-
-        private static TextureType GetTextureType(object obj)
-        {
-            switch (obj)
-            {
-                case Character character:
-                    return TextureType.Character;
-                case Flooring floor:
-                    return TextureType.Flooring;
-                case Tree tree:
-                    return TextureType.Tree;
-                case FruitTree fruitTree:
-                    return TextureType.FruitTree;
-                case Building building:
-                    return TextureType.Building;
-                case Furniture furniture:
-                    return TextureType.Furniture;
-                case Object craftable:
-                    return TextureType.Craftable;
-                default:
-                    return TextureType.Unknown;
-            }
-        }
     }
 }
