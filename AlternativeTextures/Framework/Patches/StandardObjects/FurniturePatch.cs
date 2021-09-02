@@ -87,7 +87,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                     {
                         (__instance.heldObject.Value as Furniture).drawAtNonTileSpot(spriteBatch, Game1.GlobalToLocal(Game1.viewport, new Vector2(__instance.boundingBox.Center.X - 32, __instance.boundingBox.Center.Y - (__instance.heldObject.Value as Furniture).sourceRect.Height * 4 - (__instance.drawHeldObjectLow ? (-16) : 16))), (float)(__instance.boundingBox.Bottom - 7) / 10000f, alpha);
                     }
-                    else
+                    else if (HeldObjectDraw(__instance.heldObject, spriteBatch, Game1.GlobalToLocal(Game1.viewport, new Vector2(__instance.boundingBox.Center.X - 32, __instance.boundingBox.Center.Y - (__instance.drawHeldObjectLow ? 32 : 85))), (float)(__instance.boundingBox.Bottom + 1) / 10000f, alpha))
                     {
                         spriteBatch.Draw(Game1.shadowTexture, Game1.GlobalToLocal(Game1.viewport, new Vector2(__instance.boundingBox.Center.X - 32, __instance.boundingBox.Center.Y - (__instance.drawHeldObjectLow ? 32 : 85))) + new Vector2(32f, 53f), Game1.shadowTexture.Bounds, Color.White * alpha, 0f, new Vector2(Game1.shadowTexture.Bounds.Center.X, Game1.shadowTexture.Bounds.Center.Y), 4f, SpriteEffects.None, (float)__instance.boundingBox.Bottom / 10000f);
                         spriteBatch.Draw(Game1.objectSpriteSheet, Game1.GlobalToLocal(Game1.viewport, new Vector2(__instance.boundingBox.Center.X - 32, __instance.boundingBox.Center.Y - (__instance.drawHeldObjectLow ? 32 : 85))), GameLocation.getSourceRectForObject(__instance.heldObject.Value.ParentSheetIndex), Color.White * alpha, 0f, Vector2.Zero, 4f, SpriteEffects.None, (float)(__instance.boundingBox.Bottom + 1) / 10000f);
@@ -102,6 +102,40 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 {
                     spriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(__instance.boundingBox.Center.X - 20, (float)__instance.boundingBox.Center.Y - 105.6f)), new Rectangle(276 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + (double)(x * 3047) + (double)(y * 88)) % 400.0 / 100.0) * 12, 1985, 12, 11), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, (float)(__instance.getBoundingBox(new Vector2(x, y)).Bottom - 2) / 10000f);
                 }
+
+                return false;
+            }
+            return true;
+        }
+
+        private static bool HeldObjectDraw(Object __instance, SpriteBatch spriteBatch, Vector2 location, float layerDepth, float alpha = 1f)
+        {
+            if (__instance.modData.ContainsKey("AlternativeTextureName"))
+            {
+                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
+                if (textureModel is null)
+                {
+                    return true;
+                }
+
+                var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
+                if (textureVariation == -1)
+                {
+                    return true;
+                }
+                var textureOffset = textureVariation * textureModel.TextureHeight;
+
+                // Get the current X index for the source tile
+                var xTileOffset = __instance.modData.ContainsKey("AlternativeTextureSheetId") ? __instance.ParentSheetIndex - Int32.Parse(__instance.modData["AlternativeTextureSheetId"]) : 0;
+                if (__instance.showNextIndex)
+                {
+                    xTileOffset += 1;
+                }
+                xTileOffset *= textureModel.TextureWidth;
+
+                // Replicate the base draw
+                Rectangle sourceRect = new Rectangle(xTileOffset, textureOffset, textureModel.TextureWidth, textureModel.TextureHeight);
+                spriteBatch.Draw(textureModel.Texture, location, sourceRect, Color.White * alpha, 0f, Vector2.Zero, 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, layerDepth);
 
                 return false;
             }
@@ -141,17 +175,17 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             if (Game1.activeClickableMenu is PaintBucketMenu)
             {
                 var texture = Furniture.furnitureTexture;
-                var sourceRect = __instance.sourceRect.Value;
-                sourceRect.X += sourceRect.Width * ___sourceIndexOffset.Value;
+                var sourceRect = __instance.rotations > 1 ? __instance.sourceRect.Value : __instance.defaultSourceRect.Value;
 
                 if (__instance.modData.ContainsKey("AlternativeTextureName") && AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]) is AlternativeTextureModel textureModel && Int32.Parse(__instance.modData["AlternativeTextureVariation"]) != -1)
                 {
                     texture = textureModel.Texture;
-                    sourceRect.X = __instance.sourceRect.X - __instance.defaultSourceRect.X;
+                    sourceRect.X = Math.Max(0, __instance.sourceRect.X - __instance.defaultSourceRect.X);
                     sourceRect.Y = Int32.Parse(__instance.modData["AlternativeTextureVariation"]) * textureModel.TextureHeight;
                 }
 
-                spriteBatch.Draw(texture, location + new Vector2(32f, 32f), sourceRect, color * transparency, 0f, new Vector2(sourceRect.Width / 2, sourceRect.Height / 2), 1f * GetScaleSize(sourceRect) * scaleSize, SpriteEffects.None, layerDepth);
+                sourceRect.X += sourceRect.Width * ___sourceIndexOffset.Value;
+                spriteBatch.Draw(texture, location + new Vector2(32f, 32f), sourceRect, color * transparency, 0f, new Vector2(sourceRect.Width / 2, sourceRect.Height / 2), 1f * GetScaleSize(sourceRect) * scaleSize, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, layerDepth);
 
                 return false;
             }

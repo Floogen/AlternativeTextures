@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Buildings;
 using StardewValley.Characters;
 using StardewValley.Locations;
 using StardewValley.Objects;
@@ -96,14 +97,51 @@ namespace AlternativeTextures.Framework.Patches.Tools
 
         private static bool UsePaintBucket(GameLocation location, int x, int y, Farmer who)
         {
-            var targetedObject = location.getObjectAt(x, y);
+            if (location is Farm farm)
+            {
+                var targetedBuilding = farm.getBuildingAt(new Vector2(x / 64, y / 64));
+                if (targetedBuilding != null)
+                {
+                    // Assign default data if none exists
+                    if (!targetedBuilding.modData.ContainsKey("AlternativeTextureName"))
+                    {
+                        var modelType = AlternativeTextureModel.TextureType.Building;
+                        var instanceSeasonName = $"{modelType}_{targetedBuilding.buildingType}_{Game1.currentSeason}";
+                        AssignDefaultModData(targetedBuilding, instanceSeasonName, true);
+                    }
+
+                    var modelName = targetedBuilding.modData["AlternativeTextureName"].Replace($"{targetedBuilding.modData["AlternativeTextureOwner"]}.", String.Empty);
+                    if (targetedBuilding.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(targetedBuilding.modData["AlternativeTextureSeason"]))
+                    {
+                        modelName = modelName.Replace($"_{targetedBuilding.modData["AlternativeTextureSeason"]}", String.Empty);
+                    }
+
+                    if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
+                    {
+                        Game1.addHUDMessage(new HUDMessage($"{modelName} has no alternative textures for this season!", 3));
+                        return CancelUsing(who);
+                    }
+
+                    // Display texture menu
+                    var buildingObj = new Object(100, 1, isRecipe: false, -1)
+                    {
+                        Type = GetTextureType(targetedBuilding).ToString(),
+                        TileLocation = new Vector2(targetedBuilding.tileX, targetedBuilding.tileY),
+                        modData = targetedBuilding.modData
+                    };
+                    Game1.activeClickableMenu = new PaintBucketMenu(buildingObj, modelName, textureTileWidth: targetedBuilding.tilesWide);
+
+                    return CancelUsing(who);
+                }
+            }
+
+            var targetedObject = GetObjectAt(location, x, y);
             if (targetedObject != null)
             {
                 // Assign default data if none exists
                 if (!targetedObject.modData.ContainsKey("AlternativeTextureName"))
                 {
-                    var modelType = targetedObject is Furniture ? AlternativeTextureModel.TextureType.Furniture : AlternativeTextureModel.TextureType.Craftable;
-                    var instanceSeasonName = $"{modelType}_{GetObjectName(targetedObject)}_{Game1.currentSeason}";
+                    var instanceSeasonName = $"{GetTextureType(targetedObject)}_{GetObjectName(targetedObject)}_{Game1.currentSeason}";
                     AssignDefaultModData(targetedObject, instanceSeasonName, true);
                 }
 
@@ -120,6 +158,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 }
 
                 // Display texture menu
+                targetedObject.Type = GetTextureType(targetedObject).ToString();
                 Game1.activeClickableMenu = new PaintBucketMenu(targetedObject, modelName);
 
                 return CancelUsing(who);
@@ -248,6 +287,12 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     return TextureType.Tree;
                 case FruitTree fruitTree:
                     return TextureType.FruitTree;
+                case Building building:
+                    return TextureType.Building;
+                case Furniture furniture:
+                    return TextureType.Furniture;
+                case Object craftable:
+                    return TextureType.Craftable;
                 default:
                     return TextureType.Unknown;
             }

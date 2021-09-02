@@ -125,6 +125,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
         {
             if (__instance.modData.ContainsKey("AlternativeTextureName"))
             {
+                __instance.modData["AlternativeTextureNameCached"] = __instance.modData["AlternativeTextureName"];
                 __instance.modData.Remove("AlternativeTextureName");
             }
             return true;

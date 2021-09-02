@@ -1,10 +1,12 @@
 ﻿using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.Patches;
+using AlternativeTextures.Framework.Patches.Buildings;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
+using StardewValley.Buildings;
 using StardewValley.Menus;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
@@ -39,11 +41,12 @@ namespace AlternativeTextures.Framework.UI
         private int _startingRow = 0;
         private int _texturesPerRow = 6;
         private int _maxRows = 4;
+        private float _buildingScale = 3f;
 
         private Object _textureTarget;
         private TextureType _textureType;
 
-        public PaintBucketMenu(Object target, string modelName, string uiTitle = "Paint Bucket") : base(0, 0, 832, 576, showUpperRightCloseButton: true)
+        public PaintBucketMenu(Object target, string modelName, string uiTitle = "Paint Bucket", int textureTileWidth = -1) : base(0, 0, 832, 576, showUpperRightCloseButton: true)
         {
             if (!target.modData.ContainsKey("AlternativeTextureOwner") || !target.modData.ContainsKey("AlternativeTextureName"))
             {
@@ -127,6 +130,7 @@ namespace AlternativeTextures.Framework.UI
 
             _textureType = TextureType.Unknown;
 
+            var drawingScale = 4f;
             var widthOffsetScale = 2;
             var sourceRect = GetSourceRectangle(target, availableModels.First().TextureWidth, availableModels.First().TextureHeight, -1);
             if (Enum.TryParse<TextureType>(target.Type, out _textureType))
@@ -151,6 +155,35 @@ namespace AlternativeTextures.Framework.UI
                         widthOffsetScale = 4;
                         sourceRect = new Rectangle(0, 0, 48, 80);
                         break;
+                    case TextureType.Furniture:
+                        if (sourceRect.Height >= 64)
+                        {
+                            _maxRows = 2;
+                        }
+                        else if (sourceRect.Height <= 16)
+                        {
+                            sourceRect.Height = 32;
+                        }
+
+                        break;
+                    case TextureType.Building:
+                        _maxRows = 1;
+                        _texturesPerRow = 3;
+                        widthOffsetScale = 4;
+                        sourceRect = new Rectangle(0, 0, 48, 160);
+
+                        switch (textureTileWidth)
+                        {
+                            case int w when w > 4 && w < 8:
+                                _buildingScale = 2f;
+                                break;
+                            case int w when w >= 8:
+                                _buildingScale = 1f;
+                                break;
+                        }
+
+                        drawingScale = _buildingScale;
+                        break;
                 }
             }
 
@@ -159,7 +192,7 @@ namespace AlternativeTextures.Framework.UI
                 for (int c = 0; c < _texturesPerRow; c++)
                 {
                     var componentId = c + r * _texturesPerRow;
-                    this.availableTextures.Add(new ClickableTextureComponent(new Rectangle(base.xPositionOnScreen + IClickableMenu.borderWidth + componentId % _texturesPerRow * 64 * widthOffsetScale, base.yPositionOnScreen + sourceRect.Height + componentId / _texturesPerRow * (4 * sourceRect.Height), 4 * sourceRect.Width, 4 * sourceRect.Height), availableModels.First().Texture, new Rectangle(), 4f, false)
+                    this.availableTextures.Add(new ClickableTextureComponent(new Rectangle(base.xPositionOnScreen + IClickableMenu.borderWidth + componentId % _texturesPerRow * 64 * widthOffsetScale, base.yPositionOnScreen + sourceRect.Height + componentId / _texturesPerRow * (4 * sourceRect.Height), 4 * sourceRect.Width, 4 * sourceRect.Height), availableModels.First().Texture, new Rectangle(), drawingScale, false)
                     {
                         myID = componentId,
                         downNeighborID = componentId + _texturesPerRow,
@@ -228,16 +261,17 @@ namespace AlternativeTextures.Framework.UI
                 return;
             }
 
+            var maxScale = _textureType == TextureType.Building ? _buildingScale : 4f;
             foreach (ClickableTextureComponent c in this.availableTextures)
             {
                 if (c.containsPoint(x, y))
                 {
-                    c.scale = Math.Min(c.scale + 0.05f, 4.1f);
+                    c.scale = Math.Min(c.scale + 0.05f, maxScale + 0.1f);
                     this.hovered = c;
                 }
                 else
                 {
-                    c.scale = Math.Max(4f, c.scale - 0.025f);
+                    c.scale = Math.Max(maxScale, c.scale - 0.025f);
                 }
             }
 
@@ -304,6 +338,13 @@ namespace AlternativeTextures.Framework.UI
                         foreach (string key in c.item.modData.Keys)
                         {
                             feature.modData[key] = c.item.modData[key];
+                        }
+                    }
+                    else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Building building)
+                    {
+                        foreach (string key in c.item.modData.Keys)
+                        {
+                            building.modData[key] = c.item.modData[key];
                         }
                     }
 
@@ -393,9 +434,20 @@ namespace AlternativeTextures.Framework.UI
                                 this.availableTextures[i].sourceRect = character.Sprite.SourceRect;
                                 this.availableTextures[i].draw(b, Color.White, 0.87f);
                             }
+                            else if (_textureType is TextureType.Craftable && PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) != null)
+                            {
+                                this.availableTextures[i].texture = _textureTarget.bigCraftable ? Game1.bigCraftableSpriteSheet : Game1.objectSpriteSheet;
+                                this.availableTextures[i].sourceRect = _textureTarget.bigCraftable ? Object.getSourceRectForBigCraftable(_textureTarget.parentSheetIndex) : GameLocation.getSourceRectForObject(_textureTarget.ParentSheetIndex);
+                                this.availableTextures[i].draw(b, Color.White, 0.87f);
+                            }
                             else if (PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) != null)
                             {
-                                this.availableTextures[i].item.drawInMenu(b, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y + 32f), 2f, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
+                                this.availableTextures[i].item.drawInMenu(b, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y + 32f), 2, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
+                            }
+                            else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Building building)
+                            {
+                                BuildingPatch.ResetTextureReversePatch(building);
+                                BuildingPatch.CondensedDrawInMenu(building, building.texture.Value, b, this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y, _buildingScale);
                             }
                             else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Tree tree)
                             {
@@ -431,6 +483,10 @@ namespace AlternativeTextures.Framework.UI
                             this.availableTextures[i].texture = textureModel.Texture;
                             this.availableTextures[i].sourceRect = GetSourceRectangle(_textureTarget, textureModel.TextureWidth, textureModel.TextureHeight, variation);
                             this.availableTextures[i].draw(b, Color.White, 0.87f);
+                        }
+                        else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Building building)
+                        {
+                            BuildingPatch.CondensedDrawInMenu(building, BuildingPatch.GetBuildingTextureWithPaint(building, textureModel, variation), b, this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y, _buildingScale);
                         }
                         else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_textureTarget.TileLocation.X * 64, (int)_textureTarget.TileLocation.Y * 64) is Tree tree)
                         {

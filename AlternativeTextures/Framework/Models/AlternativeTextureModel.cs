@@ -40,7 +40,8 @@ namespace AlternativeTextures.Framework.Models
             Bush,
             Flooring,
             Furniture,
-            Character
+            Character,
+            Building
         }
 
         public AlternativeTextureModel ShallowCopy()

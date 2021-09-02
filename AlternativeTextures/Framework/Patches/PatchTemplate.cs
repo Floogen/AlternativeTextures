@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Buildings;
 using StardewValley.Characters;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
@@ -115,12 +116,37 @@ namespace AlternativeTextures.Framework.Patches
                 return "Horse";
             }
 
+            if (character is Pet pet)
+            {
+                return pet is Cat ? "Cat" : "Dog";
+            }
+
             return character.name;
         }
 
         internal static Object GetObjectAt(GameLocation location, int x, int y)
         {
+            // If object is furniture and currently has something on top of it, check that instead
+            foreach (var furniture in location.furniture.Where(c => c.heldObject.Value != null))
+            {
+                if (furniture.boundingBox.Value.Contains(x, y))
+                {
+                    return furniture.heldObject.Value;
+                }
+            }
+
             return location.getObjectAt(x, y);
+        }
+
+        internal static Building GetBuildingAt(GameLocation location, int x, int y)
+        {
+            Vector2 tile = new Vector2(x / 64, y / 64);
+            if (location is Farm farm && farm.buildings.FirstOrDefault(b => b.occupiesTile(tile)) is Building building && building != null)
+            {
+                return building;
+            }
+
+            return null;
         }
 
         internal static TerrainFeature GetTerrainFeatureAt(GameLocation location, int x, int y)
@@ -133,6 +159,7 @@ namespace AlternativeTextures.Framework.Patches
 
             return location.terrainFeatures[tile];
         }
+
         internal static Character GetCharacterAt(GameLocation location, int x, int y)
         {
             var tileLocation = new Vector2(x / 64, y / 64);
@@ -158,11 +185,16 @@ namespace AlternativeTextures.Framework.Patches
                 }
             }
 
-            foreach (var horse in location.characters.Where(c => c is Horse))
+            foreach (var specialCharacter in location.characters.Where(c => c is Horse || c is Pet))
             {
-                if ((horse as Horse).GetBoundingBox().Intersects(rectangle))
+                if (specialCharacter is Horse horse && horse.GetBoundingBox().Intersects(rectangle))
                 {
                     return horse;
+                }
+
+                if (specialCharacter is Pet pet && pet.GetBoundingBox().Intersects(rectangle))
+                {
+                    return pet;
                 }
             }
 
@@ -244,8 +276,29 @@ namespace AlternativeTextures.Framework.Patches
             }
         }
 
+        internal static bool HasCachedTextureName<T>(T type, bool probe = false)
+        {
+            if (type is Object obj && obj.modData.ContainsKey("AlternativeTextureNameCached"))
+            {
+                if (!probe)
+                {
+                    obj.modData["AlternativeTextureName"] = obj.modData["AlternativeTextureNameCached"];
+                    obj.modData.Remove("AlternativeTextureNameCached");
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
         internal static bool AssignDefaultModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false)
         {
+            if (HasCachedTextureName(type))
+            {
+                return false;
+            }
+
             var textureModel = new AlternativeTextureModel() { Owner = AlternativeTextures.DEFAULT_OWNER, Season = trackSeason ? Game1.currentSeason : String.Empty };
             switch (type)
             {
@@ -258,6 +311,9 @@ namespace AlternativeTextures.Framework.Patches
                 case Character character:
                     AssignCharacterModData(character, modelName, textureModel, -1, trackSeason);
                     return true;
+                case Building building:
+                    AssignBuildingModData(building, modelName, textureModel, -1, trackSeason);
+                    return true;
             }
 
             return false;
@@ -265,6 +321,11 @@ namespace AlternativeTextures.Framework.Patches
 
         internal static bool AssignModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false)
         {
+            if (HasCachedTextureName(type))
+            {
+                return false;
+            }
+
             var textureModel = AlternativeTextures.textureManager.GetRandomTextureModel(modelName);
 
             var selectedVariation = Game1.random.Next(-1, textureModel.Variations);
@@ -288,6 +349,9 @@ namespace AlternativeTextures.Framework.Patches
                     return true;
                 case Character character:
                     AssignCharacterModData(character, modelName, textureModel, selectedVariation, trackSeason);
+                    return true;
+                case Building building:
+                    AssignBuildingModData(building, modelName, textureModel, selectedVariation, trackSeason);
                     return true;
             }
 
@@ -336,6 +400,19 @@ namespace AlternativeTextures.Framework.Patches
             }
 
             character.modData["AlternativeTextureVariation"] = variation.ToString();
+        }
+
+        private static void AssignBuildingModData(Building building, string modelName, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
+        {
+            building.modData["AlternativeTextureOwner"] = textureModel.Owner;
+            building.modData["AlternativeTextureName"] = String.Concat(textureModel.Owner, ".", modelName);
+
+            if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
+            {
+                building.modData["AlternativeTextureSeason"] = Game1.currentSeason;
+            }
+
+            building.modData["AlternativeTextureVariation"] = variation.ToString();
         }
     }
 }
