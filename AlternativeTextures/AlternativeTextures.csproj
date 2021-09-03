@@ -4,7 +4,6 @@
     <Version>3.1.0</Version>
     <TargetFramework>net5.0</TargetFramework>
     <EnableHarmony>true</EnableHarmony>
-    <GamePath>G:\Steam\steamapps\common\Stardew Valley</GamePath>
   </PropertyGroup>
 
   <ItemGroup>
