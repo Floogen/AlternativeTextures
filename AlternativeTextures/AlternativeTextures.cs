@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace AlternativeTextures
@@ -405,7 +406,7 @@ namespace AlternativeTextures
                             if (!File.Exists(Path.Combine(textureFolder.FullName, "texture.png")))
                             {
                                 // No texture.png found, may be using split texture files (texture_1.png, texture_2.png, etc.)
-                                var textureFilePaths = Directory.GetFiles(textureFolder.FullName, "texture_*.png").OrderBy(t => t);
+                                var textureFilePaths = Directory.GetFiles(textureFolder.FullName, "texture_*.png").Where(t => t.Any(char.IsDigit)).OrderBy(t => Int32.Parse(Regex.Match(t, @"\d+").Value));
                                 if (textureFilePaths.Count() == 0)
                                 {
                                     Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: No associated texture.png or split textures (texture_1.png, texture_2.png, etc.) given", LogLevel.Warn);
