@@ -402,6 +402,13 @@ namespace AlternativeTextures
                                 variation.Keywords.AddRange(textureModel.Keywords);
                             }
 
+                            // Set the season (if any)
+                            textureModel.Season = seasons.Count() == 0 ? String.Empty : seasons[s];
+
+                            // Set the ModelName and TextureId
+                            textureModel.ModelName = String.IsNullOrEmpty(textureModel.Season) ? String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName) : String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName, "_", textureModel.Season);
+                            textureModel.TextureId = String.Concat(textureModel.Owner, ".", textureModel.ModelName);
+
                             // Verify we are given a texture and if so, track it
                             if (!File.Exists(Path.Combine(textureFolder.FullName, "texture.png")))
                             {
@@ -421,8 +428,11 @@ namespace AlternativeTextures
                                 Color[] pixels = new Color[stitchedTexture.Width * stitchedTexture.Height];
                                 for (int x = 0; x < textureFilePaths.Count(); x++)
                                 {
+                                    var fileName = Path.GetFileName(textureFilePaths.ElementAt(x));
+                                    Monitor.Log($"Stitching together {textureModel.TextureId}: {fileName}", LogLevel.Trace);
+
                                     var offset = x * baseTexture.Width * baseTexture.Height;
-                                    var subTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(parentFolderName, textureFolder.Name, Path.GetFileName(textureFilePaths.ElementAt(x))));
+                                    var subTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(parentFolderName, textureFolder.Name, fileName));
 
                                     Color[] subPixels = new Color[subTexture.Width * subTexture.Height];
                                     subTexture.GetData(subPixels);
@@ -442,13 +452,6 @@ namespace AlternativeTextures
                                 textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(parentFolderName, textureFolder.Name, "texture.png"));
                                 textureModel.Texture = contentPack.LoadAsset<Texture2D>(textureModel.TileSheetPath);
                             }
-
-                            // Set the season (if any)
-                            textureModel.Season = seasons.Count() == 0 ? String.Empty : seasons[s];
-
-                            // Set the ModelName and TextureId
-                            textureModel.ModelName = String.IsNullOrEmpty(textureModel.Season) ? String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName) : String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName, "_", textureModel.Season);
-                            textureModel.TextureId = String.Concat(textureModel.Owner, ".", textureModel.ModelName);
 
                             // Track the texture model
                             textureManager.AddAlternativeTexture(textureModel);
