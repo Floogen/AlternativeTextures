@@ -236,6 +236,7 @@
     <Content Include="Examples\[AT] Example Pack\Textures\Crops\Grass\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Craftables\Sub Folder Example\HeavyTapper\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Craftables\Sub Folder Example\Tapper\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Split Texture Examples\SuitOfArmor\texture_10.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Split Texture Examples\SuitOfArmor\texture_2.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Split Texture Examples\SuitOfArmor\texture_1.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Texture Exceptions\AutoPetter\texture.png" />
