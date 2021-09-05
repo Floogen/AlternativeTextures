@@ -413,7 +413,7 @@ namespace AlternativeTextures
                             if (!File.Exists(Path.Combine(textureFolder.FullName, "texture.png")))
                             {
                                 // No texture.png found, may be using split texture files (texture_1.png, texture_2.png, etc.)
-                                var textureFilePaths = Directory.GetFiles(textureFolder.FullName, "texture_*.png").Where(t => t.Any(char.IsDigit)).OrderBy(t => Int32.Parse(Regex.Match(t, @"\d+").Value));
+                                var textureFilePaths = Directory.GetFiles(textureFolder.FullName, "texture_*.png").Select(t => Path.GetFileName(t)).Where(t => t.Any(char.IsDigit)).OrderBy(t => Int32.Parse(Regex.Match(t, @"\d+").Value));
                                 if (textureFilePaths.Count() == 0)
                                 {
                                     Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: No associated texture.png or split textures (texture_1.png, texture_2.png, etc.) given", LogLevel.Warn);
@@ -421,14 +421,14 @@ namespace AlternativeTextures
                                 }
 
                                 // Load in the first texture_#.png to get its dimensions for creating stitchedTexture
-                                Texture2D baseTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(parentFolderName, textureFolder.Name, Path.GetFileName(textureFilePaths.First())));
+                                Texture2D baseTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(parentFolderName, textureFolder.Name, textureFilePaths.First()));
                                 Texture2D stitchedTexture = new Texture2D(Game1.graphics.GraphicsDevice, baseTexture.Width, baseTexture.Height * textureFilePaths.Count());
 
                                 // Now stitch together the split textures into a single texture
                                 Color[] pixels = new Color[stitchedTexture.Width * stitchedTexture.Height];
                                 for (int x = 0; x < textureFilePaths.Count(); x++)
                                 {
-                                    var fileName = Path.GetFileName(textureFilePaths.ElementAt(x));
+                                    var fileName = textureFilePaths.ElementAt(x);
                                     Monitor.Log($"Stitching together {textureModel.TextureId}: {fileName}", LogLevel.Trace);
 
                                     var offset = x * baseTexture.Width * baseTexture.Height;
@@ -443,7 +443,7 @@ namespace AlternativeTextures
                                 }
 
                                 stitchedTexture.SetData(pixels);
-                                textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(parentFolderName, textureFolder.Name, Path.GetFileName(textureFilePaths.First())));
+                                textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(parentFolderName, textureFolder.Name, textureFilePaths.First()));
                                 textureModel.Texture = stitchedTexture;
                             }
                             else
