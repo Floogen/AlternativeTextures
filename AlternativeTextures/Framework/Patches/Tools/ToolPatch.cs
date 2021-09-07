@@ -125,11 +125,10 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     // Display texture menu
                     var buildingObj = new Object(100, 1, isRecipe: false, -1)
                     {
-                        Type = GetTextureType(targetedBuilding).ToString(),
                         TileLocation = new Vector2(targetedBuilding.tileX, targetedBuilding.tileY),
                         modData = targetedBuilding.modData
                     };
-                    Game1.activeClickableMenu = new PaintBucketMenu(buildingObj, modelName, textureTileWidth: targetedBuilding.tilesWide);
+                    Game1.activeClickableMenu = new PaintBucketMenu(buildingObj, GetTextureType(targetedBuilding), modelName, textureTileWidth: targetedBuilding.tilesWide);
 
                     return CancelUsing(who);
                 }
@@ -158,8 +157,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 }
 
                 // Display texture menu
-                targetedObject.Type = GetTextureType(targetedObject).ToString();
-                Game1.activeClickableMenu = new PaintBucketMenu(targetedObject, modelName);
+                Game1.activeClickableMenu = new PaintBucketMenu(targetedObject, GetTextureType(targetedObject), modelName);
 
                 return CancelUsing(who);
             }
@@ -215,11 +213,10 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 // Display texture menu
                 var terrainObj = new Object(100, 1, isRecipe: false, -1)
                 {
-                    Type = GetTextureType(targetedTerrain).ToString(),
                     TileLocation = targetedTerrain.currentTileLocation,
                     modData = targetedTerrain.modData
                 };
-                Game1.activeClickableMenu = new PaintBucketMenu(terrainObj, modelName);
+                Game1.activeClickableMenu = new PaintBucketMenu(terrainObj, GetTextureType(targetedTerrain), modelName);
 
                 return CancelUsing(who);
             }
@@ -256,12 +253,11 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 var obj = new Object(100, 1, isRecipe: false, -1)
                 {
                     Name = character.Name,
-                    Type = GetTextureType(character).ToString(),
                     displayName = character.displayName,
                     TileLocation = character.getTileLocation(),
                     modData = character.modData
                 };
-                Game1.activeClickableMenu = new PaintBucketMenu(obj, modelName, uiTitle: "Scissors");
+                Game1.activeClickableMenu = new PaintBucketMenu(obj, GetTextureType(character), modelName, uiTitle: "Scissors");
 
                 return CancelUsing(who);
             }
@@ -273,29 +269,6 @@ namespace AlternativeTextures.Framework.Patches.Tools
             who.CanMove = true;
             who.UsingTool = false;
             return false;
-        }
-
-        private static TextureType GetTextureType(object obj)
-        {
-            switch (obj)
-            {
-                case Character character:
-                    return TextureType.Character;
-                case Flooring floor:
-                    return TextureType.Flooring;
-                case Tree tree:
-                    return TextureType.Tree;
-                case FruitTree fruitTree:
-                    return TextureType.FruitTree;
-                case Building building:
-                    return TextureType.Building;
-                case Furniture furniture:
-                    return TextureType.Furniture;
-                case Object craftable:
-                    return TextureType.Craftable;
-                default:
-                    return TextureType.Unknown;
-            }
         }
     }
 }

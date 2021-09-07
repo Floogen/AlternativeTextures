@@ -13,6 +13,7 @@ using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static AlternativeTextures.Framework.Models.AlternativeTextureModel;
 using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.Patches
@@ -273,6 +274,29 @@ namespace AlternativeTextures.Framework.Patches
                     return "Tea";
                 default:
                     return String.Empty;
+            }
+        }
+
+        internal static TextureType GetTextureType(object obj)
+        {
+            switch (obj)
+            {
+                case Character character:
+                    return TextureType.Character;
+                case Flooring floor:
+                    return TextureType.Flooring;
+                case Tree tree:
+                    return TextureType.Tree;
+                case FruitTree fruitTree:
+                    return TextureType.FruitTree;
+                case Building building:
+                    return TextureType.Building;
+                case Furniture furniture:
+                    return TextureType.Furniture;
+                case Object craftable:
+                    return TextureType.Craftable;
+                default:
+                    return TextureType.Unknown;
             }
         }
 

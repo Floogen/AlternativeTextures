@@ -27,16 +27,23 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace AlternativeTextures
 {
     public class AlternativeTextures : Mod
     {
+        // Core modData keys
         internal const string TEXTURE_TOKEN_HEADER = "AlternativeTextures/Textures/";
         internal const string TOOL_TOKEN_HEADER = "AlternativeTextures/Tools/";
         internal const string DEFAULT_OWNER = "Stardew.Default";
+
+        // Compatibility keys
         internal const string TOOL_CONVERSION_COMPATIBILITY = "AlternativeTextures.HasConvertedMilkPails";
+        internal const string TYPE_FIX_COMPATIBILITY = "AlternativeTextures.HasFixedBadObjectTyping";
+
+        // Tool related keys
         internal const string PAINT_BUCKET_FLAG = "AlternativeTextures.PaintBucketFlag";
         internal const string OLD_PAINT_BUCKET_FLAG = "AlternativeTexturesPaintBucketFlag";
         internal const string PAINT_BRUSH_FLAG = "AlternativeTextures.PaintBrushFlag";
@@ -316,6 +323,12 @@ namespace AlternativeTextures
                 Game1.player.modData[TOOL_CONVERSION_COMPATIBILITY] = true.ToString();
                 ConvertPaintBucketsToGenericTools(Game1.player);
             }
+            if (!Game1.player.modData.ContainsKey(TYPE_FIX_COMPATIBILITY))
+            {
+                Monitor.Log($"Fixing bad object and bigcraftable typings...", LogLevel.Debug);
+                Game1.player.modData[TYPE_FIX_COMPATIBILITY] = true.ToString();
+                FixBadObjectTyping();
+            }
         }
 
         private void OnWarped(object sender, WarpedEventArgs e)
@@ -395,23 +408,60 @@ namespace AlternativeTextures
                                 variation.Keywords.AddRange(textureModel.Keywords);
                             }
 
-                            // Verify we are given a texture and if so, track it
-                            if (!File.Exists(Path.Combine(textureFolder.FullName, "texture.png")))
-                            {
-                                Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: No associated texture.png given", LogLevel.Warn);
-                                continue;
-                            }
-
-                            // Load in the texture
-                            textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(parentFolderName, textureFolder.Name, "texture.png"));
-                            textureModel.Texture = contentPack.LoadAsset<Texture2D>(textureModel.TileSheetPath);
-
                             // Set the season (if any)
                             textureModel.Season = seasons.Count() == 0 ? String.Empty : seasons[s];
 
                             // Set the ModelName and TextureId
                             textureModel.ModelName = String.IsNullOrEmpty(textureModel.Season) ? String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName) : String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName, "_", textureModel.Season);
                             textureModel.TextureId = String.Concat(textureModel.Owner, ".", textureModel.ModelName);
+
+                            // Verify we are given a texture and if so, track it
+                            if (!File.Exists(Path.Combine(textureFolder.FullName, "texture.png")))
+                            {
+                                // No texture.png found, may be using split texture files (texture_1.png, texture_2.png, etc.)
+                                var textureFilePaths = Directory.GetFiles(textureFolder.FullName, "texture_*.png")
+                                    .Select(t => Path.GetFileName(t))
+                                    .Where(t => t.Any(char.IsDigit))
+                                    .OrderBy(t => Int32.Parse(Regex.Match(t, @"\d+").Value));
+
+                                if (textureFilePaths.Count() == 0)
+                                {
+                                    Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: No associated texture.png or split textures (texture_1.png, texture_2.png, etc.) given", LogLevel.Warn);
+                                    continue;
+                                }
+
+                                // Load in the first texture_#.png to get its dimensions for creating stitchedTexture
+                                Texture2D baseTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(parentFolderName, textureFolder.Name, textureFilePaths.First()));
+                                Texture2D stitchedTexture = new Texture2D(Game1.graphics.GraphicsDevice, baseTexture.Width, baseTexture.Height * textureFilePaths.Count());
+
+                                // Now stitch together the split textures into a single texture
+                                Color[] pixels = new Color[stitchedTexture.Width * stitchedTexture.Height];
+                                for (int x = 0; x < textureFilePaths.Count(); x++)
+                                {
+                                    var fileName = textureFilePaths.ElementAt(x);
+                                    Monitor.Log($"Stitching together {textureModel.TextureId}: {fileName}", LogLevel.Trace);
+
+                                    var offset = x * baseTexture.Width * baseTexture.Height;
+                                    var subTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(parentFolderName, textureFolder.Name, fileName));
+
+                                    Color[] subPixels = new Color[subTexture.Width * subTexture.Height];
+                                    subTexture.GetData(subPixels);
+                                    for (int i = 0; i < subPixels.Length; i++)
+                                    {
+                                        pixels[i + offset] = subPixels[i];
+                                    }
+                                }
+
+                                stitchedTexture.SetData(pixels);
+                                textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(parentFolderName, textureFolder.Name, textureFilePaths.First()));
+                                textureModel.Texture = stitchedTexture;
+                            }
+                            else
+                            {
+                                // Load in the single vertical texture
+                                textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(parentFolderName, textureFolder.Name, "texture.png"));
+                                textureModel.Texture = contentPack.LoadAsset<Texture2D>(textureModel.TileSheetPath);
+                            }
 
                             // Track the texture model
                             textureManager.AddAlternativeTexture(textureModel);
@@ -618,6 +668,59 @@ namespace AlternativeTextures
                         if (chest.items[i] is MilkPail milkPail && milkPail.modData.ContainsKey(OLD_PAINT_BUCKET_FLAG))
                         {
                             chest.items[i] = PatchTemplate.GetPaintBucketTool();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void FixBadObjectTyping()
+        {
+            foreach (var location in Game1.locations)
+            {
+                ConvertBadTypedObjectToNormalType(location);
+
+                if (location is BuildableGameLocation)
+                {
+                    foreach (var building in (location as BuildableGameLocation).buildings)
+                    {
+                        GameLocation indoorLocation = building.indoors.Value;
+                        if (indoorLocation is null)
+                        {
+                            continue;
+                        }
+
+                        ConvertBadTypedObjectToNormalType(indoorLocation);
+                    }
+                }
+            }
+        }
+
+        private void ConvertBadTypedObjectToNormalType(GameLocation location)
+        {
+            foreach (var obj in location.objects.Values.Where(o => o.modData.ContainsKey("AlternativeTextureName")))
+            {
+                if (obj.Type == "Craftable" || obj.Type == "Unknown")
+                {
+                    if (obj.bigCraftable && Game1.bigCraftablesInformation.TryGetValue(obj.parentSheetIndex, out var bigObjectInfo))
+                    {
+                        string[] objectInfoArray = bigObjectInfo.Split('/');
+                        string[] typeAndCategory = objectInfoArray[3].Split(' ');
+                        obj.type.Value = typeAndCategory[0];
+
+                        if (typeAndCategory.Length > 1)
+                        {
+                            obj.Category = Convert.ToInt32(typeAndCategory[1]);
+                        }
+                    }
+                    else if (!obj.bigCraftable && Game1.objectInformation.TryGetValue(obj.parentSheetIndex, out var objectInfo))
+                    {
+                        string[] objectInfoArray = objectInfo.Split('/');
+                        string[] typeAndCategory = objectInfoArray[3].Split(' ');
+                        obj.type.Value = typeAndCategory[0];
+                        if (typeAndCategory.Length > 1)
+                        {
+                            obj.Category = Convert.ToInt32(typeAndCategory[1]);
                         }
                     }
                 }

@@ -46,7 +46,7 @@ namespace AlternativeTextures.Framework.UI
         private Object _textureTarget;
         private TextureType _textureType;
 
-        public PaintBucketMenu(Object target, string modelName, string uiTitle = "Paint Bucket", int textureTileWidth = -1) : base(0, 0, 832, 576, showUpperRightCloseButton: true)
+        public PaintBucketMenu(Object target, TextureType textureType, string modelName, string uiTitle = "Paint Bucket", int textureTileWidth = -1) : base(0, 0, 832, 576, showUpperRightCloseButton: true)
         {
             if (!target.modData.ContainsKey("AlternativeTextureOwner") || !target.modData.ContainsKey("AlternativeTextureName"))
             {
@@ -63,7 +63,7 @@ namespace AlternativeTextures.Framework.UI
 
             Vector2 topLeft = Utility.getTopLeftPositionForCenteringOnScreen(base.width, base.height);
             base.xPositionOnScreen = (int)topLeft.X;
-            base.yPositionOnScreen = (int)topLeft.Y + 32;
+            base.yPositionOnScreen = (int)topLeft.Y;
 
             // Populate the texture selection components
             var availableModels = AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation));
@@ -128,63 +128,60 @@ namespace AlternativeTextures.Framework.UI
             this.filteredTextureOptions.Insert(0, vanillaObject);
             this.cachedTextureOptions.Insert(0, vanillaObject);
 
-            _textureType = TextureType.Unknown;
+            _textureType = textureType;
 
             var drawingScale = 4f;
             var widthOffsetScale = 2;
             var sourceRect = GetSourceRectangle(target, availableModels.First().TextureWidth, availableModels.First().TextureHeight, -1);
-            if (Enum.TryParse<TextureType>(target.Type, out _textureType))
+            switch (_textureType)
             {
-                switch (_textureType)
-                {
-                    case TextureType.Flooring:
-                        sourceRect = new Rectangle(0, 0, 16, 32);
-                        break;
-                    case TextureType.Character:
-                        sourceRect = new Rectangle(0, 0, 32, 32);
-                        break;
-                    case TextureType.Tree:
-                        _maxRows = 1;
-                        _texturesPerRow = 3;
-                        widthOffsetScale = 4;
-                        sourceRect = new Rectangle(0, 0, 48, 96);
-                        break;
-                    case TextureType.FruitTree:
-                        _maxRows = 1;
-                        _texturesPerRow = 3;
-                        widthOffsetScale = 4;
-                        sourceRect = new Rectangle(0, 0, 48, 80);
-                        break;
-                    case TextureType.Furniture:
-                        if (sourceRect.Height >= 64)
-                        {
-                            _maxRows = 2;
-                        }
-                        else if (sourceRect.Height <= 16)
-                        {
-                            sourceRect.Height = 32;
-                        }
+                case TextureType.Flooring:
+                    sourceRect = new Rectangle(0, 0, 16, 32);
+                    break;
+                case TextureType.Character:
+                    sourceRect = new Rectangle(0, 0, 32, 32);
+                    break;
+                case TextureType.Tree:
+                    _maxRows = 1;
+                    _texturesPerRow = 3;
+                    widthOffsetScale = 4;
+                    sourceRect = new Rectangle(0, 0, 48, 96);
+                    break;
+                case TextureType.FruitTree:
+                    _maxRows = 1;
+                    _texturesPerRow = 3;
+                    widthOffsetScale = 4;
+                    sourceRect = new Rectangle(0, 0, 48, 80);
+                    break;
+                case TextureType.Furniture:
+                    if (sourceRect.Height >= 64)
+                    {
+                        _maxRows = 2;
+                    }
+                    else if (sourceRect.Height <= 16)
+                    {
+                        sourceRect.Height = 32;
+                    }
 
-                        break;
-                    case TextureType.Building:
-                        _maxRows = 1;
-                        _texturesPerRow = 3;
-                        widthOffsetScale = 4;
-                        sourceRect = new Rectangle(0, 0, 48, 160);
+                    break;
+                case TextureType.Building:
+                    _maxRows = 1;
+                    _texturesPerRow = 3;
+                    widthOffsetScale = 4;
+                    sourceRect = new Rectangle(0, 0, 48, 160);
 
-                        switch (textureTileWidth)
-                        {
-                            case int w when w > 4 && w < 8:
-                                _buildingScale = 2f;
-                                break;
-                            case int w when w >= 8:
-                                _buildingScale = 1f;
-                                break;
-                        }
+                    switch (textureTileWidth)
+                    {
+                        case int w when w > 4 && w < 8:
+                            _buildingScale = 2f;
+                            break;
+                        case int w when w >= 8:
+                            _buildingScale = 1f;
+                            break;
+                    }
 
-                        drawingScale = _buildingScale;
-                        break;
-                }
+                    drawingScale = _buildingScale;
+                    break;
             }
 
             for (int r = 0; r < _maxRows; r++)
@@ -513,14 +510,15 @@ namespace AlternativeTextures.Framework.UI
                 queryButton.draw(b);
             }
 
+            var hoverDisplayName = "Hover over an item to see its texture name!";
             if (this.hovered != null && this.hovered.item != null)
             {
-                if (this.hovered.item.modData.ContainsKey("AlternativeTextureName") && this.hovered.item.modData.ContainsKey("AlternativeTextureVariation"))
+                if (this.hovered.item.modData.ContainsKey("AlternativeTextureOwner") && this.hovered.item.modData.ContainsKey("AlternativeTextureVariation"))
                 {
-                    var displayName = String.Concat(this.hovered.item.modData["AlternativeTextureName"], "_", Int32.Parse(this.hovered.item.modData["AlternativeTextureVariation"]) + 1);
-                    IClickableMenu.drawHoverText(b, Game1.parseText(displayName, Game1.dialogueFont, 320), Game1.dialogueFont);
+                    hoverDisplayName = String.Concat(this.hovered.item.modData["AlternativeTextureOwner"], " > ", Int32.Parse(this.hovered.item.modData["AlternativeTextureVariation"]) + 1);
                 }
             }
+            SpriteText.drawStringWithScrollCenteredAt(b, hoverDisplayName, Game1.uiViewport.Width / 2, base.yPositionOnScreen + base.height + 16, "Hover over an item to see its texture name!");
 
             if (_startingRow > 0)
             {
