@@ -45,8 +45,8 @@ powershell Remove-Item -Path 'C:\Users\Floogen\Documents\GitHub Repos\Alternativ
 xcopy /s /y /i "C:\Users\Floogen\Documents\GitHub Repos\AlternativeTextures\AlternativeTextures\bin\Debug\net5.0" "C:\Users\Floogen\Documents\GitHub Repos\AlternativeTextures\AlternativeTextures\releases\latest\AlternativeTextures"
 7z a -tzip "C:\Users\Floogen\Documents\GitHub Repos\AlternativeTextures\AlternativeTextures\releases\AlternativeTextures-$(AssemblyVersion).zip" "C:\Users\Floogen\Documents\GitHub Repos\AlternativeTextures\AlternativeTextures\releases\latest\AlternativeTextures"
 
-powershell Remove-Item -Path '\AlternativeTextures' -Recurse -Force
-powershell Remove-Item -Path '\Alternative Textures Examples' -Recurse -Force
+powershell Remove-Item -Path '$(GameModsPath)\AlternativeTextures' -Recurse -Force
+powershell Remove-Item -Path '$(GameModsPath)\Alternative Textures Examples' -Recurse -Force
 
 xcopy /s /y /i "C:\Users\Floogen\Documents\GitHub Repos\AlternativeTextures\AlternativeTextures\releases\latest\AlternativeTextures" "$(GameModsPath)\AlternativeTextures"
 xcopy /s /y /i "C:\Users\Floogen\Documents\GitHub Repos\AlternativeTextures\AlternativeTextures\Examples\*" "$(GameModsPath)\Alternative Textures Examples"</PostBuildEvent>
