@@ -318,6 +318,11 @@ namespace AlternativeTextures.Framework.Patches
             return false;
         }
 
+        internal static bool IsDGAUsed()
+        {
+            return _helper.ModRegistry.IsLoaded("spacechase0.DynamicGameAssets");
+        }
+
         internal static bool AssignDefaultModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false)
         {
             if (HasCachedTextureName(type))
