@@ -39,16 +39,16 @@
     $(PostBuildEventDependsOn);
     PostBuildMacros;
   </PostBuildEventDependsOn>
-    <PostBuildEvent>powershell -Command "(ls *manifest.json -rec | foreach-object { $f=$_.FullName; (gc -LiteralPath \"$f\") -replace 'REPLACE_ME_WITH_VERSION',  '@(VersionNumber)' | sc -LiteralPath \"$f\" })"
+    <PostBuildEvent>powershell -Command "(ls *manifest.json -rec | foreach-object { $f=$_.FullName; (gc -LiteralPath \"$f\") -replace 'REPLACE_ME_WITH_VERSION',  '$(AssemblyVersion)' | sc -LiteralPath \"$f\" })"
 
-powershell Remove-Item -Path '$(SolutionDir)releases\latest\$(SolutionName)"' -Recurse -Force
-xcopy /s /y /i "$(TargetDir)" "$(SolutionDir)releases\latest\$(SolutionName)"
-7z a -tzip "$(SolutionDir)releases\$(SolutionName)-@(VersionNumber).zip" "$(SolutionDir)releases\latest\$(SolutionName)"
+powershell Remove-Item -Path 'C:\Users\Floogen\Documents\GitHub Repos\AlternativeTextures\AlternativeTextures\releases\latest\AlternativeTextures"' -Recurse -Force
+xcopy /s /y /i "C:\Users\Floogen\Documents\GitHub Repos\AlternativeTextures\AlternativeTextures\bin\Debug\net5.0" "C:\Users\Floogen\Documents\GitHub Repos\AlternativeTextures\AlternativeTextures\releases\latest\AlternativeTextures"
+7z a -tzip "C:\Users\Floogen\Documents\GitHub Repos\AlternativeTextures\AlternativeTextures\releases\AlternativeTextures-$(AssemblyVersion).zip" "C:\Users\Floogen\Documents\GitHub Repos\AlternativeTextures\AlternativeTextures\releases\latest\AlternativeTextures"
 
-powershell Remove-Item -Path '$(GameModsPath)\$(SolutionName)' -Recurse -Force
-powershell Remove-Item -Path '$(GameModsPath)\Alternative Textures Examples' -Recurse -Force
+powershell Remove-Item -Path '\AlternativeTextures' -Recurse -Force
+powershell Remove-Item -Path '\Alternative Textures Examples' -Recurse -Force
 
-xcopy /s /y /i "$(SolutionDir)releases\latest\$(SolutionName)" "$(GameModsPath)\$(SolutionName)"
-xcopy /s /y /i "$(SolutionDir)Examples\*" "$(GameModsPath)\Alternative Textures Examples"</PostBuildEvent>
+xcopy /s /y /i "C:\Users\Floogen\Documents\GitHub Repos\AlternativeTextures\AlternativeTextures\releases\latest\AlternativeTextures" "$(GameModsPath)\AlternativeTextures"
+xcopy /s /y /i "C:\Users\Floogen\Documents\GitHub Repos\AlternativeTextures\AlternativeTextures\Examples\*" "$(GameModsPath)\Alternative Textures Examples"</PostBuildEvent>
   </PropertyGroup>
 </Project>
