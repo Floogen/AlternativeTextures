@@ -21,7 +21,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
     {
         private readonly Type _object = typeof(Object);
 
-        internal ObjectPatch(IMonitor modMonitor) : base(modMonitor)
+        internal ObjectPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }

@@ -20,7 +20,7 @@ namespace AlternativeTextures.Framework.Patches.AnimatedObjects
     {
         private readonly Type _object = typeof(IndoorPot);
 
-        internal IndoorPotPatch(IMonitor modMonitor) : base(modMonitor)
+        internal IndoorPotPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }

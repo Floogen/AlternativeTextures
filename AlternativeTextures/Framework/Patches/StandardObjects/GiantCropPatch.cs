@@ -21,7 +21,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
     {
         private readonly Type _object = typeof(GiantCrop);
 
-        internal GiantCropPatch(IMonitor modMonitor) : base(modMonitor)
+        internal GiantCropPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }

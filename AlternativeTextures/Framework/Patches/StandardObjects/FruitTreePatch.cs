@@ -22,7 +22,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
     {
         private readonly Type _object = typeof(FruitTree);
 
-        internal FruitTreePatch(IMonitor modMonitor) : base(modMonitor)
+        internal FruitTreePatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }

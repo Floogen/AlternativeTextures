@@ -23,7 +23,7 @@ namespace AlternativeTextures.Framework.Patches.Entities
     {
         private readonly Type _entity = typeof(Pet);
 
-        internal PetPatch(IMonitor modMonitor) : base(modMonitor)
+        internal PetPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }

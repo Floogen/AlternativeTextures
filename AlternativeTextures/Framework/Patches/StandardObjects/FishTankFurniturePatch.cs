@@ -21,7 +21,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
     {
         private readonly Type _object = typeof(FishTankFurniture);
 
-        internal FishTankFurniturePatch(IMonitor modMonitor) : base(modMonitor)
+        internal FishTankFurniturePatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }

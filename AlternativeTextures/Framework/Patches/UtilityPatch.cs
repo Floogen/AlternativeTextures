@@ -22,7 +22,7 @@ namespace AlternativeTextures.Framework.Patches
     {
         private readonly Type _object = typeof(Utility);
 
-        internal UtilityPatch(IMonitor modMonitor) : base(modMonitor)
+        internal UtilityPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }

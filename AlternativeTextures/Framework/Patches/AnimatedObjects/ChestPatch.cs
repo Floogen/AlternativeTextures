@@ -21,7 +21,7 @@ namespace AlternativeTextures.Framework.Patches.AnimatedObjects
     {
         private readonly Type _object = typeof(Chest);
 
-        internal ChestPatch(IMonitor modMonitor) : base(modMonitor)
+        internal ChestPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }

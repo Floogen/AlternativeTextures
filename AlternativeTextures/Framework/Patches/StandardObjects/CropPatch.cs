@@ -20,7 +20,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
     {
         private readonly Type _object = typeof(Crop);
 
-        internal CropPatch(IMonitor modMonitor) : base(modMonitor)
+        internal CropPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }

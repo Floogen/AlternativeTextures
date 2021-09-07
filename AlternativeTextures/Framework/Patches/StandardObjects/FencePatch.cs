@@ -20,7 +20,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
     {
         private readonly Type _object = typeof(Fence);
 
-        internal FencePatch(IMonitor modMonitor) : base(modMonitor)
+        internal FencePatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }

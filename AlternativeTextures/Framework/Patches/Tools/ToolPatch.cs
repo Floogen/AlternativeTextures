@@ -25,7 +25,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
     {
         private readonly Type _object = typeof(Tool);
 
-        internal ToolPatch(IMonitor modMonitor) : base(modMonitor)
+        internal ToolPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }

@@ -22,7 +22,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
     {
         private readonly Type _object = typeof(Bush);
 
-        internal BushPatch(IMonitor modMonitor) : base(modMonitor)
+        internal BushPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }

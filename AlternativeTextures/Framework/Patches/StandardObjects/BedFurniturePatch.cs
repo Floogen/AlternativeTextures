@@ -21,7 +21,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
     {
         private readonly Type _object = typeof(BedFurniture);
 
-        internal BedFurniturePatch(IMonitor modMonitor) : base(modMonitor)
+        internal BedFurniturePatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }

@@ -21,7 +21,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
     {
         private readonly Type _object = typeof(GameLocation);
 
-        internal GameLocationPatch(IMonitor modMonitor) : base(modMonitor)
+        internal GameLocationPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }

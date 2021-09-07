@@ -20,7 +20,7 @@ namespace AlternativeTextures.Framework.Patches.AnimatedObjects
     {
         private readonly Type _object = typeof(Phone);
 
-        internal PhonePatch(IMonitor modMonitor) : base(modMonitor)
+        internal PhonePatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }
