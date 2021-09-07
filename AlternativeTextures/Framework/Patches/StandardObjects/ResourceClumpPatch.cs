@@ -30,7 +30,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
         {
             harmony.Patch(AccessTools.Method(_object, nameof(ResourceClump.draw), new[] { typeof(SpriteBatch), typeof(Vector2) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
             harmony.Patch(AccessTools.Method(_object, nameof(ResourceClump.seasonUpdate), new[] { typeof(bool) }), postfix: new HarmonyMethod(GetType(), nameof(SeasonUpdatePostfix)));
-            harmony.Patch(AccessTools.Constructor(typeof(GiantCrop), new[] { typeof(int), typeof(int), typeof(int), typeof(Vector2) }), postfix: new HarmonyMethod(GetType(), nameof(ResourceClumpPostfix)));
+            harmony.Patch(AccessTools.Constructor(typeof(ResourceClump), new[] { typeof(int), typeof(int), typeof(int), typeof(Vector2) }), postfix: new HarmonyMethod(GetType(), nameof(ResourceClumpPostfix)));
         }
 
         private static bool DrawPrefix(ResourceClump __instance, float ___shakeTimer, SpriteBatch spriteBatch, Vector2 tileLocation)
