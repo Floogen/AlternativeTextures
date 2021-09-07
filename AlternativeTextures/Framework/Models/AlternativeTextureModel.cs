@@ -44,6 +44,11 @@ namespace AlternativeTextures.Framework.Models
             Building
         }
 
+        public AlternativeTextureModel ShallowCopy()
+        {
+            return (AlternativeTextureModel)this.MemberwiseClone();
+        }
+
         public string GetTextureType()
         {
             if (!Enum.TryParse<TextureType>(Type.Trim(), true, out var textureType))
