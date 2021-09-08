@@ -45,11 +45,18 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                         harmony.Patch(AccessTools.Method(dgaFurnitureType, nameof(Furniture.drawInMenu), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(StackDrawType), typeof(Color), typeof(bool) }), prefix: new HarmonyMethod(GetType(), nameof(DrawInMenuPrefix)));
                     }
 
-                    if (Type.GetType("DynamicGameAssets.Game.CustomStorageFurniture, DynamicGameAssets") is Type dgaStorageFurniture && dgaStorageFurniture != null)
+                    if (Type.GetType("DynamicGameAssets.Game.CustomStorageFurniture, DynamicGameAssets") is Type dgaStorageFurnitureType && dgaStorageFurnitureType != null)
                     {
-                        harmony.Patch(AccessTools.Method(dgaStorageFurniture, nameof(Furniture.draw), new[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
-                        harmony.Patch(AccessTools.Method(dgaStorageFurniture, nameof(Furniture.drawAtNonTileSpot), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawAtNonTileSpotPrefix)));
-                        harmony.Patch(AccessTools.Method(dgaStorageFurniture, nameof(Furniture.drawInMenu), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(StackDrawType), typeof(Color), typeof(bool) }), prefix: new HarmonyMethod(GetType(), nameof(DrawInMenuPrefix)));
+                        harmony.Patch(AccessTools.Method(dgaStorageFurnitureType, nameof(Furniture.draw), new[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
+                        harmony.Patch(AccessTools.Method(dgaStorageFurnitureType, nameof(Furniture.drawAtNonTileSpot), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawAtNonTileSpotPrefix)));
+                        harmony.Patch(AccessTools.Method(dgaStorageFurnitureType, nameof(Furniture.drawInMenu), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(StackDrawType), typeof(Color), typeof(bool) }), prefix: new HarmonyMethod(GetType(), nameof(DrawInMenuPrefix)));
+                    }
+
+                    if (Type.GetType("DynamicGameAssets.Game.CustomTVFurniture, DynamicGameAssets") is Type dgaTVFurnitureType && dgaTVFurnitureType != null)
+                    {
+                        harmony.Patch(AccessTools.Method(dgaTVFurnitureType, nameof(Furniture.draw), new[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
+                        harmony.Patch(AccessTools.Method(dgaTVFurnitureType, nameof(Furniture.drawAtNonTileSpot), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawAtNonTileSpotPrefix)));
+                        harmony.Patch(AccessTools.Method(dgaTVFurnitureType, nameof(Furniture.drawInMenu), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(StackDrawType), typeof(Color), typeof(bool) }), prefix: new HarmonyMethod(GetType(), nameof(DrawInMenuPrefix)));
                     }
                 }
                 catch (Exception ex)
