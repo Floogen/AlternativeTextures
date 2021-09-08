@@ -25,7 +25,6 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
         }
 
-        [HarmonyBefore(new string[] { "spacechase0.DynamicGameAssets" })]
         internal void Apply(Harmony harmony)
         {
             harmony.Patch(AccessTools.Method(_object, nameof(Crop.draw), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(Color), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
@@ -50,6 +49,8 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             }
         }
 
+
+        [HarmonyBefore(new string[] { "spacechase0.DynamicGameAssets" })]
         private static bool DrawPrefix(Crop __instance, Vector2 ___origin, Vector2 ___drawPosition, Rectangle ___coloredSourceRect, float ___coloredLayerDepth, Vector2 ___smallestTileSizeOrigin, float ___layerDepth, SpriteBatch b, Vector2 tileLocation, Color toTint, float rotation)
         {
             var hoeDirt = Game1.currentLocation.terrainFeatures[tileLocation] as HoeDirt;
@@ -104,6 +105,8 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             return true;
         }
 
+
+        [HarmonyBefore(new string[] { "spacechase0.DynamicGameAssets" })]
         private static bool DrawWithOffsetPrefix(Crop __instance, Vector2 ___origin, Vector2 ___drawPosition, Rectangle ___coloredSourceRect, SpriteBatch b, Vector2 tileLocation, Color toTint, float rotation, Vector2 offset)
         {
             var gardenPot = Game1.currentLocation.getObjectAtTile((int)tileLocation.X, (int)tileLocation.Y) as IndoorPot;
