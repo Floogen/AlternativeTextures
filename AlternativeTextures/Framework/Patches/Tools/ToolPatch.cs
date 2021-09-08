@@ -128,7 +128,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
                         TileLocation = new Vector2(targetedBuilding.tileX, targetedBuilding.tileY),
                         modData = targetedBuilding.modData
                     };
-                    Game1.activeClickableMenu = new PaintBucketMenu(buildingObj, GetTextureType(targetedBuilding), modelName, textureTileWidth: targetedBuilding.tilesWide);
+                    Game1.activeClickableMenu = new PaintBucketMenu(buildingObj, buildingObj.TileLocation * 64f, GetTextureType(targetedBuilding), modelName, textureTileWidth: targetedBuilding.tilesWide);
 
                     return CancelUsing(who);
                 }
@@ -157,7 +157,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 }
 
                 // Display texture menu
-                Game1.activeClickableMenu = new PaintBucketMenu(targetedObject, GetTextureType(targetedObject), modelName);
+                Game1.activeClickableMenu = new PaintBucketMenu(targetedObject, new Vector2(x, y), GetTextureType(targetedObject), modelName);
 
                 return CancelUsing(who);
             }
@@ -216,7 +216,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     TileLocation = targetedTerrain.currentTileLocation,
                     modData = targetedTerrain.modData
                 };
-                Game1.activeClickableMenu = new PaintBucketMenu(terrainObj, GetTextureType(targetedTerrain), modelName);
+                Game1.activeClickableMenu = new PaintBucketMenu(terrainObj, terrainObj.TileLocation * 64f, GetTextureType(targetedTerrain), modelName);
 
                 return CancelUsing(who);
             }
@@ -257,7 +257,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     TileLocation = character.getTileLocation(),
                     modData = character.modData
                 };
-                Game1.activeClickableMenu = new PaintBucketMenu(obj, GetTextureType(character), modelName, uiTitle: "Scissors");
+                Game1.activeClickableMenu = new PaintBucketMenu(obj, obj.TileLocation * 64f, GetTextureType(character), modelName, uiTitle: "Scissors");
 
                 return CancelUsing(who);
             }

@@ -138,6 +138,23 @@ namespace AlternativeTextures.Framework.Patches
                 }
             }
 
+            // Prioritize checking non-rug furniture first
+            foreach (var furniture in location.furniture.Where(c => c.furniture_type != Furniture.rug))
+            {
+                if (furniture.boundingBox.Value.Contains(x, y))
+                {
+                    return furniture;
+                }
+            }
+
+            // Replicating GameLocation.getObjectAt, but doing objects before rugs
+            // Doing this so the object on top of rugs are given instead of the latter
+            var tile = new Vector2(x / 64, y / 64);
+            if (location.objects.ContainsKey(tile))
+            {
+                return location.objects[tile];
+            }
+
             return location.getObjectAt(x, y);
         }
 

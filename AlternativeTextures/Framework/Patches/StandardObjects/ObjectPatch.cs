@@ -186,7 +186,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             }
 
             // Used for most objects, except for those whom are converted upon placement (such as Fences)
-            var placedObject = location.getObjectAt(x, y);
+            var placedObject = PatchTemplate.GetObjectAt(location, x, y);
             if (placedObject is null)
             {
                 var terrainFeature = GetTerrainFeatureAt(location, x, y);
