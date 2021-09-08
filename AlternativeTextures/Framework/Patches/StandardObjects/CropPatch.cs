@@ -25,6 +25,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
         }
 
+        [HarmonyBefore(new string[] { "spacechase0.DynamicGameAssets" })]
         internal void Apply(Harmony harmony)
         {
             harmony.Patch(AccessTools.Method(_object, nameof(Crop.draw), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(Color), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
