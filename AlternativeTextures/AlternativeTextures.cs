@@ -179,7 +179,7 @@ namespace AlternativeTextures
                 var yTile = (int)e.Cursor.Tile.Y * 64;
 
                 // Verify that a supported object exists at the tile
-                var placedObject = Game1.currentLocation.getObjectAt(xTile, yTile);
+                var placedObject = PatchTemplate.GetObjectAt(Game1.currentLocation, xTile, yTile);
                 if (placedObject is null)
                 {
                     var terrainFeature = PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, xTile, yTile);
@@ -247,7 +247,7 @@ namespace AlternativeTextures
                 else
                 {
                     // Verify that a supported object exists at the tile
-                    var placedObject = Game1.currentLocation.getObjectAt(xTile, yTile);
+                    var placedObject = PatchTemplate.GetObjectAt(Game1.currentLocation, xTile, yTile);
                     if (placedObject is null)
                     {
                         var terrainFeature = PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, xTile, yTile);
