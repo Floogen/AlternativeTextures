@@ -33,6 +33,23 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             harmony.Patch(AccessTools.Method(_object, nameof(FruitTree.seasonUpdate), new[] { typeof(bool) }), postfix: new HarmonyMethod(GetType(), nameof(SeasonUpdatePostfix)));
             harmony.Patch(AccessTools.Constructor(typeof(FruitTree), new[] { typeof(int) }), postfix: new HarmonyMethod(GetType(), nameof(FruitTreePostfix)));
             harmony.Patch(AccessTools.Constructor(typeof(FruitTree), new[] { typeof(int), typeof(int) }), postfix: new HarmonyMethod(GetType(), nameof(FruitTreePostfix)));
+
+            if (PatchTemplate.IsDGAUsed())
+            {
+                try
+                {
+                    if (Type.GetType("DynamicGameAssets.Game.CustomFruitTree, DynamicGameAssets") is Type dgaCropType && dgaCropType != null)
+                    {
+                        harmony.Patch(AccessTools.Method(dgaCropType, nameof(FruitTree.draw), new[] { typeof(SpriteBatch), typeof(Vector2) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
+                        harmony.Patch(AccessTools.Method(dgaCropType, nameof(FruitTree.seasonUpdate), new[] { typeof(bool) }), postfix: new HarmonyMethod(GetType(), nameof(SeasonUpdatePostfix)));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _monitor.Log($"Failed to patch Dynamic Game Assets in {this.GetType().Name}: AT may not be able to override certain DGA object types!", LogLevel.Warn);
+                    _monitor.Log($"Patch for DGA failed in {this.GetType().Name}: {ex}", LogLevel.Trace);
+                }
+            }
         }
 
         private static bool DrawPrefix(FruitTree __instance, float ___shakeRotation, float ___shakeTimer, float ___alpha, List<Leaf> ___leaves, NetBool ___falling, SpriteBatch spriteBatch, Vector2 tileLocation)
