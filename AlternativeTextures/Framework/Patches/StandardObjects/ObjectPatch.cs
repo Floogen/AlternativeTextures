@@ -51,7 +51,8 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 }
                 catch (Exception ex)
                 {
-                    _monitor.Log($"Failed to patch Dynamic Game Assets in {this.GetType().Name}: {ex}", LogLevel.Warn);
+                    _monitor.Log($"Failed to patch Dynamic Game Assets in {this.GetType().Name}: AT may not be able to override certain DGA object types!", LogLevel.Warn);
+                    _monitor.Log($"Patch for DGA failed in {this.GetType().Name}: {ex}", LogLevel.Trace);
                 }
             }
         }
