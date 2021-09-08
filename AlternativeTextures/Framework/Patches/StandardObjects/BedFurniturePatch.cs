@@ -29,6 +29,22 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
         internal void Apply(Harmony harmony)
         {
             harmony.Patch(AccessTools.Method(_object, nameof(BedFurniture.draw), new[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
+
+            if (PatchTemplate.IsDGAUsed())
+            {
+                try
+                {
+                    if (Type.GetType("DynamicGameAssets.Game.CustomBedFurniture, DynamicGameAssets") is Type dgaBedFurnitureType && dgaBedFurnitureType != null)
+                    {
+                        harmony.Patch(AccessTools.Method(dgaBedFurnitureType, nameof(BedFurniture.draw), new[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _monitor.Log($"Failed to patch Dynamic Game Assets in {this.GetType().Name}: AT may not be able to override certain DGA object types!", LogLevel.Warn);
+                    _monitor.Log($"Patch for DGA failed in {this.GetType().Name}: {ex}", LogLevel.Trace);
+                }
+            }
         }
 
         private static bool DrawPrefix(BedFurniture __instance, NetVector2 ___drawPosition, SpriteBatch spriteBatch, int x, int y, float alpha = 1f)
