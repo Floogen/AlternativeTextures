@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyVersion>3.4.0</AssemblyVersion>
+    <Version>4.0.0-beta.1</Version>
     <TargetFramework>net5.0</TargetFramework>
     <EnableHarmony>true</EnableHarmony>
     <EnableModZip>false</EnableModZip>
