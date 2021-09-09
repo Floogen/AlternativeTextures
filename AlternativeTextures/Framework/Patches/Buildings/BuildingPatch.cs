@@ -41,7 +41,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
 
         private static void UpdatePostfix(Building __instance, GameTime time)
         {
-            if (!__instance.modData.ContainsKey("AlternativeTextureName"))
+            if (!__instance.modData.ContainsKey("AlternativeTextureName") || AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]) is null)
             {
                 return;
             }
@@ -55,6 +55,8 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                 {
                     __instance.modData["AlternativeTextureSeason"] = Game1.currentSeason;
                     __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureName"], "_", __instance.modData["AlternativeTextureSeason"]);
+
+                    BuildingPatch.ResetTextureReversePatch(__instance);
                 }
             }
 
@@ -134,14 +136,12 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                 var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
                 if (textureModel is null)
                 {
-                    BuildingPatch.ResetTextureReversePatch(__instance);
                     return false;
                 }
 
                 var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
                 if (textureVariation == -1)
                 {
-                    BuildingPatch.ResetTextureReversePatch(__instance);
                     return false;
                 }
 
