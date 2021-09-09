@@ -41,7 +41,7 @@ namespace AlternativeTextures.Framework.Patches.Entities
 
         private static void UpdatePostfix(Character __instance, GameTime time, GameLocation location)
         {
-            if (!__instance.modData.ContainsKey("AlternativeTextureName"))
+            if (!__instance.modData.ContainsKey("AlternativeTextureName") || AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]) is null)
             {
                 return;
             }
@@ -57,6 +57,17 @@ namespace AlternativeTextures.Framework.Patches.Entities
                     child.modData["AlternativeTextureName"] = String.Concat(child.modData["AlternativeTextureName"], "_", child.modData["AlternativeTextureSeason"]);
                 }
             }
+            if (__instance is Horse horse && horse.modData["AlternativeTextureName"].ToLower() != instanceName && horse.modData["AlternativeTextureName"].ToLower() != instanceSeasonName)
+            {
+                horse.modData["AlternativeTextureName"] = String.Concat(horse.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(horse)}");
+                if (horse.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(__instance.modData["AlternativeTextureSeason"]))
+                {
+                    horse.modData["AlternativeTextureSeason"] = Game1.GetSeasonForLocation(location);
+                    horse.modData["AlternativeTextureName"] = String.Concat(horse.modData["AlternativeTextureName"], "_", horse.modData["AlternativeTextureSeason"]);
+                }
+            }
+
+            __instance.Sprite.loadedTexture = String.Empty;
         }
 
         private static bool DrawPrefix(Character __instance, SpriteBatch b)
@@ -66,14 +77,12 @@ namespace AlternativeTextures.Framework.Patches.Entities
                 var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
                 if (textureModel is null)
                 {
-                    __instance.Sprite.loadedTexture = String.Empty;
                     return true;
                 }
 
                 var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
                 if (textureVariation == -1)
                 {
-                    __instance.Sprite.loadedTexture = String.Empty;
                     return true;
                 }
                 var textureOffset = textureVariation * textureModel.TextureHeight;

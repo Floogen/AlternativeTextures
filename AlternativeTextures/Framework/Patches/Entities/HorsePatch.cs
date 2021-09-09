@@ -40,14 +40,12 @@ namespace AlternativeTextures.Framework.Patches.Entities
                 var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
                 if (textureModel is null)
                 {
-                    __instance.Sprite.loadedTexture = String.Empty;
                     return true;
                 }
 
                 var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
                 if (textureVariation == -1)
                 {
-                    __instance.Sprite.loadedTexture = String.Empty;
                     return true;
                 }
                 var textureOffset = textureVariation * textureModel.TextureHeight;
