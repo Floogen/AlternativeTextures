@@ -116,6 +116,12 @@ namespace AlternativeTextures.Framework.Patches
 
             if (character is Horse horse)
             {
+                // Tractor mod compatibility: -794739 is the ID used by Tractor Mod for determining if a Stable is really a garage
+                if (horse.modData.ContainsKey("Pathoschild.TractorMod"))
+                {
+                    return "Tractor";
+                }
+
                 return "Horse";
             }
 
@@ -125,6 +131,17 @@ namespace AlternativeTextures.Framework.Patches
             }
 
             return character.name;
+        }
+
+        internal static string GetBuildingName(Building building)
+        {
+            // Tractor mod compatibility: -794739 is the ID used by Tractor Mod for determining if a Stable is really a garage
+            if (building.maxOccupants.Value == -794739)
+            {
+                return "Tractor Garage";
+            }
+
+            return building.buildingType;
         }
 
         internal static Object GetObjectAt(GameLocation location, int x, int y)

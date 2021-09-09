@@ -41,20 +41,22 @@ namespace AlternativeTextures.Framework.Patches.Buildings
 
         private static void UpdatePostfix(Building __instance, GameTime time)
         {
-            if (!__instance.modData.ContainsKey("AlternativeTextureName"))
+            if (!__instance.modData.ContainsKey("AlternativeTextureName") || AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]) is null)
             {
                 return;
             }
 
-            var instanceName = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Building}_{__instance.buildingType}");
+            var instanceName = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Building}_{GetBuildingName(__instance)}");
             var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
             if (__instance.modData["AlternativeTextureName"].ToLower() != instanceName && __instance.modData["AlternativeTextureName"].ToLower() != instanceSeasonName)
             {
-                __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Building}_{__instance.buildingType}");
+                __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Building}_{GetBuildingName(__instance)}");
                 if (__instance.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(__instance.modData["AlternativeTextureSeason"]))
                 {
                     __instance.modData["AlternativeTextureSeason"] = Game1.currentSeason;
                     __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureName"], "_", __instance.modData["AlternativeTextureSeason"]);
+
+                    BuildingPatch.ResetTextureReversePatch(__instance);
                 }
             }
 
@@ -134,14 +136,12 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                 var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
                 if (textureModel is null)
                 {
-                    BuildingPatch.ResetTextureReversePatch(__instance);
                     return false;
                 }
 
                 var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
                 if (textureVariation == -1)
                 {
-                    BuildingPatch.ResetTextureReversePatch(__instance);
                     return false;
                 }
 
@@ -287,7 +287,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
 
         private static void BuildingPostfix(Building __instance, BluePrint blueprint, Vector2 tileLocation)
         {
-            var instanceName = $"{AlternativeTextureModel.TextureType.Building}_{blueprint.name}";
+            var instanceName = $"{AlternativeTextureModel.TextureType.Building}_{GetBuildingName(__instance)}";
             var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
 
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
