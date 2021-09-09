@@ -3,16 +3,15 @@ using StardewModdingAPI;
 using System;
 using System.Linq;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
-using System.Text.RegularExpressions;
 using Microsoft.Xna.Framework;
 using StardewValley;
+using System.Collections.Generic;
 
 namespace AlternativeTextures.Framework.Interfaces.API
 {
     public interface IApi
     {
-        void AddAlternativeTexture(AlternativeTextureModel model, string owner, string tileSheetPath);
+        void AddAlternativeTexture(AlternativeTextureModel model, string owner, List<Texture2D> textures);
     }
 
     public class Api : IApi
@@ -24,7 +23,12 @@ namespace AlternativeTextures.Framework.Interfaces.API
             _framework = alternativeTexturesMod;
         }
 
-        public void AddAlternativeTexture(AlternativeTextureModel model, string owner, string tileSheetPath)
+        public void AddAlternativeTexture(AlternativeTextureModel model, string owner, Texture2D texture)
+        {
+            AddAlternativeTexture(model, owner, new List<Texture2D>() { texture });
+        }
+
+        public void AddAlternativeTexture(AlternativeTextureModel model, string owner, List<Texture2D> textures)
         {
             if (String.IsNullOrEmpty(owner))
             {
@@ -32,14 +36,9 @@ namespace AlternativeTextures.Framework.Interfaces.API
                 return;
             }
 
-            if (String.IsNullOrEmpty(tileSheetPath))
+            if (textures.Count() == 0)
             {
-                _framework.Monitor.Log($"Unable to add AlternativeTextureModel {model.GetNameWithSeason()}: TileSheetPath property is not set.");
-                return;
-            }
-            else if (!tileSheetPath.ToLower().Contains("texture.png"))
-            {
-                _framework.Monitor.Log($"Unable to add AlternativeTextureModel {model.GetNameWithSeason()}: TileSheetPath property does not contain a texture.png file.");
+                _framework.Monitor.Log($"Unable to add AlternativeTextureModel {model.GetNameWithSeason()}: Textures property is empty.");
                 return;
             }
 
@@ -76,34 +75,21 @@ namespace AlternativeTextures.Framework.Interfaces.API
                 textureModel.ModelName = String.IsNullOrEmpty(textureModel.Season) ? String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName) : String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName, "_", textureModel.Season);
                 textureModel.TextureId = String.Concat(textureModel.Owner, ".", textureModel.ModelName);
 
-                // Verify we are given a texture and if so, track it
-                if (!File.Exists(Path.Combine(tileSheetPath, "texture.png")))
+                // Verify we are given a singular texture, if not then stitch them all together
+                if (textures.Count() > 1)
                 {
-                    // No texture.png found, may be using split texture files (texture_1.png, texture_2.png, etc.)
-                    var textureFilePaths = Directory.GetFiles(tileSheetPath, "texture_*.png")
-                        .Select(t => Path.GetFileName(t))
-                        .Where(t => t.Any(char.IsDigit))
-                        .OrderBy(t => Int32.Parse(Regex.Match(t, @"\d+").Value));
-
-                    if (textureFilePaths.Count() == 0)
-                    {
-                        _framework.Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} via API: No associated texture.png or split textures (texture_1.png, texture_2.png, etc.) given", LogLevel.Warn);
-                        continue;
-                    }
-
                     // Load in the first texture_#.png to get its dimensions for creating stitchedTexture
-                    Texture2D baseTexture = _framework.Helper.Content.Load<Texture2D>(Path.Combine(tileSheetPath, textureFilePaths.First()));
-                    Texture2D stitchedTexture = new Texture2D(Game1.graphics.GraphicsDevice, baseTexture.Width, baseTexture.Height * textureFilePaths.Count());
+                    Texture2D baseTexture = textures.First();
+                    Texture2D stitchedTexture = new Texture2D(Game1.graphics.GraphicsDevice, baseTexture.Width, baseTexture.Height * textures.Count());
 
                     // Now stitch together the split textures into a single texture
                     Color[] pixels = new Color[stitchedTexture.Width * stitchedTexture.Height];
-                    for (int x = 0; x < textureFilePaths.Count(); x++)
+                    for (int x = 0; x < textures.Count(); x++)
                     {
-                        var fileName = textureFilePaths.ElementAt(x);
-                        _framework.Monitor.Log($"Stitching together {textureModel.TextureId}: {fileName}", LogLevel.Trace);
+                        _framework.Monitor.Log($"Stitching together {textureModel.TextureId}: texture_{x}", LogLevel.Trace);
 
                         var offset = x * baseTexture.Width * baseTexture.Height;
-                        var subTexture = _framework.Helper.Content.Load<Texture2D>(Path.Combine(tileSheetPath, fileName));
+                        var subTexture = textures.ElementAt(x);
 
                         Color[] subPixels = new Color[subTexture.Width * subTexture.Height];
                         subTexture.GetData(subPixels);
@@ -114,14 +100,14 @@ namespace AlternativeTextures.Framework.Interfaces.API
                     }
 
                     stitchedTexture.SetData(pixels);
-                    textureModel.TileSheetPath = Path.Combine(tileSheetPath, textureFilePaths.First());
+                    textureModel.TileSheetPath = String.Empty;
                     textureModel.Texture = stitchedTexture;
                 }
                 else
                 {
                     // Load in the single vertical texture
-                    textureModel.TileSheetPath = Path.Combine(tileSheetPath, "texture.png");
-                    textureModel.Texture = _framework.Helper.Content.Load<Texture2D>(textureModel.TileSheetPath);
+                    textureModel.TileSheetPath = String.Empty;
+                    textureModel.Texture = textures.First();
                 }
 
                 // Track the texture model
