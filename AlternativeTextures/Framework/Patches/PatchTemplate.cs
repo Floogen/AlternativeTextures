@@ -125,6 +125,17 @@ namespace AlternativeTextures.Framework.Patches
             return character.name;
         }
 
+        internal static string GetBuildingName(Building building)
+        {
+            // Tractor mod compatibility: -794739 is the ID used by Tractor Mod for determining if a Stable is really a garage
+            if (building.maxOccupants.Value == -794739)
+            {
+                return "Tractor Garage";
+            }
+
+            return building.buildingType;
+        }
+
         internal static Object GetObjectAt(GameLocation location, int x, int y)
         {
             // If object is furniture and currently has something on top of it, check that instead
