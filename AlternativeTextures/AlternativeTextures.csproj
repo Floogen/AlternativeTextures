@@ -98,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Examples\[AT] Example Pack\Textures\Craftables\AnimatedRecyclingMachine\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Furniture\AnimatedTreeOfTheWinterStar\texture.json" />
     <None Include="Examples\[AT] Crystal Mini-Obelisks\manifest.json" />
     <None Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\DeluxeCoop\texture.json" />
@@ -220,6 +221,7 @@
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Humans\Children\Toddler\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Pets\Dog\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Pets\Cat\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Furniture\AnimatedTreeOfTheWinterStar\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\BrownCouch\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\OrnateLamp\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\SmallWindow\texture.png" />
