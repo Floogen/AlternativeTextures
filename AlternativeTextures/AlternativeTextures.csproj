@@ -99,6 +99,8 @@
   <ItemGroup>
     <None Include="Examples\[AT] Example Pack\Textures\Craftables\AnimatedRecyclingMachine\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\AnimatedTreeOfTheWinterStar\texture.json" />
+    <None Include="Examples\[AT] Mystical Mini-Obelisks\manifest.json" />
+    <None Include="Examples\[AT] Mystical Mini-Obelisks\Textures\MiniObelisk\texture.json" />
     <None Include="Examples\[AT] Crystal Mini-Obelisks\manifest.json" />
     <None Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\DeluxeCoop\texture.json" />
@@ -277,6 +279,16 @@
     <Content Include="Examples\[AT] Example Pack\Textures\Craftables\StoneFence\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Craftables\WoodFence2\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Craftables\WoodFence\texture.png" />
+    <Content Include="Examples\[AT] Mystical Mini-Obelisks\Textures\MiniObelisk\texture_0.png" />
+    <Content Include="Examples\[AT] Mystical Mini-Obelisks\Textures\MiniObelisk\texture_1.png" />
+    <Content Include="Examples\[AT] Mystical Mini-Obelisks\Textures\MiniObelisk\texture_2.png" />
+    <Content Include="Examples\[AT] Mystical Mini-Obelisks\Textures\MiniObelisk\texture_3.png" />
+    <Content Include="Examples\[AT] Mystical Mini-Obelisks\Textures\MiniObelisk\texture_4.png" />
+    <Content Include="Examples\[AT] Mystical Mini-Obelisks\Textures\MiniObelisk\texture_5.png" />
+    <Content Include="Examples\[AT] Mystical Mini-Obelisks\Textures\MiniObelisk\texture_6.png" />
+    <Content Include="Examples\[AT] Mystical Mini-Obelisks\Textures\MiniObelisk\texture_7.png" />
+    <Content Include="Examples\[AT] Mystical Mini-Obelisks\Textures\MiniObelisk\texture_8.png" />
+    <Content Include="Examples\[AT] Mystical Mini-Obelisks\Textures\MiniObelisk\texture_9.png" />
     <Content Include="Examples\[AT] Snowcrows\Textures\DeluxeScarecrow\texture.png" />
     <Content Include="Examples\[AT] Snowcrows\Textures\Scarecrow\texture.png" />
     <Content Include="Examples\[CP] Content Patcher Example\assets\alt_paint_bucket.png" />

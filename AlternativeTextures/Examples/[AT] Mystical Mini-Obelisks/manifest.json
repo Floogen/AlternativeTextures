@@ -1,0 +1,13 @@
+﻿{
+  "Name": "[AT] Mystical Mini-Obelisks",
+  "Author": "PeacefulEnd",
+  "Version": "1.0.0",
+  "Description": "Mystical themed pack for Mini-Obelisks using the Alternative Textures framework.",
+  "UniqueID": "PeacefulEnd.AT.MysticalMiniObelisks",
+  "UpdateKeys": [ "Nexus:????" ],
+  "Dependencies": [],
+  "ContentPackFor": {
+    "UniqueID": "PeacefulEnd.AlternativeTextures",
+    "MinimumVersion": "3.6.0"
+  }
+}
