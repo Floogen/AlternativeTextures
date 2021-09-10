@@ -1,0 +1,51 @@
+{
+  "ItemName": "Recycling Machine",
+  "Type": "Craftable",
+  "TextureWidth": 16,
+  "TextureHeight": 32,
+  "ManualVariations": [
+    {
+      "Id": 0,
+      "Animation": [
+        {
+          "Frame": 0,
+          "Duration": 500
+        },
+        {
+          "Frame": 1,
+          "Duration": 1500
+        },
+        {
+          "Frame": 2,
+          "Duration": 1500
+        },
+        {
+          "Frame": 3,
+          "Duration": 1500
+        }
+      ]
+    },
+    {
+      "Id": 1,
+      "Keywords": [ "Blue" ],
+      "Animation": [
+        {
+          "Frame": 0,
+          "Duration": 500
+        },
+        {
+          "Frame": 1,
+          "Duration": 1500
+        },
+        {
+          "Frame": 2,
+          "Duration": 500
+        },
+        {
+          "Frame": 3,
+          "Duration": 1000
+        }
+      ]
+    }
+  ]
+}

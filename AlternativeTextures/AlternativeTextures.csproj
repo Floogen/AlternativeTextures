@@ -97,6 +97,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Examples\[AT] Example Pack\Textures\Craftables\AnimatedRecyclingMachine\texture.json" />
     <None Include="Examples\[AT] Crystal Mini-Obelisks\manifest.json" />
     <None Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\DeluxeCoop\texture.json" />
@@ -204,6 +205,8 @@
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\Silo\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\Well\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\Stable\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Craftables\AnimatedRecyclingMachine\texture_0.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Craftables\AnimatedRecyclingMachine\texture_1.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Chickens\BabyWhiteChicken\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Chickens\WhiteChicken\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Cows\BabyBrownCow\texture.png" />
