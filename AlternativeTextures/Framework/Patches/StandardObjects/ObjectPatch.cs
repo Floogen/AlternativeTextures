@@ -57,6 +57,36 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 {
                     xTileOffset += 1;
                 }
+
+                // Override xTileOffset if AlternativeTextureModel has an animation
+                if (textureModel.HasAnimation(textureVariation))
+                {
+                    if (!__instance.modData.ContainsKey("AlternativeTextureCurrentFrame") || !__instance.modData.ContainsKey("AlternativeTextureFrameDuration") || !__instance.modData.ContainsKey("AlternativeTextureElapsedDuration"))
+                    {
+                        __instance.modData["AlternativeTextureCurrentFrame"] = "0";
+                        __instance.modData["AlternativeTextureFrameDuration"] = textureModel.GetAnimationDataAtIndex(textureVariation, 0).Duration.ToString();// Animation.ElementAt(0).Duration.ToString();
+                        __instance.modData["AlternativeTextureElapsedDuration"] = "0";
+                    }
+
+                    var currentFrame = Int32.Parse(__instance.modData["AlternativeTextureCurrentFrame"]);
+                    var frameDuration = Int32.Parse(__instance.modData["AlternativeTextureFrameDuration"]);
+                    var elapsedDuration = Int32.Parse(__instance.modData["AlternativeTextureElapsedDuration"]);
+
+                    if (elapsedDuration >= frameDuration)
+                    {
+                        currentFrame = currentFrame + 1 >= textureModel.GetAnimationData(textureVariation).Count() ? 0 : currentFrame + 1;
+
+                        __instance.modData["AlternativeTextureCurrentFrame"] = currentFrame.ToString();
+                        __instance.modData["AlternativeTextureFrameDuration"] = textureModel.GetAnimationDataAtIndex(textureVariation, currentFrame).Duration.ToString();
+                        __instance.modData["AlternativeTextureElapsedDuration"] = "0";
+                    }
+                    else
+                    {
+                        __instance.modData["AlternativeTextureElapsedDuration"] = (elapsedDuration + Game1.currentGameTime.ElapsedGameTime.Milliseconds).ToString();
+                    }
+
+                    xTileOffset = currentFrame;
+                }
                 xTileOffset *= textureModel.TextureWidth;
 
                 // Get required draw values
@@ -64,7 +94,6 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 Vector2 position = Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64, y * 64 - 64));
                 Rectangle destination = new Rectangle((int)(position.X - scaleFactor.X / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(position.Y - scaleFactor.Y / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(64f + scaleFactor.X), (int)(128f + scaleFactor.Y / 2f));
                 float draw_layer = Math.Max(0f, (float)((y + 1) * 64 - 24) / 10000f) + (float)x * 1E-05f;
-
 
                 // Handle outliers for draw
                 if (__instance.ParentSheetIndex == 105 || __instance.ParentSheetIndex == 264)
