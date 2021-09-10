@@ -381,7 +381,7 @@ namespace AlternativeTextures
                             continue;
                         }
 
-                        var parentFolderName = textureFolder.Parent.FullName.Replace(contentPack.DirectoryPath + "\\", String.Empty);
+                        var parentFolderName = textureFolder.Parent.FullName.Replace(contentPack.DirectoryPath + Path.DirectorySeparatorChar, String.Empty);
                         var modelPath = Path.Combine(parentFolderName, textureFolder.Name, "texture.json");
                         var seasons = contentPack.ReadJsonFile<AlternativeTextureModel>(modelPath).Seasons;
                         for (int s = 0; s < 4; s++)
