@@ -11,5 +11,11 @@ namespace AlternativeTextures.Framework.Models
         public int Id { get; set; }
         public float ChanceWeight { get; set; } = 1f;
         public List<string> Keywords { get; set; } = new List<string>();
+        public List<AnimationModel> Animation { get; set; } = new List<AnimationModel>();
+
+        public bool HasAnimation()
+        {
+            return Animation.Count() > 0;
+        }
     }
 }

@@ -26,6 +26,7 @@ namespace AlternativeTextures.Framework.Models
         internal Texture2D Texture { get; set; }
         internal string TileSheetPath { get; set; }
         public List<VariationModel> ManualVariations { get; set; } = new List<VariationModel>();
+        public List<AnimationModel> Animation { get; set; } = new List<AnimationModel>();
 
         internal enum TextureType
         {
@@ -69,6 +70,22 @@ namespace AlternativeTextures.Framework.Models
             return ModelName;
         }
 
+        public List<AnimationModel> GetAnimationData(int variation)
+        {
+            var manualVariation = ManualVariations.FirstOrDefault(v => v.Id == variation && v.HasAnimation());
+            if (manualVariation != null)
+            {
+                return manualVariation.Animation;
+            }
+
+            return Animation;
+        }
+
+        public AnimationModel GetAnimationDataAtIndex(int variation, int index)
+        {
+            return GetAnimationData(variation).ElementAt(index);
+        }
+
         public bool HasKeyword(string variationString, string keyword)
         {
             if (!Int32.TryParse(variationString, out var variation))
@@ -87,6 +104,11 @@ namespace AlternativeTextures.Framework.Models
             }
 
             return Keywords.Any(k => k.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0);
+        }
+
+        public bool HasAnimation(int variation)
+        {
+            return Animation.Count() > 0 || ManualVariations.Any(v => v.Id == variation && v.HasAnimation());
         }
 
         public override string ToString()
