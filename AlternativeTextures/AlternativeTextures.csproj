@@ -102,6 +102,7 @@
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\GreenSlime\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\RoyalSerpent\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\Serpent\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\StoneGolemDangerous\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\ShadowBrute\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\Skeleton\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\Ghost\texture.json" />
@@ -233,6 +234,7 @@
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\GreenSlime\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\RoyalSerpent\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\Serpent\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\StoneGolemDangerous\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\ShadowBrute\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\Skeleton\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\Ghost\texture.png" />
