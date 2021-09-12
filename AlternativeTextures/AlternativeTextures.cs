@@ -89,45 +89,46 @@ namespace AlternativeTextures
                 var harmony = new Harmony(this.ModManifest.UniqueID);
 
                 // Apply texture override related patches
-                new GameLocationPatch(monitor, modHelper).Apply(harmony);
-                new ObjectPatch(monitor, modHelper).Apply(harmony);
-                new FencePatch(monitor, modHelper).Apply(harmony);
-                new HoeDirtPatch(monitor, modHelper).Apply(harmony);
-                new CropPatch(monitor, modHelper).Apply(harmony);
-                new GiantCropPatch(monitor, modHelper).Apply(harmony);
-                new GrassPatch(monitor, modHelper).Apply(harmony);
-                new TreePatch(monitor, modHelper).Apply(harmony);
-                new FruitTreePatch(monitor, modHelper).Apply(harmony);
-                new ResourceClumpPatch(monitor, modHelper).Apply(harmony);
-                new BushPatch(monitor, modHelper).Apply(harmony);
-                new FlooringPatch(monitor, modHelper).Apply(harmony);
-                new FurniturePatch(monitor, modHelper).Apply(harmony);
-                new BedFurniturePatch(monitor, modHelper).Apply(harmony);
-                new FishTankFurniturePatch(monitor, modHelper).Apply(harmony);
+                new GameLocationPatch(monitor).Apply(harmony);
+                new ObjectPatch(monitor).Apply(harmony);
+                new FencePatch(monitor).Apply(harmony);
+                new HoeDirtPatch(monitor).Apply(harmony);
+                new CropPatch(monitor).Apply(harmony);
+                new GiantCropPatch(monitor).Apply(harmony);
+                new GrassPatch(monitor).Apply(harmony);
+                new TreePatch(monitor).Apply(harmony);
+                new FruitTreePatch(monitor).Apply(harmony);
+                new ResourceClumpPatch(monitor).Apply(harmony);
+                new BushPatch(monitor).Apply(harmony);
+                new FlooringPatch(monitor).Apply(harmony);
+                new FurniturePatch(monitor).Apply(harmony);
+                new BedFurniturePatch(monitor).Apply(harmony);
+                new FishTankFurniturePatch(monitor).Apply(harmony);
 
                 // Start of animated objects
-                new ChestPatch(monitor, modHelper).Apply(harmony);
-                new CrabPotPatch(monitor, modHelper).Apply(harmony);
-                new IndoorPotPatch(monitor, modHelper).Apply(harmony);
-                new PhonePatch(monitor, modHelper).Apply(harmony);
+                new ChestPatch(monitor).Apply(harmony);
+                new CrabPotPatch(monitor).Apply(harmony);
+                new IndoorPotPatch(monitor).Apply(harmony);
+                new PhonePatch(monitor).Apply(harmony);
                 /*
                  * Not supported:
                  * - Wood Chipper
                  */
 
                 // Start of entity patches
-                new CharacterPatch(monitor, modHelper).Apply(harmony);
-                new ChildPatch(monitor, modHelper).Apply(harmony);
-                new FarmAnimalPatch(monitor, modHelper).Apply(harmony);
-                new HorsePatch(monitor, modHelper).Apply(harmony);
-                new PetPatch(monitor, modHelper).Apply(harmony);
+                new CharacterPatch(monitor).Apply(harmony);
+                new ChildPatch(monitor).Apply(harmony);
+                new FarmAnimalPatch(monitor).Apply(harmony);
+                new HorsePatch(monitor).Apply(harmony);
+                new PetPatch(monitor).Apply(harmony);
+                new MonsterPatch(monitor).Apply(harmony);
 
                 // Start of building patches
-                new BuildingPatch(monitor, modHelper).Apply(harmony);
+                new BuildingPatch(monitor).Apply(harmony);
 
                 // Paint tool related patches
-                new UtilityPatch(monitor, modHelper).Apply(harmony);
-                new ToolPatch(monitor, modHelper).Apply(harmony);
+                new UtilityPatch(monitor).Apply(harmony);
+                new ToolPatch(monitor).Apply(harmony);
             }
             catch (Exception e)
             {
@@ -301,11 +302,6 @@ namespace AlternativeTextures
                 apiManager.HookIntoJsonAssets(Helper);
             }
 
-            if (Helper.ModRegistry.IsLoaded("spacechase0.DynamicGameAssets"))
-            {
-                apiManager.HookIntoDynamicGameAssets(Helper);
-            }
-
             if (Helper.ModRegistry.IsLoaded("Pathoschild.ContentPatcher") && apiManager.HookIntoContentPatcher(Helper))
             {
                 apiManager.GetContentPatcherInterface().RegisterToken(ModManifest, "Textures", new TextureToken(textureManager, assetManager));
@@ -386,7 +382,7 @@ namespace AlternativeTextures
                             continue;
                         }
 
-                        var parentFolderName = textureFolder.Parent.FullName.Replace(contentPack.DirectoryPath + "\\", String.Empty);
+                        var parentFolderName = textureFolder.Parent.FullName.Replace(contentPack.DirectoryPath + Path.DirectorySeparatorChar, String.Empty);
                         var modelPath = Path.Combine(parentFolderName, textureFolder.Name, "texture.json");
                         var seasons = contentPack.ReadJsonFile<AlternativeTextureModel>(modelPath).Seasons;
                         for (int s = 0; s < 4; s++)
