@@ -30,11 +30,12 @@ namespace AlternativeTextures.Framework.Patches.Entities
 
         internal void Apply(Harmony harmony)
         {
-            harmony.Patch(AccessTools.Method(_entity, nameof(FarmAnimal.draw), new[] { typeof(SpriteBatch) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
+            harmony.Patch(AccessTools.Method(_entity, nameof(Monster.draw), new[] { typeof(SpriteBatch) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
+            harmony.Patch(AccessTools.Method(_entity, nameof(Monster.update), new[] { typeof(GameTime), typeof(GameLocation) }), postfix: new HarmonyMethod(GetType(), nameof(UpdatePostfix)));
             harmony.Patch(AccessTools.Constructor(_entity, new[] { typeof(string), typeof(Vector2), typeof(int) }), postfix: new HarmonyMethod(GetType(), nameof(MonsterPostfix)));
         }
 
-        private static bool DrawPrefix(Character __instance, SpriteBatch b)
+        private static bool DrawPrefix(Monster __instance, SpriteBatch b)
         {
             if (__instance.modData.ContainsKey("AlternativeTextureName"))
             {
@@ -58,6 +59,42 @@ namespace AlternativeTextures.Framework.Patches.Entities
             }
 
             return true;
+        }
+
+        private static void UpdatePostfix(Monster __instance, GameTime time, GameLocation location)
+        {
+            if (!__instance.modData.ContainsKey("AlternativeTextureName"))
+            {
+                return;
+            }
+
+            if (__instance.Sprite.textureName.Value.IndexOf("_dangerous", StringComparison.OrdinalIgnoreCase) >= 0 && __instance.modData["AlternativeTextureName"].IndexOf("_dangerous", StringComparison.OrdinalIgnoreCase) == -1)
+            {
+                var instanceName = $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(__instance)}_dangerous";
+                var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
+
+                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
+                {
+                    var result = Game1.random.Next(2) > 0 ? AssignModData(__instance, instanceSeasonName, true) : AssignModData(__instance, instanceName, false);
+                    return;
+                }
+                else
+                {
+                    if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
+                    {
+                        AssignModData(__instance, instanceName, false);
+                        return;
+                    }
+
+                    if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
+                    {
+                        AssignModData(__instance, instanceSeasonName, true);
+                        return;
+                    }
+                }
+
+                AssignDefaultModData(__instance, instanceSeasonName, true);
+            }
         }
 
         private static void MonsterPostfix(Monster __instance, string name, Vector2 position, int facingDir)
