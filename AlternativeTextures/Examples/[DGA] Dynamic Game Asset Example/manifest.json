@@ -1,0 +1,19 @@
+﻿{
+  "Name": "Alternative Textures Example For Dynamic Game Assets",
+  "Author": "ExampleAuthor",
+  "Version": "1.0.0",
+  "Description": "...",
+  "UniqueID": "ExampleAuthor.ExampleDynamicGameAssetItem",
+  "UpdateKeys": [],
+  "Dependencies": [
+    {
+      "UniqueID": "spacechase0.DynamicGameAssets",
+      "IsRequired": true
+    }
+  ],
+  "ContentPackFor": {
+    "UniqueID": "spacechase0.DynamicGameAssets"
+  },
+  "DGA.FormatVersion": 2,
+  "DGA.ConditionsFormatVersion": "1.23.0"
+}

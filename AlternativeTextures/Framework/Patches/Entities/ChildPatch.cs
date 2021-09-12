@@ -22,7 +22,7 @@ namespace AlternativeTextures.Framework.Patches.Entities
     {
         private readonly Type _entity = typeof(Child);
 
-        internal ChildPatch(IMonitor modMonitor) : base(modMonitor)
+        internal ChildPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }

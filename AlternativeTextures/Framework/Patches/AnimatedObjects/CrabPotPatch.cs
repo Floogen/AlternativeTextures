@@ -20,7 +20,7 @@ namespace AlternativeTextures.Framework.Patches.AnimatedObjects
     {
         private readonly Type _object = typeof(CrabPot);
 
-        internal CrabPotPatch(IMonitor modMonitor) : base(modMonitor)
+        internal CrabPotPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }

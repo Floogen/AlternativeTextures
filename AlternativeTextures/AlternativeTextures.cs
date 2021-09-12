@@ -89,46 +89,46 @@ namespace AlternativeTextures
                 var harmony = new Harmony(this.ModManifest.UniqueID);
 
                 // Apply texture override related patches
-                new GameLocationPatch(monitor).Apply(harmony);
-                new ObjectPatch(monitor).Apply(harmony);
-                new FencePatch(monitor).Apply(harmony);
-                new HoeDirtPatch(monitor).Apply(harmony);
-                new CropPatch(monitor).Apply(harmony);
-                new GiantCropPatch(monitor).Apply(harmony);
-                new GrassPatch(monitor).Apply(harmony);
-                new TreePatch(monitor).Apply(harmony);
-                new FruitTreePatch(monitor).Apply(harmony);
-                new ResourceClumpPatch(monitor).Apply(harmony);
-                new BushPatch(monitor).Apply(harmony);
-                new FlooringPatch(monitor).Apply(harmony);
-                new FurniturePatch(monitor).Apply(harmony);
-                new BedFurniturePatch(monitor).Apply(harmony);
-                new FishTankFurniturePatch(monitor).Apply(harmony);
+                new GameLocationPatch(monitor, helper).Apply(harmony);
+                new ObjectPatch(monitor, helper).Apply(harmony);
+                new FencePatch(monitor, helper).Apply(harmony);
+                new HoeDirtPatch(monitor, helper).Apply(harmony);
+                new CropPatch(monitor, helper).Apply(harmony);
+                new GiantCropPatch(monitor, helper).Apply(harmony);
+                new GrassPatch(monitor, helper).Apply(harmony);
+                new TreePatch(monitor, helper).Apply(harmony);
+                new FruitTreePatch(monitor, helper).Apply(harmony);
+                new ResourceClumpPatch(monitor, helper).Apply(harmony);
+                new BushPatch(monitor, helper).Apply(harmony);
+                new FlooringPatch(monitor, helper).Apply(harmony);
+                new FurniturePatch(monitor, helper).Apply(harmony);
+                new BedFurniturePatch(monitor, helper).Apply(harmony);
+                new FishTankFurniturePatch(monitor, helper).Apply(harmony);
 
                 // Start of animated objects
-                new ChestPatch(monitor).Apply(harmony);
-                new CrabPotPatch(monitor).Apply(harmony);
-                new IndoorPotPatch(monitor).Apply(harmony);
-                new PhonePatch(monitor).Apply(harmony);
+                new ChestPatch(monitor, helper).Apply(harmony);
+                new CrabPotPatch(monitor, helper).Apply(harmony);
+                new IndoorPotPatch(monitor, helper).Apply(harmony);
+                new PhonePatch(monitor, helper).Apply(harmony);
                 /*
                  * Not supported:
                  * - Wood Chipper
                  */
 
                 // Start of entity patches
-                new CharacterPatch(monitor).Apply(harmony);
-                new ChildPatch(monitor).Apply(harmony);
-                new FarmAnimalPatch(monitor).Apply(harmony);
-                new HorsePatch(monitor).Apply(harmony);
-                new PetPatch(monitor).Apply(harmony);
-                new MonsterPatch(monitor).Apply(harmony);
+                new CharacterPatch(monitor, helper).Apply(harmony);
+                new ChildPatch(monitor, helper).Apply(harmony);
+                new FarmAnimalPatch(monitor, helper).Apply(harmony);
+                new HorsePatch(monitor, helper).Apply(harmony);
+                new PetPatch(monitor, helper).Apply(harmony);
+                new MonsterPatch(monitor, helper).Apply(harmony);
 
                 // Start of building patches
-                new BuildingPatch(monitor).Apply(harmony);
+                new BuildingPatch(monitor, helper).Apply(harmony);
 
                 // Paint tool related patches
-                new UtilityPatch(monitor).Apply(harmony);
-                new ToolPatch(monitor).Apply(harmony);
+                new UtilityPatch(monitor, helper).Apply(harmony);
+                new ToolPatch(monitor, helper).Apply(harmony);
             }
             catch (Exception e)
             {

@@ -22,7 +22,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
         private readonly Type _object = typeof(Grass);
         private const string NAME_PREFIX = "Grass";
 
-        public GrassPatch(IMonitor modMonitor) : base(modMonitor)
+        public GrassPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }

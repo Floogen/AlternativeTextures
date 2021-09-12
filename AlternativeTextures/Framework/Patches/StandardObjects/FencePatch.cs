@@ -20,7 +20,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
     {
         private readonly Type _object = typeof(Fence);
 
-        internal FencePatch(IMonitor modMonitor) : base(modMonitor)
+        internal FencePatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }
@@ -29,6 +29,24 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
         {
             harmony.Patch(AccessTools.Method(_object, nameof(Fence.draw), new[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Fence.performObjectDropInAction), new[] { typeof(Item), typeof(bool), typeof(Farmer) }), postfix: new HarmonyMethod(GetType(), nameof(PerformObjectDropInActionPostfix)));
+
+            if (PatchTemplate.IsDGAUsed())
+            {
+                try
+                {
+                    if (Type.GetType("DynamicGameAssets.Game.CustomFence, DynamicGameAssets") is Type dgaFenceType && dgaFenceType != null)
+                    {
+                        // DGA doesn't use either of these methods for CustomFence
+                        //harmony.Patch(AccessTools.Method(dgaFenceType, nameof(Fence.draw), new[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
+                        //harmony.Patch(AccessTools.Method(dgaFenceType, nameof(Fence.performObjectDropInAction), new[] { typeof(Item), typeof(bool), typeof(Farmer) }), postfix: new HarmonyMethod(GetType(), nameof(PerformObjectDropInActionPostfix)));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _monitor.Log($"Failed to patch Dynamic Game Assets in {this.GetType().Name}: AT may not be able to override certain DGA object types!", LogLevel.Warn);
+                    _monitor.Log($"Patch for DGA failed in {this.GetType().Name}: {ex}", LogLevel.Trace);
+                }
+            }
         }
 
         private static bool DrawPrefix(Fence __instance, SpriteBatch b, int x, int y, float alpha = 1f)

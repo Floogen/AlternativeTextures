@@ -20,7 +20,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
     {
         private readonly Type _object = typeof(Crop);
 
-        internal CropPatch(IMonitor modMonitor) : base(modMonitor)
+        internal CropPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }
@@ -29,8 +29,28 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
         {
             harmony.Patch(AccessTools.Method(_object, nameof(Crop.draw), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(Color), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Crop.drawWithOffset), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(Color), typeof(float), typeof(Vector2) }), prefix: new HarmonyMethod(GetType(), nameof(DrawWithOffsetPrefix)));
+
+            if (PatchTemplate.IsDGAUsed())
+            {
+                try
+                {
+                    if (Type.GetType("DynamicGameAssets.Game.CustomCrop, DynamicGameAssets") is Type dgaCropType && dgaCropType != null)
+                    {
+                        // DGA doesn't use either of these methods for CustomCrop, as Crop.draw and Crop.drawWithOffset aren't virtual (i.e. not overridable)
+                        //harmony.Patch(AccessTools.Method(dgaCropType, nameof(Crop.draw), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(Color), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
+                        //harmony.Patch(AccessTools.Method(dgaCropType, nameof(Crop.drawWithOffset), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(Color), typeof(float), typeof(Vector2) }), prefix: new HarmonyMethod(GetType(), nameof(DrawWithOffsetPrefix)));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _monitor.Log($"Failed to patch Dynamic Game Assets in {this.GetType().Name}: AT may not be able to override certain DGA object types!", LogLevel.Warn);
+                    _monitor.Log($"Patch for DGA failed in {this.GetType().Name}: {ex}", LogLevel.Trace);
+                }
+            }
         }
 
+
+        [HarmonyBefore(new string[] { "spacechase0.DynamicGameAssets" })]
         private static bool DrawPrefix(Crop __instance, Vector2 ___origin, Vector2 ___drawPosition, Rectangle ___coloredSourceRect, float ___coloredLayerDepth, Vector2 ___smallestTileSizeOrigin, float ___layerDepth, SpriteBatch b, Vector2 tileLocation, Color toTint, float rotation)
         {
             var hoeDirt = Game1.currentLocation.terrainFeatures[tileLocation] as HoeDirt;
@@ -85,6 +105,8 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             return true;
         }
 
+
+        [HarmonyBefore(new string[] { "spacechase0.DynamicGameAssets" })]
         private static bool DrawWithOffsetPrefix(Crop __instance, Vector2 ___origin, Vector2 ___drawPosition, Rectangle ___coloredSourceRect, SpriteBatch b, Vector2 tileLocation, Color toTint, float rotation, Vector2 offset)
         {
             var gardenPot = Game1.currentLocation.getObjectAtTile((int)tileLocation.X, (int)tileLocation.Y) as IndoorPot;

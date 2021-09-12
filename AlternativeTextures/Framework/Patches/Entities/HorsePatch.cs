@@ -22,7 +22,7 @@ namespace AlternativeTextures.Framework.Patches.Entities
     {
         private readonly Type _entity = typeof(Horse);
 
-        internal HorsePatch(IMonitor modMonitor) : base(modMonitor)
+        internal HorsePatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }

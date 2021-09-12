@@ -21,7 +21,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
     {
         private readonly Type _object = typeof(GiantCrop);
 
-        internal GiantCropPatch(IMonitor modMonitor) : base(modMonitor)
+        internal GiantCropPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }
@@ -30,6 +30,22 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
         {
             harmony.Patch(AccessTools.Method(_object, nameof(GiantCrop.draw), new[] { typeof(SpriteBatch), typeof(Vector2) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
             harmony.Patch(AccessTools.Constructor(typeof(GiantCrop), new[] { typeof(int), typeof(Vector2) }), postfix: new HarmonyMethod(GetType(), nameof(GiantCropPostfix)));
+
+            if (PatchTemplate.IsDGAUsed())
+            {
+                try
+                {
+                    if (Type.GetType("DynamicGameAssets.Game.CustomGiantCrop, DynamicGameAssets") is Type dgaGiantCropType && dgaGiantCropType != null)
+                    {
+                        harmony.Patch(AccessTools.Method(dgaGiantCropType, nameof(GiantCrop.draw), new[] { typeof(SpriteBatch), typeof(Vector2) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _monitor.Log($"Failed to patch Dynamic Game Assets in {this.GetType().Name}: AT may not be able to override certain DGA object types!", LogLevel.Warn);
+                    _monitor.Log($"Patch for DGA failed in {this.GetType().Name}: {ex}", LogLevel.Trace);
+                }
+            }
         }
 
         private static bool DrawPrefix(GiantCrop __instance, float ___shakeTimer, SpriteBatch spriteBatch, Vector2 tileLocation)

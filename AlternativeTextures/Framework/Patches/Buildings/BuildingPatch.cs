@@ -25,7 +25,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
     {
         private readonly Type _entity = typeof(Building);
 
-        internal BuildingPatch(IMonitor modMonitor) : base(modMonitor)
+        internal BuildingPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }

@@ -21,7 +21,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
     {
         private readonly Type _object = typeof(ResourceClump);
 
-        internal ResourceClumpPatch(IMonitor modMonitor) : base(modMonitor)
+        internal ResourceClumpPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }

@@ -1,0 +1,7 @@
+﻿[
+  {
+    "$ItemType": "BigCraftable",
+    "ID": "TestDGAItem",
+    "Texture": "BigCraftables/Example Item/big-craftable.png:0"
+  }
+]

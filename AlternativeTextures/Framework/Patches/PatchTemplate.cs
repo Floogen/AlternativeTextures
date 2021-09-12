@@ -21,10 +21,12 @@ namespace AlternativeTextures.Framework.Patches
     internal class PatchTemplate
     {
         internal static IMonitor _monitor;
+        internal static IModHelper _helper;
 
-        internal PatchTemplate(IMonitor modMonitor)
+        internal PatchTemplate(IMonitor modMonitor, IModHelper modHelper)
         {
             _monitor = modMonitor;
+            _helper = modHelper;
         }
 
         internal static GenericTool GetPaintBucketTool()
@@ -348,6 +350,11 @@ namespace AlternativeTextures.Framework.Patches
             }
 
             return false;
+        }
+
+        internal static bool IsDGAUsed()
+        {
+            return _helper.ModRegistry.IsLoaded("spacechase0.DynamicGameAssets");
         }
 
         internal static bool AssignDefaultModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false)

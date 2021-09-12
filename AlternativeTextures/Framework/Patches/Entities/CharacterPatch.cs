@@ -26,7 +26,7 @@ namespace AlternativeTextures.Framework.Patches.Entities
         internal const string BABY_NAME_PREFIX = "Baby";
         internal const string TODDLER_NAME_PREFIX = "Toddler";
 
-        internal CharacterPatch(IMonitor modMonitor) : base(modMonitor)
+        internal CharacterPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 
         }
