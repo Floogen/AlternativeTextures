@@ -63,6 +63,7 @@
     <Compile Include="Framework\Models\AnimationModel.cs" />
     <Compile Include="Framework\Models\VariationModel.cs" />
     <Compile Include="Framework\Patches\Buildings\BuildingPatch.cs" />
+    <Compile Include="Framework\Patches\Entities\MonsterPatch.cs" />
     <Compile Include="Framework\Patches\Entities\PetPatch.cs" />
     <Compile Include="Framework\Patches\Entities\HorsePatch.cs" />
     <Compile Include="Framework\Patches\Entities\FarmAnimalPatch.cs" />

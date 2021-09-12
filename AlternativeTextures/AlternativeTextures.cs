@@ -121,6 +121,7 @@ namespace AlternativeTextures
                 new FarmAnimalPatch(monitor).Apply(harmony);
                 new HorsePatch(monitor).Apply(harmony);
                 new PetPatch(monitor).Apply(harmony);
+                new MonsterPatch(monitor).Apply(harmony);
 
                 // Start of building patches
                 new BuildingPatch(monitor).Apply(harmony);
