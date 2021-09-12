@@ -99,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Examples\[AT] Example Pack\Textures\Craftables\AnimatedRecyclingMachine\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\Mummy\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\AnimatedTreeOfTheWinterStar\texture.json" />
     <None Include="Examples\[AT] Mystical Mini-Obelisks\manifest.json" />
     <None Include="Examples\[AT] Mystical Mini-Obelisks\Textures\MiniObelisk\texture.json" />
@@ -222,6 +223,7 @@
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Sheep\Sheep\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Humans\Children\Baby\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Humans\Children\Toddler\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\Mummy\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Pets\Dog\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Pets\Cat\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Furniture\AnimatedTreeOfTheWinterStar\texture.png" />
