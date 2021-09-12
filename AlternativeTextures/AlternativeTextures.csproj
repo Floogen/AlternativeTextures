@@ -99,6 +99,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Examples\[AT] Example Pack\Textures\Craftables\AnimatedRecyclingMachine\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\GreenSlime\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\RoyalSerpent\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\Serpent\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\ShadowBrute\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\Skeleton\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\Ghost\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\Bat\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\Mummy\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\AnimatedTreeOfTheWinterStar\texture.json" />
     <None Include="Examples\[AT] Mystical Mini-Obelisks\manifest.json" />
@@ -223,6 +230,13 @@
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Sheep\Sheep\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Humans\Children\Baby\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Humans\Children\Toddler\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\GreenSlime\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\RoyalSerpent\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\Serpent\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\ShadowBrute\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\Skeleton\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\Ghost\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\Bat\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\Mummy\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Pets\Dog\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Pets\Cat\texture.png" />
