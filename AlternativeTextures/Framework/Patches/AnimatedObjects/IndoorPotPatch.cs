@@ -51,7 +51,7 @@ namespace AlternativeTextures.Framework.Patches.AnimatedObjects
                 scaleFactor *= 4f;
                 Vector2 position = Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64, y * 64 - 64));
                 Rectangle destination = new Rectangle((int)(position.X - scaleFactor.X / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(position.Y - scaleFactor.Y / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(64f + scaleFactor.X), (int)(128f + scaleFactor.Y / 2f));
-                spriteBatch.Draw(textureModel.Texture, destination, new Rectangle((__instance.showNextIndex ? 1 : 0) * textureModel.TextureWidth, textureOffset, 16, 32), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64 - 24) / 10000f) + (((int)__instance.parentSheetIndex == 105) ? 0.0035f : 0f) + (float)x * 1E-05f);
+                spriteBatch.Draw(textureModel.GetTexture(textureVariation), destination, new Rectangle((__instance.showNextIndex ? 1 : 0) * textureModel.TextureWidth, textureOffset, 16, 32), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64 - 24) / 10000f) + (((int)__instance.parentSheetIndex == 105) ? 0.0035f : 0f) + (float)x * 1E-05f);
 
                 if ((int)__instance.hoeDirt.Value.fertilizer != 0)
                 {

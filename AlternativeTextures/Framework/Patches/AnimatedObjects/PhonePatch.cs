@@ -52,13 +52,13 @@ namespace AlternativeTextures.Framework.Patches.AnimatedObjects
                 Vector2 position = Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64, y * 64 - 64));
                 Rectangle destination = new Rectangle((int)(position.X - scaleFactor.X / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(position.Y - scaleFactor.Y / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(64f + scaleFactor.X), (int)(128f + scaleFactor.Y / 2f));
                 float draw_layer = Math.Max(0f, (float)((y + 1) * 64 - 24) / 10000f) + (float)x * 1E-05f;
-                spriteBatch.Draw(textureModel.Texture, destination, new Rectangle(0, textureVariation * textureModel.TextureHeight, textureModel.TextureWidth, textureModel.TextureHeight), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
+                spriteBatch.Draw(textureModel.GetTexture(textureVariation), destination, new Rectangle(0, textureVariation * textureModel.TextureHeight, textureModel.TextureWidth, textureModel.TextureHeight), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
 
                 bool ringing = Phone.ringingTimer > 0 && Phone.ringingTimer < 600;
                 position = Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64, y * 64 - 64));
                 destination = new Rectangle((int)position.X + ((ringing || __instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)position.Y + ((ringing || __instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), 64, 128);
                 draw_layer = Math.Max(0f, (float)((y + 1) * 64 - 20) / 10000f) + (float)x * 1E-05f;
-                spriteBatch.Draw(textureModel.Texture, destination, new Rectangle(16, textureOffset, 16, 32), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
+                spriteBatch.Draw(textureModel.GetTexture(textureVariation), destination, new Rectangle(16, textureOffset, 16, 32), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
 
                 return false;
             }

@@ -161,15 +161,15 @@ namespace AlternativeTextures.Framework.Patches.Buildings
             var yOffset = textureVariation * textureModel.TextureHeight;
             var textureWidth = building.CanBePainted() ? xOffset : textureModel.TextureWidth;
 
-            var texture2D = textureModel.Texture.CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(0, yOffset, textureWidth, textureModel.TextureHeight));
+            var texture2D = textureModel.GetTexture(textureVariation).CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(0, yOffset, textureWidth, textureModel.TextureHeight));
             if (building.paintedTexture != null)
             {
                 building.paintedTexture = null;
             }
 
-            if (building.CanBePainted() && xOffset * 2 <= textureModel.Texture.Width)
+            if (building.CanBePainted() && xOffset * 2 <= textureModel.GetTexture(textureVariation).Width)
             {
-                var paintedTexture2D = textureModel.Texture.CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(xOffset, yOffset, xOffset, textureModel.TextureHeight));
+                var paintedTexture2D = textureModel.GetTexture(textureVariation).CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(xOffset, yOffset, xOffset, textureModel.TextureHeight));
                 building.paintedTexture = GetPaintedOverlay(building, texture2D, paintedTexture2D, building.netBuildingPaintColor.Value);
                 if (building.paintedTexture != null)
                 {

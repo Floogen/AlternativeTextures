@@ -92,6 +92,17 @@ namespace AlternativeTextures.Framework.Models
             return GetAnimationData(variation).ElementAt(index);
         }
 
+        public Texture2D GetTexture(int variation)
+        {
+            int textureOffset = TextureHeight * variation;
+            if (textureOffset >= MAX_TEXTURE_HEIGHT)
+            {
+                return Textures[textureOffset / MAX_TEXTURE_HEIGHT];
+            }
+
+            return Textures[0];
+        }
+
         public bool HasKeyword(string variationString, string keyword)
         {
             if (!Int32.TryParse(variationString, out var variation))

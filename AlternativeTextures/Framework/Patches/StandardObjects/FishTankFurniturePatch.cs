@@ -81,7 +81,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                     Rectangle sourceRect = new Rectangle(__instance.sourceRect.Value.Width, __instance.sourceRect.Value.Y, __instance.sourceRect.Value.Width, __instance.sourceRect.Value.Height);
                     sourceRect.Y = textureOffset;
 
-                    spriteBatch.Draw(textureModel.Texture, Game1.GlobalToLocal(Game1.viewport, draw_position + shake), sourceRect, Color.White * alpha, 0f, Vector2.Zero, 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, __instance.GetGlassDrawLayer());
+                    spriteBatch.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, draw_position + shake), sourceRect, Color.White * alpha, 0f, Vector2.Zero, 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, __instance.GetGlassDrawLayer());
                     if (Furniture.isDrawingLocationFurniture)
                     {
                         int hatsDrawn = 0;

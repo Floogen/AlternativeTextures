@@ -57,7 +57,7 @@ namespace AlternativeTextures.Framework.Patches.Entities
                 }
                 var textureOffset = textureVariation * textureModel.TextureHeight;
 
-                __instance.Sprite.spriteTexture = textureModel.Texture;
+                __instance.Sprite.spriteTexture = textureModel.GetTexture(textureVariation);
                 __instance.Sprite.sourceRect.Y = textureOffset + (__instance.Sprite.currentFrame * __instance.Sprite.SpriteWidth / __instance.Sprite.Texture.Width * __instance.Sprite.SpriteHeight);
             }
 
@@ -81,7 +81,7 @@ namespace AlternativeTextures.Framework.Patches.Entities
                 }
                 var textureOffset = textureVariation * textureModel.TextureHeight;
 
-                __instance.Sprite.spriteTexture = textureModel.Texture;
+                __instance.Sprite.spriteTexture = textureModel.GetTexture(textureVariation);
                 __instance.Sprite.sourceRect.Y = textureOffset + (__instance.Sprite.currentFrame * __instance.Sprite.SpriteWidth / __instance.Sprite.Texture.Width * __instance.Sprite.SpriteHeight);
 
                 b.Draw(__instance.Sprite.Texture, __instance.getLocalPosition(Game1.viewport) + new Vector2(__instance.Sprite.SpriteWidth * 4 / 2, __instance.GetBoundingBox().Height / 2) + ((___shakeTimer > 0) ? new Vector2(Game1.random.Next(-1, 2), Game1.random.Next(-1, 2)) : Vector2.Zero), __instance.Sprite.SourceRect, Color.White, __instance.rotation, new Vector2(__instance.Sprite.SpriteWidth / 2, (float)__instance.Sprite.SpriteHeight * 3f / 4f), Math.Max(0.2f, __instance.scale) * 4f, (__instance.flip || (__instance.Sprite.CurrentAnimation != null && __instance.Sprite.CurrentAnimation[__instance.Sprite.currentAnimationIndex].flip)) ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, __instance.isSleepingOnFarmerBed.Value ? (((float)__instance.getStandingY() + 112f) / 10000f) : ((float)__instance.getStandingY() / 10000f)));

@@ -77,7 +77,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                     }
                     sourceRect.Y += textureOffset;
 
-                    spriteBatch.Draw(textureModel.Texture, Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f + 32f, tileLocation.Y * 64f - (float)(sourceRect.Height * 4 - 64) + (float)(((int)__instance.growthStage >= 3) ? 128 : 64))), sourceRect, __instance.fertilized ? Color.HotPink : Color.White, ___shakeRotation, new Vector2(8f, ((int)__instance.growthStage >= 3) ? 32 : 16), 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, ((int)__instance.growthStage == 0) ? 0.0001f : ((float)__instance.getBoundingBox(tileLocation).Bottom / 10000f));
+                    spriteBatch.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f + 32f, tileLocation.Y * 64f - (float)(sourceRect.Height * 4 - 64) + (float)(((int)__instance.growthStage >= 3) ? 128 : 64))), sourceRect, __instance.fertilized ? Color.HotPink : Color.White, ___shakeRotation, new Vector2(8f, ((int)__instance.growthStage >= 3) ? 32 : 16), 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, ((int)__instance.growthStage == 0) ? 0.0001f : ((float)__instance.getBoundingBox(tileLocation).Bottom / 10000f));
                 }
                 else
                 {
@@ -97,20 +97,20 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                             }
                         }
                         source_rect.Y += textureOffset;
-                        spriteBatch.Draw(textureModel.Texture, Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f + 32f, tileLocation.Y * 64f + 64f)), source_rect, Color.White * ___alpha, ___shakeRotation, new Vector2(24f, 96f), 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (float)(__instance.getBoundingBox(tileLocation).Bottom + 2) / 10000f - tileLocation.X / 1000000f);
+                        spriteBatch.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f + 32f, tileLocation.Y * 64f + 64f)), source_rect, Color.White * ___alpha, ___shakeRotation, new Vector2(24f, 96f), 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (float)(__instance.getBoundingBox(tileLocation).Bottom + 2) / 10000f - tileLocation.X / 1000000f);
                     }
                     if ((float)__instance.health >= 1f || (!___falling && (float)__instance.health > -99f))
                     {
-                        spriteBatch.Draw(textureModel.Texture, Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f + ((___shakeTimer > 0f) ? ((float)Math.Sin(Math.PI * 2.0 / (double)___shakeTimer) * 3f) : 0f), tileLocation.Y * 64f - 64f)), new Rectangle(Tree.stumpSourceRect.X, Tree.stumpSourceRect.Y + textureOffset, Tree.stumpSourceRect.Width, Tree.stumpSourceRect.Height), Color.White * ___alpha, 0f, Vector2.Zero, 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (float)__instance.getBoundingBox(tileLocation).Bottom / 10000f);
+                        spriteBatch.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f + ((___shakeTimer > 0f) ? ((float)Math.Sin(Math.PI * 2.0 / (double)___shakeTimer) * 3f) : 0f), tileLocation.Y * 64f - 64f)), new Rectangle(Tree.stumpSourceRect.X, Tree.stumpSourceRect.Y + textureOffset, Tree.stumpSourceRect.Width, Tree.stumpSourceRect.Height), Color.White * ___alpha, 0f, Vector2.Zero, 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (float)__instance.getBoundingBox(tileLocation).Bottom / 10000f);
                     }
                     if ((bool)__instance.stump && (float)__instance.health < 4f && (float)__instance.health > -99f)
                     {
-                        spriteBatch.Draw(textureModel.Texture, Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f + ((___shakeTimer > 0f) ? ((float)Math.Sin(Math.PI * 2.0 / (double)___shakeTimer) * 3f) : 0f), tileLocation.Y * 64f)), new Rectangle(Math.Min(2, (int)(3f - (float)__instance.health)) * 16, 144 + textureOffset, 16, 16), Color.White * ___alpha, 0f, Vector2.Zero, 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (float)(__instance.getBoundingBox(tileLocation).Bottom + 1) / 10000f);
+                        spriteBatch.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f + ((___shakeTimer > 0f) ? ((float)Math.Sin(Math.PI * 2.0 / (double)___shakeTimer) * 3f) : 0f), tileLocation.Y * 64f)), new Rectangle(Math.Min(2, (int)(3f - (float)__instance.health)) * 16, 144 + textureOffset, 16, 16), Color.White * ___alpha, 0f, Vector2.Zero, 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (float)(__instance.getBoundingBox(tileLocation).Bottom + 1) / 10000f);
                     }
                 }
                 foreach (Leaf i in ___leaves)
                 {
-                    spriteBatch.Draw(textureModel.Texture, Game1.GlobalToLocal(Game1.viewport, i.position), new Rectangle(16 + i.type % 2 * 8, textureOffset + (112 + i.type / 2 * 8), 8, 8), Color.White, i.rotation, Vector2.Zero, 4f, SpriteEffects.None, (float)__instance.getBoundingBox(tileLocation).Bottom / 10000f + 0.01f);
+                    spriteBatch.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, i.position), new Rectangle(16 + i.type % 2 * 8, textureOffset + (112 + i.type / 2 * 8), 8, 8), Color.White, i.rotation, Vector2.Zero, 4f, SpriteEffects.None, (float)__instance.getBoundingBox(tileLocation).Bottom / 10000f + 0.01f);
                 }
                 return false;
             }
