@@ -71,6 +71,11 @@ namespace AlternativeTextures.Framework.Models
             return ModelName;
         }
 
+        public int GetVariations()
+        {
+            return ManualVariations.Where(v => v.Id >= 0).Count() > 0 ? ManualVariations.Where(v => v.Id >= 0).Count() : Variations;
+        }
+
         public List<AnimationModel> GetAnimationData(int variation)
         {
             var manualVariation = ManualVariations.FirstOrDefault(v => v.Id == variation && v.HasAnimation());
