@@ -79,35 +79,45 @@ namespace AlternativeTextures.Framework.Interfaces.API
                 if (textures.Count() > 1)
                 {
                     // Load in the first texture_#.png to get its dimensions for creating stitchedTexture
+
+                    int maxVariationsPerTexture = textureModel.MAX_TEXTURE_HEIGHT / textureModel.TextureHeight;
                     Texture2D baseTexture = textures.First();
-                    Texture2D stitchedTexture = new Texture2D(Game1.graphics.GraphicsDevice, baseTexture.Width, baseTexture.Height * textures.Count());
-
-                    // Now stitch together the split textures into a single texture
-                    Color[] pixels = new Color[stitchedTexture.Width * stitchedTexture.Height];
-                    for (int x = 0; x < textures.Count(); x++)
+                    for (int t = 0; t <= (textureModel.GetVariations() * textureModel.TextureHeight) / textureModel.MAX_TEXTURE_HEIGHT; t++)
                     {
-                        _framework.Monitor.Log($"Stitching together {textureModel.TextureId}: texture_{x}", LogLevel.Trace);
-
-                        var offset = x * baseTexture.Width * baseTexture.Height;
-                        var subTexture = textures.ElementAt(x);
-
-                        Color[] subPixels = new Color[subTexture.Width * subTexture.Height];
-                        subTexture.GetData(subPixels);
-                        for (int i = 0; i < subPixels.Length; i++)
+                        int variationLimit = Math.Min(maxVariationsPerTexture, textureModel.GetVariations() - (maxVariationsPerTexture * t));
+                        if (variationLimit < 0)
                         {
-                            pixels[i + offset] = subPixels[i];
+                            variationLimit = 0;
                         }
-                    }
+                        Texture2D stitchedTexture = new Texture2D(Game1.graphics.GraphicsDevice, baseTexture.Width, Math.Min(textureModel.TextureHeight * variationLimit, textureModel.MAX_TEXTURE_HEIGHT));
 
-                    stitchedTexture.SetData(pixels);
-                    textureModel.TileSheetPath = String.Empty;
-                    textureModel.Texture = stitchedTexture;
+                        // Now stitch together the split textures into a single texture
+                        Color[] pixels = new Color[stitchedTexture.Width * stitchedTexture.Height];
+                        for (int x = 0; x < variationLimit; x++)
+                        {
+                            _framework.Monitor.Log($"Stitching together {textureModel.TextureId}: texture_{x}", LogLevel.Trace);
+
+                            var offset = x * baseTexture.Width * baseTexture.Height;
+                            var subTexture = textures.ElementAt(x + (maxVariationsPerTexture * t));
+
+                            Color[] subPixels = new Color[subTexture.Width * subTexture.Height];
+                            subTexture.GetData(subPixels);
+                            for (int i = 0; i < subPixels.Length; i++)
+                            {
+                                pixels[i + offset] = subPixels[i];
+                            }
+                        }
+
+                        stitchedTexture.SetData(pixels);
+                        textureModel.TileSheetPath = String.Empty;
+                        textureModel.Textures.Add(stitchedTexture);
+                    }
                 }
                 else
                 {
                     // Load in the single vertical texture
                     textureModel.TileSheetPath = String.Empty;
-                    textureModel.Texture = textures.First();
+                    textureModel.Textures.Add(textures.First());
                 }
 
                 // Track the texture model

@@ -342,7 +342,7 @@ namespace AlternativeTextures
         {
             foreach (var texture in textureManager.GetAllTextures().Where(t => t.EnableContentPatcherCheck))
             {
-                var loadedTexture = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{texture.GetId()}", ContentSource.GameContent);
+                var loadedTexture = Helper.Content.Load<List<Texture2D>>($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{texture.GetId()}", ContentSource.GameContent);
                 textureManager.UpdateTexture(texture.GetId(), loadedTexture);
             }
 
@@ -437,36 +437,45 @@ namespace AlternativeTextures
                                 }
 
                                 // Load in the first texture_#.png to get its dimensions for creating stitchedTexture
+                                int maxVariationsPerTexture = textureModel.MAX_TEXTURE_HEIGHT / textureModel.TextureHeight;
                                 Texture2D baseTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(parentFolderName, textureFolder.Name, textureFilePaths.First()));
-                                Texture2D stitchedTexture = new Texture2D(Game1.graphics.GraphicsDevice, baseTexture.Width, baseTexture.Height * textureFilePaths.Count());
-
-                                // Now stitch together the split textures into a single texture
-                                Color[] pixels = new Color[stitchedTexture.Width * stitchedTexture.Height];
-                                for (int x = 0; x < textureFilePaths.Count(); x++)
+                                for (int t = 0; t <= (textureModel.GetVariations() * textureModel.TextureHeight) / textureModel.MAX_TEXTURE_HEIGHT; t++)
                                 {
-                                    var fileName = textureFilePaths.ElementAt(x);
-                                    Monitor.Log($"Stitching together {textureModel.TextureId}: {fileName}", LogLevel.Trace);
-
-                                    var offset = x * baseTexture.Width * baseTexture.Height;
-                                    var subTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(parentFolderName, textureFolder.Name, fileName));
-
-                                    Color[] subPixels = new Color[subTexture.Width * subTexture.Height];
-                                    subTexture.GetData(subPixels);
-                                    for (int i = 0; i < subPixels.Length; i++)
+                                    int variationLimit = Math.Min(maxVariationsPerTexture, textureModel.GetVariations() - (maxVariationsPerTexture * t));
+                                    if (variationLimit < 0)
                                     {
-                                        pixels[i + offset] = subPixels[i];
+                                        variationLimit = 0;
                                     }
-                                }
+                                    Texture2D stitchedTexture = new Texture2D(Game1.graphics.GraphicsDevice, baseTexture.Width, Math.Min(textureModel.TextureHeight * variationLimit, textureModel.MAX_TEXTURE_HEIGHT));
 
-                                stitchedTexture.SetData(pixels);
-                                textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(parentFolderName, textureFolder.Name, textureFilePaths.First()));
-                                textureModel.Texture = stitchedTexture;
+                                    // Now stitch together the split textures into a single texture
+                                    Color[] pixels = new Color[stitchedTexture.Width * stitchedTexture.Height];
+                                    for (int x = 0; x < variationLimit; x++)
+                                    {
+                                        var fileName = textureFilePaths.ElementAt(x + (variationLimit * t));
+                                        Monitor.Log($"Stitching together {textureModel.TextureId}: {fileName}", LogLevel.Trace);
+
+                                        var offset = x * baseTexture.Width * baseTexture.Height;
+                                        var subTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(parentFolderName, textureFolder.Name, fileName));
+
+                                        Color[] subPixels = new Color[subTexture.Width * subTexture.Height];
+                                        subTexture.GetData(subPixels);
+                                        for (int i = 0; i < subPixels.Length; i++)
+                                        {
+                                            pixels[i + offset] = subPixels[i];
+                                        }
+                                    }
+
+                                    stitchedTexture.SetData(pixels);
+                                    textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(parentFolderName, textureFolder.Name, textureFilePaths.First()));
+                                    textureModel.Textures.Add(stitchedTexture);
+                                }
                             }
                             else
                             {
                                 // Load in the single vertical texture
                                 textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(parentFolderName, textureFolder.Name, "texture.png"));
-                                textureModel.Texture = contentPack.LoadAsset<Texture2D>(textureModel.TileSheetPath);
+                                textureModel.Textures.Add(contentPack.LoadAsset<Texture2D>(textureModel.TileSheetPath));
                             }
 
                             // Track the texture model
