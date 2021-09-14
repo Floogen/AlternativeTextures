@@ -28,6 +28,7 @@ namespace AlternativeTextures.Framework.Models
         public List<VariationModel> ManualVariations { get; set; } = new List<VariationModel>();
         public List<AnimationModel> Animation { get; set; } = new List<AnimationModel>();
 
+        public int MAX_TEXTURE_HEIGHT { get { return 16384; } }
         internal enum TextureType
         {
             Unknown,
