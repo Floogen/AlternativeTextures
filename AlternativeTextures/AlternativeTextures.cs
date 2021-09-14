@@ -399,6 +399,11 @@ namespace AlternativeTextures
 
                             // Override Grass Alternative Texture pack ItemNames to always be Grass, in order to be compatible with translations 
                             textureModel.ItemName = textureModel.Type == "Grass" ? "Grass" : textureModel.ItemName;
+                            if (String.IsNullOrEmpty(textureModel.ItemName))
+                            {
+                                Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: Missing the ItemName property!", LogLevel.Warn);
+                                continue;
+                            }
 
                             // Add the UniqueId to the top-level Keywords
                             textureModel.Keywords.Add(contentPack.Manifest.UniqueID);
