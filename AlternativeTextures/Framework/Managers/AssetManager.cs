@@ -54,7 +54,7 @@ namespace AlternativeTextures.Framework.Managers
             }
 
             var textureModel = AlternativeTextures.textureManager.GetAllTextures().First(t => asset.AssetNameEquals($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{t.GetId()}"));
-            return (T)(object)textureModel.Texture;
+            return (T)(object)textureModel.Textures;
         }
 
         internal Texture2D GetPaintBucketTexture()

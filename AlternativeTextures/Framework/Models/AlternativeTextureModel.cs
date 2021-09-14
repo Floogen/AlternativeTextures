@@ -23,8 +23,8 @@ namespace AlternativeTextures.Framework.Models
         public int TextureWidth { get; set; }
         public int TextureHeight { get; set; }
         public int Variations { get; set; } = 1;
-        internal Texture2D Texture { get; set; }
         internal string TileSheetPath { get; set; }
+        internal List<Texture2D> Textures { get; set; } = new List<Texture2D>();
         public List<VariationModel> ManualVariations { get; set; } = new List<VariationModel>();
         public List<AnimationModel> Animation { get; set; } = new List<AnimationModel>();
 

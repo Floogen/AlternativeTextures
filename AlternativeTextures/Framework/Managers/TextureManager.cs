@@ -108,14 +108,14 @@ namespace AlternativeTextures.Framework.Managers
             return seasonalTextures;
         }
 
-        public void UpdateTexture(string textureId, Texture2D texture)
+        public void UpdateTexture(string textureId, List<Texture2D> textures)
         {
             if (!DoesObjectHaveAlternativeTextureById(textureId))
             {
                 return;
             }
 
-            _alternativeTextures.First(t => String.Equals(t.GetId(), textureId, StringComparison.OrdinalIgnoreCase)).Texture = texture;
+            _alternativeTextures.First(t => String.Equals(t.GetId(), textureId, StringComparison.OrdinalIgnoreCase)).Textures = textures;
         }
     }
 }
