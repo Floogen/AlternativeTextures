@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewValley;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,6 +65,11 @@ namespace AlternativeTextures.Framework.Models
         public string GetId()
         {
             return TextureId;
+        }
+
+        public string GetTokenId()
+        {
+            return String.Concat(Owner, ".", ItemName, "_", String.IsNullOrEmpty(Season) ? Game1.currentSeason : Season);
         }
 
         public string GetNameWithSeason()

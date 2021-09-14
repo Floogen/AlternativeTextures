@@ -46,7 +46,7 @@ namespace AlternativeTextures.Framework.Managers
 
         public List<string> GetValidTextureNamesWithSeason()
         {
-            return _alternativeTextures.Select(t => String.Concat(t.GetId(), "_", t.Season)).ToList();
+            return _alternativeTextures.Select(t => String.Concat(t.Owner, ".", t.ItemName, "_", String.IsNullOrEmpty(t.Season) ? Game1.currentSeason : t.Season)).ToList();
         }
 
         public bool DoesObjectHaveAlternativeTexture(int objectId)
