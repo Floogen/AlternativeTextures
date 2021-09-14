@@ -80,16 +80,16 @@ namespace AlternativeTextures.Framework.Interfaces.API
                 {
                     // Load in the first texture_#.png to get its dimensions for creating stitchedTexture
 
-                    int maxVariationsPerTexture = textureModel.MAX_TEXTURE_HEIGHT / textureModel.TextureHeight;
+                    int maxVariationsPerTexture = AlternativeTextureModel.MAX_TEXTURE_HEIGHT / textureModel.TextureHeight;
                     Texture2D baseTexture = textures.First();
-                    for (int t = 0; t <= (textureModel.GetVariations() * textureModel.TextureHeight) / textureModel.MAX_TEXTURE_HEIGHT; t++)
+                    for (int t = 0; t <= (textureModel.GetVariations() * textureModel.TextureHeight) / AlternativeTextureModel.MAX_TEXTURE_HEIGHT; t++)
                     {
                         int variationLimit = Math.Min(maxVariationsPerTexture, textureModel.GetVariations() - (maxVariationsPerTexture * t));
                         if (variationLimit < 0)
                         {
                             variationLimit = 0;
                         }
-                        Texture2D stitchedTexture = new Texture2D(Game1.graphics.GraphicsDevice, baseTexture.Width, Math.Min(textureModel.TextureHeight * variationLimit, textureModel.MAX_TEXTURE_HEIGHT));
+                        Texture2D stitchedTexture = new Texture2D(Game1.graphics.GraphicsDevice, baseTexture.Width, Math.Min(textureModel.TextureHeight * variationLimit, AlternativeTextureModel.MAX_TEXTURE_HEIGHT));
 
                         // Now stitch together the split textures into a single texture
                         Color[] pixels = new Color[stitchedTexture.Width * stitchedTexture.Height];
