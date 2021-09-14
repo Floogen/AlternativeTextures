@@ -467,15 +467,25 @@ namespace AlternativeTextures
                                     }
 
                                     stitchedTexture.SetData(pixels);
-                                    textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(parentFolderName, textureFolder.Name, textureFilePaths.First()));
                                     textureModel.Textures.Add(stitchedTexture);
                                 }
+
+                                textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(parentFolderName, textureFolder.Name, textureFilePaths.First()));
                             }
                             else
                             {
                                 // Load in the single vertical texture
                                 textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(parentFolderName, textureFolder.Name, "texture.png"));
-                                textureModel.Textures.Add(contentPack.LoadAsset<Texture2D>(textureModel.TileSheetPath));
+                                Texture2D singularTexture = contentPack.LoadAsset<Texture2D>(textureModel.TileSheetPath);
+                                if (singularTexture.Height >= AlternativeTextureModel.MAX_TEXTURE_HEIGHT)
+                                {
+                                    Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: The texture {textureModel.TextureId} has a height larger than 16384!\nPlease split it into individual textures (e.g. texture_0.png, texture_1.png, etc.) to resolve this issue.", LogLevel.Warn);
+                                    continue;
+                                }
+                                else
+                                {
+                                    textureModel.Textures.Add(singularTexture);
+                                }
                             }
 
                             // Track the texture model

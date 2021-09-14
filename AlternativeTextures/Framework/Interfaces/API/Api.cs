@@ -109,15 +109,25 @@ namespace AlternativeTextures.Framework.Interfaces.API
                         }
 
                         stitchedTexture.SetData(pixels);
-                        textureModel.TileSheetPath = String.Empty;
                         textureModel.Textures.Add(stitchedTexture);
                     }
+
+                    textureModel.TileSheetPath = String.Empty;
                 }
                 else
                 {
                     // Load in the single vertical texture
                     textureModel.TileSheetPath = String.Empty;
-                    textureModel.Textures.Add(textures.First());
+                    Texture2D singularTexture = textures.First();
+                    if (singularTexture.Height >= AlternativeTextureModel.MAX_TEXTURE_HEIGHT)
+                    {
+                        _framework.Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: The texture {textureModel.TextureId} has a height larger than 16384!\nPlease split it into individual textures (e.g. texture_0.png, texture_1.png, etc.) to resolve this issue.", LogLevel.Warn);
+                        continue;
+                    }
+                    else
+                    {
+                        textureModel.Textures.Add(singularTexture);
+                    }
                 }
 
                 // Track the texture model
