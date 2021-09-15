@@ -6,6 +6,7 @@ using AlternativeTextures.Framework.Patches;
 using AlternativeTextures.Framework.Patches.AnimatedObjects;
 using AlternativeTextures.Framework.Patches.Buildings;
 using AlternativeTextures.Framework.Patches.Entities;
+using AlternativeTextures.Framework.Patches.GameLocations;
 using AlternativeTextures.Framework.Patches.StandardObjects;
 using AlternativeTextures.Framework.Patches.Tools;
 using AlternativeTextures.Framework.Utilities;
@@ -125,6 +126,10 @@ namespace AlternativeTextures
 
                 // Start of building patches
                 new BuildingPatch(monitor, helper).Apply(harmony);
+
+                // Start of location patches
+                new GameLocationPatch(monitor, helper).Apply(harmony);
+                new DecoratableLocationPatch(monitor, helper).Apply(harmony);
 
                 // Paint tool related patches
                 new UtilityPatch(monitor, helper).Apply(harmony);

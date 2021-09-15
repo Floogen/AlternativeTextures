@@ -70,6 +70,7 @@
     <Compile Include="Framework\Patches\Entities\FarmAnimalPatch.cs" />
     <Compile Include="Framework\Patches\Entities\ChildPatch.cs" />
     <Compile Include="Framework\Patches\Entities\CharacterPatch.cs" />
+    <Compile Include="Framework\Patches\GameLocations\DecoratableLocationPatch.cs" />
     <Compile Include="Framework\Patches\StandardObjects\FishTankFurniturePatch.cs" />
     <Compile Include="Framework\Patches\StandardObjects\BedFurniturePatch.cs" />
     <Compile Include="Framework\Patches\StandardObjects\FurniturePatch.cs" />
@@ -83,7 +84,7 @@
     <Compile Include="Framework\Patches\UtilityPatch.cs" />
     <Compile Include="Framework\Patches\StandardObjects\ResourceClumpPatch.cs" />
     <Compile Include="Framework\Patches\StandardObjects\GiantCropPatch.cs" />
-    <Compile Include="Framework\Patches\StandardObjects\GameLocationPatch.cs" />
+    <Compile Include="Framework\Patches\GameLocations\GameLocationPatch.cs" />
     <Compile Include="Framework\Patches\PatchTemplate.cs" />
     <Compile Include="Framework\Patches\StandardObjects\FruitTreePatch.cs" />
     <Compile Include="Framework\Patches\StandardObjects\BushPatch.cs" />
