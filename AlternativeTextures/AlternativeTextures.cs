@@ -342,7 +342,7 @@ namespace AlternativeTextures
         {
             foreach (var texture in textureManager.GetAllTextures().Where(t => t.EnableContentPatcherCheck))
             {
-                var loadedTexture = Helper.Content.Load<List<Texture2D>>($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{texture.GetId()}", ContentSource.GameContent);
+                var loadedTexture = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{texture.GetTokenId()}", ContentSource.GameContent);
                 textureManager.UpdateTexture(texture.GetId(), loadedTexture);
             }
 

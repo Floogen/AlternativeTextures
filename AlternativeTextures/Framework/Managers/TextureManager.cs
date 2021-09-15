@@ -46,7 +46,7 @@ namespace AlternativeTextures.Framework.Managers
 
         public List<string> GetValidTextureNamesWithSeason()
         {
-            return _alternativeTextures.Select(t => String.Concat(t.Owner, ".", t.ItemName, "_", String.IsNullOrEmpty(t.Season) ? Game1.currentSeason : t.Season)).ToList();
+            return _alternativeTextures.Select(t => t.GetTokenId()).ToList();
         }
 
         public bool DoesObjectHaveAlternativeTexture(int objectId)
@@ -108,14 +108,15 @@ namespace AlternativeTextures.Framework.Managers
             return seasonalTextures;
         }
 
-        public void UpdateTexture(string textureId, List<Texture2D> textures)
+        public void UpdateTexture(string textureId, Texture2D texture)
         {
             if (!DoesObjectHaveAlternativeTextureById(textureId))
             {
                 return;
             }
 
-            _alternativeTextures.First(t => String.Equals(t.GetId(), textureId, StringComparison.OrdinalIgnoreCase)).Textures = textures;
+            var replacementIndex = _alternativeTextures.IndexOf(_alternativeTextures.First(t => String.Equals(t.GetId(), textureId, StringComparison.OrdinalIgnoreCase)));
+            _alternativeTextures[replacementIndex].Textures[0] = texture;
         }
     }
 }
