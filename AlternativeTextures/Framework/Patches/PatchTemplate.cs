@@ -7,6 +7,7 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.Characters;
+using StardewValley.Locations;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using StardewValley.Tools;
@@ -379,6 +380,9 @@ namespace AlternativeTextures.Framework.Patches
                 case Building building:
                     AssignBuildingModData(building, modelName, textureModel, -1, trackSeason);
                     return true;
+                case DecoratableLocation decoratableLocation:
+                    AssignDecoratableLocationModData(decoratableLocation, modelName, textureModel, -1, trackSeason);
+                    return true;
             }
 
             return false;
@@ -417,6 +421,9 @@ namespace AlternativeTextures.Framework.Patches
                     return true;
                 case Building building:
                     AssignBuildingModData(building, modelName, textureModel, selectedVariation, trackSeason);
+                    return true;
+                case DecoratableLocation decoratableLocation:
+                    AssignDecoratableLocationModData(decoratableLocation, modelName, textureModel, selectedVariation, trackSeason);
                     return true;
             }
 
@@ -478,6 +485,20 @@ namespace AlternativeTextures.Framework.Patches
             }
 
             building.modData["AlternativeTextureVariation"] = variation.ToString();
+        }
+
+        private static void AssignDecoratableLocationModData(DecoratableLocation decoratableLocation, string modelName, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
+        {
+            decoratableLocation.modData["AlternativeTextureOwner"] = textureModel.Owner;
+            decoratableLocation.modData["AlternativeTextureName"] = String.Concat(textureModel.Owner, ".", modelName);
+
+            if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
+            {
+                decoratableLocation.modData["AlternativeTextureSeason"] = Game1.currentSeason;
+            }
+
+            decoratableLocation.modData["AlternativeTexturePlacementIndex"] = "-1";
+            decoratableLocation.modData["AlternativeTextureVariation"] = variation.ToString();
         }
     }
 }
