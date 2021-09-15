@@ -194,6 +194,7 @@
     <None Include="Examples\[AT] Example Pack\Textures\Craftables\StoneFence\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Craftables\WoodFence2\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Craftables\WoodFence\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Floors\WoodFloor\texture.json" />
     <None Include="Examples\[AT] Snowcrows\manifest.json" />
     <None Include="Examples\[AT] Snowcrows\Textures\DeluxeScarecrow\texture.json" />
     <None Include="Examples\[AT] Snowcrows\Textures\Scarecrow\texture.json" />
@@ -314,6 +315,7 @@
     <Content Include="Examples\[AT] Mystical Mini-Obelisks\Textures\MiniObelisk\texture_7.png" />
     <Content Include="Examples\[AT] Mystical Mini-Obelisks\Textures\MiniObelisk\texture_8.png" />
     <Content Include="Examples\[AT] Mystical Mini-Obelisks\Textures\MiniObelisk\texture_9.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Floors\WoodFloor\texture.png" />
     <Content Include="Examples\[AT] Snowcrows\Textures\DeluxeScarecrow\texture.png" />
     <Content Include="Examples\[AT] Snowcrows\Textures\Scarecrow\texture.png" />
     <Content Include="Examples\[CP] Content Patcher Example\assets\alt_paint_bucket.png" />
