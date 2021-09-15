@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Buildings;
+using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
@@ -183,6 +184,11 @@ namespace AlternativeTextures.Framework.UI
 
                     drawingScale = _buildingScale;
                     break;
+                case TextureType.Decoration:
+                    widthOffsetScale = 3;
+                    _texturesPerRow = 4;
+                    sourceRect = new Rectangle(0, 0, 32, 64);
+                    break;
             }
 
             for (int r = 0; r < _maxRows; r++)
@@ -346,6 +352,29 @@ namespace AlternativeTextures.Framework.UI
                             building.modData[key] = c.item.modData[key];
                         }
                     }
+                    else if (Game1.currentLocation is DecoratableLocation decoratableLocation && (decoratableLocation.getFloorAt(new Point((int)_position.X, (int)_position.Y)) != -1 || decoratableLocation.getWallForRoomAt(new Point((int)_position.X, (int)_position.Y)) != -1))
+                    {
+                        var floorIndex = decoratableLocation.getFloorAt(new Point((int)_position.X, (int)_position.Y));
+                        var typeKey = floorIndex == -1 ? "Wallpaper" : "Floor";
+                        foreach (string key in c.item.modData.Keys.Where(k => !k.Contains("AlternativeTexture.Floor") && !k.Contains("AlternativeTexture.Wallpaper")))
+                        {
+                            decoratableLocation.modData[key] = c.item.modData[key];
+                            if (key.Contains("AlternativeTexture"))
+                            {
+                                decoratableLocation.modData[key.Replace("AlternativeTexture", String.Concat("AlternativeTexture.", typeKey, "."))] = c.item.modData[key];
+                            }
+                        }
+                        decoratableLocation.modData[$"AlternativeTexture.{typeKey}.RoomIndex"] = (floorIndex == -1 ? decoratableLocation.getWallForRoomAt(new Point((int)_position.X, (int)_position.Y)) : floorIndex).ToString();
+
+                        if (floorIndex == -1)
+                        {
+                            decoratableLocation.setWallpapers();
+                        }
+                        else
+                        {
+                            decoratableLocation.setFloors();
+                        }
+                    }
 
                     // Draw coloring animation
                     for (int j = 0; j < 12; j++)
@@ -466,6 +495,23 @@ namespace AlternativeTextures.Framework.UI
                                 this.availableTextures[i].sourceRect = this.GetFlooringSourceRect(flooring, this.availableTextures[i].sourceRect.Height, -1);
                                 this.availableTextures[i].draw(b, Color.White, 0.87f);
                             }
+                            else if (Game1.currentLocation is DecoratableLocation decoratableLocation && (decoratableLocation.getFloorAt(new Point((int)_position.X, (int)_position.Y)) != -1 || decoratableLocation.getWallForRoomAt(new Point((int)_position.X, (int)_position.Y)) != -1))
+                            {
+                                var which = 0;
+                                var floor = decoratableLocation.getFloorAt(new Point((int)_position.X, (int)_position.Y));
+                                if (floor != -1)
+                                {
+                                    which = decoratableLocation.floor[floor];
+                                }
+                                else
+                                {
+                                    which = decoratableLocation.wallPaper[decoratableLocation.getWallForRoomAt(new Point((int)_position.X, (int)_position.Y))];
+                                }
+
+                                this.availableTextures[i].texture = Wallpaper.wallpaperTexture;
+                                this.availableTextures[i].sourceRect = (floor != -1 ? new Rectangle(which % 8 * 32, 336 + which / 8 * 32, 32, 32) : new Rectangle(which % 16 * 16, which / 16 * 48 + 8, 16, 32));
+                                this.availableTextures[i].draw(b, Color.White, 0.87f);
+                            }
                         }
                         else if (_textureType is TextureType.Character && PatchTemplate.GetCharacterAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Character character && character != null)
                         {
@@ -503,6 +549,12 @@ namespace AlternativeTextures.Framework.UI
                         {
                             this.availableTextures[i].texture = textureModel.GetTexture(variation);
                             this.availableTextures[i].sourceRect = GetFlooringSourceRect(flooring, textureModel.TextureHeight, variation);
+                            this.availableTextures[i].draw(b, Color.White, 0.87f);
+                        }
+                        else if (Game1.currentLocation is DecoratableLocation decoratableLocation && (decoratableLocation.getFloorAt(new Point((int)_position.X, (int)_position.Y)) != -1 || decoratableLocation.getWallForRoomAt(new Point((int)_position.X, (int)_position.Y)) != -1))
+                        {
+                            this.availableTextures[i].texture = textureModel.GetTexture(variation);
+                            this.availableTextures[i].sourceRect = new Rectangle(0, variation * textureModel.TextureHeight, textureModel.TextureWidth, textureModel.TextureHeight);
                             this.availableTextures[i].draw(b, Color.White, 0.87f);
                         }
                     }

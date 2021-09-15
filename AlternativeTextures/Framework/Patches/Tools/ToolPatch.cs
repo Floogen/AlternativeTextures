@@ -133,6 +133,46 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     return CancelUsing(who);
                 }
             }
+            else if (location is DecoratableLocation decoratableLocation)
+            {
+                Point tile = new Point(x / 64, y / 64);
+
+                List<Rectangle> floors = decoratableLocation.getFloors();
+                for (int j = 0; j < floors.Count; j++)
+                {
+                    if (floors[j].Contains(tile))
+                    {
+                        if (!decoratableLocation.modData.ContainsKey("AlternativeTexture.Floor.Name"))
+                        {
+                            var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Decoration}_Floor_{Game1.GetSeasonForLocation(decoratableLocation)}";
+                            AssignDefaultModData(decoratableLocation, instanceSeasonName, true, isWallpaper: false);
+                        }
+
+                        _monitor.Log(decoratableLocation.modData["AlternativeTexture.Floor.Name"], LogLevel.Debug);
+                        var modelName = decoratableLocation.modData["AlternativeTexture.Floor.Name"].Replace($"{decoratableLocation.modData["AlternativeTexture.Floor.Owner"]}.", String.Empty);
+                        if (decoratableLocation.modData.ContainsKey("AlternativeTexture.Floor.Season") && !String.IsNullOrEmpty(decoratableLocation.modData["AlternativeTexture.Floor.Season"]))
+                        {
+                            modelName = modelName.Replace($"_{decoratableLocation.modData["AlternativeTexture.Floor.Season"]}", String.Empty);
+                        }
+
+                        if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
+                        {
+                            Game1.addHUDMessage(new HUDMessage($"{modelName} has no alternative textures for this season!", 3));
+                            return CancelUsing(who);
+                        }
+
+                        // Display texture menu
+                        var locationObj = new Object(100, 1, isRecipe: false, -1)
+                        {
+                            TileLocation = Utility.PointToVector2(tile),
+                            modData = decoratableLocation.modData
+                        };
+                        Game1.activeClickableMenu = new PaintBucketMenu(locationObj, locationObj.TileLocation, GetTextureType(decoratableLocation), modelName);
+
+                        return CancelUsing(who);
+                    }
+                }
+            }
 
             var targetedObject = GetObjectAt(location, x, y);
             if (targetedObject != null)

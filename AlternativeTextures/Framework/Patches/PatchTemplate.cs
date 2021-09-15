@@ -332,6 +332,8 @@ namespace AlternativeTextures.Framework.Patches
                     return TextureType.Furniture;
                 case Object craftable:
                     return TextureType.Craftable;
+                case DecoratableLocation location:
+                    return TextureType.Decoration;
                 default:
                     return TextureType.Unknown;
             }
@@ -358,7 +360,7 @@ namespace AlternativeTextures.Framework.Patches
             return _helper.ModRegistry.IsLoaded("spacechase0.DynamicGameAssets");
         }
 
-        internal static bool AssignDefaultModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false)
+        internal static bool AssignDefaultModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false, bool isWallpaper = false)
         {
             if (HasCachedTextureName(type))
             {
@@ -381,14 +383,20 @@ namespace AlternativeTextures.Framework.Patches
                     AssignBuildingModData(building, modelName, textureModel, -1, trackSeason);
                     return true;
                 case DecoratableLocation decoratableLocation:
-                    AssignDecoratableLocationModData(decoratableLocation, modelName, textureModel, -1, trackSeason);
+                    if (isWallpaper)
+                    {
+                        AssignWallpaperModData(decoratableLocation, modelName, textureModel, -1, trackSeason);
+                        return true;
+                    }
+
+                    AssignFloorModData(decoratableLocation, modelName, textureModel, -1, trackSeason);
                     return true;
             }
 
             return false;
         }
 
-        internal static bool AssignModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false)
+        internal static bool AssignModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false, bool isWallpaper = false)
         {
             if (HasCachedTextureName(type))
             {
@@ -423,7 +431,13 @@ namespace AlternativeTextures.Framework.Patches
                     AssignBuildingModData(building, modelName, textureModel, selectedVariation, trackSeason);
                     return true;
                 case DecoratableLocation decoratableLocation:
-                    AssignDecoratableLocationModData(decoratableLocation, modelName, textureModel, selectedVariation, trackSeason);
+                    if (isWallpaper)
+                    {
+                        AssignWallpaperModData(decoratableLocation, modelName, textureModel, selectedVariation, trackSeason);
+                        return true;
+                    }
+
+                    AssignFloorModData(decoratableLocation, modelName, textureModel, selectedVariation, trackSeason);
                     return true;
             }
 
@@ -497,8 +511,39 @@ namespace AlternativeTextures.Framework.Patches
                 decoratableLocation.modData["AlternativeTextureSeason"] = Game1.currentSeason;
             }
 
-            decoratableLocation.modData["AlternativeTexturePlacementIndex"] = "-1";
             decoratableLocation.modData["AlternativeTextureVariation"] = variation.ToString();
+        }
+
+        private static void AssignWallpaperModData(DecoratableLocation decoratableLocation, string modelName, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
+        {
+            decoratableLocation.modData["AlternativeTexture.Wallpaper.Owner"] = textureModel.Owner;
+            decoratableLocation.modData["AlternativeTexture.Wallpaper.Name"] = String.Concat(textureModel.Owner, ".", modelName);
+
+            if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
+            {
+                decoratableLocation.modData["AlternativeTexture.Wallpaper.Season"] = Game1.currentSeason;
+            }
+
+            decoratableLocation.modData["AlternativeTexture.Wallpaper.RoomIndex"] = "-1";
+            decoratableLocation.modData["AlternativeTexture.Wallpaper.Variation"] = variation.ToString();
+
+            AssignDecoratableLocationModData(decoratableLocation, modelName, textureModel, variation, trackSeason);
+        }
+
+        private static void AssignFloorModData(DecoratableLocation decoratableLocation, string modelName, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
+        {
+            decoratableLocation.modData["AlternativeTexture.Floor.Owner"] = textureModel.Owner;
+            decoratableLocation.modData["AlternativeTexture.Floor.Name"] = String.Concat(textureModel.Owner, ".", modelName);
+
+            if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
+            {
+                decoratableLocation.modData["AlternativeTexture.Floor.Season"] = Game1.currentSeason;
+            }
+
+            decoratableLocation.modData["AlternativeTexture.Floor.RoomIndex"] = "-1";
+            decoratableLocation.modData["AlternativeTexture.Floor.Variation"] = variation.ToString();
+
+            AssignDecoratableLocationModData(decoratableLocation, modelName, textureModel, variation, trackSeason);
         }
     }
 }
