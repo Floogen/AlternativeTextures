@@ -190,7 +190,7 @@ namespace AlternativeTextures.Framework.UI
                 for (int c = 0; c < _texturesPerRow; c++)
                 {
                     var componentId = c + r * _texturesPerRow;
-                    this.availableTextures.Add(new ClickableTextureComponent(new Rectangle(base.xPositionOnScreen + IClickableMenu.borderWidth + componentId % _texturesPerRow * 64 * widthOffsetScale, base.yPositionOnScreen + sourceRect.Height + componentId / _texturesPerRow * (4 * sourceRect.Height), 4 * sourceRect.Width, 4 * sourceRect.Height), availableModels.First().Texture, new Rectangle(), drawingScale, false)
+                    this.availableTextures.Add(new ClickableTextureComponent(new Rectangle(base.xPositionOnScreen + IClickableMenu.borderWidth + componentId % _texturesPerRow * 64 * widthOffsetScale, base.yPositionOnScreen + sourceRect.Height + componentId / _texturesPerRow * (4 * sourceRect.Height), 4 * sourceRect.Width, 4 * sourceRect.Height), availableModels.First().GetTexture(0), new Rectangle(), drawingScale, false)
                     {
                         myID = componentId,
                         downNeighborID = componentId + _texturesPerRow,
@@ -469,7 +469,7 @@ namespace AlternativeTextures.Framework.UI
                         }
                         else if (_textureType is TextureType.Character && PatchTemplate.GetCharacterAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Character character && character != null)
                         {
-                            this.availableTextures[i].texture = textureModel.Texture;
+                            this.availableTextures[i].texture = textureModel.GetTexture(variation);
                             this.availableTextures[i].sourceRect = GetCharacterSourceRectangle(character, textureModel.TextureWidth, textureModel.TextureHeight, variation);
                             this.availableTextures[i].draw(b, Color.White, 0.87f);
                         }
@@ -479,7 +479,7 @@ namespace AlternativeTextures.Framework.UI
                         }
                         else if (PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) != null)
                         {
-                            this.availableTextures[i].texture = textureModel.Texture;
+                            this.availableTextures[i].texture = textureModel.GetTexture(variation);
                             this.availableTextures[i].sourceRect = GetSourceRectangle(_textureTarget, textureModel.TextureWidth, textureModel.TextureHeight, variation);
                             this.availableTextures[i].draw(b, Color.White, 0.87f);
                         }
@@ -489,19 +489,19 @@ namespace AlternativeTextures.Framework.UI
                         }
                         else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Tree tree)
                         {
-                            this.availableTextures[i].texture = textureModel.Texture;
+                            this.availableTextures[i].texture = textureModel.GetTexture(variation);
                             this.availableTextures[i].sourceRect = GetTreeSourceRect(tree, textureModel.TextureHeight, variation);
                             this.availableTextures[i].draw(b, Color.White, 0.87f);
                         }
                         else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is FruitTree fruitTree)
                         {
-                            this.availableTextures[i].texture = textureModel.Texture;
+                            this.availableTextures[i].texture = textureModel.GetTexture(variation);
                             this.availableTextures[i].sourceRect = GetFruitTreeSourceRect(fruitTree, textureModel.TextureHeight, variation);
                             this.availableTextures[i].draw(b, Color.White, 0.87f);
                         }
                         else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Flooring flooring)
                         {
-                            this.availableTextures[i].texture = textureModel.Texture;
+                            this.availableTextures[i].texture = textureModel.GetTexture(variation);
                             this.availableTextures[i].sourceRect = GetFlooringSourceRect(flooring, textureModel.TextureHeight, variation);
                             this.availableTextures[i].draw(b, Color.White, 0.87f);
                         }

@@ -43,7 +43,7 @@ namespace AlternativeTextures.Framework.Managers
             {
                 return true;
             }
-            return AlternativeTextures.textureManager.GetValidTextureNames().Any(id => asset.AssetNameEquals($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{id}"));
+            return AlternativeTextures.textureManager.GetAllTextures().Any(t => asset.AssetNameEquals($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{t.GetTokenId()}"));
         }
 
         public T Load<T>(IAssetInfo asset)
@@ -53,8 +53,8 @@ namespace AlternativeTextures.Framework.Managers
                 return (T)(object)toolNames.First(n => asset.AssetNameEquals($"{AlternativeTextures.TOOL_TOKEN_HEADER}{n.Key}")).Value;
             }
 
-            var textureModel = AlternativeTextures.textureManager.GetAllTextures().First(t => asset.AssetNameEquals($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{t.GetId()}"));
-            return (T)(object)textureModel.Texture;
+            var textureModel = AlternativeTextures.textureManager.GetAllTextures().First(t => asset.AssetNameEquals($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{t.GetTokenId()}"));
+            return (T)(object)textureModel.Textures.First();
         }
 
         internal Texture2D GetPaintBucketTexture()

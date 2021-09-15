@@ -53,7 +53,7 @@ namespace AlternativeTextures.Framework.Patches.Entities
                 __instance.flip = __instance.FacingDirection == 3;
                 __instance.Sprite.UpdateSourceRect();
 
-                __instance.Sprite.spriteTexture = textureModel.Texture;
+                __instance.Sprite.spriteTexture = textureModel.GetTexture(textureVariation);
                 __instance.Sprite.sourceRect.Y = textureOffset + (__instance.Sprite.currentFrame * __instance.Sprite.SpriteWidth / __instance.Sprite.Texture.Width * __instance.Sprite.SpriteHeight);
                 CharacterPatch.DrawReversePatch(__instance, b);
 

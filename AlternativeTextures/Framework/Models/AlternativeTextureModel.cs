@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewValley;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,11 +24,12 @@ namespace AlternativeTextures.Framework.Models
         public int TextureWidth { get; set; }
         public int TextureHeight { get; set; }
         public int Variations { get; set; } = 1;
-        internal Texture2D Texture { get; set; }
         internal string TileSheetPath { get; set; }
+        internal List<Texture2D> Textures { get; set; } = new List<Texture2D>();
         public List<VariationModel> ManualVariations { get; set; } = new List<VariationModel>();
         public List<AnimationModel> Animation { get; set; } = new List<AnimationModel>();
 
+        public static int MAX_TEXTURE_HEIGHT { get { return 16384; } }
         internal enum TextureType
         {
             Unknown,
@@ -65,9 +67,19 @@ namespace AlternativeTextures.Framework.Models
             return TextureId;
         }
 
+        public string GetTokenId()
+        {
+            return String.Concat(Owner, ".", ItemName, "_", String.IsNullOrEmpty(Season) ? Game1.currentSeason : Season);
+        }
+
         public string GetNameWithSeason()
         {
             return ModelName;
+        }
+
+        public int GetVariations()
+        {
+            return ManualVariations.Where(v => v.Id >= 0).Count() > 0 ? ManualVariations.Where(v => v.Id >= 0).Count() : Variations;
         }
 
         public List<AnimationModel> GetAnimationData(int variation)
@@ -84,6 +96,17 @@ namespace AlternativeTextures.Framework.Models
         public AnimationModel GetAnimationDataAtIndex(int variation, int index)
         {
             return GetAnimationData(variation).ElementAt(index);
+        }
+
+        public Texture2D GetTexture(int variation)
+        {
+            int textureOffset = TextureHeight * variation;
+            if (textureOffset >= MAX_TEXTURE_HEIGHT)
+            {
+                return Textures[textureOffset / MAX_TEXTURE_HEIGHT];
+            }
+
+            return Textures[0];
         }
 
         public bool HasKeyword(string variationString, string keyword)

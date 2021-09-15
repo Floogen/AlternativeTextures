@@ -342,7 +342,7 @@ namespace AlternativeTextures
         {
             foreach (var texture in textureManager.GetAllTextures().Where(t => t.EnableContentPatcherCheck))
             {
-                var loadedTexture = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{texture.GetId()}", ContentSource.GameContent);
+                var loadedTexture = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{texture.GetTokenId()}", ContentSource.GameContent);
                 textureManager.UpdateTexture(texture.GetId(), loadedTexture);
             }
 
@@ -399,6 +399,11 @@ namespace AlternativeTextures
 
                             // Override Grass Alternative Texture pack ItemNames to always be Grass, in order to be compatible with translations 
                             textureModel.ItemName = textureModel.Type == "Grass" ? "Grass" : textureModel.ItemName;
+                            if (String.IsNullOrEmpty(textureModel.ItemName))
+                            {
+                                Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: Missing the ItemName property!", LogLevel.Warn);
+                                continue;
+                            }
 
                             // Add the UniqueId to the top-level Keywords
                             textureModel.Keywords.Add(contentPack.Manifest.UniqueID);
@@ -432,36 +437,55 @@ namespace AlternativeTextures
                                 }
 
                                 // Load in the first texture_#.png to get its dimensions for creating stitchedTexture
+                                int maxVariationsPerTexture = AlternativeTextureModel.MAX_TEXTURE_HEIGHT / textureModel.TextureHeight;
                                 Texture2D baseTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(parentFolderName, textureFolder.Name, textureFilePaths.First()));
-                                Texture2D stitchedTexture = new Texture2D(Game1.graphics.GraphicsDevice, baseTexture.Width, baseTexture.Height * textureFilePaths.Count());
-
-                                // Now stitch together the split textures into a single texture
-                                Color[] pixels = new Color[stitchedTexture.Width * stitchedTexture.Height];
-                                for (int x = 0; x < textureFilePaths.Count(); x++)
+                                for (int t = 0; t <= (textureModel.GetVariations() * textureModel.TextureHeight) / AlternativeTextureModel.MAX_TEXTURE_HEIGHT; t++)
                                 {
-                                    var fileName = textureFilePaths.ElementAt(x);
-                                    Monitor.Log($"Stitching together {textureModel.TextureId}: {fileName}", LogLevel.Trace);
-
-                                    var offset = x * baseTexture.Width * baseTexture.Height;
-                                    var subTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(parentFolderName, textureFolder.Name, fileName));
-
-                                    Color[] subPixels = new Color[subTexture.Width * subTexture.Height];
-                                    subTexture.GetData(subPixels);
-                                    for (int i = 0; i < subPixels.Length; i++)
+                                    int variationLimit = Math.Min(maxVariationsPerTexture, textureModel.GetVariations() - (maxVariationsPerTexture * t));
+                                    if (variationLimit < 0)
                                     {
-                                        pixels[i + offset] = subPixels[i];
+                                        variationLimit = 0;
                                     }
+                                    Texture2D stitchedTexture = new Texture2D(Game1.graphics.GraphicsDevice, baseTexture.Width, Math.Min(textureModel.TextureHeight * variationLimit, AlternativeTextureModel.MAX_TEXTURE_HEIGHT));
+
+                                    // Now stitch together the split textures into a single texture
+                                    Color[] pixels = new Color[stitchedTexture.Width * stitchedTexture.Height];
+                                    for (int x = 0; x < variationLimit; x++)
+                                    {
+                                        var fileName = textureFilePaths.ElementAt(x + (variationLimit * t));
+                                        Monitor.Log($"Stitching together {textureModel.TextureId}: {fileName}", LogLevel.Trace);
+
+                                        var offset = x * baseTexture.Width * baseTexture.Height;
+                                        var subTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(parentFolderName, textureFolder.Name, fileName));
+
+                                        Color[] subPixels = new Color[subTexture.Width * subTexture.Height];
+                                        subTexture.GetData(subPixels);
+                                        for (int i = 0; i < subPixels.Length; i++)
+                                        {
+                                            pixels[i + offset] = subPixels[i];
+                                        }
+                                    }
+
+                                    stitchedTexture.SetData(pixels);
+                                    textureModel.Textures.Add(stitchedTexture);
                                 }
 
-                                stitchedTexture.SetData(pixels);
                                 textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(parentFolderName, textureFolder.Name, textureFilePaths.First()));
-                                textureModel.Texture = stitchedTexture;
                             }
                             else
                             {
                                 // Load in the single vertical texture
                                 textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(parentFolderName, textureFolder.Name, "texture.png"));
-                                textureModel.Texture = contentPack.LoadAsset<Texture2D>(textureModel.TileSheetPath);
+                                Texture2D singularTexture = contentPack.LoadAsset<Texture2D>(textureModel.TileSheetPath);
+                                if (singularTexture.Height >= AlternativeTextureModel.MAX_TEXTURE_HEIGHT)
+                                {
+                                    Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: The texture {textureModel.TextureId} has a height larger than 16384!\nPlease split it into individual textures (e.g. texture_0.png, texture_1.png, etc.) to resolve this issue.", LogLevel.Warn);
+                                    continue;
+                                }
+                                else
+                                {
+                                    textureModel.Textures.Add(singularTexture);
+                                }
                             }
 
                             // Track the texture model

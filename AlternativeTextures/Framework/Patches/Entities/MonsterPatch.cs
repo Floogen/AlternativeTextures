@@ -54,7 +54,7 @@ namespace AlternativeTextures.Framework.Patches.Entities
                 }
                 var textureOffset = textureVariation * textureModel.TextureHeight;
 
-                __instance.Sprite.spriteTexture = textureModel.Texture;
+                __instance.Sprite.spriteTexture = textureModel.GetTexture(textureVariation);
                 __instance.Sprite.sourceRect.Y = textureOffset + (__instance.Sprite.currentFrame * __instance.Sprite.SpriteWidth / __instance.Sprite.Texture.Width * __instance.Sprite.SpriteHeight);
             }
 
