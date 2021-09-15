@@ -99,6 +99,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Examples\[AT] Example Pack\Textures\Buildings\BigBarn\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\Barn\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Craftables\AnimatedRecyclingMachine\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\GreenSlime\texture.json" />
@@ -209,6 +210,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Examples\[AT] Crystal Mini-Obelisks\Textures\MiniObelisk\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Buildings\BigBarn\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\Barn\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\DeluxeCoop\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\DeluxeBarn\texture.png" />
