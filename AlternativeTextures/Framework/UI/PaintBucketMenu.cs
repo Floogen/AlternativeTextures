@@ -44,6 +44,7 @@ namespace AlternativeTextures.Framework.UI
         private int _maxRows = 4;
         private float _buildingScale = 3f;
 
+        private string _modelName;
         private Object _textureTarget;
         private Vector2 _position;
         private TextureType _textureType;
@@ -208,6 +209,7 @@ namespace AlternativeTextures.Framework.UI
             }
 
             // Cache the input object to easily reference the vanilla texture
+            _modelName = modelName;
             _textureTarget = target;
             _position = position;
 
@@ -354,8 +356,19 @@ namespace AlternativeTextures.Framework.UI
                     }
                     else if (Game1.currentLocation is DecoratableLocation decoratableLocation && (decoratableLocation.getFloorAt(new Point((int)_position.X, (int)_position.Y)) != -1 || decoratableLocation.getWallForRoomAt(new Point((int)_position.X, (int)_position.Y)) != -1))
                     {
-                        var floorIndex = decoratableLocation.getFloorAt(new Point((int)_position.X, (int)_position.Y));
-                        var typeKey = floorIndex == -1 ? "Wallpaper" : "Floor";
+                        var room = 0;
+                        var isFloor = false;
+                        if (_modelName.Contains("Floor"))
+                        {
+                            isFloor = true;
+                            room = decoratableLocation.getFloorAt(new Point((int)_position.X, (int)_position.Y));
+                        }
+                        else
+                        {
+                            room = decoratableLocation.getWallForRoomAt(new Point((int)_position.X, (int)_position.Y));
+                        }
+
+                        var typeKey = isFloor ? "Floor" : "Wallpaper";
                         foreach (string key in c.item.modData.Keys.Where(k => !k.Contains("AlternativeTexture.Floor") && !k.Contains("AlternativeTexture.Wallpaper")))
                         {
                             decoratableLocation.modData[key] = c.item.modData[key];
@@ -364,15 +377,15 @@ namespace AlternativeTextures.Framework.UI
                                 decoratableLocation.modData[key.Replace("AlternativeTexture", String.Concat("AlternativeTexture.", typeKey, "."))] = c.item.modData[key];
                             }
                         }
-                        decoratableLocation.modData[$"AlternativeTexture.{typeKey}.RoomIndex"] = (floorIndex == -1 ? decoratableLocation.getWallForRoomAt(new Point((int)_position.X, (int)_position.Y)) : floorIndex).ToString();
+                        decoratableLocation.modData[$"AlternativeTexture.{typeKey}.RoomIndex"] = room.ToString();
 
-                        if (floorIndex == -1)
+                        if (isFloor)
                         {
-                            decoratableLocation.setWallpapers();
+                            decoratableLocation.setFloors();
                         }
                         else
                         {
-                            decoratableLocation.setFloors();
+                            decoratableLocation.setWallpapers();
                         }
                     }
 
@@ -498,10 +511,11 @@ namespace AlternativeTextures.Framework.UI
                             else if (Game1.currentLocation is DecoratableLocation decoratableLocation && (decoratableLocation.getFloorAt(new Point((int)_position.X, (int)_position.Y)) != -1 || decoratableLocation.getWallForRoomAt(new Point((int)_position.X, (int)_position.Y)) != -1))
                             {
                                 var which = 0;
-                                var floor = decoratableLocation.getFloorAt(new Point((int)_position.X, (int)_position.Y));
-                                if (floor != -1)
+                                var isFloor = false;
+                                if (_modelName.Contains("Floor"))
                                 {
-                                    which = decoratableLocation.floor[floor];
+                                    isFloor = true;
+                                    which = decoratableLocation.floor[decoratableLocation.getFloorAt(new Point((int)_position.X, (int)_position.Y))];
                                 }
                                 else
                                 {
@@ -509,7 +523,7 @@ namespace AlternativeTextures.Framework.UI
                                 }
 
                                 this.availableTextures[i].texture = Wallpaper.wallpaperTexture;
-                                this.availableTextures[i].sourceRect = (floor != -1 ? new Rectangle(which % 8 * 32, 336 + which / 8 * 32, 32, 32) : new Rectangle(which % 16 * 16, which / 16 * 48 + 8, 16, 32));
+                                this.availableTextures[i].sourceRect = (isFloor ? new Rectangle(which % 8 * 32, 336 + which / 8 * 32, 32, 32) : new Rectangle(which % 16 * 16, which / 16 * 48, 16, 48));
                                 this.availableTextures[i].draw(b, Color.White, 0.87f);
                             }
                         }
