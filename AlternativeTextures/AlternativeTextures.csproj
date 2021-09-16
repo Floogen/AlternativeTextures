@@ -77,10 +77,10 @@
     <Compile Include="Framework\Patches\StandardObjects\FlooringPatch.cs" />
     <Compile Include="Framework\UI\PaintBucketMenu.cs" />
     <Compile Include="Framework\Models\AlternativeTextureModel.cs" />
-    <Compile Include="Framework\Patches\AnimatedObjects\PhonePatch.cs" />
-    <Compile Include="Framework\Patches\AnimatedObjects\IndoorPotPatch.cs" />
-    <Compile Include="Framework\Patches\AnimatedObjects\CrabPotPatch.cs" />
-    <Compile Include="Framework\Patches\AnimatedObjects\ChestPatch.cs" />
+    <Compile Include="Framework\Patches\SpecialObjects\PhonePatch.cs" />
+    <Compile Include="Framework\Patches\SpecialObjects\IndoorPotPatch.cs" />
+    <Compile Include="Framework\Patches\SpecialObjects\CrabPotPatch.cs" />
+    <Compile Include="Framework\Patches\SpecialObjects\ChestPatch.cs" />
     <Compile Include="Framework\Patches\UtilityPatch.cs" />
     <Compile Include="Framework\Patches\StandardObjects\ResourceClumpPatch.cs" />
     <Compile Include="Framework\Patches\StandardObjects\GiantCropPatch.cs" />

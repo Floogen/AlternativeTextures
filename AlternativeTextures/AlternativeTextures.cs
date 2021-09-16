@@ -3,7 +3,7 @@ using AlternativeTextures.Framework.Interfaces.API;
 using AlternativeTextures.Framework.Managers;
 using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.Patches;
-using AlternativeTextures.Framework.Patches.AnimatedObjects;
+using AlternativeTextures.Framework.Patches.SpecialObjects;
 using AlternativeTextures.Framework.Patches.Buildings;
 using AlternativeTextures.Framework.Patches.Entities;
 using AlternativeTextures.Framework.Patches.GameLocations;
@@ -106,7 +106,7 @@ namespace AlternativeTextures
                 new BedFurniturePatch(monitor, helper).Apply(harmony);
                 new FishTankFurniturePatch(monitor, helper).Apply(harmony);
 
-                // Start of animated objects
+                // Start of special objects
                 new ChestPatch(monitor, helper).Apply(harmony);
                 new CrabPotPatch(monitor, helper).Apply(harmony);
                 new IndoorPotPatch(monitor, helper).Apply(harmony);
