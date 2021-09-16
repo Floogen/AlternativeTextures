@@ -14,6 +14,7 @@ using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using static AlternativeTextures.Framework.Models.AlternativeTextureModel;
@@ -378,18 +379,21 @@ namespace AlternativeTextures.Framework.UI
                             }
                         }
 
-                        if (decoratableLocation.modData[$"AlternativeTexture.Wallpaper.Owner_{room}"] != AlternativeTextures.DEFAULT_OWNER)
-                        {
-                            decoratableLocation.modData[$"AlternativeTexture.Wallpaper.Dirty_{room}"] = true.ToString();
-                        }
-
                         if (isFloor)
                         {
-                            decoratableLocation.setFloors();
+                            decoratableLocation.setFloor(decoratableLocation.floor[room], room, true);
+                            MethodInfo method = decoratableLocation.GetType().GetMethod("doSetVisibleFloor", BindingFlags.Instance | BindingFlags.NonPublic);
+                            method.Invoke(decoratableLocation, new object[] { room, decoratableLocation.floor[room] });
+
+                            decoratableLocation.modData[$"AlternativeTexture.Floor.Dirty_{room}"] = true.ToString();
                         }
                         else
                         {
-                            decoratableLocation.setWallpapers();
+                            decoratableLocation.setWallpaper(decoratableLocation.wallPaper[room], room, true);
+                            MethodInfo method = decoratableLocation.GetType().GetMethod("doSetVisibleWallpaper", BindingFlags.Instance | BindingFlags.NonPublic);
+                            method.Invoke(decoratableLocation, new object[] { room, decoratableLocation.wallPaper[room] });
+
+                            decoratableLocation.modData[$"AlternativeTexture.Wallpaper.Dirty_{room}"] = true.ToString();
                         }
                     }
 

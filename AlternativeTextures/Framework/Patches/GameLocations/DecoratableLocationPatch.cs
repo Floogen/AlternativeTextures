@@ -42,6 +42,12 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
                 return;
             }
 
+            if (__instance.modData.ContainsKey($"AlternativeTexture.Wallpaper.Dirty_{whichRoom}") && !Convert.ToBoolean(__instance.modData[$"AlternativeTexture.Wallpaper.Dirty_{whichRoom}"]))
+            {
+                return;
+            }
+            __instance.modData[$"AlternativeTexture.Wallpaper.Dirty_{whichRoom}"] = false.ToString();
+
             var walls = __instance.getWalls();
             MethodInfo method = __instance.GetType().GetMethod("IsFloorableOrWallpaperableTile", BindingFlags.Instance | BindingFlags.NonPublic);
             foreach (Rectangle r2 in walls)
@@ -77,21 +83,12 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
             }
         }
 
-        private static void ResetWallTiles(DecoratableLocation __instance, int x, int y, string layer_name)
+        private static void ResetWallTiles(DecoratableLocation __instance, int tileX, int tileY, string layer_name)
         {
             var layer = __instance.map.GetLayer(layer_name);
-            if (layer != null && x < layer.LayerWidth && y < layer.LayerHeight && layer.Tiles[x, y] != null && layer.Tiles[x, y].TileSheet != null && layer.Tiles[x, y].TileSheet.Id.Contains(AlternativeTextures.TEXTURE_TOKEN_HEADER))
+            if (layer != null && tileX < layer.LayerWidth && tileY < layer.LayerHeight && layer.Tiles[tileX, tileY] != null && layer.Tiles[tileX, tileY].TileSheet != null && layer.Tiles[tileX, tileY].TileSheet.Id.Contains(AlternativeTextures.TEXTURE_TOKEN_HEADER))
             {
-                for (int w = 0; w < __instance.getWalls().Count(); w++)
-                {
-                    if (__instance.modData.ContainsKey($"AlternativeTexture.Wallpaper.Owner_{w}") && __instance.getWalls()[w].Contains(x, y))
-                    {
-                        if (__instance.modData[$"AlternativeTexture.Wallpaper.Owner_{w}"] == AlternativeTextures.DEFAULT_OWNER)
-                        {
-                            layer.Tiles[x, y] = new StaticTile(__instance.map.GetLayer(layer_name), __instance.map.GetTileSheet("walls_and_floors"), BlendMode.Alpha, 0);
-                        }
-                    }
-                }
+                layer.Tiles[tileX, tileY] = new StaticTile(__instance.map.GetLayer(layer_name), __instance.map.GetTileSheet("walls_and_floors"), BlendMode.Alpha, 0);
             }
         }
 
@@ -102,6 +99,12 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
                 return;
             }
 
+            if (__instance.modData.ContainsKey($"AlternativeTexture.Floor.Dirty_{whichRoom}") && !Convert.ToBoolean(__instance.modData[$"AlternativeTexture.Floor.Dirty_{whichRoom}"]))
+            {
+                return;
+            }
+            __instance.modData[$"AlternativeTexture.Floor.Dirty_{whichRoom}"] = false.ToString();
+
             var floors = __instance.getFloors();
             MethodInfo method = __instance.GetType().GetMethod("IsFloorableTile", BindingFlags.Instance | BindingFlags.NonPublic);
             foreach (Rectangle r2 in floors)
@@ -111,49 +114,43 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
                     continue;
                 }
 
+                var whichIndex = __instance.floor[whichRoom];
                 for (int x2 = r2.X; x2 < r2.Right; x2 += 2)
                 {
                     for (int y2 = r2.Y; y2 < r2.Bottom; y2 += 2)
                     {
+                        Point tileStartingPoint = new Point(x2, y2);
                         if (r2.Contains(x2, y2) && Convert.ToBoolean(method.Invoke(__instance, new object[] { x2, y2, "Back" })))
                         {
-                            ResetFloorTiles(__instance, x2, y2, "Back");
+                            ResetFloorTiles(__instance, x2, y2, "Back", whichIndex, tileStartingPoint);
                         }
                         if (r2.Contains(x2 + 1, y2) && Convert.ToBoolean(method.Invoke(__instance, new object[] { x2 + 1, y2, "Back" })))
                         {
-                            ResetFloorTiles(__instance, x2 + 1, y2, "Back");
+                            ResetFloorTiles(__instance, x2 + 1, y2, "Back", whichIndex, tileStartingPoint);
                         }
                         if (r2.Contains(x2, y2 + 1) && Convert.ToBoolean(method.Invoke(__instance, new object[] { x2, y2 + 1, "Back" })))
                         {
-                            ResetFloorTiles(__instance, x2, y2 + 1, "Back");
+                            ResetFloorTiles(__instance, x2, y2 + 1, "Back", whichIndex, tileStartingPoint);
                         }
                         if (r2.Contains(x2 + 1, y2 + 1) && Convert.ToBoolean(method.Invoke(__instance, new object[] { x2 + 1, y2 + 1, "Back" })))
                         {
-                            ResetFloorTiles(__instance, x2 + 1, y2 + 1, "Back");
+                            ResetFloorTiles(__instance, x2 + 1, y2 + 1, "Back", whichIndex, tileStartingPoint);
                         }
                     }
                 }
             }
         }
 
-        private static void ResetFloorTiles(DecoratableLocation __instance, int x, int y, string layer_name)
+        private static void ResetFloorTiles(DecoratableLocation __instance, int tileX, int tileY, string layer_name, int which, Point tileStartingPoint)
         {
             var layer = __instance.map.GetLayer(layer_name);
-            if (layer != null && x < layer.LayerWidth && y < layer.LayerHeight && layer.Tiles[x, y] != null && layer.Tiles[x, y].TileSheet != null && layer.Tiles[x, y].TileSheet.Id.Contains(AlternativeTextures.TEXTURE_TOKEN_HEADER))
+            if (layer != null && tileX < layer.LayerWidth && tileY < layer.LayerHeight && layer.Tiles[tileX, tileY] != null && layer.Tiles[tileX, tileY].TileSheet != null && layer.Tiles[tileX, tileY].TileSheet.Id.Contains(AlternativeTextures.TEXTURE_TOKEN_HEADER))
             {
-                for (int f = 0; f < __instance.getFloors().Count(); f++)
-                {
-                    if (__instance.modData.ContainsKey($"AlternativeTexture.Floor.Owner_{f}") && __instance.getFloors()[f].Contains(x, y))
-                    {
-                        if (__instance.modData[$"AlternativeTexture.Floor.Owner_{f}"] == AlternativeTextures.DEFAULT_OWNER)
-                        {
-                            var currentIndex = __instance.getTileIndexAt(x, y, layer_name);
-                            int x_offset = currentIndex % 2;
-                            int y_offset = currentIndex / 32;
-                            layer.Tiles[x, y] = new StaticTile(__instance.map.GetLayer(layer_name), __instance.map.GetTileSheet("walls_and_floors"), BlendMode.Alpha, 336 + x_offset + 16 * y_offset);
-                        }
-                    }
-                }
+                int tileSheetIndex = 336 + which % 8 * 2 + which / 8 * 32;
+                int x_offset = tileX - tileStartingPoint.X;
+                int y_offset = tileY - tileStartingPoint.Y;
+
+                layer.Tiles[tileX, tileY] = new StaticTile(layer, __instance.map.GetTileSheet("walls_and_floors"), BlendMode.Alpha, tileSheetIndex + x_offset + 16 * y_offset);
             }
         }
 
