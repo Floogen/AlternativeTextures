@@ -374,10 +374,14 @@ namespace AlternativeTextures.Framework.UI
                             decoratableLocation.modData[key] = c.item.modData[key];
                             if (key.Contains("AlternativeTexture"))
                             {
-                                decoratableLocation.modData[key.Replace("AlternativeTexture", String.Concat("AlternativeTexture.", typeKey, "."))] = c.item.modData[key];
+                                decoratableLocation.modData[key.Replace("AlternativeTexture", String.Concat("AlternativeTexture.", typeKey, ".")) + $"_{room}"] = c.item.modData[key];
                             }
                         }
-                        decoratableLocation.modData[$"AlternativeTexture.{typeKey}.RoomIndex"] = room.ToString();
+
+                        if (decoratableLocation.modData[$"AlternativeTexture.Wallpaper.Owner_{room}"] != AlternativeTextures.DEFAULT_OWNER)
+                        {
+                            decoratableLocation.modData[$"AlternativeTexture.Wallpaper.Dirty_{room}"] = true.ToString();
+                        }
 
                         if (isFloor)
                         {

@@ -147,16 +147,16 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     }
                     if (wall.Contains(tile))
                     {
-                        if (!decoratableLocation.modData.ContainsKey("AlternativeTexture.Wallpaper.Name"))
+                        if (!decoratableLocation.modData.ContainsKey($"AlternativeTexture.Wallpaper.Name_{i}"))
                         {
                             var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Decoration}_Wallpaper_{Game1.GetSeasonForLocation(decoratableLocation)}";
                             AssignDefaultModData(decoratableLocation, instanceSeasonName, true, isWallpaper: true);
                         }
 
-                        var modelName = decoratableLocation.modData["AlternativeTexture.Wallpaper.Name"].Replace($"{decoratableLocation.modData["AlternativeTexture.Wallpaper.Owner"]}.", String.Empty);
-                        if (decoratableLocation.modData.ContainsKey("AlternativeTexture.Wallpaper.Season") && !String.IsNullOrEmpty(decoratableLocation.modData["AlternativeTexture.Wallpaper.Season"]))
+                        var modelName = decoratableLocation.modData[$"AlternativeTexture.Wallpaper.Name_{i}"].Replace($"{decoratableLocation.modData[$"AlternativeTexture.Wallpaper.Owner_{i}"]}.", String.Empty);
+                        if (decoratableLocation.modData.ContainsKey($"AlternativeTexture.Wallpaper.Season_{i}") && !String.IsNullOrEmpty(decoratableLocation.modData[$"AlternativeTexture.Wallpaper.Season_{i}"]))
                         {
-                            modelName = modelName.Replace($"_{decoratableLocation.modData["AlternativeTexture.Wallpaper.Season"]}", String.Empty);
+                            modelName = modelName.Replace($"_{decoratableLocation.modData[$"AlternativeTexture.Wallpaper.Season_{i}"]}", String.Empty);
                         }
 
                         if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
@@ -182,16 +182,16 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 {
                     if (floors[j].Contains(tile))
                     {
-                        if (!decoratableLocation.modData.ContainsKey("AlternativeTexture.Floor.Name"))
+                        if (!decoratableLocation.modData.ContainsKey($"AlternativeTexture.Floor.Name_{j}"))
                         {
                             var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Decoration}_Floor_{Game1.GetSeasonForLocation(decoratableLocation)}";
                             AssignDefaultModData(decoratableLocation, instanceSeasonName, true, isWallpaper: false);
                         }
 
-                        var modelName = decoratableLocation.modData["AlternativeTexture.Floor.Name"].Replace($"{decoratableLocation.modData["AlternativeTexture.Floor.Owner"]}.", String.Empty);
-                        if (decoratableLocation.modData.ContainsKey("AlternativeTexture.Floor.Season") && !String.IsNullOrEmpty(decoratableLocation.modData["AlternativeTexture.Floor.Season"]))
+                        var modelName = decoratableLocation.modData[$"AlternativeTexture.Floor.Name_{j}"].Replace($"{decoratableLocation.modData[$"AlternativeTexture.Floor.Owner_{j}"]}.", String.Empty);
+                        if (decoratableLocation.modData.ContainsKey($"AlternativeTexture.Floor.Season_{j}") && !String.IsNullOrEmpty(decoratableLocation.modData[$"AlternativeTexture.Floor.Season_{j}"]))
                         {
-                            modelName = modelName.Replace($"_{decoratableLocation.modData["AlternativeTexture.Floor.Season"]}", String.Empty);
+                            modelName = modelName.Replace($"_{decoratableLocation.modData[$"AlternativeTexture.Floor.Season_{j}"]}", String.Empty);
                         }
 
                         if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)

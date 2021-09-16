@@ -516,32 +516,38 @@ namespace AlternativeTextures.Framework.Patches
 
         private static void AssignWallpaperModData(DecoratableLocation decoratableLocation, string modelName, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
         {
-            decoratableLocation.modData["AlternativeTexture.Wallpaper.Owner"] = textureModel.Owner;
-            decoratableLocation.modData["AlternativeTexture.Wallpaper.Name"] = String.Concat(textureModel.Owner, ".", modelName);
-
-            if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
+            for (int x = 0; x < decoratableLocation.getWalls().Count(); x++)
             {
-                decoratableLocation.modData["AlternativeTexture.Wallpaper.Season"] = Game1.currentSeason;
-            }
+                decoratableLocation.modData[$"AlternativeTexture.Wallpaper.Owner_{x}"] = textureModel.Owner;
+                decoratableLocation.modData[$"AlternativeTexture.Wallpaper.Name_{x}"] = String.Concat(textureModel.Owner, ".", modelName);
 
-            decoratableLocation.modData["AlternativeTexture.Wallpaper.RoomIndex"] = "-1";
-            decoratableLocation.modData["AlternativeTexture.Wallpaper.Variation"] = variation.ToString();
+                if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
+                {
+                    decoratableLocation.modData[$"AlternativeTexture.Wallpaper.Season_{x}"] = Game1.currentSeason;
+                }
+
+                decoratableLocation.modData[$"AlternativeTexture.Wallpaper.Dirty_{x}"] = false.ToString();
+                decoratableLocation.modData[$"AlternativeTexture.Wallpaper.Variation_{x}"] = variation.ToString();
+            }
 
             AssignDecoratableLocationModData(decoratableLocation, modelName, textureModel, variation, trackSeason);
         }
 
         private static void AssignFloorModData(DecoratableLocation decoratableLocation, string modelName, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
         {
-            decoratableLocation.modData["AlternativeTexture.Floor.Owner"] = textureModel.Owner;
-            decoratableLocation.modData["AlternativeTexture.Floor.Name"] = String.Concat(textureModel.Owner, ".", modelName);
-
-            if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
+            for (int x = 0; x < decoratableLocation.getFloors().Count(); x++)
             {
-                decoratableLocation.modData["AlternativeTexture.Floor.Season"] = Game1.currentSeason;
-            }
+                decoratableLocation.modData[$"AlternativeTexture.Floor.Owner_{x}"] = textureModel.Owner;
+                decoratableLocation.modData[$"AlternativeTexture.Floor.Name_{x}"] = String.Concat(textureModel.Owner, ".", modelName);
 
-            decoratableLocation.modData["AlternativeTexture.Floor.RoomIndex"] = "-1";
-            decoratableLocation.modData["AlternativeTexture.Floor.Variation"] = variation.ToString();
+                if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
+                {
+                    decoratableLocation.modData[$"AlternativeTexture.Floor.Season_{x}"] = Game1.currentSeason;
+                }
+
+                decoratableLocation.modData[$"AlternativeTexture.Floor.Dirty_{x}"] = false.ToString();
+                decoratableLocation.modData[$"AlternativeTexture.Floor.Variation_{x}"] = variation.ToString();
+            }
 
             AssignDecoratableLocationModData(decoratableLocation, modelName, textureModel, variation, trackSeason);
         }
