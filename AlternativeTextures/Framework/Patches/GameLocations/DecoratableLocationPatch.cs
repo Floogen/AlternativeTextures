@@ -35,16 +35,19 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
             harmony.Patch(AccessTools.Method(_object, "doSetVisibleFloor", new[] { typeof(int), typeof(int) }), postfix: new HarmonyMethod(GetType(), nameof(DoSetVisibleFloorPostfix)));
         }
 
-        private static void ResetWallTiles(DecoratableLocation __instance, int whichRoom)
+        internal static void ResetWallTiles(DecoratableLocation __instance, int whichRoom, bool force = false)
         {
-            if (!__instance.modData.ContainsKey($"AlternativeTexture.Wallpaper.Owner_{whichRoom}") || __instance.modData[$"AlternativeTexture.Wallpaper.Owner_{whichRoom}"] != AlternativeTextures.DEFAULT_OWNER)
+            if (!force)
             {
-                return;
-            }
+                if (!__instance.modData.ContainsKey($"AlternativeTexture.Wallpaper.Owner_{whichRoom}") || __instance.modData[$"AlternativeTexture.Wallpaper.Owner_{whichRoom}"] != AlternativeTextures.DEFAULT_OWNER)
+                {
+                    return;
+                }
 
-            if (__instance.modData.ContainsKey($"AlternativeTexture.Wallpaper.Dirty_{whichRoom}") && !Convert.ToBoolean(__instance.modData[$"AlternativeTexture.Wallpaper.Dirty_{whichRoom}"]))
-            {
-                return;
+                if (__instance.modData.ContainsKey($"AlternativeTexture.Wallpaper.Dirty_{whichRoom}") && !Convert.ToBoolean(__instance.modData[$"AlternativeTexture.Wallpaper.Dirty_{whichRoom}"]))
+                {
+                    return;
+                }
             }
             __instance.modData[$"AlternativeTexture.Wallpaper.Dirty_{whichRoom}"] = false.ToString();
 
@@ -92,16 +95,19 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
             }
         }
 
-        private static void ResetFloorTiles(DecoratableLocation __instance, int whichRoom)
+        internal static void ResetFloorTiles(DecoratableLocation __instance, int whichRoom, bool force = false)
         {
-            if (!__instance.modData.ContainsKey($"AlternativeTexture.Floor.Owner_{whichRoom}") || __instance.modData[$"AlternativeTexture.Floor.Owner_{whichRoom}"] != AlternativeTextures.DEFAULT_OWNER)
+            if (!force)
             {
-                return;
-            }
+                if (!__instance.modData.ContainsKey($"AlternativeTexture.Floor.Owner_{whichRoom}") || __instance.modData[$"AlternativeTexture.Floor.Owner_{whichRoom}"] != AlternativeTextures.DEFAULT_OWNER)
+                {
+                    return;
+                }
 
-            if (__instance.modData.ContainsKey($"AlternativeTexture.Floor.Dirty_{whichRoom}") && !Convert.ToBoolean(__instance.modData[$"AlternativeTexture.Floor.Dirty_{whichRoom}"]))
-            {
-                return;
+                if (__instance.modData.ContainsKey($"AlternativeTexture.Floor.Dirty_{whichRoom}") && !Convert.ToBoolean(__instance.modData[$"AlternativeTexture.Floor.Dirty_{whichRoom}"]))
+                {
+                    return;
+                }
             }
             __instance.modData[$"AlternativeTexture.Floor.Dirty_{whichRoom}"] = false.ToString();
 
@@ -203,9 +209,10 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
             var tileSheet = new TileSheet($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{textureModel.GetTokenId()}", __instance.map, texturePath, new xTile.Dimensions.Size(textureModel.Textures.First().Width, textureModel.Textures.First().Height), new xTile.Dimensions.Size(16));
 
             // Add the tileSheet, if it is missing from the map
-            if (!__instance.map.GetLayer("Back").Map.TileSheets.Contains(tileSheet))
+            if (!__instance.map.TileSheets.Contains(tileSheet))
             {
-                __instance.map.GetLayer("Back").Map.AddTileSheet(tileSheet);
+                __instance.map.AddTileSheet(tileSheet);
+                __instance.map.LoadTileSheets(Game1.mapDisplayDevice);
             }
 
             // Modified vanilla logic
@@ -290,9 +297,10 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
             var tileSheet = new TileSheet($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{textureModel.GetTokenId()}", __instance.map, texturePath, new xTile.Dimensions.Size(textureModel.Textures.First().Width, textureModel.Textures.First().Height), new xTile.Dimensions.Size(16));
 
             // Add the tileSheet, if it is missing from the map
-            if (!__instance.map.GetLayer("Back").Map.TileSheets.Contains(tileSheet))
+            if (!__instance.map.TileSheets.Contains(tileSheet))
             {
-                __instance.map.GetLayer("Back").Map.AddTileSheet(tileSheet);
+                __instance.map.AddTileSheet(tileSheet);
+                __instance.map.LoadTileSheets(Game1.mapDisplayDevice);
             }
 
             // Modified vanilla logic
