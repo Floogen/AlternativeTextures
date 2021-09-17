@@ -111,6 +111,7 @@ namespace AlternativeTextures
                 new CrabPotPatch(monitor, helper).Apply(harmony);
                 new IndoorPotPatch(monitor, helper).Apply(harmony);
                 new PhonePatch(monitor, helper).Apply(harmony);
+                new WallpaperPatch(monitor, helper).Apply(harmony);
                 /*
                  * Not supported:
                  * - Wood Chipper
