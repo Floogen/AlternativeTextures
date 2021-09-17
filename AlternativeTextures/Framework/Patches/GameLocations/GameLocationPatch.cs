@@ -15,7 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Object = StardewValley.Object;
 
-namespace AlternativeTextures.Framework.Patches.StandardObjects
+namespace AlternativeTextures.Framework.Patches.GameLocations
 {
     internal class GameLocationPatch : PatchTemplate
     {

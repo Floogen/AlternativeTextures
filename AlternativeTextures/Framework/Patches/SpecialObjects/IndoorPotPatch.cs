@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Object = StardewValley.Object;
 
-namespace AlternativeTextures.Framework.Patches.AnimatedObjects
+namespace AlternativeTextures.Framework.Patches.SpecialObjects
 {
     internal class IndoorPotPatch : PatchTemplate
     {

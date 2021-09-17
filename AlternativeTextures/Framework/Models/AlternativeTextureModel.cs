@@ -44,7 +44,8 @@ namespace AlternativeTextures.Framework.Models
             Flooring,
             Furniture,
             Character,
-            Building
+            Building,
+            Decoration
         }
 
         public AlternativeTextureModel ShallowCopy()
