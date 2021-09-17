@@ -37,6 +37,32 @@ namespace AlternativeTextures.Framework.Patches.Entities
             harmony.Patch(AccessTools.Constructor(typeof(Dog), new[] { typeof(int), typeof(int), typeof(int) }), postfix: new HarmonyMethod(GetType(), nameof(PetPostfix)));
         }
 
+        private static void ReloadBreedSpritePostfix(Pet __instance)
+        {
+            if (__instance.modData.ContainsKey("AlternativeTextureName") && __instance.modData["AlternativeTextureOwner"] != AlternativeTextures.DEFAULT_OWNER)
+            {
+                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
+                if (textureModel is null)
+                {
+                    __instance.Sprite.LoadTexture(__instance.getPetTextureName());
+                    return;
+                }
+
+                var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
+                if (textureVariation == -1)
+                {
+                    __instance.Sprite.LoadTexture(__instance.getPetTextureName());
+                    return;
+                }
+                var textureOffset = textureVariation * textureModel.TextureHeight;
+
+                __instance.Sprite.spriteTexture = textureModel.GetTexture(textureVariation);
+                __instance.Sprite.sourceRect.Y = textureOffset + (__instance.Sprite.currentFrame * __instance.Sprite.SpriteWidth / __instance.Sprite.Texture.Width * __instance.Sprite.SpriteHeight);
+            }
+
+            return;
+        }
+
         private static bool DrawPrefix(Pet __instance, int ___shakeTimer, SpriteBatch b)
         {
             if (__instance.modData.ContainsKey("AlternativeTextureName"))
@@ -88,6 +114,8 @@ namespace AlternativeTextures.Framework.Patches.Entities
                     pet.modData["AlternativeTextureName"] = String.Concat(pet.modData["AlternativeTextureName"], "_", pet.modData["AlternativeTextureSeason"]);
                 }
             }
+
+            ReloadBreedSpritePostfix(__instance);
         }
 
         private static void PetPostfix(Pet __instance, int xTile, int yTile, int breed)
