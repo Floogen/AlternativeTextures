@@ -3,9 +3,10 @@ using AlternativeTextures.Framework.Interfaces.API;
 using AlternativeTextures.Framework.Managers;
 using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.Patches;
-using AlternativeTextures.Framework.Patches.AnimatedObjects;
+using AlternativeTextures.Framework.Patches.SpecialObjects;
 using AlternativeTextures.Framework.Patches.Buildings;
 using AlternativeTextures.Framework.Patches.Entities;
+using AlternativeTextures.Framework.Patches.GameLocations;
 using AlternativeTextures.Framework.Patches.StandardObjects;
 using AlternativeTextures.Framework.Patches.Tools;
 using AlternativeTextures.Framework.Utilities;
@@ -105,11 +106,12 @@ namespace AlternativeTextures
                 new BedFurniturePatch(monitor, helper).Apply(harmony);
                 new FishTankFurniturePatch(monitor, helper).Apply(harmony);
 
-                // Start of animated objects
+                // Start of special objects
                 new ChestPatch(monitor, helper).Apply(harmony);
                 new CrabPotPatch(monitor, helper).Apply(harmony);
                 new IndoorPotPatch(monitor, helper).Apply(harmony);
                 new PhonePatch(monitor, helper).Apply(harmony);
+                new WallpaperPatch(monitor, helper).Apply(harmony);
                 /*
                  * Not supported:
                  * - Wood Chipper
@@ -125,6 +127,10 @@ namespace AlternativeTextures
 
                 // Start of building patches
                 new BuildingPatch(monitor, helper).Apply(harmony);
+
+                // Start of location patches
+                new GameLocationPatch(monitor, helper).Apply(harmony);
+                new DecoratableLocationPatch(monitor, helper).Apply(harmony);
 
                 // Paint tool related patches
                 new UtilityPatch(monitor, helper).Apply(harmony);

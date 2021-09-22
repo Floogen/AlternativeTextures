@@ -11,10 +11,16 @@
     },
     {
       "Id": 0,
+      "Tints": [
+        [ 255, 255, 255, 255 ] // Use this color (white) to have the game skip applying a tint to the flower
+      ],
       "ChanceWeight": 0.1
     },
     {
       "Id": 1,
+      "Tints": [
+        [ 100, 125, 255, 255 ]
+      ],
       "ChanceWeight": 0.5
     },
     {

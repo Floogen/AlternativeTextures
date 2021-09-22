@@ -30,9 +30,8 @@ namespace AlternativeTextures.Framework.Patches.Entities
 
         internal void Apply(Harmony harmony)
         {
-            //harmony.Patch(AccessTools.Method(_entity, nameof(Pet.reloadBreedSprite), null), postfix: new HarmonyMethod(GetType(), nameof(ReloadBreedSpritePostfix)));
             harmony.Patch(AccessTools.Method(_entity, nameof(Pet.draw), new[] { typeof(SpriteBatch) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
-            harmony.Patch(AccessTools.Method(_entity, nameof(Pet.update), new[] { typeof(GameTime), typeof(GameLocation) }), postfix: new HarmonyMethod(GetType(), nameof(ReloadBreedSpritePostfix)));
+            harmony.Patch(AccessTools.Method(_entity, nameof(Pet.update), new[] { typeof(GameTime), typeof(GameLocation) }), postfix: new HarmonyMethod(GetType(), nameof(UpdatePostfix)));
 
             harmony.Patch(AccessTools.Constructor(typeof(Cat), new[] { typeof(int), typeof(int), typeof(int) }), postfix: new HarmonyMethod(GetType(), nameof(PetPostfix)));
             harmony.Patch(AccessTools.Constructor(typeof(Dog), new[] { typeof(int), typeof(int), typeof(int) }), postfix: new HarmonyMethod(GetType(), nameof(PetPostfix)));
@@ -40,7 +39,7 @@ namespace AlternativeTextures.Framework.Patches.Entities
 
         private static void ReloadBreedSpritePostfix(Pet __instance)
         {
-            if (__instance.modData.ContainsKey("AlternativeTextureName"))
+            if (__instance.modData.ContainsKey("AlternativeTextureName") && __instance.modData["AlternativeTextureOwner"] != AlternativeTextures.DEFAULT_OWNER)
             {
                 var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
                 if (textureModel is null)
@@ -104,8 +103,8 @@ namespace AlternativeTextures.Framework.Patches.Entities
                 return;
             }
 
-            var instanceName = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(__instance)}");
-            var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
+            var instanceName = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(__instance)}").ToLower();
+            var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(__instance.currentLocation)}".ToLower();
             if (__instance is Pet pet && pet.modData["AlternativeTextureName"].ToLower() != instanceName && pet.modData["AlternativeTextureName"].ToLower() != instanceSeasonName)
             {
                 pet.modData["AlternativeTextureName"] = String.Concat(pet.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(pet)}");
@@ -115,6 +114,8 @@ namespace AlternativeTextures.Framework.Patches.Entities
                     pet.modData["AlternativeTextureName"] = String.Concat(pet.modData["AlternativeTextureName"], "_", pet.modData["AlternativeTextureSeason"]);
                 }
             }
+
+            ReloadBreedSpritePostfix(__instance);
         }
 
         private static void PetPostfix(Pet __instance, int xTile, int yTile, int breed)
