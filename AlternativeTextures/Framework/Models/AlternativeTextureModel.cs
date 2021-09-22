@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using System;
@@ -110,6 +111,18 @@ namespace AlternativeTextures.Framework.Models
             return Textures[0];
         }
 
+        public Color GetRandomTint(int variation)
+        {
+            if (!HasTint(variation))
+            {
+                return Color.White;
+            }
+
+            var tints = ManualVariations.First(v => v.Id == variation).Tints;
+            var selectedTint = tints[Game1.random.Next(tints.Count())];
+            return new Color(selectedTint[0], selectedTint[1], selectedTint[2], selectedTint[3]);
+        }
+
         public bool HasKeyword(string variationString, string keyword)
         {
             if (!Int32.TryParse(variationString, out var variation))
@@ -133,6 +146,11 @@ namespace AlternativeTextures.Framework.Models
         public bool HasAnimation(int variation)
         {
             return Animation.Count() > 0 || ManualVariations.Any(v => v.Id == variation && v.HasAnimation());
+        }
+
+        public bool HasTint(int variation)
+        {
+            return ManualVariations.Any(v => v.Id == variation && v.HasTint());
         }
 
         public override string ToString()
