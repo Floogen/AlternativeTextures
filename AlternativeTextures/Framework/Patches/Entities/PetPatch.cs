@@ -103,8 +103,8 @@ namespace AlternativeTextures.Framework.Patches.Entities
                 return;
             }
 
-            var instanceName = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(__instance)}");
-            var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
+            var instanceName = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(__instance)}").ToLower();
+            var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(__instance.currentLocation)}".ToLower();
             if (__instance is Pet pet && pet.modData["AlternativeTextureName"].ToLower() != instanceName && pet.modData["AlternativeTextureName"].ToLower() != instanceSeasonName)
             {
                 pet.modData["AlternativeTextureName"] = String.Concat(pet.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(pet)}");

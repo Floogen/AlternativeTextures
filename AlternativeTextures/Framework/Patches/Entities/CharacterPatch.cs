@@ -46,8 +46,8 @@ namespace AlternativeTextures.Framework.Patches.Entities
                 return;
             }
 
-            var instanceName = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(__instance)}");
-            var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
+            var instanceName = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(__instance)}").ToLower();
+            var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(__instance.currentLocation)}".ToLower();
             if (__instance is Child child && child.modData["AlternativeTextureName"].ToLower() != instanceName && child.modData["AlternativeTextureName"].ToLower() != instanceSeasonName)
             {
                 child.modData["AlternativeTextureName"] = String.Concat(child.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(child)}");
@@ -56,6 +56,8 @@ namespace AlternativeTextures.Framework.Patches.Entities
                     child.modData["AlternativeTextureSeason"] = Game1.GetSeasonForLocation(location);
                     child.modData["AlternativeTextureName"] = String.Concat(child.modData["AlternativeTextureName"], "_", child.modData["AlternativeTextureSeason"]);
                 }
+
+                __instance.Sprite.loadedTexture = String.Empty;
             }
             if (__instance is Horse horse && horse.modData["AlternativeTextureName"].ToLower() != instanceName && horse.modData["AlternativeTextureName"].ToLower() != instanceSeasonName)
             {
@@ -65,9 +67,9 @@ namespace AlternativeTextures.Framework.Patches.Entities
                     horse.modData["AlternativeTextureSeason"] = Game1.GetSeasonForLocation(location);
                     horse.modData["AlternativeTextureName"] = String.Concat(horse.modData["AlternativeTextureName"], "_", horse.modData["AlternativeTextureSeason"]);
                 }
-            }
 
-            __instance.Sprite.loadedTexture = String.Empty;
+                __instance.Sprite.loadedTexture = String.Empty;
+            }
         }
 
         private static bool DrawPrefix(Character __instance, SpriteBatch b)
