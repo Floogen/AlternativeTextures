@@ -32,30 +32,35 @@ namespace AlternativeTextures.Framework.Patches.Entities
         {
             harmony.Patch(AccessTools.Method(_entity, nameof(Monster.draw), new[] { typeof(SpriteBatch) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
             harmony.Patch(AccessTools.Method(_entity, nameof(Monster.update), new[] { typeof(GameTime), typeof(GameLocation) }), postfix: new HarmonyMethod(GetType(), nameof(UpdatePostfix)));
+            harmony.Patch(AccessTools.Method(_entity, nameof(Monster.reloadSprite), null), postfix: new HarmonyMethod(GetType(), nameof(ReloadSpritePostfix)));
             harmony.Patch(AccessTools.Constructor(_entity, new[] { typeof(string), typeof(Vector2), typeof(int) }), postfix: new HarmonyMethod(GetType(), nameof(MonsterPostfix)));
+        }
+
+        private static void SetTexture(Monster monster, AlternativeTextureModel textureModel)
+        {
+            if (textureModel is null)
+            {
+                monster.Sprite.loadedTexture = String.Empty;
+                return;
+            }
+
+            var textureVariation = Int32.Parse(monster.modData["AlternativeTextureVariation"]);
+            if (textureVariation == -1)
+            {
+                monster.Sprite.loadedTexture = String.Empty;
+                return;
+            }
+            var textureOffset = textureVariation * textureModel.TextureHeight;
+
+            monster.Sprite.spriteTexture = textureModel.GetTexture(textureVariation);
+            monster.Sprite.sourceRect.Y = textureOffset + (monster.Sprite.currentFrame * monster.Sprite.SpriteWidth / monster.Sprite.Texture.Width * monster.Sprite.SpriteHeight);
         }
 
         private static bool DrawPrefix(Monster __instance, SpriteBatch b)
         {
             if (__instance.modData.ContainsKey("AlternativeTextureName"))
             {
-                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
-                if (textureModel is null)
-                {
-                    __instance.Sprite.loadedTexture = String.Empty;
-                    return true;
-                }
-
-                var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
-                if (textureVariation == -1)
-                {
-                    __instance.Sprite.loadedTexture = String.Empty;
-                    return true;
-                }
-                var textureOffset = textureVariation * textureModel.TextureHeight;
-
-                __instance.Sprite.spriteTexture = textureModel.GetTexture(textureVariation);
-                __instance.Sprite.sourceRect.Y = textureOffset + (__instance.Sprite.currentFrame * __instance.Sprite.SpriteWidth / __instance.Sprite.Texture.Width * __instance.Sprite.SpriteHeight);
+                SetTexture(__instance, AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]));
             }
 
             return true;
@@ -94,6 +99,33 @@ namespace AlternativeTextures.Framework.Patches.Entities
                 }
 
                 AssignDefaultModData(__instance, instanceSeasonName, true);
+            }
+
+            var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
+            if (textureModel is null)
+            {
+                __instance.Sprite.loadedTexture = String.Empty;
+                return;
+            }
+
+            var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
+            if (textureVariation == -1)
+            {
+                __instance.Sprite.loadedTexture = String.Empty;
+                return;
+            }
+
+            if (__instance.Sprite.textureName.Value != textureModel.GetTexture(textureVariation).Name)
+            {
+                SetTexture(__instance, textureModel);
+            }
+        }
+
+        private static void ReloadSpritePostfix(Monster __instance)
+        {
+            if (__instance.modData.ContainsKey("AlternativeTextureName"))
+            {
+                SetTexture(__instance, AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]));
             }
         }
 
