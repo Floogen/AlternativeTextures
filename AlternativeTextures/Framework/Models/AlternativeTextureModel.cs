@@ -123,6 +123,11 @@ namespace AlternativeTextures.Framework.Models
             return new Color(selectedTint[0], selectedTint[1], selectedTint[2], selectedTint[3]);
         }
 
+        public bool IsDecoration()
+        {
+            return String.Equals(GetTextureType(), "Decoration", StringComparison.OrdinalIgnoreCase);
+        }
+
         public bool HasKeyword(string variationString, string keyword)
         {
             if (!Int32.TryParse(variationString, out var variation))
