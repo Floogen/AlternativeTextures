@@ -225,79 +225,68 @@ namespace AlternativeTextures.Framework.Patches.Tools
             {
                 Point tile = new Point(x / 64, y / 64);
 
-                List<Rectangle> walls = decoratableLocation.getWalls();
-                for (int i = 0; i < walls.Count; i++)
+                var wallId = decoratableLocation.getWallForRoomAt(tile);
+                if (wallId != -1)
                 {
-                    Rectangle wall = walls[i];
-                    if (wall.Height == 2)
+                    if (!decoratableLocation.modData.ContainsKey("AlternativeTextureName") || !decoratableLocation.modData["AlternativeTextureName"].Contains("Wallpaper"))
                     {
-                        wall.Height = 3;
+                        var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Decoration}_Wallpaper_{Game1.GetSeasonForLocation(decoratableLocation)}";
+                        AssignDefaultModData(decoratableLocation, instanceSeasonName, true);
                     }
-                    if (wall.Contains(tile))
+
+                    var modelName = decoratableLocation.modData["AlternativeTextureName"].Replace($"{decoratableLocation.modData["AlternativeTextureOwner"]}.", String.Empty);
+                    if (decoratableLocation.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(decoratableLocation.modData["AlternativeTextureSeason"]))
                     {
-                        if (!decoratableLocation.modData.ContainsKey($"AlternativeTexture.Wallpaper.Name_{i}"))
-                        {
-                            var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Decoration}_Wallpaper_{Game1.GetSeasonForLocation(decoratableLocation)}";
-                            AssignDefaultModData(decoratableLocation, instanceSeasonName, true, isWallpaper: true);
-                        }
+                        modelName = modelName.Replace($"_{decoratableLocation.modData["AlternativeTextureSeason"]}", String.Empty);
+                    }
 
-                        var modelName = decoratableLocation.modData[$"AlternativeTexture.Wallpaper.Name_{i}"].Replace($"{decoratableLocation.modData[$"AlternativeTexture.Wallpaper.Owner_{i}"]}.", String.Empty);
-                        if (decoratableLocation.modData.ContainsKey($"AlternativeTexture.Wallpaper.Season_{i}") && !String.IsNullOrEmpty(decoratableLocation.modData[$"AlternativeTexture.Wallpaper.Season_{i}"]))
-                        {
-                            modelName = modelName.Replace($"_{decoratableLocation.modData[$"AlternativeTexture.Wallpaper.Season_{i}"]}", String.Empty);
-                        }
-
-                        if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
-                        {
-                            Game1.addHUDMessage(new HUDMessage($"{modelName} has no alternative textures for this season!", 3));
-                            return CancelUsing(who);
-                        }
-
-                        // Display texture menu
-                        var locationObj = new Object(100, 1, isRecipe: false, -1)
-                        {
-                            TileLocation = Utility.PointToVector2(tile),
-                            modData = decoratableLocation.modData
-                        };
-                        Game1.activeClickableMenu = new PaintBucketMenu(locationObj, locationObj.TileLocation, GetTextureType(decoratableLocation), modelName);
-
+                    if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
+                    {
+                        Game1.addHUDMessage(new HUDMessage($"{modelName} has no alternative textures for this season!", 3));
                         return CancelUsing(who);
                     }
+
+                    // Display texture menu
+                    var locationObj = new Object(100, 1, isRecipe: false, -1)
+                    {
+                        TileLocation = Utility.PointToVector2(tile),
+                        modData = decoratableLocation.modData
+                    };
+                    Game1.activeClickableMenu = new PaintBucketMenu(locationObj, locationObj.TileLocation, GetTextureType(decoratableLocation), modelName);
+
+                    return CancelUsing(who);
                 }
 
-                List<Rectangle> floors = decoratableLocation.getFloors();
-                for (int j = 0; j < floors.Count; j++)
+                var floorId = decoratableLocation.getFloorAt(tile);
+                if (floorId != -1)
                 {
-                    if (floors[j].Contains(tile))
+                    if (!decoratableLocation.modData.ContainsKey("AlternativeTextureName") || !decoratableLocation.modData["AlternativeTextureName"].Contains("Floor"))
                     {
-                        if (!decoratableLocation.modData.ContainsKey($"AlternativeTexture.Floor.Name_{j}"))
-                        {
-                            var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Decoration}_Floor_{Game1.GetSeasonForLocation(decoratableLocation)}";
-                            AssignDefaultModData(decoratableLocation, instanceSeasonName, true, isWallpaper: false);
-                        }
+                        var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Decoration}_Floor_{Game1.GetSeasonForLocation(decoratableLocation)}";
+                        AssignDefaultModData(decoratableLocation, instanceSeasonName, true);
+                    }
 
-                        var modelName = decoratableLocation.modData[$"AlternativeTexture.Floor.Name_{j}"].Replace($"{decoratableLocation.modData[$"AlternativeTexture.Floor.Owner_{j}"]}.", String.Empty);
-                        if (decoratableLocation.modData.ContainsKey($"AlternativeTexture.Floor.Season_{j}") && !String.IsNullOrEmpty(decoratableLocation.modData[$"AlternativeTexture.Floor.Season_{j}"]))
-                        {
-                            modelName = modelName.Replace($"_{decoratableLocation.modData[$"AlternativeTexture.Floor.Season_{j}"]}", String.Empty);
-                        }
+                    var modelName = decoratableLocation.modData["AlternativeTextureName"].Replace($"{decoratableLocation.modData["AlternativeTextureOwner"]}.", String.Empty);
+                    if (decoratableLocation.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(decoratableLocation.modData["AlternativeTextureSeason"]))
+                    {
+                        modelName = modelName.Replace($"_{decoratableLocation.modData["AlternativeTextureSeason"]}", String.Empty);
+                    }
 
-                        if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
-                        {
-                            Game1.addHUDMessage(new HUDMessage($"{modelName} has no alternative textures for this season!", 3));
-                            return CancelUsing(who);
-                        }
-
-                        // Display texture menu
-                        var locationObj = new Object(100, 1, isRecipe: false, -1)
-                        {
-                            TileLocation = Utility.PointToVector2(tile),
-                            modData = decoratableLocation.modData
-                        };
-                        Game1.activeClickableMenu = new PaintBucketMenu(locationObj, locationObj.TileLocation, GetTextureType(decoratableLocation), modelName);
-
+                    if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
+                    {
+                        Game1.addHUDMessage(new HUDMessage($"{modelName} has no alternative textures for this season!", 3));
                         return CancelUsing(who);
                     }
+
+                    // Display texture menu
+                    var locationObj = new Object(100, 1, isRecipe: false, -1)
+                    {
+                        TileLocation = Utility.PointToVector2(tile),
+                        modData = decoratableLocation.modData
+                    };
+                    Game1.activeClickableMenu = new PaintBucketMenu(locationObj, locationObj.TileLocation, GetTextureType(decoratableLocation), modelName);
+
+                    return CancelUsing(who);
                 }
             }
 
