@@ -441,6 +441,11 @@ namespace AlternativeTextures
                                     Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: No associated texture.png or split textures (texture_1.png, texture_2.png, etc.) given", LogLevel.Warn);
                                     continue;
                                 }
+                                else if (textureModel.IsDecoration())
+                                {
+                                    Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: Split textures (texture_1.png, texture_2.png, etc.) are not allowed for Decoration types (wallpapers / floors)!", LogLevel.Warn);
+                                    continue;
+                                }
 
                                 // Load in the first texture_#.png to get its dimensions for creating stitchedTexture
                                 int maxVariationsPerTexture = AlternativeTextureModel.MAX_TEXTURE_HEIGHT / textureModel.TextureHeight;
@@ -486,6 +491,11 @@ namespace AlternativeTextures
                                 if (singularTexture.Height >= AlternativeTextureModel.MAX_TEXTURE_HEIGHT)
                                 {
                                     Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: The texture {textureModel.TextureId} has a height larger than 16384!\nPlease split it into individual textures (e.g. texture_0.png, texture_1.png, etc.) to resolve this issue.", LogLevel.Warn);
+                                    continue;
+                                }
+                                else if (textureModel.IsDecoration() && singularTexture.Width < 256)
+                                {
+                                    Monitor.Log($"Unable to add alternative texture for {textureModel.ItemName} from {contentPack.Manifest.Name}: The required image width is 256 for Decoration types (wallpapers / floors). Please correct the image's width manually.", LogLevel.Warn);
                                     continue;
                                 }
                                 else
