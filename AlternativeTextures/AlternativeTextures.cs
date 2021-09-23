@@ -1,4 +1,5 @@
-﻿using AlternativeTextures.Framework.External.ContentPatcher;
+﻿using AlternativeTextures.Framework.External.GenericModConfigMenu;
+using AlternativeTextures.Framework.External.ContentPatcher;
 using AlternativeTextures.Framework.Interfaces.API;
 using AlternativeTextures.Framework.Managers;
 using AlternativeTextures.Framework.Models;
@@ -31,6 +32,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using xTile.Tiles;
+using Microsoft.Xna.Framework.Input;
 
 namespace AlternativeTextures
 {
@@ -52,9 +54,11 @@ namespace AlternativeTextures
         internal const string PAINT_BRUSH_SCALE = "AlternativeTextures.PaintBrushScale";
         internal const string SCISSORS_FLAG = "AlternativeTextures.ScissorsFlag";
 
+        // Shared static helpers
         internal static IMonitor monitor;
         internal static IModHelper modHelper;
         internal static Multiplayer multiplayer;
+        internal static ModConfig modConfig;
 
         // Managers
         internal static TextureManager textureManager;
@@ -311,12 +315,129 @@ namespace AlternativeTextures
 
             if (Helper.ModRegistry.IsLoaded("Pathoschild.ContentPatcher") && apiManager.HookIntoContentPatcher(Helper))
             {
-                apiManager.GetContentPatcherInterface().RegisterToken(ModManifest, "Textures", new TextureToken(textureManager, assetManager));
-                apiManager.GetContentPatcherInterface().RegisterToken(ModManifest, "Tools", new ToolToken(textureManager, assetManager));
+                apiManager.GetContentPatcherApi().RegisterToken(ModManifest, "Textures", new TextureToken(textureManager, assetManager));
+                apiManager.GetContentPatcherApi().RegisterToken(ModManifest, "Tools", new ToolToken(textureManager, assetManager));
             }
 
             // Load any owned content packs
             this.LoadContentPacks();
+
+            // Set our default configuration file
+            modConfig = Helper.ReadConfig<ModConfig>();
+
+            // Hook into GMCM, if applicable
+            if (Helper.ModRegistry.IsLoaded("spacechase0.GenericModConfigMenu") && apiManager.HookIntoGenericModConfigMenu(Helper))
+            {
+                var configApi = apiManager.GetGenericModConfigMenuApi();
+                configApi.RegisterModConfig(ModManifest, () => modConfig = new ModConfig(), () => Helper.WriteConfig(modConfig));
+
+                var contentPacks = Helper.ContentPacks.GetOwned();
+                // Create the page labels for each content pack's page
+                configApi.RegisterLabel(ModManifest, $"Content Packs", String.Empty);
+                foreach (var contentPack in contentPacks)
+                {
+                    configApi.RegisterPageLabel(ModManifest, String.Concat("> ", CleanContentPackNameForConfig(contentPack.Manifest.Name)), contentPack.Manifest.Description, contentPack.Manifest.UniqueID);
+                }
+
+                // Add the content pack owner pages
+                foreach (var contentPack in contentPacks)
+                {
+                    configApi.StartNewPage(ModManifest, contentPack.Manifest.UniqueID);
+                    configApi.OverridePageDisplayName(ModManifest, contentPack.Manifest.UniqueID, CleanContentPackNameForConfig(contentPack.Manifest.Name));
+
+                    // Create a page label for each TextureType under this content pack
+                    configApi.RegisterLabel(ModManifest, $"Catagories", String.Empty);
+                    foreach (var textureType in textureManager.GetAllTextures().Where(t => t.Owner == contentPack.Manifest.UniqueID).Select(t => t.GetTextureType()).Distinct().OrderBy(t => t))
+                    {
+                        configApi.RegisterPageLabel(ModManifest, String.Concat("> ", textureType), String.Empty, String.Concat(contentPack.Manifest.UniqueID, ".", textureType));
+                    }
+
+                    // Create a page label for each model under this content pack
+                    foreach (var model in textureManager.GetAllTextures().Where(t => t.Owner == contentPack.Manifest.UniqueID).OrderBy(t => t.GetTextureType()).ThenBy(t => t.ItemName))
+                    {
+                        configApi.StartNewPage(ModManifest, String.Concat(model.Owner, ".", model.GetTextureType()));
+
+                        // Create page label for each model
+                        var description = $"Type: {model.GetTextureType()}\nSeason(s): {(String.IsNullOrEmpty(model.Season) ? "All" : model.Season)}\nVariations: {model.GetVariations()}";
+                        configApi.RegisterPageLabel(ModManifest, String.Concat("> ", model.ItemName), description, model.GetId());
+                    }
+
+                    // Add the AlternativeTextureModel pages
+                    foreach (var model in textureManager.GetAllTextures().Where(t => t.Owner == contentPack.Manifest.UniqueID))
+                    {
+                        configApi.StartNewPage(ModManifest, model.GetId());
+
+                        for (int variation = 0; variation < model.GetVariations(); variation++)
+                        {
+                            // Add general description label
+                            var description = $"Type: {model.GetTextureType()}\nSeason(s): {(String.IsNullOrEmpty(model.Season) ? "All" : model.Season)}";
+                            configApi.RegisterLabel(ModManifest, $"Variation: {variation}", description);
+
+                            // Add the reference image for the alternative texture
+                            var sourceRect = new Rectangle(0, variation * model.TextureHeight, model.TextureWidth, model.TextureHeight);
+                            switch (model.GetTextureType())
+                            {
+                                case "Decoration":
+                                    var isFloor = model.ItemName.Equals("Floor", StringComparison.OrdinalIgnoreCase);
+                                    var decorationOffset = isFloor ? 8 : 16;
+                                    sourceRect = new Rectangle((variation % decorationOffset) * model.TextureWidth, (variation / decorationOffset) * model.TextureHeight, model.TextureWidth, model.TextureHeight);
+                                    break;
+                            }
+
+                            var scale = 4;
+                            if (model.TextureHeight >= 64)
+                            {
+                                scale = 2;
+                            }
+                            if (model.TextureHeight >= 128)
+                            {
+                                scale = 1;
+                            }
+                            configApi.RegisterImage(ModManifest, $"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{model.GetTokenId()}", sourceRect, scale);
+
+                            // Add our custom widget, which passes over the required data needed to flag the TextureId with the appropriate Variation 
+                            var textureWidget = new TextureWidget() { TextureId = model.GetId(), Variation = variation, Enabled = !modConfig.IsTextureVariationDisabled(model.GetId(), variation) };
+                            Func<Vector2, object, object> widgetUpdate = (Vector2 pos, object state) =>
+                            {
+                                var widget = state as TextureWidget;
+                                if (widget is null)
+                                {
+                                    widget = textureWidget;
+                                }
+
+                                var bounds = new Rectangle((int)pos.X, (int)pos.Y, OptionsCheckbox.sourceRectChecked.Width * 4, OptionsCheckbox.sourceRectChecked.Width * 4);
+                                bool isHovering = bounds.Contains(Game1.getOldMouseX(), Game1.getOldMouseY());
+                                if (isHovering && Game1.oldMouseState.LeftButton == ButtonState.Released && Game1.input.GetMouseState().LeftButton == ButtonState.Pressed)
+                                {
+                                    widget.Enabled = !widget.Enabled;
+                                }
+
+                                return widget;
+                            };
+                            Func<SpriteBatch, Vector2, object, object> widgetDraw = (SpriteBatch b, Vector2 pos, object state) =>
+                            {
+                                var widget = state as TextureWidget;
+                                b.Draw(Game1.mouseCursors, pos, widget.Enabled ? OptionsCheckbox.sourceRectChecked : OptionsCheckbox.sourceRectUnchecked, Color.White, 0, Vector2.Zero, 4, SpriteEffects.None, 0);
+
+                                return widget;
+                            };
+                            Action<object> widgetSave = (object state) =>
+                            {
+                                if (state is null || !(state is TextureWidget widget))
+                                {
+                                    return;
+                                }
+
+                                modConfig.SetTextureStatus(widget.TextureId, widget.Variation, widget.Enabled);
+                            };
+                            configApi.RegisterLabel(ModManifest, String.Empty, String.Empty);
+                            configApi.RegisterComplexOption(ModManifest, $"Enabled", $"If checked, this alternative texture will be available.", widgetUpdate, widgetDraw, widgetSave);
+
+                            configApi.RegisterLabel(ModManifest, String.Empty, String.Empty);
+                        }
+                    }
+                }
+            }
         }
 
         private void OnDayStarted(object sender, DayStartedEventArgs e)
@@ -347,6 +468,12 @@ namespace AlternativeTextures
 
         private void UpdateTextures()
         {
+            foreach (var texture in textureManager.GetAllTextures().Where(t => t.EnableContentPatcherCheck))
+            {
+                var loadedTexture = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{texture.GetTokenId()}", ContentSource.GameContent);
+                textureManager.UpdateTexture(texture.GetId(), loadedTexture);
+            }
+
             foreach (var texture in textureManager.GetAllTextures().Where(t => t.EnableContentPatcherCheck))
             {
                 var loadedTexture = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{texture.GetTokenId()}", ContentSource.GameContent);
@@ -650,6 +777,11 @@ namespace AlternativeTextures
         private void DebugShowPaintShop(string command, string[] args)
         {
             Game1.activeClickableMenu = new ShopMenu(Utility.getCarpenterStock(), 0, "Robin");
+        }
+
+        private string CleanContentPackNameForConfig(string contentPackName)
+        {
+            return contentPackName.Replace("[", String.Empty).Replace("]", String.Empty);
         }
 
         private void ConvertPaintBucketsToGenericTools(Farmer who)
