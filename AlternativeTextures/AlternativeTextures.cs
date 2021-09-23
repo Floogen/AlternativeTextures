@@ -76,13 +76,14 @@ namespace AlternativeTextures
             // Setup our managers
             textureManager = new TextureManager(monitor);
             apiManager = new ApiManager(monitor);
-            assetManager = new AssetManager(helper);
+            assetManager = new AssetManager(helper, textureManager);
 
             // Setup our utilities
             fpsCounter = new FpsCounter();
 
             // Load the asset manager
             helper.Content.AssetLoaders.Add(assetManager);
+            helper.Content.AssetEditors.Add(assetManager);
 
             // Load our Harmony patches
             try
