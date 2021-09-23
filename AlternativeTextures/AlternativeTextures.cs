@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using xTile.Tiles;
 
 namespace AlternativeTextures
 {
@@ -112,7 +113,6 @@ namespace AlternativeTextures
                 new CrabPotPatch(monitor, helper).Apply(harmony);
                 new IndoorPotPatch(monitor, helper).Apply(harmony);
                 new PhonePatch(monitor, helper).Apply(harmony);
-                new WallpaperPatch(monitor, helper).Apply(harmony);
                 /*
                  * Not supported:
                  * - Wood Chipper
