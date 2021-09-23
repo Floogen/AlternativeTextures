@@ -84,6 +84,11 @@ namespace AlternativeTextures.Framework.UI
                         objectWithVariation.modData["AlternativeTextureVariation"] = manualVariations[v].Id.ToString();
                         objectWithVariation.modData["AlternativeTextureSeason"] = availableModels[m].Season;
 
+                        if (AlternativeTextures.modConfig.IsTextureVariationDisabled(objectWithVariation.modData["AlternativeTextureName"], manualVariations[v].Id))
+                        {
+                            continue;
+                        }
+
                         if (target is Furniture furniture)
                         {
                             (objectWithVariation as Furniture).currentRotation.Value = furniture.currentRotation;
@@ -103,6 +108,11 @@ namespace AlternativeTextures.Framework.UI
                         objectWithVariation.modData["AlternativeTextureName"] = availableModels[m].GetId();
                         objectWithVariation.modData["AlternativeTextureVariation"] = v.ToString();
                         objectWithVariation.modData["AlternativeTextureSeason"] = availableModels[m].Season;
+
+                        if (AlternativeTextures.modConfig.IsTextureVariationDisabled(objectWithVariation.modData["AlternativeTextureName"], v))
+                        {
+                            continue;
+                        }
 
                         if (target is Furniture furniture)
                         {
