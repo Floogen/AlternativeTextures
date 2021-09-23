@@ -14,6 +14,7 @@ namespace AlternativeTextures.Framework.Managers
         private IJsonAssetsApi _jsonAssetsApi;
         private IDynamicGameAssetsApi _dynamicGameAssetsApi;
         private IContentPatcherApi _contentPatcherApi;
+        private IGenericModConfigMenuApi _genericModConfigMenuApi;
 
         public ApiManager(IMonitor monitor)
         {
@@ -62,6 +63,20 @@ namespace AlternativeTextures.Framework.Managers
             return true;
         }
 
+        internal bool HookIntoGenericModConfigMenu(IModHelper helper)
+        {
+            _genericModConfigMenuApi = helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+
+            if (_genericModConfigMenuApi is null)
+            {
+                _monitor.Log("Failed to hook into spacechase0.GenericModConfigMenu.", LogLevel.Error);
+                return false;
+            }
+
+            _monitor.Log("Successfully hooked into spacechase0.GenericModConfigMenu.", LogLevel.Debug);
+            return true;
+        }
+
         internal IJsonAssetsApi GetJsonAssetsApi()
         {
             return _jsonAssetsApi;
@@ -71,9 +86,14 @@ namespace AlternativeTextures.Framework.Managers
             return _dynamicGameAssetsApi;
         }
 
-        public IContentPatcherApi GetContentPatcherInterface()
+        public IContentPatcherApi GetContentPatcherApi()
         {
             return _contentPatcherApi;
+        }
+
+        public IGenericModConfigMenuApi GetGenericModConfigMenuApi()
+        {
+            return _genericModConfigMenuApi;
         }
     }
 }
