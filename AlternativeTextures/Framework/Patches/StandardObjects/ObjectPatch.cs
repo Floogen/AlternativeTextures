@@ -68,7 +68,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 }
 
                 var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
-                if (textureVariation == -1)
+                if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
                 {
                     return true;
                 }
@@ -87,7 +87,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                     if (!__instance.modData.ContainsKey("AlternativeTextureCurrentFrame") || !__instance.modData.ContainsKey("AlternativeTextureFrameDuration") || !__instance.modData.ContainsKey("AlternativeTextureElapsedDuration"))
                     {
                         __instance.modData["AlternativeTextureCurrentFrame"] = "0";
-                        __instance.modData["AlternativeTextureFrameDuration"] = textureModel.GetAnimationDataAtIndex(textureVariation, 0).Duration.ToString();// Animation.ElementAt(0).Duration.ToString();
+                        __instance.modData["AlternativeTextureFrameDuration"] = textureModel.GetAnimationDataAtIndex(textureVariation, 0).Duration.ToString();
                         __instance.modData["AlternativeTextureElapsedDuration"] = "0";
                     }
 
@@ -195,7 +195,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 }
 
                 var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
-                if (textureVariation == -1)
+                if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
                 {
                     return;
                 }
