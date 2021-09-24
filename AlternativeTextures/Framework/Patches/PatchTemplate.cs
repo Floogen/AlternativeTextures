@@ -415,7 +415,7 @@ namespace AlternativeTextures.Framework.Patches
             return false;
         }
 
-        internal static bool AssignModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false, bool isWallpaper = false)
+        internal static bool AssignModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false)
         {
             if (HasCachedTextureName(type))
             {
