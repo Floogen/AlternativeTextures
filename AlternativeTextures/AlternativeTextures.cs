@@ -313,6 +313,11 @@ namespace AlternativeTextures
                 apiManager.HookIntoJsonAssets(Helper);
             }
 
+            if (Helper.ModRegistry.IsLoaded("spacechase0.DynamicGameAssets"))
+            {
+                apiManager.HookIntoDynamicGameAssets(Helper);
+            }
+
             if (Helper.ModRegistry.IsLoaded("Pathoschild.ContentPatcher") && apiManager.HookIntoContentPatcher(Helper))
             {
                 apiManager.GetContentPatcherApi().RegisterToken(ModManifest, "Textures", new TextureToken(textureManager, assetManager));
