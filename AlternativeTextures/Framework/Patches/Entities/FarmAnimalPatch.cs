@@ -46,7 +46,7 @@ namespace AlternativeTextures.Framework.Patches.Entities
                 }
 
                 var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
-                if (textureVariation == -1)
+                if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
                 {
                     __instance.Sprite.loadedTexture = String.Empty;
                     return true;
