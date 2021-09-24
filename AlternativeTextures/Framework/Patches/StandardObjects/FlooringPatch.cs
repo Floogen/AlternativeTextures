@@ -117,7 +117,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
         private static bool DrawInMenuPrefix(Flooring __instance, SpriteBatch spriteBatch, Vector2 positionOnScreen, Vector2 tileLocation, float scale, float layerDepth)
         {
-            if (__instance.modData.ContainsKey("AlternativeTextureName"))
+            if (__instance.modData.ContainsKey("AlternativeTextureName") && !PatchTemplate.IsDGAObject(__instance))
             {
                 var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
                 if (textureModel is null)

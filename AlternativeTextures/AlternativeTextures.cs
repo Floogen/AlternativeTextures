@@ -117,6 +117,7 @@ namespace AlternativeTextures
                 new CrabPotPatch(monitor, helper).Apply(harmony);
                 new IndoorPotPatch(monitor, helper).Apply(harmony);
                 new PhonePatch(monitor, helper).Apply(harmony);
+                new TorchPatch(monitor, helper).Apply(harmony);
                 /*
                  * Not supported:
                  * - Wood Chipper
@@ -310,6 +311,11 @@ namespace AlternativeTextures
             if (Helper.ModRegistry.IsLoaded("spacechase0.JsonAssets"))
             {
                 apiManager.HookIntoJsonAssets(Helper);
+            }
+
+            if (Helper.ModRegistry.IsLoaded("spacechase0.DynamicGameAssets"))
+            {
+                apiManager.HookIntoDynamicGameAssets(Helper);
             }
 
             if (Helper.ModRegistry.IsLoaded("Pathoschild.ContentPatcher") && apiManager.HookIntoContentPatcher(Helper))

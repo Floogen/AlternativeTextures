@@ -57,7 +57,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             }
         }
 
-        private static bool DrawPrefix(Object __instance, SpriteBatch spriteBatch, int x, int y, float alpha = 1f)
+        internal static bool DrawPrefix(Object __instance, SpriteBatch spriteBatch, int x, int y, float alpha = 1f)
         {
             if (__instance.modData.ContainsKey("AlternativeTextureName"))
             {
@@ -112,39 +112,71 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 }
                 xTileOffset *= textureModel.TextureWidth;
 
-                // Get required draw values
-                Vector2 scaleFactor = __instance.getScale() * 4f;
-                Vector2 position = Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64, y * 64 - 64));
-                Rectangle destination = new Rectangle((int)(position.X - scaleFactor.X / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(position.Y - scaleFactor.Y / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(64f + scaleFactor.X), (int)(128f + scaleFactor.Y / 2f));
-                float draw_layer = Math.Max(0f, (float)((y + 1) * 64 - 24) / 10000f) + (float)x * 1E-05f;
+                if (__instance.bigCraftable)
+                {
+                    // Get required draw values
+                    Vector2 scaleFactor = __instance.getScale() * 4f;
+                    Vector2 position = Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64, y * 64 - 64));
+                    Rectangle destination = new Rectangle((int)(position.X - scaleFactor.X / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(position.Y - scaleFactor.Y / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(64f + scaleFactor.X), (int)(128f + scaleFactor.Y / 2f));
+                    float draw_layer = Math.Max(0f, (float)((y + 1) * 64 - 24) / 10000f) + (float)x * 1E-05f;
 
-                // Handle outliers for draw
-                if (__instance.ParentSheetIndex == 105 || __instance.ParentSheetIndex == 264)
-                {
-                    draw_layer = Math.Max(0f, (float)((y + 1) * 64 + 2) / 10000f) + (float)x / 1000000f;
-                }
-                if (__instance.ParentSheetIndex == 272)
-                {
-                    spriteBatch.Draw(textureModel.GetTexture(textureVariation), destination, new Rectangle(16, textureOffset, 16, 32), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
-                    spriteBatch.Draw(textureModel.GetTexture(textureVariation), position + new Vector2(8.5f, 12f) * 4f, new Rectangle(32, textureOffset, 16, 32), Color.White * alpha, (float)Game1.currentGameTime.TotalGameTime.TotalSeconds * -1.5f, new Vector2(7.5f, 15.5f), 4f, SpriteEffects.None, draw_layer + 1E-05f);
-                    return false;
-                }
+                    // Handle outliers for draw
+                    if (__instance.ParentSheetIndex == 105 || __instance.ParentSheetIndex == 264)
+                    {
+                        draw_layer = Math.Max(0f, (float)((y + 1) * 64 + 2) / 10000f) + (float)x / 1000000f;
+                    }
+                    if (__instance.ParentSheetIndex == 272)
+                    {
+                        spriteBatch.Draw(textureModel.GetTexture(textureVariation), destination, new Rectangle(16, textureOffset, 16, 32), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
+                        spriteBatch.Draw(textureModel.GetTexture(textureVariation), position + new Vector2(8.5f, 12f) * 4f, new Rectangle(32, textureOffset, 16, 32), Color.White * alpha, (float)Game1.currentGameTime.TotalGameTime.TotalSeconds * -1.5f, new Vector2(7.5f, 15.5f), 4f, SpriteEffects.None, draw_layer + 1E-05f);
+                        return false;
+                    }
 
-                // Perform base game draw logic
-                spriteBatch.Draw(textureModel.GetTexture(textureVariation), destination, new Rectangle(xTileOffset, textureOffset, textureModel.TextureWidth, textureModel.TextureHeight), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
+                    // Perform base game draw logic
+                    spriteBatch.Draw(textureModel.GetTexture(textureVariation), destination, new Rectangle(xTileOffset, textureOffset, textureModel.TextureWidth, textureModel.TextureHeight), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
 
-                // Replicate the extra draw logic from the base game
-                if (__instance.Name.Equals("Loom") && (int)__instance.minutesUntilReady > 0)
-                {
-                    spriteBatch.Draw(textureModel.GetTexture(textureVariation), __instance.getLocalPosition(Game1.viewport) + new Vector2(32f, 0f), new Rectangle(32, textureOffset, 16, 16), Color.White * alpha, __instance.scale.X, new Vector2(8f, 8f), 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64) / 10000f + 0.0001f + (float)x * 1E-05f));
+                    // Replicate the extra draw logic from the base game
+                    if (__instance.Name.Equals("Loom") && (int)__instance.minutesUntilReady > 0)
+                    {
+                        spriteBatch.Draw(textureModel.GetTexture(textureVariation), __instance.getLocalPosition(Game1.viewport) + new Vector2(32f, 0f), new Rectangle(32, textureOffset, 16, 16), Color.White * alpha, __instance.scale.X, new Vector2(8f, 8f), 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64) / 10000f + 0.0001f + (float)x * 1E-05f));
+                    }
+                    if ((bool)__instance.isLamp && Game1.isDarkOut())
+                    {
+                        spriteBatch.Draw(Game1.mouseCursors, position + new Vector2(-32f, -32f), new Rectangle(88, 1779, 32, 32), Color.White * 0.75f, 0f, Vector2.Zero, 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64 - 20) / 10000f) + (float)x / 1000000f);
+                    }
+                    if ((int)__instance.parentSheetIndex == 126 && (int)__instance.quality != 0)
+                    {
+                        spriteBatch.Draw(FarmerRenderer.hatsTexture, position + new Vector2(-3f, -6f) * 4f, new Rectangle(((int)__instance.quality - 1) * 20 % FarmerRenderer.hatsTexture.Width, ((int)__instance.quality - 1) * 20 / FarmerRenderer.hatsTexture.Width * 20 * 4, 20, 20), Color.White * alpha, 0f, Vector2.Zero, 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64 - 20) / 10000f) + (float)x * 1E-05f);
+                    }
                 }
-                if ((bool)__instance.isLamp && Game1.isDarkOut())
+                else if (!Game1.eventUp || (Game1.CurrentEvent != null && !Game1.CurrentEvent.isTileWalkedOn(x, y)))
                 {
-                    spriteBatch.Draw(Game1.mouseCursors, position + new Vector2(-32f, -32f), new Rectangle(88, 1779, 32, 32), Color.White * 0.75f, 0f, Vector2.Zero, 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64 - 20) / 10000f) + (float)x / 1000000f);
-                }
-                if ((int)__instance.parentSheetIndex == 126 && (int)__instance.quality != 0)
-                {
-                    spriteBatch.Draw(FarmerRenderer.hatsTexture, position + new Vector2(-3f, -6f) * 4f, new Rectangle(((int)__instance.quality - 1) * 20 % FarmerRenderer.hatsTexture.Width, ((int)__instance.quality - 1) * 20 / FarmerRenderer.hatsTexture.Width * 20 * 4, 20, 20), Color.White * alpha, 0f, Vector2.Zero, 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64 - 20) / 10000f) + (float)x * 1E-05f);
+                    if ((int)__instance.parentSheetIndex == 590)
+                    {
+                        Texture2D mouseCursors = Game1.mouseCursors;
+                        Vector2 position2 = Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64 + 32 + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), y * 64 + 32 + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0)));
+                        Rectangle? sourceRectangle = new Rectangle(368 + ((Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 1200.0 <= 400.0) ? ((int)(Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 400.0 / 100.0) * 16) : 0), 32, 16, 16);
+                        Color color = Color.White * alpha;
+                        Vector2 origin = new Vector2(8f, 8f);
+
+                        spriteBatch.Draw(mouseCursors, position2, sourceRectangle, color, 0f, origin, (__instance.scale.Y > 1f) ? __instance.getScale().Y : 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (float)(__instance.isPassable() ? __instance.getBoundingBox(new Vector2(x, y)).Top : __instance.getBoundingBox(new Vector2(x, y)).Bottom) / 10000f);
+                        return false;
+                    }
+                    if ((int)__instance.fragility != 2)
+                    {
+                        spriteBatch.Draw(Game1.shadowTexture, Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64 + 32, y * 64 + 51 + 4)), Game1.shadowTexture.Bounds, Color.White * alpha, 0f, new Vector2(Game1.shadowTexture.Bounds.Center.X, Game1.shadowTexture.Bounds.Center.Y), 4f, SpriteEffects.None, (float)__instance.getBoundingBox(new Vector2(x, y)).Bottom / 15000f);
+                    }
+
+                    Vector2 position3 = Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64 + 32 + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), y * 64 + 32 + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0)));
+                    Color color2 = Color.White * alpha;
+                    Vector2 origin2 = new Vector2(8f, 8f);
+
+                    spriteBatch.Draw(textureModel.GetTexture(textureVariation), position3, new Rectangle(xTileOffset, textureOffset, textureModel.TextureWidth, textureModel.TextureHeight), color2, 0f, origin2, (__instance.scale.Y > 1f) ? __instance.getScale().Y : 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (float)(__instance.isPassable() ? __instance.getBoundingBox(new Vector2(x, y)).Top : __instance.getBoundingBox(new Vector2(x, y)).Bottom) / 10000f);
+                    if (__instance.heldObject.Value != null && __instance.IsSprinkler())
+                    {
+                        // Unhandled sprinkler attachments
+                        return false;
+                    }
                 }
 
                 // Check if product is ready to display (if applicable)

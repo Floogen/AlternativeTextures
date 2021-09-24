@@ -1,4 +1,5 @@
-﻿using AlternativeTextures.Framework.Models;
+﻿using AlternativeTextures.Framework.Interfaces;
+using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.Patches.Entities;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
@@ -56,6 +57,16 @@ namespace AlternativeTextures.Framework.Patches
 
         internal static string GetObjectName(Object obj)
         {
+            // Perform separate check for DGA objects, before using check for vanilla objects
+            if (IsDGAUsed() && AlternativeTextures.apiManager.GetDynamicGameAssetsApi() is IDynamicGameAssetsApi api && api != null)
+            {
+                var dgaId = api.GetDGAItemId(obj);
+                if (dgaId != null)
+                {
+                    return dgaId;
+                }
+            }
+
             if (obj.bigCraftable)
             {
                 if (!Game1.bigCraftablesInformation.ContainsKey(obj.parentSheetIndex))
@@ -358,6 +369,20 @@ namespace AlternativeTextures.Framework.Patches
         internal static bool IsDGAUsed()
         {
             return _helper.ModRegistry.IsLoaded("spacechase0.DynamicGameAssets");
+        }
+
+        internal static bool IsDGAObject(object obj)
+        {
+            if (IsDGAUsed() && AlternativeTextures.apiManager.GetDynamicGameAssetsApi() is IDynamicGameAssetsApi api && api != null)
+            {
+                var dgaId = api.GetDGAItemId(obj);
+                if (dgaId != null)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         internal static bool AssignDefaultModData<T>(T type, string modelName, bool trackSeason = false, bool trackSheetId = false)

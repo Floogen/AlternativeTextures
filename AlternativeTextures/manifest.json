@@ -17,6 +17,10 @@
       "IsRequired": false
     },
     {
+      "UniqueID": "spacechase0.GenericModConfigMenu",
+      "IsRequired": false
+    },
+    {
       "UniqueID": "Pathoschild.ContentPatcher",
       "IsRequired": false
     }

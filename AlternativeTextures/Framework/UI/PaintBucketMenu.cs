@@ -504,7 +504,11 @@ namespace AlternativeTextures.Framework.UI
                         this.availableTextures[i].item = target;
                         if (variation == -1 || target.modData["AlternativeTextureOwner"] == AlternativeTextures.DEFAULT_OWNER)
                         {
-                            if (_textureTarget is Fence)
+                            if (PatchTemplate.IsDGAUsed() && PatchTemplate.IsDGAObject(PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_position.X, (int)_position.Y)))
+                            {
+                                this.availableTextures[i].item.drawInMenu(b, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y + 32f), 2, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
+                            }
+                            else if (_textureTarget is Fence)
                             {
                                 this.availableTextures[i].texture = (_textureTarget as Fence).loadFenceTexture();
                                 this.availableTextures[i].sourceRect = this.GetFenceSourceRect(_textureTarget as Fence, this.availableTextures[i].sourceRect.Height, -1);
