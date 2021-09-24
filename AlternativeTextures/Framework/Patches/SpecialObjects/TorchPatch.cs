@@ -56,10 +56,17 @@ namespace AlternativeTextures.Framework.Patches.SpecialObjects
 
                 if (!__instance.bigCraftable)
                 {
-                    ObjectPatch.DrawPrefix(__instance, spriteBatch, x, y, alpha);
+                    Rectangle sourceRect = new Rectangle(0, textureOffset, textureModel.TextureWidth, textureModel.TextureHeight);
+                    sourceRect.Y += 8;
+                    sourceRect.Height /= 2;
+                    Vector2 position2 = Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64, y * 64 + 32));
+                    Rectangle? sourceRectangle = sourceRect;
+                    Color white = Color.White;
+                    Vector2 zero = Vector2.Zero;
+
+                    spriteBatch.Draw(textureModel.GetTexture(textureVariation), position2, sourceRectangle, white, 0f, zero, (__instance.scale.Y > 1f) ? __instance.getScale().Y : 4f, SpriteEffects.None, (float)__instance.getBoundingBox(new Vector2(x, y)).Bottom / 10000f);
                     spriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64, y * 64 + 32)), new Rectangle(88, 1779, 30, 30), Color.PaleGoldenrod * (Game1.currentLocation.IsOutdoors ? 0.35f : 0.43f), 0f, new Vector2(15f, 15f), 4f + (float)(64.0 * Math.Sin((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + (double)(x * 64 * 777) + (double)(y * 64 * 9746)) % 3140.0 / 1000.0) / 50.0), SpriteEffects.None, 1f);
 
-                    Rectangle sourceRect = new Rectangle();
                     sourceRect.X = 276 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + (double)(x * 3204) + (double)(y * 49)) % 700.0 / 100.0) * 8;
                     sourceRect.Y = 1965;
                     sourceRect.Width = 8;
