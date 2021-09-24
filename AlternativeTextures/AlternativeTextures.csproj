@@ -75,6 +75,7 @@
     <Compile Include="Framework\Patches\Entities\ChildPatch.cs" />
     <Compile Include="Framework\Patches\Entities\CharacterPatch.cs" />
     <Compile Include="Framework\Patches\GameLocations\DecoratableLocationPatch.cs" />
+    <Compile Include="Framework\Patches\SpecialObjects\TorchPatch.cs" />
     <Compile Include="Framework\Patches\SpecialObjects\WallpaperPatch.cs" />
     <Compile Include="Framework\Patches\StandardObjects\FishTankFurniturePatch.cs" />
     <Compile Include="Framework\Patches\StandardObjects\BedFurniturePatch.cs" />
