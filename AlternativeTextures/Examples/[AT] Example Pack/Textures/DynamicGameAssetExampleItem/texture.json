@@ -1,5 +1,5 @@
 {
-  "ItemName": "TestDGAItem",
+  "ItemName": "ExampleAuthor.ExampleDynamicGameAssetItem/TestDGAItem",
   "Type": "Craftable",
   "TextureWidth": 16,
   "TextureHeight": 32,

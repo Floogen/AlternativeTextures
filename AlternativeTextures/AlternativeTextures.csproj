@@ -108,6 +108,7 @@
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\BigBarn\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\Barn\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Craftables\AnimatedRecyclingMachine\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\DynamicGameAssetExampleItem\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\GreenSlime\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\RoyalSerpent\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\Serpent\texture.json" />
@@ -206,6 +207,9 @@
     <None Include="Examples\[AT] Snowcrows\Textures\Scarecrow\texture.json" />
     <None Include="Examples\[CP] Content Patcher Example\content.json" />
     <None Include="Examples\[CP] Content Patcher Example\manifest.json" />
+    <None Include="Examples\[DGA] Dynamic Game Asset Example\content.json" />
+    <None Include="Examples\[DGA] Dynamic Game Asset Example\i18n\default.json" />
+    <None Include="Examples\[DGA] Dynamic Game Asset Example\manifest.json" />
     <None Include="Examples\[JA] Json Asset Example\BigCraftables\Example Item\big-craftable.json" />
     <None Include="Examples\[JA] Json Asset Example\content-pack.json" />
     <None Include="Examples\[AT] Example Pack\manifest.json" />
@@ -233,6 +237,7 @@
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\Stable\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Craftables\AnimatedRecyclingMachine\texture_0.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Craftables\AnimatedRecyclingMachine\texture_1.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\DynamicGameAssetExampleItem\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Chickens\BabyWhiteChicken\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Chickens\WhiteChicken\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Entities\Animals\Cows\BabyBrownCow\texture.png" />
@@ -327,6 +332,7 @@
     <Content Include="Examples\[AT] Snowcrows\Textures\Scarecrow\texture.png" />
     <Content Include="Examples\[CP] Content Patcher Example\assets\alt_paint_bucket.png" />
     <Content Include="Examples\[CP] Content Patcher Example\assets\test_replacement.png" />
+    <Content Include="Examples\[DGA] Dynamic Game Asset Example\BigCraftables\Example Item\big-craftable.png" />
     <Content Include="Examples\[JA] Json Asset Example\BigCraftables\Example Item\big-craftable.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Craftables\MiniObelisk\texture.png" />
     <Content Include="Framework\Assets\PaintBrushEmpty.png">
