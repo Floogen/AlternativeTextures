@@ -575,6 +575,11 @@ namespace AlternativeTextures
                                     Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: No associated texture.png or split textures (texture_1.png, texture_2.png, etc.) given", LogLevel.Warn);
                                     continue;
                                 }
+                                if (textureModel.GetVariations() > textureFilePaths.Count())
+                                {
+                                    Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: There are less split texture files compared to variations ({textureFilePaths.Count()} file(s) vs {textureModel.GetVariations()} variation(s))", LogLevel.Warn);
+                                    continue;
+                                }
 
                                 // Load in the first texture_#.png to get its dimensions for creating stitchedTexture
                                 int maxVariationsPerTexture = AlternativeTextureModel.MAX_TEXTURE_HEIGHT / textureModel.TextureHeight;
