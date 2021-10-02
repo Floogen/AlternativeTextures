@@ -206,7 +206,7 @@ namespace AlternativeTextures
                             PatchTemplate.AssignDefaultModData(flooring, instanceSeasonName, true);
                         }
 
-                        Game1.addHUDMessage(new HUDMessage($"Texture copied!", 2) { timeLeft = 1000 });
+                        Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.texture_copied"), 2) { timeLeft = 1000 });
                         tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}";
                         tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
                         tool.modData["AlternativeTextureOwner"] = flooring.modData["AlternativeTextureOwner"];
@@ -219,11 +219,11 @@ namespace AlternativeTextures
                         tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
                         if (terrainFeature != null)
                         {
-                            Game1.addHUDMessage(new HUDMessage($"The brush doesn't support copying textures from this object.", 3) { timeLeft = 2000 });
+                            Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.brush_not_supported"), 3) { timeLeft = 2000 });
                         }
                         else
                         {
-                            Game1.addHUDMessage(new HUDMessage($"Cleared brush!", 2) { timeLeft = 1000 });
+                            Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.cleared_brush"), 2) { timeLeft = 1000 });
                         }
                     }
                 }
@@ -236,7 +236,7 @@ namespace AlternativeTextures
                         PatchTemplate.AssignDefaultModData(placedObject, instanceSeasonName, true);
                     }
 
-                    Game1.addHUDMessage(new HUDMessage($"Texture copied!", 2) { timeLeft = 1000 });
+                    Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.texture_copied"), 2) { timeLeft = 1000 });
                     tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}";
                     tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
                     tool.modData["AlternativeTextureOwner"] = placedObject.modData["AlternativeTextureOwner"];
@@ -255,7 +255,7 @@ namespace AlternativeTextures
 
                 if (String.IsNullOrEmpty(tool.modData[PAINT_BRUSH_FLAG]))
                 {
-                    Game1.addHUDMessage(new HUDMessage($"The brush doesn't have a copied texture! Right click on an object to copy a texture.", 3) { timeLeft = 2000 });
+                    Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.brush_is_empty"), 3) { timeLeft = 2000 });
                 }
                 else
                 {
@@ -275,12 +275,12 @@ namespace AlternativeTextures
                             }
                             else
                             {
-                                Game1.addHUDMessage(new HUDMessage($"The copied texture {tool.modData[PAINT_BRUSH_FLAG]} isn't valid for this object!", 3) { timeLeft = 2000 });
+                                Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.invalid_copied_texture", new { textureName = tool.modData[PAINT_BRUSH_FLAG] }), 3) { timeLeft = 2000 });
                             }
                         }
                         else if (terrainFeature != null)
                         {
-                            Game1.addHUDMessage(new HUDMessage($"You can't paint that!", 3) { timeLeft = 2000 });
+                            Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.paint_not_placeable"), 3) { timeLeft = 2000 });
                         }
                     }
                     else
@@ -294,7 +294,7 @@ namespace AlternativeTextures
                         }
                         else
                         {
-                            Game1.addHUDMessage(new HUDMessage($"The copied texture {tool.modData[PAINT_BRUSH_FLAG]} isn't valid for this object!", 3) { timeLeft = 2000 });
+                            Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.invalid_copied_texture", new { textureName = tool.modData[PAINT_BRUSH_FLAG] }), 3) { timeLeft = 2000 });
                         }
                     }
                 }

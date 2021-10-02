@@ -216,6 +216,9 @@
     <None Include="Examples\[AT] Example Pack\manifest.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Craftables\MiniObelisk\texture.json" />
     <None Include="Examples\[JA] Json Asset Example\manifest.json" />
+    <None Include="i18n\default.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="manifest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
