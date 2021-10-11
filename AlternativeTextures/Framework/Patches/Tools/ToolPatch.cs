@@ -249,8 +249,14 @@ namespace AlternativeTextures.Framework.Patches.Tools
 
                         if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
                         {
-                            Game1.addHUDMessage(new HUDMessage(_helper.Translation.Get("messages.warning.no_textures_for_season", new { itemName = modelName }), 3));
-                            return CancelUsing(who);
+                            var defaultModelName = $"{AlternativeTextureModel.TextureType.Decoration}_Wallpaper";
+                            if (AlternativeTextures.textureManager.GetAvailableTextureModels(defaultModelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
+                            {
+                                Game1.addHUDMessage(new HUDMessage(_helper.Translation.Get("messages.warning.no_textures_for_season", new { itemName = modelName }), 3));
+                                return CancelUsing(who);
+                            }
+
+                            modelName = defaultModelName;
                         }
 
                         // Display texture menu
@@ -284,8 +290,14 @@ namespace AlternativeTextures.Framework.Patches.Tools
 
                         if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
                         {
-                            Game1.addHUDMessage(new HUDMessage(_helper.Translation.Get("messages.warning.no_textures_for_season", new { itemName = modelName }), 3));
-                            return CancelUsing(who);
+                            var defaultModelName = $"{AlternativeTextureModel.TextureType.Decoration}_Floor";
+                            if (AlternativeTextures.textureManager.GetAvailableTextureModels(defaultModelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
+                            {
+                                Game1.addHUDMessage(new HUDMessage(_helper.Translation.Get("messages.warning.no_textures_for_season", new { itemName = modelName }), 3));
+                                return CancelUsing(who);
+                            }
+
+                            modelName = defaultModelName;
                         }
 
                         // Display texture menu
