@@ -199,6 +199,7 @@ namespace AlternativeTextures.Framework.UI
                 case TextureType.Decoration:
                     widthOffsetScale = 3;
                     _texturesPerRow = 4;
+                    _maxRows = 2;
                     sourceRect = new Rectangle(0, 0, 32, 64);
                     break;
             }
