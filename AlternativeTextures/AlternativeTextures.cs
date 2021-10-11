@@ -581,37 +581,9 @@ namespace AlternativeTextures
                                 }
 
                                 // Load in the first texture_#.png to get its dimensions for creating stitchedTexture
-                                int maxVariationsPerTexture = AlternativeTextureModel.MAX_TEXTURE_HEIGHT / textureModel.TextureHeight;
-                                Texture2D baseTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(parentFolderName, textureFolder.Name, textureFilePaths.First()));
-                                for (int t = 0; t <= (textureModel.GetVariations() * textureModel.TextureHeight) / AlternativeTextureModel.MAX_TEXTURE_HEIGHT; t++)
+                                if (!StitchTexturesToModel(textureModel, contentPack, Path.Combine(parentFolderName, textureFolder.Name), textureFilePaths))
                                 {
-                                    int variationLimit = Math.Min(maxVariationsPerTexture, textureModel.GetVariations() - (maxVariationsPerTexture * t));
-                                    if (variationLimit < 0)
-                                    {
-                                        variationLimit = 0;
-                                    }
-                                    Texture2D stitchedTexture = new Texture2D(Game1.graphics.GraphicsDevice, baseTexture.Width, Math.Min(textureModel.TextureHeight * variationLimit, AlternativeTextureModel.MAX_TEXTURE_HEIGHT));
-
-                                    // Now stitch together the split textures into a single texture
-                                    Color[] pixels = new Color[stitchedTexture.Width * stitchedTexture.Height];
-                                    for (int x = 0; x < variationLimit; x++)
-                                    {
-                                        var fileName = textureFilePaths.ElementAt(x + (variationLimit * t));
-                                        Monitor.Log($"Stitching together {textureModel.TextureId}: {fileName}", LogLevel.Trace);
-
-                                        var offset = x * baseTexture.Width * baseTexture.Height;
-                                        var subTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(parentFolderName, textureFolder.Name, fileName));
-
-                                        Color[] subPixels = new Color[subTexture.Width * subTexture.Height];
-                                        subTexture.GetData(subPixels);
-                                        for (int i = 0; i < subPixels.Length; i++)
-                                        {
-                                            pixels[i + offset] = subPixels[i];
-                                        }
-                                    }
-
-                                    stitchedTexture.SetData(pixels);
-                                    textureModel.Textures.Add(stitchedTexture);
+                                    continue;
                                 }
 
                                 textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(parentFolderName, textureFolder.Name, textureFilePaths.First()));
@@ -650,6 +622,68 @@ namespace AlternativeTextures
                     Monitor.Log($"Error loading content pack {contentPack.Manifest.Name}: {ex}", LogLevel.Error);
                 }
             }
+        }
+
+        private bool StitchTexturesToModel(AlternativeTextureModel textureModel, IContentPack contentPack, string rootPath, IEnumerable<string> textureFilePaths)
+        {
+            int maxVariationsPerTexture = AlternativeTextureModel.MAX_TEXTURE_HEIGHT / textureModel.TextureHeight;
+            Texture2D baseTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(rootPath, textureFilePaths.First()));
+
+            try
+            {
+                for (int t = 0; t <= (textureModel.GetVariations() * textureModel.TextureHeight) / AlternativeTextureModel.MAX_TEXTURE_HEIGHT; t++)
+                {
+                    int variationLimit = Math.Min(maxVariationsPerTexture, textureModel.GetVariations() - (maxVariationsPerTexture * t));
+                    if (variationLimit < 0)
+                    {
+                        variationLimit = 0;
+                    }
+                    Texture2D stitchedTexture = new Texture2D(Game1.graphics.GraphicsDevice, baseTexture.Width, Math.Min(textureModel.TextureHeight * variationLimit, AlternativeTextureModel.MAX_TEXTURE_HEIGHT));
+
+                    // Now stitch together the split textures into a single texture
+                    Color[] pixels = new Color[stitchedTexture.Width * stitchedTexture.Height];
+                    for (int x = 0; x < variationLimit; x++)
+                    {
+                        int textureIndex = x + (variationLimit * t);
+                        if (textureFilePaths.ElementAtOrDefault(textureIndex) is null)
+                        {
+                            Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: Attempted to add variation {textureIndex} from split texture, but the texture image doesn't exist!", LogLevel.Warn);
+                            return false;
+                        }
+
+                        var fileName = textureFilePaths.ElementAt(textureIndex);
+                        Monitor.Log($"Stitching together {textureModel.TextureId}: {fileName}", LogLevel.Trace);
+
+                        var offset = x * baseTexture.Width * baseTexture.Height;
+                        var subTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(rootPath, fileName));
+
+                        try
+                        {
+                            Color[] subPixels = new Color[subTexture.Width * subTexture.Height];
+                            subTexture.GetData(subPixels);
+                            for (int i = 0; i < subPixels.Length; i++)
+                            {
+                                pixels[i + offset] = subPixels[i];
+                            }
+                        }
+                        catch (IndexOutOfRangeException)
+                        {
+                            Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: Failed to add variation from split texture {fileName}, it has a different image size [{subTexture.Width}x{subTexture.Height}] compared to the first texture [{baseTexture.Width}x{baseTexture.Height}]!", LogLevel.Warn);
+                            return false;
+                        }
+                    }
+
+                    stitchedTexture.SetData(pixels);
+                    textureModel.Textures.Add(stitchedTexture);
+                }
+            }
+            catch (Exception exception)
+            {
+                Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: Unhandled framework error: {exception}", LogLevel.Warn);
+                return false;
+            }
+
+            return true;
         }
 
         private void DebugSpawnGiantCrop(string command, string[] args)
