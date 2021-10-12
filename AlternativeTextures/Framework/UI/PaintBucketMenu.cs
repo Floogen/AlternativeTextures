@@ -564,6 +564,13 @@ namespace AlternativeTextures.Framework.UI
                                 this.availableTextures[i].draw(b, Color.White, 0.87f);
                             }
                         }
+                        else if (PatchTemplate.IsDGAUsed() && PatchTemplate.IsDGAObject(PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_position.X, (int)_position.Y)) && PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Furniture)
+                        {
+                            var offset = textureModel.TextureHeight <= 16 ? 32 : 0;
+                            this.availableTextures[i].texture = textureModel.GetTexture(variation);
+                            this.availableTextures[i].sourceRect = GetSourceRectangle(_textureTarget, textureModel.TextureWidth, textureModel.TextureHeight, variation);
+                            b.Draw(this.availableTextures[i].texture, new Vector2((float)this.availableTextures[i].bounds.X + (float)(this.availableTextures[i].sourceRect.Width / 2) * this.availableTextures[i].baseScale, (float)this.availableTextures[i].bounds.Y + (float)(this.availableTextures[i].sourceRect.Height / 2) * this.availableTextures[i].baseScale + offset), this.availableTextures[i].sourceRect, Color.White, 0f, new Vector2(this.availableTextures[i].sourceRect.Width / 2, this.availableTextures[i].sourceRect.Height / 2), this.availableTextures[i].scale, SpriteEffects.None, 0.87f);
+                        }
                         else if (_textureType is TextureType.Character && PatchTemplate.GetCharacterAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Character character && character != null)
                         {
                             this.availableTextures[i].texture = textureModel.GetTexture(variation);
