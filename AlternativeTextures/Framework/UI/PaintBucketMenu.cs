@@ -365,6 +365,8 @@ namespace AlternativeTextures.Framework.UI
                         {
                             building.modData[key] = c.item.modData[key];
                         }
+
+                        building.resetTexture();
                     }
                     else if (Game1.currentLocation is DecoratableLocation decoratableLocation && (decoratableLocation.getFloorAt(new Point((int)_position.X, (int)_position.Y)) != -1 || decoratableLocation.getWallForRoomAt(new Point((int)_position.X, (int)_position.Y)) != -1))
                     {
