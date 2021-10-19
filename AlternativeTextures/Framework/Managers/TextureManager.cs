@@ -14,11 +14,13 @@ namespace AlternativeTextures.Framework.Managers
     {
         private IMonitor _monitor;
         private List<AlternativeTextureModel> _alternativeTextures;
+        private HashSet<string> _textureIdsInsensitive;
 
         public TextureManager(IMonitor monitor)
         {
             _monitor = monitor;
             _alternativeTextures = new List<AlternativeTextureModel>();
+            _textureIdsInsensitive = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
         public void AddAlternativeTexture(AlternativeTextureModel model)
@@ -31,6 +33,7 @@ namespace AlternativeTextures.Framework.Managers
             else
             {
                 _alternativeTextures.Add(model);
+                _textureIdsInsensitive.Add(model.GetId());
             }
         }
 
