@@ -64,7 +64,7 @@ namespace AlternativeTextures.Framework.Managers
 
         public bool DoesObjectHaveAlternativeTextureById(string objectId)
         {
-            return _alternativeTextures.Any(t => String.Equals(t.GetId(), objectId, StringComparison.OrdinalIgnoreCase));
+            return _textureIdsInsensitive.Contains(objectId);
         }
 
         public AlternativeTextureModel GetRandomTextureModel(int objectId)
