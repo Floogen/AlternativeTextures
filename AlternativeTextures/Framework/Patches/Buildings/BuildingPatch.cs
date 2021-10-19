@@ -59,8 +59,6 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                     BuildingPatch.ResetTextureReversePatch(__instance);
                 }
             }
-
-            ResetTexturePrefix(__instance);
         }
 
         internal static void CondensedDrawInMenu(Building building, Texture2D texture, SpriteBatch b, int x, int y, float scale, float alpha = 1f)
@@ -129,7 +127,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
             }
         }
 
-        private static bool ResetTexturePrefix(Building __instance)
+        internal static bool ResetTexturePrefix(Building __instance)
         {
             if (__instance.modData.ContainsKey("AlternativeTextureName"))
             {
