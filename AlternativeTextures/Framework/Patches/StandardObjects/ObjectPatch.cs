@@ -32,6 +32,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             harmony.Patch(AccessTools.Method(_object, nameof(Object.draw), new[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Object.drawPlacementBounds), new[] { typeof(SpriteBatch), typeof(GameLocation) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPlacementBoundsPrefix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Object.DayUpdate), new[] { typeof(GameLocation) }), postfix: new HarmonyMethod(GetType(), nameof(DayUpdatePostfix)));
+            harmony.Patch(AccessTools.Method(_object, nameof(Object.rot), null), postfix: new HarmonyMethod(GetType(), nameof(RotPostfix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Object.placementAction), new[] { typeof(GameLocation), typeof(int), typeof(int), typeof(Farmer) }), postfix: new HarmonyMethod(GetType(), nameof(PlacementActionPostfix)));
 
             if (PatchTemplate.IsDGAUsed())
@@ -242,6 +243,14 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 {
                     __instance.modData["AlternativeTextureSheetId"] = __instance.ParentSheetIndex.ToString();
                 }
+            }
+        }
+
+        internal static void RotPostfix(Object __instance)
+        {
+            if (__instance.modData.ContainsKey("AlternativeTextureName"))
+            {
+                __instance.modData["AlternativeTextureVariation"] = "-1";
             }
         }
 
