@@ -402,6 +402,7 @@ namespace AlternativeTextures
                             configApi.RegisterImage(ModManifest, $"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{model.GetTokenId()}", sourceRect, scale);
 
                             // Add our custom widget, which passes over the required data needed to flag the TextureId with the appropriate Variation 
+                            bool wasClicking = false;
                             var textureWidget = new TextureWidget() { TextureId = model.GetId(), Variation = variation, Enabled = !modConfig.IsTextureVariationDisabled(model.GetId(), variation) };
                             Func<Vector2, object, object> widgetUpdate = (Vector2 pos, object state) =>
                             {
@@ -413,10 +414,13 @@ namespace AlternativeTextures
 
                                 var bounds = new Rectangle((int)pos.X, (int)pos.Y, OptionsCheckbox.sourceRectChecked.Width * 4, OptionsCheckbox.sourceRectChecked.Width * 4);
                                 bool isHovering = bounds.Contains(Game1.getOldMouseX(), Game1.getOldMouseY());
-                                if (isHovering && Game1.oldMouseState.LeftButton == ButtonState.Released && Game1.input.GetMouseState().LeftButton == ButtonState.Pressed)
+
+                                bool isClicking = Game1.input.GetMouseState().LeftButton == ButtonState.Pressed;
+                                if (isHovering && isClicking && !wasClicking)
                                 {
                                     widget.Enabled = !widget.Enabled;
                                 }
+                                wasClicking = isClicking;
 
                                 return widget;
                             };
