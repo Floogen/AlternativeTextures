@@ -172,6 +172,10 @@ namespace AlternativeTextures.Framework.UI
                     {
                         _maxRows = 2;
                     }
+                    else if (sourceRect.Height >= 32)
+                    {
+                        _maxRows = 3;
+                    }
                     else if (sourceRect.Height <= 16)
                     {
                         sourceRect.Height = 32;
