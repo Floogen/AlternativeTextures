@@ -48,7 +48,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
 
             var instanceName = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Building}_{GetBuildingName(__instance)}");
             var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
-            if (__instance.modData["AlternativeTextureName"].ToLower() != instanceName && __instance.modData["AlternativeTextureName"].ToLower() != instanceSeasonName)
+            if (!String.Equals(__instance.modData["AlternativeTextureName"], instanceName, StringComparison.OrdinalIgnoreCase) && !String.Equals(__instance.modData["AlternativeTextureName"], instanceSeasonName, StringComparison.OrdinalIgnoreCase))
             {
                 __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Building}_{GetBuildingName(__instance)}");
                 if (__instance.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(__instance.modData["AlternativeTextureSeason"]))
