@@ -591,5 +591,6 @@ namespace AlternativeTextures.Framework.Patches
             }
 
             farm.modData["AlternativeTextureVariation"] = variation.ToString();
+        }
     }
 }

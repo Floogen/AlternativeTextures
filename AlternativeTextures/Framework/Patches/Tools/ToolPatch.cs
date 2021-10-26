@@ -146,7 +146,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
             if (location is Farm farm)
             {
                 var targetedBuilding = farm.getBuildingAt(new Vector2(x / 64, y / 64));
-                if (farm.GetHouseRect().Contains(new Vector2(x / 64, y / 64)))
+                if (farm.GetHouseRect().Contains(x / 64, y / 64))
                 {
                     targetedBuilding = new Building();
                     targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}";

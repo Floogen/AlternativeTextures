@@ -372,7 +372,7 @@ namespace AlternativeTextures.Framework.UI
 
                         building.resetTexture();
                     }
-                    else if (Game1.currentLocation is Farm farm && farm.GetHouseRect().Contains(new Vector2(_position.X, _position.Y) / 64))
+                    else if (Game1.currentLocation is Farm farm && farm.GetHouseRect().Contains((int)_position.X / 64, (int)_position.Y / 64))
                     {
                         var targetedBuilding = new Building();
                         targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel + 1}";
@@ -533,7 +533,7 @@ namespace AlternativeTextures.Framework.UI
                                 BuildingPatch.ResetTextureReversePatch(building);
                                 BuildingPatch.CondensedDrawInMenu(building, building.texture.Value, b, this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y, _buildingScale);
                             }
-                            else if (Game1.currentLocation is Farm farm && farm.GetHouseRect().Contains(new Vector2(_position.X, _position.Y) / 64))
+                            else if (Game1.currentLocation is Farm farm && farm.GetHouseRect().Contains((int)_position.X / 64, (int)_position.Y / 64))
                             {
                                 var targetedBuilding = new Building();
                                 targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel + 1}";
@@ -613,7 +613,7 @@ namespace AlternativeTextures.Framework.UI
                         {
                             BuildingPatch.CondensedDrawInMenu(building, BuildingPatch.GetBuildingTextureWithPaint(building, textureModel, variation), b, this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y, _buildingScale);
                         }
-                        else if (Game1.currentLocation is Farm farm && farm.GetHouseRect().Contains(new Vector2(_position.X, _position.Y) / 64))
+                        else if (Game1.currentLocation is Farm farm && farm.GetHouseRect().Contains((int)_position.X / 64, (int)_position.Y / 64))
                         {
                             var targetedBuilding = new Building();
                             targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel + 1}";
