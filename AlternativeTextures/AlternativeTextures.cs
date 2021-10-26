@@ -585,9 +585,13 @@ namespace AlternativeTextures
                                     Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: There are less split texture files compared to variations ({textureFilePaths.Count()} file(s) vs {textureModel.GetVariations()} variation(s))", LogLevel.Warn);
                                     continue;
                                 }
+                                if (textureModel.GetVariations() < textureFilePaths.Count())
+                                {
+                                    Monitor.Log($"Warning for alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: There are less variations specified in texture.json than split textures files", LogLevel.Warn);
+                                }
 
                                 // Load in the first texture_#.png to get its dimensions for creating stitchedTexture
-                                if (!StitchTexturesToModel(textureModel, contentPack, Path.Combine(parentFolderName, textureFolder.Name), textureFilePaths))
+                                if (!StitchTexturesToModel(textureModel, contentPack, Path.Combine(parentFolderName, textureFolder.Name), textureFilePaths.Take(textureModel.GetVariations())))
                                 {
                                     continue;
                                 }
@@ -629,6 +633,13 @@ namespace AlternativeTextures
         {
             int maxVariationsPerTexture = AlternativeTextureModel.MAX_TEXTURE_HEIGHT / textureModel.TextureHeight;
             Texture2D baseTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(rootPath, textureFilePaths.First()));
+
+            // If there is only one split texture file, skip the rest of the logic to avoid issues
+            if (textureFilePaths.Count() == 1)
+            {
+                textureModel.Textures.Add(baseTexture);
+                return true;
+            }
 
             try
             {
