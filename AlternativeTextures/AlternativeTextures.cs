@@ -137,6 +137,7 @@ namespace AlternativeTextures
                 // Start of location patches
                 new GameLocationPatch(monitor, helper).Apply(harmony);
                 new DecoratableLocationPatch(monitor, helper).Apply(harmony);
+                new FarmPatch(monitor, helper).Apply(harmony);
 
                 // Paint tool related patches
                 new UtilityPatch(monitor, helper).Apply(harmony);

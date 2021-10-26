@@ -416,6 +416,9 @@ namespace AlternativeTextures.Framework.Patches
 
                     AssignFloorModData(decoratableLocation, modelName, textureModel, -1, trackSeason);
                     return true;
+                case Farm farm:
+                    AssignFarmModData(farm, modelName, textureModel, -1, trackSeason);
+                    return true;
             }
 
             return false;
@@ -576,5 +579,17 @@ namespace AlternativeTextures.Framework.Patches
 
             AssignDecoratableLocationModData(decoratableLocation, modelName, textureModel, variation, trackSeason);
         }
+
+        private static void AssignFarmModData(Farm farm, string modelName, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
+        {
+            farm.modData["AlternativeTextureOwner"] = textureModel.Owner;
+            farm.modData["AlternativeTextureName"] = String.Concat(textureModel.Owner, ".", modelName);
+
+            if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
+            {
+                farm.modData["AlternativeTextureSeason"] = Game1.currentSeason;
+            }
+
+            farm.modData["AlternativeTextureVariation"] = variation.ToString();
     }
 }

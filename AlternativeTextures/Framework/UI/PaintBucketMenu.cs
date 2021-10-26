@@ -372,6 +372,20 @@ namespace AlternativeTextures.Framework.UI
 
                         building.resetTexture();
                     }
+                    else if (Game1.currentLocation is Farm farm && farm.GetHouseRect().Contains(new Vector2(_position.X, _position.Y) / 64))
+                    {
+                        var targetedBuilding = new Building();
+                        targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel + 1}";
+                        targetedBuilding.tilesWide.Value = farm.GetHouseRect().Width;
+                        targetedBuilding.tilesHigh.Value = farm.GetHouseRect().Height;
+
+                        foreach (string key in c.item.modData.Keys)
+                        {
+                            farm.modData[key] = c.item.modData[key];
+                        }
+
+                        farm.houseSource.Value = new Rectangle(0, 144 * (((int)Game1.MasterPlayer.houseUpgradeLevel == 3) ? 2 : ((int)Game1.MasterPlayer.houseUpgradeLevel)), 160, 144);
+                    }
                     else if (Game1.currentLocation is DecoratableLocation decoratableLocation && (decoratableLocation.getFloorAt(new Point((int)_position.X, (int)_position.Y)) != -1 || decoratableLocation.getWallForRoomAt(new Point((int)_position.X, (int)_position.Y)) != -1))
                     {
                         var room = 0;
@@ -519,6 +533,22 @@ namespace AlternativeTextures.Framework.UI
                                 BuildingPatch.ResetTextureReversePatch(building);
                                 BuildingPatch.CondensedDrawInMenu(building, building.texture.Value, b, this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y, _buildingScale);
                             }
+                            else if (Game1.currentLocation is Farm farm && farm.GetHouseRect().Contains(new Vector2(_position.X, _position.Y) / 64))
+                            {
+                                var targetedBuilding = new Building();
+                                targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel + 1}";
+                                targetedBuilding.tilesWide.Value = farm.GetHouseRect().Width;
+                                targetedBuilding.tilesHigh.Value = farm.GetHouseRect().Height;
+
+                                Texture2D house_texture = Farm.houseTextures;
+                                if (farm.paintedHouseTexture != null)
+                                {
+                                    house_texture = farm.paintedHouseTexture;
+                                }
+
+                                BuildingPatch.ResetTextureReversePatch(targetedBuilding);
+                                BuildingPatch.CondensedDrawInMenu(targetedBuilding, house_texture, b, this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y, _buildingScale);
+                            }
                             else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Tree tree)
                             {
                                 this.availableTextures[i].texture = tree.texture.Value;
@@ -582,6 +612,15 @@ namespace AlternativeTextures.Framework.UI
                         else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Building building)
                         {
                             BuildingPatch.CondensedDrawInMenu(building, BuildingPatch.GetBuildingTextureWithPaint(building, textureModel, variation), b, this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y, _buildingScale);
+                        }
+                        else if (Game1.currentLocation is Farm farm && farm.GetHouseRect().Contains(new Vector2(_position.X, _position.Y) / 64))
+                        {
+                            var targetedBuilding = new Building();
+                            targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel + 1}";
+                            targetedBuilding.tilesWide.Value = farm.GetHouseRect().Width;
+                            targetedBuilding.tilesHigh.Value = farm.GetHouseRect().Height;
+
+                            BuildingPatch.CondensedDrawInMenu(targetedBuilding, BuildingPatch.GetBuildingTextureWithPaint(targetedBuilding, textureModel, variation), b, this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y, _buildingScale);
                         }
                         else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Tree tree)
                         {

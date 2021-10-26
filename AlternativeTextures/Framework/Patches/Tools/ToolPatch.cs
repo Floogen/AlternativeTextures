@@ -146,6 +146,28 @@ namespace AlternativeTextures.Framework.Patches.Tools
             if (location is Farm farm)
             {
                 var targetedBuilding = farm.getBuildingAt(new Vector2(x / 64, y / 64));
+                if (farm.GetHouseRect().Contains(new Vector2(x / 64, y / 64)))
+                {
+                    targetedBuilding = new Building();
+                    targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}";
+                    targetedBuilding.tileX.Value = farm.GetHouseRect().X;
+                    targetedBuilding.tileY.Value = farm.GetHouseRect().Y;
+                    targetedBuilding.tilesWide.Value = farm.GetHouseRect().Width;
+                    targetedBuilding.tilesHigh.Value = farm.GetHouseRect().Height;
+
+                    if (!farm.modData.ContainsKey("AlternativeTextureName"))
+                    {
+                        var modelType = AlternativeTextureModel.TextureType.Building;
+                        var instanceSeasonName = $"{modelType}_{targetedBuilding.buildingType}_{Game1.currentSeason}";
+                        AssignDefaultModData(farm, instanceSeasonName, true);
+                    }
+
+                    foreach (string key in farm.modData.Keys)
+                    {
+                        targetedBuilding.modData[key] = farm.modData[key];
+                    }
+                }
+
                 if (targetedBuilding != null)
                 {
                     // Assign default data if none exists
