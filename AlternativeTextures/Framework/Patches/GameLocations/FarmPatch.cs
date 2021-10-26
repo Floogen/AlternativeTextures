@@ -52,6 +52,7 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
                     return true;
                 }
 
+                // Initial vanilla logic
                 BaseDrawReversePatch(__instance, b);
                 foreach (KeyValuePair<long, FarmAnimal> pair in __instance.animals.Pairs)
                 {
@@ -66,6 +67,7 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
                 }
                 b.Draw(Game1.mouseCursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(entry_position_tile.X + 3, entry_position_tile.Y + 2) * 64f), Building.rightShadow, Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1E-05f);
 
+                // Custom farmhouse logic
                 Color house_draw_color = Color.White;
                 if (__instance.frameHouseColor.HasValue)
                 {
@@ -78,7 +80,7 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
                 {
                     var targetedBuilding = new Building();
                     targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}";
-                    targetedBuilding.netBuildingPaintColor.Value = __instance.frameHouseColor.Value;
+                    targetedBuilding.netBuildingPaintColor = __instance.housePaintColor;
                     targetedBuilding.tileX.Value = __instance.GetHouseRect().X;
                     targetedBuilding.tileY.Value = __instance.GetHouseRect().Y;
                     targetedBuilding.tilesWide.Value = __instance.GetHouseRect().Width + 1;
