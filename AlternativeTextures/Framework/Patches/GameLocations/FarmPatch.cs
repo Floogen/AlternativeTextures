@@ -31,9 +31,50 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
 
         internal void Apply(Harmony harmony)
         {
+            harmony.Patch(AccessTools.Method(_object, nameof(Farm.ApplyHousePaint), null), postfix: new HarmonyMethod(GetType(), nameof(ApplyHousePaintPostfix)));
+            harmony.Patch(AccessTools.Method(_object, nameof(Farm.DayUpdate), new[] { typeof(int) }), postfix: new HarmonyMethod(GetType(), nameof(DayUpdatePostfix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Farm.draw), new[] { typeof(SpriteBatch) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
 
             harmony.CreateReversePatcher(AccessTools.Method(typeof(BuildableGameLocation), nameof(BuildableGameLocation.draw), new[] { typeof(SpriteBatch) }), new HarmonyMethod(GetType(), nameof(BaseDrawReversePatch))).Patch();
+        }
+
+        private static void ApplyHousePaintPostfix(Farm __instance)
+        {
+            if (__instance.modData.ContainsKey("AlternativeTextureName"))
+            {
+                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
+                if (textureModel is null)
+                {
+                    return;
+                }
+
+                var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
+                if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
+                {
+                    return;
+                }
+
+                if (__instance.paintedHouseTexture != null)
+                {
+                    __instance.paintedHouseTexture.Dispose();
+                    __instance.paintedHouseTexture = null;
+                }
+
+                var targetedBuilding = new Building();
+                targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}";
+                targetedBuilding.netBuildingPaintColor = __instance.housePaintColor;
+                targetedBuilding.tileX.Value = __instance.GetHouseRect().X;
+                targetedBuilding.tileY.Value = __instance.GetHouseRect().Y;
+                targetedBuilding.tilesWide.Value = __instance.GetHouseRect().Width + 1;
+                targetedBuilding.tilesHigh.Value = __instance.GetHouseRect().Height + 1;
+
+                __instance.paintedHouseTexture = BuildingPatch.GetBuildingTextureWithPaint(targetedBuilding, textureModel, textureVariation, true);
+            }
+        }
+
+        private static void DayUpdatePostfix(Farm __instance, int dayOfMonth)
+        {
+            ApplyHousePaintPostfix(__instance);
         }
 
         private static bool DrawPrefix(Farm __instance, TemporaryAnimatedSprite ___shippingBinLid, SpriteBatch b)
@@ -78,15 +119,7 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
                 Texture2D house_texture = textureModel.GetTexture(textureVariation);
                 if (__instance.paintedHouseTexture != null)
                 {
-                    var targetedBuilding = new Building();
-                    targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}";
-                    targetedBuilding.netBuildingPaintColor = __instance.housePaintColor;
-                    targetedBuilding.tileX.Value = __instance.GetHouseRect().X;
-                    targetedBuilding.tileY.Value = __instance.GetHouseRect().Y;
-                    targetedBuilding.tilesWide.Value = __instance.GetHouseRect().Width + 1;
-                    targetedBuilding.tilesHigh.Value = __instance.GetHouseRect().Height + 1;
-
-                    house_texture = BuildingPatch.GetBuildingTextureWithPaint(targetedBuilding, textureModel, textureVariation, true);
+                    house_texture = __instance.paintedHouseTexture;
                 }
 
                 Vector2 house_draw_position = new Vector2(entry_position_world.X - 384f, entry_position_world.Y - 440f);
