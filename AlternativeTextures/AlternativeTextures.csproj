@@ -122,6 +122,7 @@
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\Bat\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\Mummy\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Furniture\AnimatedTreeOfTheWinterStar\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Outliers\ArtifactSpot\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Wallpapers\WoodWall\texture.json" />
     <None Include="Examples\[AT] Mystical Mini-Obelisks\manifest.json" />
     <None Include="Examples\[AT] Mystical Mini-Obelisks\Textures\MiniObelisk\texture.json" />
@@ -289,6 +290,7 @@
     <Content Include="Examples\[AT] Example Pack\Textures\Crops\Grass\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Craftables\Sub Folder Example\HeavyTapper\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Craftables\Sub Folder Example\Tapper\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Outliers\ArtifactSpot\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Split Texture Examples\SuitOfArmor\texture_10.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Split Texture Examples\SuitOfArmor\texture_2.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Split Texture Examples\SuitOfArmor\texture_1.png" />
