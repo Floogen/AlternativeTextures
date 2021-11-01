@@ -83,6 +83,7 @@ namespace AlternativeTextures.Framework.UI
                         objectWithVariation.modData["AlternativeTextureName"] = availableModels[m].GetId();
                         objectWithVariation.modData["AlternativeTextureVariation"] = manualVariations[v].Id.ToString();
                         objectWithVariation.modData["AlternativeTextureSeason"] = availableModels[m].Season;
+                        objectWithVariation.modData["AlternativeTextureDisplayName"] = manualVariations[v].Name;
 
                         if (AlternativeTextures.modConfig.IsTextureVariationDisabled(objectWithVariation.modData["AlternativeTextureName"], manualVariations[v].Id))
                         {
@@ -108,6 +109,7 @@ namespace AlternativeTextures.Framework.UI
                         objectWithVariation.modData["AlternativeTextureName"] = availableModels[m].GetId();
                         objectWithVariation.modData["AlternativeTextureVariation"] = v.ToString();
                         objectWithVariation.modData["AlternativeTextureSeason"] = availableModels[m].Season;
+                        objectWithVariation.modData["AlternativeTextureDisplayName"] = String.Empty;
 
                         if (AlternativeTextures.modConfig.IsTextureVariationDisabled(objectWithVariation.modData["AlternativeTextureName"], v))
                         {
@@ -132,6 +134,7 @@ namespace AlternativeTextures.Framework.UI
             vanillaObject.modData["AlternativeTextureName"] = $"{vanillaObject.modData["AlternativeTextureOwner"]}.{modelName}";
             vanillaObject.modData["AlternativeTextureVariation"] = $"{-1}";
             vanillaObject.modData["AlternativeTextureSeason"] = String.Empty;
+            vanillaObject.modData["AlternativeTextureDisplayName"] = String.Empty;
 
             if (target is Furniture)
             {
@@ -657,12 +660,21 @@ namespace AlternativeTextures.Framework.UI
                 queryButton.draw(b);
             }
 
+            var hoverInfoText = String.Empty;
             var hoverDisplayName = "Hover over an item to see its texture name!";
             if (this.hovered != null && this.hovered.item != null)
             {
                 if (this.hovered.item.modData.ContainsKey("AlternativeTextureOwner") && this.hovered.item.modData.ContainsKey("AlternativeTextureVariation"))
                 {
-                    hoverDisplayName = String.Concat(this.hovered.item.modData["AlternativeTextureOwner"], " > ", Int32.Parse(this.hovered.item.modData["AlternativeTextureVariation"]) + 1);
+                    if (this.hovered.item.modData.ContainsKey("AlternativeTextureDisplayName") && !String.IsNullOrEmpty(this.hovered.item.modData["AlternativeTextureDisplayName"]))
+                    {
+                        hoverInfoText = String.Concat(this.hovered.item.modData["AlternativeTextureOwner"], " > ", Int32.Parse(this.hovered.item.modData["AlternativeTextureVariation"]) + 1);
+                        hoverDisplayName = this.hovered.item.modData["AlternativeTextureDisplayName"];
+                    }
+                    else
+                    {
+                        hoverDisplayName = String.Concat(this.hovered.item.modData["AlternativeTextureOwner"], " > ", Int32.Parse(this.hovered.item.modData["AlternativeTextureVariation"]) + 1);
+                    }
                 }
             }
             SpriteText.drawStringWithScrollCenteredAt(b, hoverDisplayName, Game1.uiViewport.Width / 2, base.yPositionOnScreen + base.height + 16, "Hover over an item to see its texture name!");
@@ -674,6 +686,11 @@ namespace AlternativeTextures.Framework.UI
             if ((_maxRows + _startingRow) * _texturesPerRow < this.filteredTextureOptions.Count)
             {
                 this.forwardButton.draw(b);
+            }
+
+            if (!String.IsNullOrEmpty(hoverInfoText))
+            {
+                IClickableMenu.drawHoverText(b, hoverInfoText, Game1.smallFont);
             }
 
             Game1.mouseCursorTransparency = 1f;
