@@ -635,8 +635,13 @@ namespace AlternativeTextures
             Texture2D baseTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(rootPath, textureFilePaths.First()));
 
             // If there is only one split texture file, skip the rest of the logic to avoid issues
-            if (textureFilePaths.Count() == 1)
+            if (textureFilePaths.Count() == 1 || textureModel.GetVariations() == 1)
             {
+                if (textureModel.GetVariations() == 1 && textureFilePaths.Count() > 1)
+                {
+                    Monitor.Log($"Detected more split textures ({textureFilePaths.Count()}) than specified variations ({textureModel.GetVariations()}) for {textureModel.TextureId} from {contentPack.Manifest.Name}", LogLevel.Warn);
+                }
+
                 textureModel.Textures.Add(baseTexture);
                 return true;
             }
