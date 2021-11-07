@@ -2,6 +2,7 @@
   <PropertyGroup>
     <Version>5.0.0-beta.14</Version>
     <TargetFramework>net5.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
     <EnableHarmony>true</EnableHarmony>
     <EnableModZip>false</EnableModZip>
     <EnableModDeploy>false</EnableModDeploy>
