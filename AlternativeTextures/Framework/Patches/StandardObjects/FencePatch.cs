@@ -72,7 +72,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 }
 
                 var gateOffset = __instance.isGate ? 128 : 0;
-                var textureOffset = textureVariation * textureModel.TextureHeight;
+                var textureOffset = textureModel.GetTextureOffset(textureVariation);
                 if ((bool)__instance.isGate)
                 {
                     Vector2 offset = new Vector2(0f, 0f);

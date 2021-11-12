@@ -66,7 +66,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 {
                     return true;
                 }
-                var textureOffset = textureVariation * textureModel.TextureHeight;
+                var textureOffset = textureModel.GetTextureOffset(textureVariation);
 
                 Vector2 position = Game1.GlobalToLocal(Game1.viewport, ___drawPosition);
 
@@ -132,7 +132,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 {
                     return true;
                 }
-                var textureOffset = textureVariation * textureModel.TextureHeight;
+                var textureOffset = textureModel.GetTextureOffset(textureVariation);
 
                 var sourceX = ___sourceRect.X >= 128 ? ___sourceRect.X - 128 : ___sourceRect.X;
                 if ((bool)__instance.forageCrop)

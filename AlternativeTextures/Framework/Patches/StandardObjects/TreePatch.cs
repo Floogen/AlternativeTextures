@@ -56,7 +56,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                     return true;
                 }
 
-                var textureOffset = textureVariation * textureModel.TextureHeight;
+                var textureOffset = textureModel.GetTextureOffset(textureVariation);
                 if ((int)__instance.growthStage < 5)
                 {
                     Rectangle sourceRect = Rectangle.Empty;
