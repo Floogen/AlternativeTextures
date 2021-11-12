@@ -382,7 +382,7 @@ namespace AlternativeTextures
                             configApi.RegisterLabel(ModManifest, $"Variation: {variation}", description);
 
                             // Add the reference image for the alternative texture
-                            var sourceRect = new Rectangle(0, variation * model.TextureHeight, model.TextureWidth, model.TextureHeight);
+                            var sourceRect = new Rectangle(0, model.GetTextureOffset(variation), model.TextureWidth, model.TextureHeight);
                             switch (model.GetTextureType())
                             {
                                 case "Decoration":
@@ -662,7 +662,7 @@ namespace AlternativeTextures
                     Color[] pixels = new Color[stitchedTexture.Width * stitchedTexture.Height];
                     for (int x = 0; x < variationLimit; x++)
                     {
-                        int textureIndex = x + (variationLimit * t);
+                        int textureIndex = x + (maxVariationsPerTexture * t);
                         if (textureFilePaths.ElementAtOrDefault(textureIndex) is null)
                         {
                             Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: Attempted to add variation {textureIndex} from split texture, but the texture image doesn't exist!", LogLevel.Warn);
