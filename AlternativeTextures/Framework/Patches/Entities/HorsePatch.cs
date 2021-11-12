@@ -48,7 +48,7 @@ namespace AlternativeTextures.Framework.Patches.Entities
                 {
                     return true;
                 }
-                var textureOffset = textureVariation * textureModel.TextureHeight;
+                var textureOffset = textureModel.GetTextureOffset(textureVariation);
 
                 __instance.flip = __instance.FacingDirection == 3;
                 __instance.Sprite.UpdateSourceRect();
