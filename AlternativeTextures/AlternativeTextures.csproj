@@ -113,6 +113,7 @@
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\BigBarn\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\Barn\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Buildings\Farmhouse_0\texture.json" />
+    <None Include="Examples\[AT] Example Pack\Textures\Buildings\ShippingBin\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Craftables\AnimatedRecyclingMachine\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\DynamicGameAssetExampleItem\texture.json" />
     <None Include="Examples\[AT] Example Pack\Textures\Entities\Monsters\GreenSlime\texture.json" />
@@ -237,6 +238,7 @@
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\DeluxeCoop\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\DeluxeBarn\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\Farmhouse_0\texture.png" />
+    <Content Include="Examples\[AT] Example Pack\Textures\Buildings\ShippingBin\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\JunimoHut\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\FishPond\texture.png" />
     <Content Include="Examples\[AT] Example Pack\Textures\Buildings\Greenhouse\texture.png" />
