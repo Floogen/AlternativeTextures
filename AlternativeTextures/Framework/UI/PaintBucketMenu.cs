@@ -402,6 +402,11 @@ namespace AlternativeTextures.Framework.UI
                         }
 
                         building.resetTexture();
+
+                        if (building is ShippingBin shippingBin && shippingBin.modData["AlternativeTextureOwner"] == AlternativeTextures.DEFAULT_OWNER)
+                        {
+                            shippingBin.initLid();
+                        }
                     }
                     else if (Game1.currentLocation is Farm farm && farm.GetHouseRect().Contains(new Vector2(_position.X, _position.Y) / 64))
                     {
@@ -558,6 +563,11 @@ namespace AlternativeTextures.Framework.UI
                             {
                                 BuildingPatch.ResetTextureReversePatch(building);
                                 BuildingPatch.CondensedDrawInMenu(building, building.texture.Value, b, this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y, _buildingScale);
+
+                                if (building is ShippingBin shippingBin)
+                                {
+                                    b.Draw(Game1.mouseCursors, new Vector2(this.availableTextures[i].bounds.X + 4, this.availableTextures[i].bounds.Y - 20), new Rectangle(134, 226, 30, 25), Color.White, 0f, Vector2.Zero, _buildingScale, SpriteEffects.None, 1f);
+                                }
                             }
                             else if (Game1.currentLocation is Farm farm && farm.GetHouseRect().Contains(new Vector2(_position.X, _position.Y) / 64))
                             {
@@ -629,6 +639,11 @@ namespace AlternativeTextures.Framework.UI
                         else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Building building)
                         {
                             BuildingPatch.CondensedDrawInMenu(building, BuildingPatch.GetBuildingTextureWithPaint(building, textureModel, variation), b, this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y, _buildingScale);
+
+                            if (building is ShippingBin shippingBin)
+                            {
+                                b.Draw(textureModel.GetTexture(variation), new Vector2(this.availableTextures[i].bounds.X + 4, this.availableTextures[i].bounds.Y - 20), new Rectangle(32, textureModel.GetTextureOffset(variation), 30, 25), Color.White, 0f, Vector2.Zero, _buildingScale, SpriteEffects.None, 1f);
+                            }
                         }
                         else if (Game1.currentLocation is Farm farm && farm.GetHouseRect().Contains(new Vector2(_position.X, _position.Y) / 64))
                         {
