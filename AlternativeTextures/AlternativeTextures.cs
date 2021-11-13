@@ -134,6 +134,7 @@ namespace AlternativeTextures
                 // Start of building patches
                 new BuildingPatch(monitor, helper).Apply(harmony);
                 new StablePatch(monitor, helper).Apply(harmony); // Specifically for Tractor Mod, to allow texture variations
+                new ShippingBinPatch(monitor, helper).Apply(harmony);
 
                 // Start of location patches
                 new GameLocationPatch(monitor, helper).Apply(harmony);

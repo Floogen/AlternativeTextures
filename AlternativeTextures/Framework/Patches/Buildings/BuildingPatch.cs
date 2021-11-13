@@ -124,11 +124,6 @@ namespace AlternativeTextures.Framework.Patches.Buildings
 
                     //building.drawShadow(b, x, y);
                     b.Draw(texture, new Vector2(x, y), building.getSourceRect(), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
-
-                    if (building is ShippingBin)
-                    {
-                        b.Draw(Game1.mouseCursors, new Vector2(x + 4, y - 20), new Rectangle(134, 226, 30, 25), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 1f);
-                    }
                     return;
             }
         }

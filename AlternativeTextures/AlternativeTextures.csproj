@@ -68,6 +68,7 @@
     <Compile Include="Framework\Models\AnimationModel.cs" />
     <Compile Include="Framework\Models\DisabledTextureModel.cs" />
     <Compile Include="Framework\Models\VariationModel.cs" />
+    <Compile Include="Framework\Patches\Buildings\ShippingBinPatch.cs" />
     <Compile Include="Framework\Patches\Buildings\StablePatch.cs" />
     <Compile Include="Framework\Patches\Buildings\BuildingPatch.cs" />
     <Compile Include="Framework\Patches\Entities\MonsterPatch.cs" />
