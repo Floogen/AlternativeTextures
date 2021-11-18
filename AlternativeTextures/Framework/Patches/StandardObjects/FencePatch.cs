@@ -19,6 +19,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
     internal class FencePatch : PatchTemplate
     {
         private readonly Type _object = typeof(Fence);
+        private const int VANILLA_FENCE_TEXTURE_WIDTH = 48;
 
         internal FencePatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
@@ -150,7 +151,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                     __instance.heldObject.Value.draw(b, x * 64 + (int)offset2.X, (y - 1) * 64 - 16 + (int)offset2.Y, (float)(y * 64 + 64) / 10000f, 1f);
                 }
 
-                b.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64, y * 64 - 64)), new Rectangle((sourceRectPosition * Fence.fencePieceWidth % __instance.fenceTexture.Value.Bounds.Width), textureOffset + (sourceRectPosition * Fence.fencePieceWidth / __instance.fenceTexture.Value.Bounds.Width * Fence.fencePieceHeight), Fence.fencePieceWidth, Fence.fencePieceHeight), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, (float)(y * 64 + 32) / 10000f);
+                b.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64, y * 64 - 64)), new Rectangle((sourceRectPosition * Fence.fencePieceWidth % VANILLA_FENCE_TEXTURE_WIDTH), textureOffset + (sourceRectPosition * Fence.fencePieceWidth / VANILLA_FENCE_TEXTURE_WIDTH * Fence.fencePieceHeight), Fence.fencePieceWidth, Fence.fencePieceHeight), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, (float)(y * 64 + 32) / 10000f);
 
                 return false;
             }
