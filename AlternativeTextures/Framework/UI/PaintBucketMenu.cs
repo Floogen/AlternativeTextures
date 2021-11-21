@@ -681,7 +681,7 @@ namespace AlternativeTextures.Framework.UI
                             var decorationOffset = isFloor ? 8 : 16;
 
                             this.availableTextures[i].texture = textureModel.GetTexture(variation);
-                            this.availableTextures[i].sourceRect = new Rectangle(0, textureModel.GetTextureOffset(variation), textureModel.TextureWidth, textureModel.TextureHeight);
+                            this.availableTextures[i].sourceRect = new Rectangle((variation % decorationOffset) * textureModel.TextureWidth, (variation / decorationOffset) * textureModel.TextureHeight, textureModel.TextureWidth, textureModel.TextureHeight);
                             this.availableTextures[i].draw(b, Color.White, 0.87f);
                         }
                     }
