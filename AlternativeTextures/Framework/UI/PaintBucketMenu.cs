@@ -588,7 +588,7 @@ namespace AlternativeTextures.Framework.UI
                             else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Tree tree)
                             {
                                 this.availableTextures[i].texture = tree.texture.Value;
-                                this.availableTextures[i].sourceRect = GetTreeSourceRect(textureModel, tree, 0, 0);
+                                this.availableTextures[i].sourceRect = GetTreeSourceRect(textureModel, tree, 0, -1);
                                 this.availableTextures[i].draw(b, Color.White, 0.87f);
                             }
                             else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is FruitTree fruitTree)
@@ -828,7 +828,7 @@ namespace AlternativeTextures.Framework.UI
 
         private Rectangle GetTreeSourceRect(AlternativeTextureModel textureModel, Tree tree, int textureHeight, int variation)
         {
-            int sourceRectOffset = textureModel.GetTextureOffset(variation);
+            int sourceRectOffset = variation == -1 ? 0 : textureModel.GetTextureOffset(variation);
             Rectangle source_rect = tree.treeTopSourceRect;
             if (tree.treeType.Value == 9)
             {
@@ -853,7 +853,7 @@ namespace AlternativeTextures.Framework.UI
                 return new Rectangle((12 + (fruitTree.greenHouseTree ? 1 : Utility.getSeasonNumber(Game1.GetSeasonForLocation(Game1.currentLocation))) * 3) * 16, (int)fruitTree.treeType * 5 * 16, 48, 80);
             }
 
-            int sourceRectOffset = textureModel.GetTextureOffset(variation);
+            int sourceRectOffset = variation == -1 ? 0 : textureModel.GetTextureOffset(variation);
             Rectangle source_rect = new Rectangle((12 + (fruitTree.greenHouseTree ? 1 : Utility.getSeasonNumber(Game1.GetSeasonForLocation(Game1.currentLocation))) * 3) * 16, 0, 48, 80);
 
             source_rect.Y += sourceRectOffset;
