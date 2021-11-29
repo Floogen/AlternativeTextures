@@ -3,8 +3,10 @@ using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.UI;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.Characters;
@@ -13,6 +15,7 @@ using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -187,6 +190,19 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
                     {
                         Game1.addHUDMessage(new HUDMessage(_helper.Translation.Get("messages.warning.no_textures_for_season", new { itemName = modelName }), 3));
+                        return CancelUsing(who);
+                    }
+
+                    // Verify this building has a texture we can target
+                    var texturePath = PathUtilities.NormalizePath(Path.Combine(targetedBuilding.textureName() + ".png"));
+                    try
+                    {
+                        _ = _helper.Content.Load<Texture2D>(Path.Combine(targetedBuilding.textureName()), ContentSource.GameContent);
+                        _monitor.Log($"{modelName} has a targetable texture within Buildings: {texturePath}", LogLevel.Trace);
+                    }
+                    catch (ContentLoadException ex)
+                    {
+                        Game1.addHUDMessage(new HUDMessage(AlternativeTextures.modHelper.Translation.Get("messages.warning.custom_building_not_supported", new { itemName = modelName }), 3));
                         return CancelUsing(who);
                     }
 
