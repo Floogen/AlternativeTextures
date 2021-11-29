@@ -135,13 +135,13 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                 var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
                 if (textureModel is null)
                 {
-                    return false;
+                    return true;
                 }
 
                 var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
                 if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
                 {
-                    return false;
+                    return true;
                 }
 
                 __instance.texture = new Lazy<Texture2D>(delegate
