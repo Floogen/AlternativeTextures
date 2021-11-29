@@ -194,18 +194,20 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     }
 
                     // Verify this building has a texture we can target
-                    var texturePath = PathUtilities.NormalizePath(Path.Combine(targetedBuilding.textureName() + ".png"));
-                    try
+                    if (!farm.GetHouseRect().Contains(x / 64, y / 64))
                     {
-                        _ = _helper.Content.Load<Texture2D>(Path.Combine(targetedBuilding.textureName()), ContentSource.GameContent);
-                        _monitor.Log($"{modelName} has a targetable texture within Buildings: {texturePath}", LogLevel.Trace);
+                        var texturePath = PathUtilities.NormalizePath(Path.Combine(targetedBuilding.textureName() + ".png"));
+                        try
+                        {
+                            _ = _helper.Content.Load<Texture2D>(Path.Combine(targetedBuilding.textureName()), ContentSource.GameContent);
+                            _monitor.Log($"{modelName} has a targetable texture within Buildings: {texturePath}", LogLevel.Trace);
+                        }
+                        catch (ContentLoadException ex)
+                        {
+                            Game1.addHUDMessage(new HUDMessage(AlternativeTextures.modHelper.Translation.Get("messages.warning.custom_building_not_supported", new { itemName = modelName }), 3));
+                            return CancelUsing(who);
+                        }
                     }
-                    catch (ContentLoadException ex)
-                    {
-                        Game1.addHUDMessage(new HUDMessage(AlternativeTextures.modHelper.Translation.Get("messages.warning.custom_building_not_supported", new { itemName = modelName }), 3));
-                        return CancelUsing(who);
-                    }
-
                     // Display texture menu
                     var buildingObj = new Object(100, 1, isRecipe: false, -1)
                     {
