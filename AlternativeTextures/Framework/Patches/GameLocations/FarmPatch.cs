@@ -42,6 +42,16 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
         {
             if (__instance.modData.ContainsKey("AlternativeTextureName"))
             {
+                var buildingType = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}";
+                if (!__instance.modData["AlternativeTextureName"].Contains(buildingType))
+                {
+                    var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Building}_{buildingType}_{Game1.currentSeason}";
+                    AssignDefaultModData(__instance, instanceSeasonName, true);
+
+                    __instance.paintedHouseTexture.Dispose();
+                    __instance.paintedHouseTexture = BuildingPainter.Apply(Farm.houseTextures, "Buildings\\houses_PaintMask", __instance.housePaintColor); ;
+                }
+
                 var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
                 if (textureModel is null)
                 {
@@ -61,7 +71,7 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
                 }
 
                 var targetedBuilding = new Building();
-                targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}";
+                targetedBuilding.buildingType.Value = buildingType;
                 targetedBuilding.netBuildingPaintColor = __instance.housePaintColor;
                 targetedBuilding.tileX.Value = __instance.GetHouseRect().X;
                 targetedBuilding.tileY.Value = __instance.GetHouseRect().Y;

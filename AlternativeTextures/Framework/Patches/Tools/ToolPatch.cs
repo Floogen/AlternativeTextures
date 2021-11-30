@@ -158,9 +158,9 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     targetedBuilding.tilesWide.Value = farm.GetHouseRect().Width;
                     targetedBuilding.tilesHigh.Value = farm.GetHouseRect().Height;
 
-                    if (!farm.modData.ContainsKey("AlternativeTextureName"))
+                    var modelType = AlternativeTextureModel.TextureType.Building;
+                    if (!farm.modData.ContainsKey("AlternativeTextureName") || !farm.modData["AlternativeTextureName"].Contains(targetedBuilding.buildingType.Value))
                     {
-                        var modelType = AlternativeTextureModel.TextureType.Building;
                         var instanceSeasonName = $"{modelType}_{targetedBuilding.buildingType}_{Game1.currentSeason}";
                         AssignDefaultModData(farm, instanceSeasonName, true);
                     }

@@ -410,11 +410,6 @@ namespace AlternativeTextures.Framework.UI
                     }
                     else if (Game1.currentLocation is Farm farm && farm.GetHouseRect().Contains(new Vector2(_position.X, _position.Y) / 64))
                     {
-                        var targetedBuilding = new Building();
-                        targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel + 1}";
-                        targetedBuilding.tilesWide.Value = farm.GetHouseRect().Width;
-                        targetedBuilding.tilesHigh.Value = farm.GetHouseRect().Height;
-
                         foreach (string key in c.item.modData.Keys)
                         {
                             farm.modData[key] = c.item.modData[key];
