@@ -48,8 +48,11 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
                     var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Building}_{buildingType}_{Game1.currentSeason}";
                     AssignDefaultModData(__instance, instanceSeasonName, true);
 
-                    __instance.paintedHouseTexture.Dispose();
-                    __instance.paintedHouseTexture = BuildingPainter.Apply(Farm.houseTextures, "Buildings\\houses_PaintMask", __instance.housePaintColor); ;
+                    if (__instance.paintedHouseTexture != null)
+                    {
+                        __instance.paintedHouseTexture.Dispose();
+                        __instance.paintedHouseTexture = BuildingPainter.Apply(Farm.houseTextures, "Buildings\\houses_PaintMask", __instance.housePaintColor);
+                    }
                 }
 
                 var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
