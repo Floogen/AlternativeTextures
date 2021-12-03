@@ -571,10 +571,10 @@ namespace AlternativeTextures.Framework.UI
                                 targetedBuilding.tilesWide.Value = farm.GetHouseRect().Width;
                                 targetedBuilding.tilesHigh.Value = farm.GetHouseRect().Height;
 
-                                Texture2D house_texture = Farm.houseTextures;
-                                if (farm.paintedHouseTexture != null)
+                                Texture2D house_texture = BuildingPainter.Apply(Farm.houseTextures, "Buildings\\houses_PaintMask", farm.housePaintColor);
+                                if (house_texture is null)
                                 {
-                                    house_texture = BuildingPainter.Apply(Farm.houseTextures, "Buildings\\houses_PaintMask", farm.housePaintColor);
+                                    house_texture = Farm.houseTextures;
                                 }
 
                                 BuildingPatch.ResetTextureReversePatch(targetedBuilding);
