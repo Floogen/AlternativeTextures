@@ -578,7 +578,7 @@ namespace AlternativeTextures.Framework.UI
                                 }
 
                                 BuildingPatch.ResetTextureReversePatch(targetedBuilding);
-                                BuildingPatch.CondensedDrawInMenu(targetedBuilding, house_texture, b, this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y, _buildingScale);
+                                b.Draw(house_texture, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), farm.houseSource, targetedBuilding.color, 0f, new Vector2(0f, 0f), _buildingScale, SpriteEffects.None, 0.89f);
                             }
                             else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Tree tree)
                             {
@@ -650,7 +650,7 @@ namespace AlternativeTextures.Framework.UI
                             targetedBuilding.tilesWide.Value = farm.GetHouseRect().Width + 1;
                             targetedBuilding.tilesHigh.Value = farm.GetHouseRect().Height + 1;
 
-                            BuildingPatch.CondensedDrawInMenu(targetedBuilding, BuildingPatch.GetBuildingTextureWithPaint(targetedBuilding, textureModel, variation, true), b, this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y, _buildingScale);
+                            b.Draw(BuildingPatch.GetBuildingTextureWithPaint(targetedBuilding, textureModel, variation, true), new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), new Rectangle(0, 0, farm.houseSource.Width, farm.houseSource.Height), targetedBuilding.color, 0f, new Vector2(0f, 0f), _buildingScale, SpriteEffects.None, 0.89f);
                         }
                         else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Tree tree)
                         {

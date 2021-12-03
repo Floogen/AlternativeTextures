@@ -116,12 +116,6 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                 case ShippingBin shippingBin:
                 case Stable stable:
                 default:
-                    if (building.buildingType.Value.ToLower().Contains("farmhouse"))
-                    {
-                        b.Draw(texture, new Vector2(x, y), new Rectangle(0, 0, 160, 144), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
-                        return;
-                    }
-
                     //building.drawShadow(b, x, y);
                     b.Draw(texture, new Vector2(x, y), building.getSourceRect(), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
                     return;
