@@ -56,7 +56,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                     __instance.modData["AlternativeTextureSeason"] = Game1.currentSeason;
                     __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureName"], "_", __instance.modData["AlternativeTextureSeason"]);
 
-                    BuildingPatch.ResetTextureReversePatch(__instance);
+                    __instance.resetTexture();
                 }
             }
         }
