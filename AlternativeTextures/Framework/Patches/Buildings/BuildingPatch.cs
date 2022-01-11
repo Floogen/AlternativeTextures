@@ -107,7 +107,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                     return;
                 case JunimoHut junimoHut:
                     //building.drawShadow(b, x, y);
-                    b.Draw(texture, new Vector2(x, y), new Rectangle(0, 0, 48, 64), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
+                    b.Draw(texture, new Vector2(x, y), junimoHut.sourceRect, building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
                     return;
                 case Mill mill:
                     b.Draw(texture, new Vector2(x, y), building.getSourceRectForMenu(), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
