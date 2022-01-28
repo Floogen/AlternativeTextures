@@ -32,12 +32,12 @@ namespace AlternativeTextures.Framework.Patches.Entities
         {
             harmony.Patch(AccessTools.Method(_entity, nameof(Horse.draw), new[] { typeof(SpriteBatch) }), postfix: new HarmonyMethod(GetType(), nameof(DrawPostfix)));
 
-            harmony.Patch(AccessTools.Method(_entity, nameof(Horse.draw), new[] { typeof(SpriteBatch) }), transpiler: new HarmonyMethod(typeof(HorsePatch), nameof(FixHeadAndHatPosition)));
+            harmony.Patch(AccessTools.Method(_entity, nameof(Horse.draw), new[] { typeof(SpriteBatch) }), transpiler: new HarmonyMethod(typeof(HorsePatch), nameof(AdjustForVariationTranspiler)));
             harmony.Patch(AccessTools.Constructor(_entity, new[] { typeof(Guid), typeof(int), typeof(int) }), postfix: new HarmonyMethod(GetType(), nameof(HorsePostfix)));
         }
 
 
-        private static IEnumerable<CodeInstruction> FixHeadAndHatPosition(IEnumerable<CodeInstruction> instructions)
+        private static IEnumerable<CodeInstruction> AdjustForVariationTranspiler(IEnumerable<CodeInstruction> instructions)
         {
             try
             {
