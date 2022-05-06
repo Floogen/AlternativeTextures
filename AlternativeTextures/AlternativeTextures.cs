@@ -168,7 +168,7 @@ namespace AlternativeTextures
             helper.Events.Display.Rendered += OnDisplayRendered;
 
             // Hook into the Content events
-            helper.Events.Content.AssetRequested += this.OnContentAssetRequested;
+            helper.Events.Content.AssetRequested += OnContentAssetRequested;
             helper.Events.Content.AssetsInvalidated += OnContentInvalidated;
         }
 
@@ -204,26 +204,26 @@ namespace AlternativeTextures
                 {
                     e.LoadFrom(() => textureModel.Textures.First(), AssetLoadPriority.Exclusive, textureModel.Owner);
                 }
-                else if (assetName.IsEquivalentTo("Data/AdditionalWallpaperFlooring") && textureManager.GetValidTextureNamesWithSeason().Count > 0)
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/AdditionalWallpaperFlooring") && textureManager.GetValidTextureNamesWithSeason().Count > 0)
+            {
+                e.Edit(asset =>
                 {
-                    e.Edit(asset =>
+                    List<ModWallpaperOrFlooring> moddedDecorations = asset.GetData<List<ModWallpaperOrFlooring>>();
+
+                    foreach (var textureModel in textureManager.GetAllTextures().Where(t => t.IsDecoration() && !moddedDecorations.Any(d => d.ID == t.GetId())))
                     {
-                        List<ModWallpaperOrFlooring> moddedDecorations = asset.GetData<List<ModWallpaperOrFlooring>>();
-
-                        foreach (var textureModel in textureManager.GetAllTextures().Where(t => t.IsDecoration() && !moddedDecorations.Any(d => d.ID == t.GetId())))
+                        var decoration = new ModWallpaperOrFlooring()
                         {
-                            var decoration = new ModWallpaperOrFlooring()
-                            {
-                                ID = textureModel.GetId(),
-                                Texture = $"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{textureModel.GetTokenId()}",
-                                IsFlooring = String.Equals(textureModel.ItemName, "Floor", StringComparison.OrdinalIgnoreCase),
-                                Count = textureModel.GetVariations()
-                            };
+                            ID = textureModel.GetId(),
+                            Texture = $"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{textureModel.GetTokenId()}",
+                            IsFlooring = String.Equals(textureModel.ItemName, "Floor", StringComparison.OrdinalIgnoreCase),
+                            Count = textureModel.GetVariations()
+                        };
 
-                            moddedDecorations.Add(decoration);
-                        }
-                    });
-                }
+                        moddedDecorations.Add(decoration);
+                    }
+                });
             }
         }
 
@@ -653,7 +653,7 @@ namespace AlternativeTextures
                             // Track the texture model
                             textureManager.AddAlternativeTexture(textureModel);
 
-                            // Register for Content Patcher
+                            // Register for Content Patcher (likely should convert this so we do the load on textureModel itself)
                             _ = Helper.GameContent.Load<Texture2D>($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{textureModel.GetTokenId()}");
 
                             // Log it

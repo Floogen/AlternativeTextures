@@ -44,64 +44,6 @@ namespace AlternativeTextures.Framework.Managers
             _textureManager = textureManager;
         }
 
-        public bool CanEdit<T>(IAssetInfo asset)
-        {
-            if (asset.Name.IsEquivalentTo("Data/AdditionalWallpaperFlooring") && _textureManager.GetValidTextureNamesWithSeason().Count > 0)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public void Edit<T>(IAssetData asset)
-        {
-            if (asset.Name.IsEquivalentTo("Data/AdditionalWallpaperFlooring") && _textureManager.GetValidTextureNamesWithSeason().Count > 0)
-            {
-                if (asset.Name.IsEquivalentTo("Data/AdditionalWallpaperFlooring"))
-                {
-                    List<ModWallpaperOrFlooring> moddedDecorations = asset.GetData<List<ModWallpaperOrFlooring>>();
-                    foreach (var textureModel in _textureManager.GetAllTextures().Where(t => t.IsDecoration() && !moddedDecorations.Any(d => d.ID == t.GetId())))
-                    {
-                        var decoration = new ModWallpaperOrFlooring()
-                        {
-                            ID = textureModel.GetId(),
-                            Texture = $"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{textureModel.GetTokenId()}",
-                            IsFlooring = String.Equals(textureModel.ItemName, "Floor", StringComparison.OrdinalIgnoreCase),
-                            Count = textureModel.GetVariations()
-                        };
-
-                        moddedDecorations.Add(decoration);
-                    }
-                }
-            }
-        }
-
-        public bool CanLoad<T>(IAssetInfo asset)
-        {
-            if (toolNames.Any(n => asset.Name.IsEquivalentTo($"{AlternativeTextures.TOOL_TOKEN_HEADER}{n.Key}")))
-            {
-                return true;
-            }
-            return AlternativeTextures.textureManager.GetAllTextures().Any(t => asset.Name.IsEquivalentTo($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{t.GetTokenId()}"));
-        }
-
-        public T Load<T>(IAssetInfo asset)
-        {
-            if (toolNames.Any(n => asset.Name.IsEquivalentTo($"{AlternativeTextures.TOOL_TOKEN_HEADER}{n.Key}")) || AlternativeTextures.textureManager.GetAllTextures().Any(t => asset.Name.IsEquivalentTo($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{t.GetTokenId()}")))
-            {
-                if (toolNames.Any(n => asset.Name.IsEquivalentTo($"{AlternativeTextures.TOOL_TOKEN_HEADER}{n.Key}")))
-                {
-                    return (T)(object)toolNames.First(n => asset.Name.IsEquivalentTo($"{AlternativeTextures.TOOL_TOKEN_HEADER}{n.Key}")).Value;
-                }
-
-                var textureModel = AlternativeTextures.textureManager.GetAllTextures().First(t => asset.Name.IsEquivalentTo($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{t.GetTokenId()}"));
-                return (T)(object)textureModel.Textures.First();
-            }
-
-            return default(T);
-        }
-
         internal Texture2D GetPaintBucketTexture()
         {
             return _paintBucketTexture;
