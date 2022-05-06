@@ -33,6 +33,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using xTile.Tiles;
 using Microsoft.Xna.Framework.Input;
+using StardewValley.GameData;
 
 namespace AlternativeTextures
 {
@@ -85,10 +86,6 @@ namespace AlternativeTextures
 
             // Setup our utilities
             fpsCounter = new FpsCounter();
-
-            // Load the asset manager
-            helper.Content.AssetLoaders.Add(assetManager);
-            helper.Content.AssetEditors.Add(assetManager);
 
             // Load our Harmony patches
             try
@@ -163,15 +160,71 @@ namespace AlternativeTextures
             helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
             helper.Events.GameLoop.DayStarted += this.OnDayStarted;
 
-            // Hook into Player events
-            helper.Events.Player.Warped += this.OnWarped;
-
             // Hook into Input events
             helper.Events.Input.ButtonsChanged += OnButtonChanged;
             helper.Events.Input.ButtonPressed += OnButtonPressed;
 
             // Hook into Display events
             helper.Events.Display.Rendered += OnDisplayRendered;
+
+            // Hook into the Content events
+            helper.Events.Content.AssetRequested += this.OnContentAssetRequested;
+            helper.Events.Content.AssetsInvalidated += OnContentInvalidated;
+        }
+
+        private void OnContentInvalidated(object sender, AssetsInvalidatedEventArgs e)
+        {
+            foreach (var asset in e.Names.Where(a => assetManager.toolNames.Any(n => a.IsEquivalentTo($"{AlternativeTextures.TOOL_TOKEN_HEADER}{n.Key}")) || AlternativeTextures.textureManager.GetAllTextures().Any(t => a.IsEquivalentTo($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{t.GetTokenId()}"))))
+            {
+                if (assetManager.toolNames.Any(n => asset.IsEquivalentTo($"{AlternativeTextures.TOOL_TOKEN_HEADER}{n.Key}")))
+                {
+                    assetManager.toolNames[asset.Name] = Helper.GameContent.Load<Texture2D>(asset);
+                }
+                else
+                {
+                    var trackedModel = AlternativeTextures.textureManager.GetAllTextures().First(t => asset.IsEquivalentTo($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{t.GetTokenId()}"));
+                    var loadedTexture = Helper.GameContent.Load<Texture2D>($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{trackedModel.GetTokenId()}");
+
+                    textureManager.UpdateTexture(trackedModel.GetId(), loadedTexture);
+                }
+            }
+        }
+
+        private void OnContentAssetRequested(object sender, AssetRequestedEventArgs e)
+        {
+            if (e.DataType == typeof(Texture2D))
+            {
+                var assetName = e.Name;
+
+                if (assetManager.toolNames.Any(n => assetName.IsEquivalentTo($"{AlternativeTextures.TOOL_TOKEN_HEADER}{n.Key}")))
+                {
+                    e.LoadFrom(() => assetManager.toolNames.First(n => assetName.IsEquivalentTo($"{AlternativeTextures.TOOL_TOKEN_HEADER}{n.Key}")).Value, AssetLoadPriority.Exclusive);
+                }
+                else if (AlternativeTextures.textureManager.GetAllTextures().FirstOrDefault(t => assetName.IsEquivalentTo($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{t.GetTokenId()}")) is AlternativeTextureModel textureModel && textureModel is not null)
+                {
+                    e.LoadFrom(() => textureModel.Textures.First(), AssetLoadPriority.Exclusive, textureModel.Owner);
+                }
+                else if (assetName.IsEquivalentTo("Data/AdditionalWallpaperFlooring") && textureManager.GetValidTextureNamesWithSeason().Count > 0)
+                {
+                    e.Edit(asset =>
+                    {
+                        List<ModWallpaperOrFlooring> moddedDecorations = asset.GetData<List<ModWallpaperOrFlooring>>();
+
+                        foreach (var textureModel in textureManager.GetAllTextures().Where(t => t.IsDecoration() && !moddedDecorations.Any(d => d.ID == t.GetId())))
+                        {
+                            var decoration = new ModWallpaperOrFlooring()
+                            {
+                                ID = textureModel.GetId(),
+                                Texture = $"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{textureModel.GetTokenId()}",
+                                IsFlooring = String.Equals(textureModel.ItemName, "Floor", StringComparison.OrdinalIgnoreCase),
+                                Count = textureModel.GetVariations()
+                            };
+
+                            moddedDecorations.Add(decoration);
+                        }
+                    });
+                }
+            }
         }
 
         private void OnDisplayRendered(object sender, RenderedEventArgs e)
@@ -330,6 +383,13 @@ namespace AlternativeTextures
             // Load any owned content packs
             this.LoadContentPacks();
 
+            // Register tools
+            foreach (var tool in assetManager.toolNames.ToList())
+            {
+                var loadedTexture = Helper.GameContent.Load<Texture2D>($"{AlternativeTextures.TOOL_TOKEN_HEADER}{tool.Key}");
+                assetManager.toolNames[tool.Key] = loadedTexture;
+            }
+
             // Set our default configuration file
             modConfig = Helper.ReadConfig<ModConfig>();
 
@@ -454,9 +514,6 @@ namespace AlternativeTextures
 
         private void OnDayStarted(object sender, DayStartedEventArgs e)
         {
-            // Load all available textures to account for any Content Patcher's OnDayStart updates
-            UpdateTextures();
-
             // Backwards compatibility logic
             if (!Game1.player.modData.ContainsKey(TOOL_CONVERSION_COMPATIBILITY))
             {
@@ -469,33 +526,6 @@ namespace AlternativeTextures
                 Monitor.Log($"Fixing bad object and bigcraftable typings...", LogLevel.Debug);
                 Game1.player.modData[TYPE_FIX_COMPATIBILITY] = true.ToString();
                 FixBadObjectTyping();
-            }
-        }
-
-        private void OnWarped(object sender, WarpedEventArgs e)
-        {
-            // Load all available textures to account for any Content Patcher's OnWarped updates
-            UpdateTextures();
-        }
-
-        private void UpdateTextures()
-        {
-            foreach (var texture in textureManager.GetAllTextures().Where(t => t.EnableContentPatcherCheck))
-            {
-                var loadedTexture = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{texture.GetTokenId()}", ContentSource.GameContent);
-                textureManager.UpdateTexture(texture.GetId(), loadedTexture);
-            }
-
-            foreach (var texture in textureManager.GetAllTextures().Where(t => t.EnableContentPatcherCheck))
-            {
-                var loadedTexture = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{texture.GetTokenId()}", ContentSource.GameContent);
-                textureManager.UpdateTexture(texture.GetId(), loadedTexture);
-            }
-
-            foreach (var tool in assetManager.toolNames.ToList())
-            {
-                var loadedTexture = Helper.Content.Load<Texture2D>($"{AlternativeTextures.TOOL_TOKEN_HEADER}{tool.Key}", ContentSource.GameContent);
-                assetManager.toolNames[tool.Key] = loadedTexture;
             }
         }
 
@@ -597,13 +627,13 @@ namespace AlternativeTextures
                                     continue;
                                 }
 
-                                textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(parentFolderName, textureFolder.Name, textureFilePaths.First()));
+                                textureModel.TileSheetPath = contentPack.ModContent.GetInternalAssetName(Path.Combine(parentFolderName, textureFolder.Name, textureFilePaths.First())).Name;
                             }
                             else
                             {
                                 // Load in the single vertical texture
-                                textureModel.TileSheetPath = contentPack.GetActualAssetKey(Path.Combine(parentFolderName, textureFolder.Name, "texture.png"));
-                                Texture2D singularTexture = contentPack.LoadAsset<Texture2D>(textureModel.TileSheetPath);
+                                textureModel.TileSheetPath = contentPack.ModContent.GetInternalAssetName(Path.Combine(parentFolderName, textureFolder.Name, "texture.png")).Name;
+                                Texture2D singularTexture = contentPack.ModContent.Load<Texture2D>(textureModel.TileSheetPath);
                                 if (singularTexture.Height >= AlternativeTextureModel.MAX_TEXTURE_HEIGHT)
                                 {
                                     Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: The texture {textureModel.TextureId} has a height larger than 16384!\nPlease split it into individual textures (e.g. texture_0.png, texture_1.png, etc.) to resolve this issue.", LogLevel.Warn);
@@ -623,6 +653,9 @@ namespace AlternativeTextures
                             // Track the texture model
                             textureManager.AddAlternativeTexture(textureModel);
 
+                            // Register for Content Patcher
+                            _ = Helper.GameContent.Load<Texture2D>($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{textureModel.GetTokenId()}");
+
                             // Log it
                             Monitor.Log(textureModel.ToString(), LogLevel.Trace);
                         }
@@ -638,7 +671,7 @@ namespace AlternativeTextures
         private bool StitchTexturesToModel(AlternativeTextureModel textureModel, IContentPack contentPack, string rootPath, IEnumerable<string> textureFilePaths)
         {
             int maxVariationsPerTexture = AlternativeTextureModel.MAX_TEXTURE_HEIGHT / textureModel.TextureHeight;
-            Texture2D baseTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(rootPath, textureFilePaths.First()));
+            Texture2D baseTexture = contentPack.ModContent.Load<Texture2D>(Path.Combine(rootPath, textureFilePaths.First()));
 
             // If there is only one split texture file, skip the rest of the logic to avoid issues
             if (textureFilePaths.Count() == 1 || textureModel.GetVariations() == 1)
@@ -678,7 +711,7 @@ namespace AlternativeTextures
                         Monitor.Log($"Stitching together {textureModel.TextureId}: {fileName}", LogLevel.Trace);
 
                         var offset = x * baseTexture.Width * baseTexture.Height;
-                        var subTexture = contentPack.LoadAsset<Texture2D>(Path.Combine(rootPath, fileName));
+                        var subTexture = contentPack.ModContent.Load<Texture2D>(Path.Combine(rootPath, fileName));
 
                         try
                         {
