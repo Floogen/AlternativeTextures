@@ -16,6 +16,7 @@ namespace AlternativeTextures.Framework.Models
         public string ItemName { get; set; }
         internal int ItemId { get; set; } = -1;
         public string Type { get; set; }
+        [Obsolete("No longer used due SMAPI 3.14.0 allowing for passive invalidation checks.")]
         public bool EnableContentPatcherCheck { get; set; }
         public List<string> Keywords { get; set; } = new List<string>();
         public List<string> Seasons { get; set; } = new List<string>(); // For use by mod user to determine which seasons the texture is valid for
