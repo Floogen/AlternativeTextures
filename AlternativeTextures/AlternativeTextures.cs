@@ -80,7 +80,7 @@ namespace AlternativeTextures
             multiplayer = helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
 
             // Setup our managers
-            textureManager = new TextureManager(monitor);
+            textureManager = new TextureManager(monitor, helper);
             apiManager = new ApiManager(monitor);
             assetManager = new AssetManager(helper, textureManager);
 
@@ -180,12 +180,11 @@ namespace AlternativeTextures
                 {
                     assetManager.toolNames[asset.Name] = Helper.GameContent.Load<Texture2D>(asset);
                 }
-                else
+                else if (AlternativeTextures.textureManager.GetTextureByToken(asset.Name) is Texture2D texture && texture is not null)
                 {
-                    var trackedModel = AlternativeTextures.textureManager.GetAllTextures().First(t => asset.IsEquivalentTo($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{t.GetTokenId()}"));
-                    var loadedTexture = Helper.GameContent.Load<Texture2D>($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{trackedModel.GetTokenId()}");
+                    var loadedTexture = Helper.GameContent.Load<Texture2D>(asset.Name);
 
-                    textureManager.UpdateTexture(trackedModel.GetId(), loadedTexture);
+                    textureManager.UpdateTexture(asset.Name, loadedTexture);
                 }
             }
         }
@@ -200,9 +199,9 @@ namespace AlternativeTextures
                 {
                     e.LoadFrom(() => assetManager.toolNames.First(n => assetName.IsEquivalentTo($"{AlternativeTextures.TOOL_TOKEN_HEADER}{n.Key}")).Value, AssetLoadPriority.Exclusive);
                 }
-                else if (AlternativeTextures.textureManager.GetAllTextures().FirstOrDefault(t => assetName.IsEquivalentTo($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{t.GetTokenId()}")) is AlternativeTextureModel textureModel && textureModel is not null)
+                else if (textureManager.GetModelByToken(assetName.Name) is AlternativeTextureModel model && model is not null)
                 {
-                    e.LoadFrom(() => textureModel.Textures.First(), AssetLoadPriority.Exclusive, textureModel.Owner);
+                    e.LoadFrom(() => model.GetTexture(textureManager.GetVariationFromToken(assetName.Name)), AssetLoadPriority.Exclusive);
                 }
             }
             else if (e.NameWithoutLocale.IsEquivalentTo("Data/AdditionalWallpaperFlooring") && textureManager.GetValidTextureNamesWithSeason().Count > 0)
@@ -639,22 +638,24 @@ namespace AlternativeTextures
                                     Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: The texture {textureModel.TextureId} has a height larger than 16384!\nPlease split it into individual textures (e.g. texture_0.png, texture_1.png, etc.) to resolve this issue.", LogLevel.Warn);
                                     continue;
                                 }
-                                else if (textureModel.IsDecoration() && singularTexture.Width < 256)
+                                else if (textureModel.IsDecoration())
                                 {
-                                    Monitor.Log($"Unable to add alternative texture for {textureModel.ItemName} from {contentPack.Manifest.Name}: The required image width is 256 for Decoration types (wallpapers / floors). Please correct the image's width manually.", LogLevel.Warn);
-                                    continue;
+                                    if (singularTexture.Width < 256)
+                                    {
+                                        Monitor.Log($"Unable to add alternative texture for {textureModel.ItemName} from {contentPack.Manifest.Name}: The required image width is 256 for Decoration types (wallpapers / floors). Please correct the image's width manually.", LogLevel.Warn);
+                                        continue;
+                                    }
+
+                                    textureModel.Textures[0] = singularTexture;
                                 }
-                                else
+                                else if (!SplitVerticalTexturesToModel(textureModel, contentPack.Manifest.Name, singularTexture))
                                 {
-                                    textureModel.Textures.Add(singularTexture);
+                                    continue;
                                 }
                             }
 
                             // Track the texture model
                             textureManager.AddAlternativeTexture(textureModel);
-
-                            // Register for Content Patcher (likely should convert this so we do the load on textureModel itself)
-                            _ = Helper.GameContent.Load<Texture2D>($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{textureModel.GetTokenId()}");
 
                             // Log it
                             Monitor.Log(textureModel.ToString(), LogLevel.Trace);
@@ -668,9 +669,44 @@ namespace AlternativeTextures
             }
         }
 
+        internal bool SplitVerticalTexturesToModel(AlternativeTextureModel textureModel, string contentPackName, Texture2D verticalTexture)
+        {
+            try
+            {
+                for (int v = 0; v < textureModel.GetVariations(); v++)
+                {
+                    var extractRectangle = new Rectangle(0, textureModel.TextureHeight * v, verticalTexture.Width, textureModel.TextureHeight);
+                    Color[] extractPixels = new Color[extractRectangle.Width * extractRectangle.Height];
+
+                    if (verticalTexture.Bounds.Contains(extractRectangle) is false)
+                    {
+                        int maxVariationsPossible = verticalTexture.Height / textureModel.TextureHeight;
+
+                        Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPackName}: More variations specified ({textureModel.GetVariations()}) than given ({maxVariationsPossible})", LogLevel.Warn);
+                        return false;
+                    }
+
+                    // Get the required pixels
+                    verticalTexture.GetData(0, extractRectangle, extractPixels, 0, extractPixels.Length);
+
+                    // Set the required pixels
+                    var extractedTexture = new Texture2D(Game1.graphics.GraphicsDevice, extractRectangle.Width, extractRectangle.Height);
+                    extractedTexture.SetData(extractPixels);
+
+                    textureModel.Textures[v] = (extractedTexture);
+                }
+            }
+            catch (Exception exception)
+            {
+                Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPackName}: Unhandled framework error: {exception}", LogLevel.Warn);
+                return false;
+            }
+
+            return true;
+        }
+
         private bool StitchTexturesToModel(AlternativeTextureModel textureModel, IContentPack contentPack, string rootPath, IEnumerable<string> textureFilePaths)
         {
-            int maxVariationsPerTexture = AlternativeTextureModel.MAX_TEXTURE_HEIGHT / textureModel.TextureHeight;
             Texture2D baseTexture = contentPack.ModContent.Load<Texture2D>(Path.Combine(rootPath, textureFilePaths.First()));
 
             // If there is only one split texture file, skip the rest of the logic to avoid issues
@@ -681,56 +717,19 @@ namespace AlternativeTextures
                     Monitor.Log($"Detected more split textures ({textureFilePaths.Count()}) than specified variations ({textureModel.GetVariations()}) for {textureModel.TextureId} from {contentPack.Manifest.Name}", LogLevel.Warn);
                 }
 
-                textureModel.Textures.Add(baseTexture);
+                textureModel.Textures[0] = baseTexture;
                 return true;
             }
 
             try
             {
-                for (int t = 0; t <= (textureModel.GetVariations() * textureModel.TextureHeight) / AlternativeTextureModel.MAX_TEXTURE_HEIGHT; t++)
+                int variation = 0;
+                foreach (var textureFilePath in textureFilePaths)
                 {
-                    int variationLimit = Math.Min(maxVariationsPerTexture, textureModel.GetVariations() - (maxVariationsPerTexture * t));
-                    if (variationLimit < 0)
-                    {
-                        variationLimit = 0;
-                    }
-                    Texture2D stitchedTexture = new Texture2D(Game1.graphics.GraphicsDevice, baseTexture.Width, Math.Min(textureModel.TextureHeight * variationLimit, AlternativeTextureModel.MAX_TEXTURE_HEIGHT));
+                    var splitTexture = contentPack.ModContent.Load<Texture2D>(Path.Combine(rootPath, textureFilePath));
+                    textureModel.Textures[variation] = splitTexture;
 
-                    // Now stitch together the split textures into a single texture
-                    Color[] pixels = new Color[stitchedTexture.Width * stitchedTexture.Height];
-                    for (int x = 0; x < variationLimit; x++)
-                    {
-                        int textureIndex = x + (maxVariationsPerTexture * t);
-                        if (textureFilePaths.ElementAtOrDefault(textureIndex) is null)
-                        {
-                            Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: Attempted to add variation {textureIndex} from split texture, but the texture image doesn't exist!", LogLevel.Warn);
-                            return false;
-                        }
-
-                        var fileName = textureFilePaths.ElementAt(textureIndex);
-                        Monitor.Log($"Stitching together {textureModel.TextureId}: {fileName}", LogLevel.Trace);
-
-                        var offset = x * baseTexture.Width * baseTexture.Height;
-                        var subTexture = contentPack.ModContent.Load<Texture2D>(Path.Combine(rootPath, fileName));
-
-                        try
-                        {
-                            Color[] subPixels = new Color[subTexture.Width * subTexture.Height];
-                            subTexture.GetData(subPixels);
-                            for (int i = 0; i < subPixels.Length; i++)
-                            {
-                                pixels[i + offset] = subPixels[i];
-                            }
-                        }
-                        catch (IndexOutOfRangeException)
-                        {
-                            Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: Failed to add variation from split texture {fileName}, it has a different image size [{subTexture.Width}x{subTexture.Height}] compared to the first texture [{baseTexture.Width}x{baseTexture.Height}]!", LogLevel.Warn);
-                            return false;
-                        }
-                    }
-
-                    stitchedTexture.SetData(pixels);
-                    textureModel.Textures.Add(stitchedTexture);
+                    variation++;
                 }
             }
             catch (Exception exception)
