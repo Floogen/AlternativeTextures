@@ -45,7 +45,7 @@ namespace AlternativeTextures.Framework.Managers
                 _textureIdsInsensitive.Add(model.GetId());
             }
 
-            RegisterTokens(model);
+            //RegisterTokens(model);
         }
 
         public void RegisterTokens(AlternativeTextureModel textureModel)
