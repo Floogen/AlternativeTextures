@@ -362,6 +362,9 @@ namespace AlternativeTextures
 
         private void OnGameLaunched(object sender, GameLaunchedEventArgs e)
         {
+            // Set our default configuration file
+            modConfig = Helper.ReadConfig<ModConfig>();
+
             // Hook into the APIs we utilize
             if (Helper.ModRegistry.IsLoaded("spacechase0.JsonAssets"))
             {
@@ -388,9 +391,6 @@ namespace AlternativeTextures
                 var loadedTexture = Helper.GameContent.Load<Texture2D>($"{AlternativeTextures.TOOL_TOKEN_HEADER}{tool.Key}");
                 assetManager.toolNames[tool.Key] = loadedTexture;
             }
-
-            // Set our default configuration file
-            modConfig = Helper.ReadConfig<ModConfig>();
 
             // Hook into GMCM, if applicable
             if (Helper.ModRegistry.IsLoaded("spacechase0.GenericModConfigMenu") && apiManager.HookIntoGenericModConfigMenu(Helper))
@@ -658,7 +658,10 @@ namespace AlternativeTextures
                             textureManager.AddAlternativeTexture(textureModel);
 
                             // Log it
-                            Monitor.Log(textureModel.ToString(), LogLevel.Trace);
+                            if (modConfig.OutputTextureDataToLog)
+                            {
+                                Monitor.Log(textureModel.ToString(), LogLevel.Trace);
+                            }
                         }
                     }
                 }

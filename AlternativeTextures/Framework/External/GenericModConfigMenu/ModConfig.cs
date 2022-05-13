@@ -9,6 +9,7 @@ namespace AlternativeTextures.Framework.External.GenericModConfigMenu
 {
     public class ModConfig
     {
+        public bool OutputTextureDataToLog { get; set; }
         public List<DisabledTextureModel> DisabledTextures { get; set; } = new List<DisabledTextureModel>();
 
         internal bool IsTextureVariationDisabled(string textureId, int variation)

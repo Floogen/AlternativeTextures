@@ -132,7 +132,10 @@ namespace AlternativeTextures.Framework.Interfaces.API
                 AlternativeTextures.textureManager.AddAlternativeTexture(textureModel);
 
                 // Log it
-                _framework.Monitor.Log(textureModel.ToString(), LogLevel.Trace);
+                if (AlternativeTextures.modConfig.OutputTextureDataToLog)
+                {
+                    _framework.Monitor.Log(textureModel.ToString(), LogLevel.Trace);
+                }
             }
         }
     }
