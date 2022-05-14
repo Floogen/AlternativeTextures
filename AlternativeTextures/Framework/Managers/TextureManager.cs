@@ -52,15 +52,12 @@ namespace AlternativeTextures.Framework.Managers
         {
             // Register for Content Patcher
             var token = $"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{textureModel.GetTokenId()}";
-
             _tokenToModel[token] = new TokenModel() { Id = token, AlternativeTexture = textureModel };
-            _tokenToTextures[token] = _helper.GameContent.Load<Texture2D>(token);
+
             foreach (int variation in textureModel.Textures.Keys)
             {
                 token = $"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{textureModel.GetTokenId(variation)}";
-
                 _tokenToModel[token] = new TokenModel() { Id = token, Variation = variation, AlternativeTexture = textureModel };
-                _tokenToTextures[token] = _helper.GameContent.Load<Texture2D>(token);
             }
         }
 
@@ -171,6 +168,11 @@ namespace AlternativeTextures.Framework.Managers
             }
 
             return _tokenToModel[token];
+        }
+
+        public void UpdateTokenCache(string token)
+        {
+            _tokenToTextures[token] = _helper.GameContent.Load<Texture2D>(token);
         }
 
         public void UpdateTexture(string token, Texture2D texture)

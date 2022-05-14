@@ -1,4 +1,5 @@
 ﻿using AlternativeTextures.Framework.Managers;
+using AlternativeTextures.Framework.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -48,8 +49,14 @@ namespace AlternativeTextures.Framework.External.ContentPatcher
         {
             error = String.Empty;
 
-            if (!_textureManager.GetValidTextureNamesWithSeason().Any(name => String.Equals(name, input, StringComparison.OrdinalIgnoreCase)))
+            if (_textureManager.GetTextureByToken($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{input}") is null)
             {
+                if (_textureManager.GetModelByToken($"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{input}") is TokenModel model && model is not null)
+                {
+                    _textureManager.UpdateTokenCache(model.Id);
+                    return true;
+                }
+
                 error = $"No matching texture found for the given UNIQUE_ID.TEXTURE_NAME: {input}";
                 return false;
             }
