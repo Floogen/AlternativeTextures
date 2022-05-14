@@ -39,6 +39,10 @@ namespace AlternativeTextures.Framework.Managers
             toolNames.Add("Scissors", _scissorsTexture);
             toolNames.Add("PaintBrush_Empty", _paintBrushEmptyTexture);
             toolNames.Add("PaintBrush_Filled", _paintBrushFilledTexture);
+            toolNames.Add($"{AlternativeTextures.TOOL_TOKEN_HEADER}PaintBucket", _paintBucketTexture);
+            toolNames.Add($"{AlternativeTextures.TOOL_TOKEN_HEADER}Scissors", _scissorsTexture);
+            toolNames.Add($"{AlternativeTextures.TOOL_TOKEN_HEADER}PaintBrush_Empty", _paintBrushEmptyTexture);
+            toolNames.Add($"{AlternativeTextures.TOOL_TOKEN_HEADER}PaintBrush_Filled", _paintBrushFilledTexture);
 
             // Get the TextureMananger
             _textureManager = textureManager;
