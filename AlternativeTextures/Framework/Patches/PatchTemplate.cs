@@ -337,6 +337,10 @@ namespace AlternativeTextures.Framework.Patches
                     return TextureType.Tree;
                 case FruitTree fruitTree:
                     return TextureType.FruitTree;
+                case Grass grass:
+                    return TextureType.Grass;
+                case TerrainFeature hoeDirt:
+                    return TextureType.Crop;
                 case Building building:
                     return TextureType.Building;
                 case Furniture furniture:
