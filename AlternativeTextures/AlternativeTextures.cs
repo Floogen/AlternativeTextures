@@ -384,6 +384,8 @@ namespace AlternativeTextures
             // Load any owned content packs
             this.LoadContentPacks();
 
+            Monitor.Log($"Finished loading Alternative Textures content packs", LogLevel.Debug);
+
             // Register tools
             foreach (var tool in assetManager.toolNames.ToList())
             {
