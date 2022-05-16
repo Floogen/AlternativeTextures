@@ -266,6 +266,24 @@ namespace AlternativeTextures
                         tool.modData["AlternativeTextureName"] = flooring.modData["AlternativeTextureName"];
                         tool.modData["AlternativeTextureVariation"] = flooring.modData["AlternativeTextureVariation"];
                     }
+                    else if (terrainFeature is HoeDirt hoeDirt)
+                    {
+                        var modelType = AlternativeTextureModel.TextureType.Crop;
+                        var instanceName = Game1.objectInformation.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectInformation[hoeDirt.crop.netSeedIndex.Value].Split('/')[0] : String.Empty;
+                        if (!hoeDirt.modData.ContainsKey("AlternativeTextureName") || !hoeDirt.modData.ContainsKey("AlternativeTextureVariation"))
+                        {
+                            // Assign default modData
+                            var instanceSeasonName = $"{modelType}_{instanceName}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
+                            PatchTemplate.AssignDefaultModData(hoeDirt, instanceSeasonName, true);
+                        }
+
+                        Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.texture_copied"), 2) { timeLeft = 1000 });
+                        tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{instanceName}";
+                        tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
+                        tool.modData["AlternativeTextureOwner"] = hoeDirt.modData["AlternativeTextureOwner"];
+                        tool.modData["AlternativeTextureName"] = hoeDirt.modData["AlternativeTextureName"];
+                        tool.modData["AlternativeTextureVariation"] = hoeDirt.modData["AlternativeTextureVariation"];
+                    }
                     else
                     {
                         tool.modData[PAINT_BRUSH_FLAG] = String.Empty;
@@ -325,6 +343,21 @@ namespace AlternativeTextures
                                 flooring.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
                                 flooring.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
                                 flooring.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
+                            }
+                            else
+                            {
+                                Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.invalid_copied_texture", new { textureName = tool.modData[PAINT_BRUSH_FLAG] }), 3) { timeLeft = 2000 });
+                            }
+                        }
+                        else if (terrainFeature is HoeDirt hoeDirt)
+                        {
+                            var modelType = AlternativeTextureModel.TextureType.Crop;
+                            var instanceName = Game1.objectInformation.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectInformation[hoeDirt.crop.netSeedIndex.Value].Split('/')[0] : String.Empty;
+                            if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_{instanceName}")
+                            {
+                                hoeDirt.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
+                                hoeDirt.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
+                                hoeDirt.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
                             }
                             else
                             {

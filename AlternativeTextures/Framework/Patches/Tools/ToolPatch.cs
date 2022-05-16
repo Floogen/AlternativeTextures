@@ -256,7 +256,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
             var targetedTerrain = GetTerrainFeatureAt(location, x, y);
             if (targetedTerrain != null)
             {
-                if (targetedTerrain is HoeDirt || targetedTerrain is GiantCrop || targetedTerrain is Grass)
+                if (targetedTerrain is GiantCrop || targetedTerrain is Grass)
                 {
                     Game1.addHUDMessage(new HUDMessage(_helper.Translation.Get("messages.warning.paint_not_placeable"), 3));
                     return CancelUsing(who);
@@ -281,6 +281,12 @@ namespace AlternativeTextures.Framework.Patches.Tools
                         var saplingName = Game1.objectInformation.ContainsKey(saplingIndex) ? Game1.objectInformation[saplingIndex].Split('/')[0] : String.Empty;
 
                         var instanceSeasonName = $"{AlternativeTextureModel.TextureType.FruitTree}_{saplingName}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
+                        AssignDefaultModData(targetedTerrain, instanceSeasonName, true);
+                    }
+                    else if (targetedTerrain is HoeDirt hoeDirt)
+                    {
+                        var instanceName = Game1.objectInformation.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectInformation[hoeDirt.crop.netSeedIndex.Value].Split('/')[0] : String.Empty;
+                        var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Crop}_{instanceName}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
                         AssignDefaultModData(targetedTerrain, instanceSeasonName, true);
                     }
                     else
