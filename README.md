@@ -11,3 +11,12 @@ See [the wiki](https://github.com/Floogen/AlternativeTextures/wiki) for detailed
 &nbsp;
 ## Example Content Packs
 Some example alternative textures are included in this repository, which can be [found here](https://github.com/Floogen/AlternativeTextures/tree/development/AlternativeTextures/Examples).
+
+# Credits
+## Translations
+Alternative Textures has been generously translated into several languages by the following users:
+
+* **Russian** - angel4killer
+* **Thai** - ellipszist
+* **Turkish** - KediDili
+* **Ukrainian** - burunduk
