@@ -459,7 +459,7 @@ namespace AlternativeTextures
                             {
                                 scale = 1;
                             }
-                            configApi.RegisterImage(ModManifest, $"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{model.GetTokenId()}", sourceRect, scale);
+                            configApi.RegisterImage(ModManifest, $"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{model.GetTokenId(variation)}", sourceRect, scale);
 
                             // Add our custom widget, which passes over the required data needed to flag the TextureId with the appropriate Variation 
                             bool wasClicking = false;
