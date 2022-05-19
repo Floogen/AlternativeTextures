@@ -281,7 +281,7 @@ namespace AlternativeTextures.Framework.Patches
                 case 9:
                     return "Stepping Stone Path";
                 case 10:
-                    return "Straw Brick Floor";
+                    return "Brick Floor";
                 case 11:
                     return "Rustic Plank Floor";
                 case 12:
