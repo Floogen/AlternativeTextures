@@ -181,6 +181,12 @@ namespace AlternativeTextures.Framework.UI
             var sourceRect = GetSourceRectangle(availableModels.First(), target, availableModels.First().TextureWidth, availableModels.First().TextureHeight, -1);
             switch (_textureType)
             {
+                case TextureType.Craftable:
+                    if (sourceRect.Height <= 16)
+                    {
+                        _maxRows = 8;
+                    }
+                    break;
                 case TextureType.Flooring:
                     sourceRect = new Rectangle(0, 0, 16, 32);
                     break;
@@ -207,7 +213,7 @@ namespace AlternativeTextures.Framework.UI
                     sourceRect = new Rectangle(0, 0, 128, 32);
                     break;
                 case TextureType.Grass:
-                    _maxRows = 4;
+                    _maxRows = 6;
                     _texturesPerRow = 4;
                     widthOffsetScale = 3;
                     xOffset = 32;
