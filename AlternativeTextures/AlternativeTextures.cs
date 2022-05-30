@@ -54,6 +54,7 @@ namespace AlternativeTextures
         internal const string PAINT_BRUSH_FLAG = "AlternativeTextures.PaintBrushFlag";
         internal const string PAINT_BRUSH_SCALE = "AlternativeTextures.PaintBrushScale";
         internal const string SCISSORS_FLAG = "AlternativeTextures.ScissorsFlag";
+        internal const string SPRAY_CAN_FLAG = "AlternativeTextures.SprayCanFlag";
 
         // Shared static helpers
         internal static IMonitor monitor;
@@ -237,99 +238,22 @@ namespace AlternativeTextures
 
         private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
         {
-            if (Game1.activeClickableMenu is null && Game1.player.CurrentTool is GenericTool tool && tool.modData.ContainsKey(PAINT_BRUSH_FLAG) && e.Button is SButton.MouseRight)
+            if (Game1.activeClickableMenu is null && Game1.player.CurrentTool is GenericTool tool && e.Button is SButton.MouseRight)
             {
-                Helper.Input.Suppress(e.Button);
-
                 var xTile = (int)e.Cursor.Tile.X * 64;
                 var yTile = (int)e.Cursor.Tile.Y * 64;
 
-                // Verify that a supported object exists at the tile
-                var placedObject = PatchTemplate.GetObjectAt(Game1.currentLocation, xTile, yTile);
-                if (placedObject is null)
+                if (tool.modData.ContainsKey(PAINT_BRUSH_FLAG))
                 {
-                    var terrainFeature = PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, xTile, yTile);
-                    if (terrainFeature is Flooring flooring)
-                    {
-                        var modelType = AlternativeTextureModel.TextureType.Flooring;
-                        if (!flooring.modData.ContainsKey("AlternativeTextureName") || !flooring.modData.ContainsKey("AlternativeTextureVariation"))
-                        {
-                            // Assign default modData
-                            var instanceSeasonName = $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
-                            PatchTemplate.AssignDefaultModData(flooring, instanceSeasonName, true);
-                        }
+                    Helper.Input.Suppress(e.Button);
 
-                        Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.texture_copied"), 2) { timeLeft = 1000 });
-                        tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}";
-                        tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
-                        tool.modData["AlternativeTextureOwner"] = flooring.modData["AlternativeTextureOwner"];
-                        tool.modData["AlternativeTextureName"] = flooring.modData["AlternativeTextureName"];
-                        tool.modData["AlternativeTextureVariation"] = flooring.modData["AlternativeTextureVariation"];
-                    }
-                    else if (terrainFeature is HoeDirt hoeDirt)
-                    {
-                        var modelType = AlternativeTextureModel.TextureType.Crop;
-                        var instanceName = Game1.objectInformation.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectInformation[hoeDirt.crop.netSeedIndex.Value].Split('/')[0] : String.Empty;
-                        if (!hoeDirt.modData.ContainsKey("AlternativeTextureName") || !hoeDirt.modData.ContainsKey("AlternativeTextureVariation"))
-                        {
-                            // Assign default modData
-                            var instanceSeasonName = $"{modelType}_{instanceName}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
-                            PatchTemplate.AssignDefaultModData(hoeDirt, instanceSeasonName, true);
-                        }
-
-                        Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.texture_copied"), 2) { timeLeft = 1000 });
-                        tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{instanceName}";
-                        tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
-                        tool.modData["AlternativeTextureOwner"] = hoeDirt.modData["AlternativeTextureOwner"];
-                        tool.modData["AlternativeTextureName"] = hoeDirt.modData["AlternativeTextureName"];
-                        tool.modData["AlternativeTextureVariation"] = hoeDirt.modData["AlternativeTextureVariation"];
-                    }
-                    else if (terrainFeature is Grass grass)
-                    {
-                        var modelType = AlternativeTextureModel.TextureType.Grass;
-                        if (!grass.modData.ContainsKey("AlternativeTextureName") || !grass.modData.ContainsKey("AlternativeTextureVariation"))
-                        {
-                            // Assign default modData
-                            var instanceSeasonName = $"{modelType}_Grass_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
-                            PatchTemplate.AssignDefaultModData(grass, instanceSeasonName, true);
-                        }
-
-                        Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.texture_copied"), 2) { timeLeft = 1000 });
-                        tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_Grass";
-                        tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
-                        tool.modData["AlternativeTextureOwner"] = grass.modData["AlternativeTextureOwner"];
-                        tool.modData["AlternativeTextureName"] = grass.modData["AlternativeTextureName"];
-                        tool.modData["AlternativeTextureVariation"] = grass.modData["AlternativeTextureVariation"];
-                    }
-                    else
-                    {
-                        tool.modData[PAINT_BRUSH_FLAG] = String.Empty;
-                        tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
-                        if (terrainFeature != null)
-                        {
-                            Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.brush_not_supported"), 3) { timeLeft = 2000 });
-                        }
-                        else
-                        {
-                            Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.cleared_brush"), 2) { timeLeft = 1000 });
-                        }
-                    }
+                    RightClickPaintBrush(tool, xTile, yTile);
                 }
-                else
+                else if (tool.modData.ContainsKey(SPRAY_CAN_FLAG))
                 {
-                    var modelType = placedObject is Furniture ? AlternativeTextureModel.TextureType.Furniture : AlternativeTextureModel.TextureType.Craftable;
-                    if (!placedObject.modData.ContainsKey("AlternativeTextureName") || !placedObject.modData.ContainsKey("AlternativeTextureVariation"))
-                    {
-                        var instanceSeasonName = $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}_{Game1.currentSeason}";
-                        PatchTemplate.AssignDefaultModData(placedObject, instanceSeasonName, true);
-                    }
+                    Helper.Input.Suppress(e.Button);
 
-                    Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.texture_copied"), 2) { timeLeft = 1000 });
-                    tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}";
-                    tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
-                    tool.modData["AlternativeTextureOwner"] = placedObject.modData["AlternativeTextureOwner"];
-                    tool.modData["AlternativeTextureName"] = placedObject.modData["AlternativeTextureName"];
-                    tool.modData["AlternativeTextureVariation"] = placedObject.modData["AlternativeTextureVariation"];
+                    ToolPatch.UsePaintBucket(Game1.player.currentLocation, xTile, yTile, Game1.player, true);
                 }
             }
         }
@@ -341,78 +265,181 @@ namespace AlternativeTextures
                 var xTile = (int)e.Cursor.Tile.X * 64;
                 var yTile = (int)e.Cursor.Tile.Y * 64;
 
-                if (String.IsNullOrEmpty(tool.modData[PAINT_BRUSH_FLAG]))
+                if (tool.modData.ContainsKey(PAINT_BRUSH_FLAG))
                 {
-                    Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.brush_is_empty"), 3) { timeLeft = 2000 });
+                    LeftClickPaintBrush(tool, xTile, yTile);
+                }
+                else if (tool.modData.ContainsKey(SPRAY_CAN_FLAG))
+                {
+
+                }
+            }
+        }
+
+        private void RightClickPaintBrush(GenericTool tool, int xTile, int yTile)
+        {
+            // Verify that a supported object exists at the tile
+            var placedObject = PatchTemplate.GetObjectAt(Game1.currentLocation, xTile, yTile);
+            if (placedObject is null)
+            {
+                var terrainFeature = PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, xTile, yTile);
+                if (terrainFeature is Flooring flooring)
+                {
+                    var modelType = AlternativeTextureModel.TextureType.Flooring;
+                    if (!flooring.modData.ContainsKey("AlternativeTextureName") || !flooring.modData.ContainsKey("AlternativeTextureVariation"))
+                    {
+                        // Assign default modData
+                        var instanceSeasonName = $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
+                        PatchTemplate.AssignDefaultModData(flooring, instanceSeasonName, true);
+                    }
+
+                    Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.texture_copied"), 2) { timeLeft = 1000 });
+                    tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}";
+                    tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
+                    tool.modData["AlternativeTextureOwner"] = flooring.modData["AlternativeTextureOwner"];
+                    tool.modData["AlternativeTextureName"] = flooring.modData["AlternativeTextureName"];
+                    tool.modData["AlternativeTextureVariation"] = flooring.modData["AlternativeTextureVariation"];
+                }
+                else if (terrainFeature is HoeDirt hoeDirt)
+                {
+                    var modelType = AlternativeTextureModel.TextureType.Crop;
+                    var instanceName = Game1.objectInformation.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectInformation[hoeDirt.crop.netSeedIndex.Value].Split('/')[0] : String.Empty;
+                    if (!hoeDirt.modData.ContainsKey("AlternativeTextureName") || !hoeDirt.modData.ContainsKey("AlternativeTextureVariation"))
+                    {
+                        // Assign default modData
+                        var instanceSeasonName = $"{modelType}_{instanceName}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
+                        PatchTemplate.AssignDefaultModData(hoeDirt, instanceSeasonName, true);
+                    }
+
+                    Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.texture_copied"), 2) { timeLeft = 1000 });
+                    tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{instanceName}";
+                    tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
+                    tool.modData["AlternativeTextureOwner"] = hoeDirt.modData["AlternativeTextureOwner"];
+                    tool.modData["AlternativeTextureName"] = hoeDirt.modData["AlternativeTextureName"];
+                    tool.modData["AlternativeTextureVariation"] = hoeDirt.modData["AlternativeTextureVariation"];
+                }
+                else if (terrainFeature is Grass grass)
+                {
+                    var modelType = AlternativeTextureModel.TextureType.Grass;
+                    if (!grass.modData.ContainsKey("AlternativeTextureName") || !grass.modData.ContainsKey("AlternativeTextureVariation"))
+                    {
+                        // Assign default modData
+                        var instanceSeasonName = $"{modelType}_Grass_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
+                        PatchTemplate.AssignDefaultModData(grass, instanceSeasonName, true);
+                    }
+
+                    Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.texture_copied"), 2) { timeLeft = 1000 });
+                    tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_Grass";
+                    tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
+                    tool.modData["AlternativeTextureOwner"] = grass.modData["AlternativeTextureOwner"];
+                    tool.modData["AlternativeTextureName"] = grass.modData["AlternativeTextureName"];
+                    tool.modData["AlternativeTextureVariation"] = grass.modData["AlternativeTextureVariation"];
                 }
                 else
                 {
-                    // Verify that a supported object exists at the tile
-                    var placedObject = PatchTemplate.GetObjectAt(Game1.currentLocation, xTile, yTile);
-                    if (placedObject is null)
+                    tool.modData[PAINT_BRUSH_FLAG] = String.Empty;
+                    tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
+                    if (terrainFeature != null)
                     {
-                        var terrainFeature = PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, xTile, yTile);
-                        if (terrainFeature is Flooring flooring)
-                        {
-                            var modelType = AlternativeTextureModel.TextureType.Flooring;
-                            if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}")
-                            {
-                                flooring.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
-                                flooring.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
-                                flooring.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
-                            }
-                            else
-                            {
-                                Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.invalid_copied_texture", new { textureName = tool.modData[PAINT_BRUSH_FLAG] }), 3) { timeLeft = 2000 });
-                            }
-                        }
-                        else if (terrainFeature is HoeDirt hoeDirt)
-                        {
-                            var modelType = AlternativeTextureModel.TextureType.Crop;
-                            var instanceName = Game1.objectInformation.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectInformation[hoeDirt.crop.netSeedIndex.Value].Split('/')[0] : String.Empty;
-                            if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_{instanceName}")
-                            {
-                                hoeDirt.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
-                                hoeDirt.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
-                                hoeDirt.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
-                            }
-                            else
-                            {
-                                Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.invalid_copied_texture", new { textureName = tool.modData[PAINT_BRUSH_FLAG] }), 3) { timeLeft = 2000 });
-                            }
-                        }
-                        else if (terrainFeature is Grass grass)
-                        {
-                            var modelType = AlternativeTextureModel.TextureType.Grass;
-                            if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_Grass")
-                            {
-                                grass.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
-                                grass.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
-                                grass.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
-                            }
-                            else
-                            {
-                                Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.invalid_copied_texture", new { textureName = tool.modData[PAINT_BRUSH_FLAG] }), 3) { timeLeft = 2000 });
-                            }
-                        }
-                        else if (terrainFeature != null)
-                        {
-                            Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.paint_not_placeable"), 3) { timeLeft = 2000 });
-                        }
+                        Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.brush_not_supported"), 3) { timeLeft = 2000 });
                     }
                     else
                     {
-                        var modelType = placedObject is Furniture ? AlternativeTextureModel.TextureType.Furniture : AlternativeTextureModel.TextureType.Craftable;
-                        if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}")
+                        Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.cleared_brush"), 2) { timeLeft = 1000 });
+                    }
+                }
+            }
+            else
+            {
+                var modelType = placedObject is Furniture ? AlternativeTextureModel.TextureType.Furniture : AlternativeTextureModel.TextureType.Craftable;
+                if (!placedObject.modData.ContainsKey("AlternativeTextureName") || !placedObject.modData.ContainsKey("AlternativeTextureVariation"))
+                {
+                    var instanceSeasonName = $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}_{Game1.currentSeason}";
+                    PatchTemplate.AssignDefaultModData(placedObject, instanceSeasonName, true);
+                }
+
+                Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.texture_copied"), 2) { timeLeft = 1000 });
+                tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}";
+                tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
+                tool.modData["AlternativeTextureOwner"] = placedObject.modData["AlternativeTextureOwner"];
+                tool.modData["AlternativeTextureName"] = placedObject.modData["AlternativeTextureName"];
+                tool.modData["AlternativeTextureVariation"] = placedObject.modData["AlternativeTextureVariation"];
+            }
+        }
+
+        private void LeftClickPaintBrush(GenericTool tool, int xTile, int yTile)
+        {
+            if (String.IsNullOrEmpty(tool.modData[PAINT_BRUSH_FLAG]))
+            {
+                Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.brush_is_empty"), 3) { timeLeft = 2000 });
+            }
+            else
+            {
+                // Verify that a supported object exists at the tile
+                var placedObject = PatchTemplate.GetObjectAt(Game1.currentLocation, xTile, yTile);
+                if (placedObject is null)
+                {
+                    var terrainFeature = PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, xTile, yTile);
+                    if (terrainFeature is Flooring flooring)
+                    {
+                        var modelType = AlternativeTextureModel.TextureType.Flooring;
+                        if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}")
                         {
-                            placedObject.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
-                            placedObject.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
-                            placedObject.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
+                            flooring.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
+                            flooring.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
+                            flooring.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
                         }
                         else
                         {
                             Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.invalid_copied_texture", new { textureName = tool.modData[PAINT_BRUSH_FLAG] }), 3) { timeLeft = 2000 });
                         }
+                    }
+                    else if (terrainFeature is HoeDirt hoeDirt)
+                    {
+                        var modelType = AlternativeTextureModel.TextureType.Crop;
+                        var instanceName = Game1.objectInformation.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectInformation[hoeDirt.crop.netSeedIndex.Value].Split('/')[0] : String.Empty;
+                        if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_{instanceName}")
+                        {
+                            hoeDirt.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
+                            hoeDirt.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
+                            hoeDirt.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
+                        }
+                        else
+                        {
+                            Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.invalid_copied_texture", new { textureName = tool.modData[PAINT_BRUSH_FLAG] }), 3) { timeLeft = 2000 });
+                        }
+                    }
+                    else if (terrainFeature is Grass grass)
+                    {
+                        var modelType = AlternativeTextureModel.TextureType.Grass;
+                        if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_Grass")
+                        {
+                            grass.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
+                            grass.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
+                            grass.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
+                        }
+                        else
+                        {
+                            Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.invalid_copied_texture", new { textureName = tool.modData[PAINT_BRUSH_FLAG] }), 3) { timeLeft = 2000 });
+                        }
+                    }
+                    else if (terrainFeature != null)
+                    {
+                        Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.paint_not_placeable"), 3) { timeLeft = 2000 });
+                    }
+                }
+                else
+                {
+                    var modelType = placedObject is Furniture ? AlternativeTextureModel.TextureType.Furniture : AlternativeTextureModel.TextureType.Craftable;
+                    if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}")
+                    {
+                        placedObject.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
+                        placedObject.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
+                        placedObject.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
+                    }
+                    else
+                    {
+                        Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.invalid_copied_texture", new { textureName = tool.modData[PAINT_BRUSH_FLAG] }), 3) { timeLeft = 2000 });
                     }
                 }
             }
@@ -951,7 +978,14 @@ namespace AlternativeTextures
 
         private void DebugShowPaintShop(string command, string[] args)
         {
-            Game1.activeClickableMenu = new ShopMenu(Utility.getCarpenterStock(), 0, "Robin");
+            var items = new Dictionary<ISalable, int[]>()
+            {
+                { PatchTemplate.GetPaintBucketTool(), new int[2] { 500, 1 } },
+                { PatchTemplate.GetScissorsTool(), new int[2] { 500, 1 } },
+                { PatchTemplate.GetPaintBrushTool(), new int[2] { 500, 1 } },
+                { PatchTemplate.GetSprayCanTool(), new int[2] { 500, 1 } }
+            };
+            Game1.activeClickableMenu = new ShopMenu(items);
         }
 
         private string CleanContentPackNameForConfig(string contentPackName)

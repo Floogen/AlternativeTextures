@@ -34,21 +34,21 @@ namespace AlternativeTextures.Framework.UI
         public List<ClickableTextureComponent> availableTextures = new List<ClickableTextureComponent>();
 
         // Textbox
-        private TextBox _searchBox;
-        private ClickableComponent _searchBoxCC;
+        protected TextBox _searchBox;
+        protected ClickableComponent _searchBoxCC;
 
-        private string _title;
-        private string _cachedTextBoxValue;
+        protected string _title;
+        protected string _cachedTextBoxValue;
 
-        private int _startingRow = 0;
-        private int _texturesPerRow = 6;
-        private int _maxRows = 4;
-        private float _buildingScale = 3f;
+        protected int _startingRow = 0;
+        protected int _texturesPerRow = 6;
+        protected int _maxRows = 4;
+        protected float _buildingScale = 3f;
 
-        private string _modelName;
-        private Object _textureTarget;
-        private Vector2 _position;
-        private TextureType _textureType;
+        protected string _modelName;
+        protected Object _textureTarget;
+        protected Vector2 _position;
+        protected TextureType _textureType;
 
         public PaintBucketMenu(Object target, Vector2 position, TextureType textureType, string modelName, string uiTitle = "Paint Bucket", int textureTileWidth = -1) : base(0, 0, 832, 576, showUpperRightCloseButton: true)
         {
