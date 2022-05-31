@@ -51,6 +51,7 @@ namespace AlternativeTextures.Framework.UI
         protected Vector2 _position;
         protected TextureType _textureType;
 
+        private bool _isSprayCan;
         protected Dictionary<string, SelectedTextureModel> _selectedIdsToModels;
 
         public PaintBucketMenu(Object target, Vector2 position, TextureType textureType, string modelName, string uiTitle = "Paint Bucket", int textureTileWidth = -1, bool isSprayCan = false) : base(0, 0, 832, 576, showUpperRightCloseButton: true)
@@ -61,6 +62,7 @@ namespace AlternativeTextures.Framework.UI
                 return;
             }
             _title = uiTitle;
+            _isSprayCan = isSprayCan;
 
             // Set up menu structure
             if (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.ko || LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.fr)
@@ -781,8 +783,11 @@ namespace AlternativeTextures.Framework.UI
                 IClickableMenu.drawHoverText(b, hoverInfoText, Game1.smallFont);
             }
 
-            Game1.mouseCursorTransparency = 1f;
-            base.drawMouse(b);
+            if (_isSprayCan is false)
+            {
+                Game1.mouseCursorTransparency = 1f;
+                base.drawMouse(b);
+            }
         }
 
         private Rectangle GetSourceRectangle(AlternativeTextureModel textureModel, Object target, int textureWidth, int textureHeight, int variation)
