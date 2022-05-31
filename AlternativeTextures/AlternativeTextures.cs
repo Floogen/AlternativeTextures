@@ -526,6 +526,33 @@ namespace AlternativeTextures
 
                     tool.modData[SPRAY_CAN_FLAG] = $"{modelType}_Grass";
                 }
+                else if (terrainFeature is Tree tree)
+                {
+                    var modelType = AlternativeTextureModel.TextureType.Tree;
+                    if (!tree.modData.ContainsKey("AlternativeTextureName") || !tree.modData.ContainsKey("AlternativeTextureVariation"))
+                    {
+                        // Assign default modData
+                        var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Tree}_{PatchTemplate.GetTreeTypeString(tree)}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
+                        PatchTemplate.AssignDefaultModData(tree, instanceSeasonName, true);
+                    }
+
+                    tool.modData[SPRAY_CAN_FLAG] = $"{modelType}_{PatchTemplate.GetTreeTypeString(tree)}";
+                }
+                else if (terrainFeature is FruitTree fruitTree)
+                {
+                    var modelType = AlternativeTextureModel.TextureType.FruitTree;
+                    Dictionary<int, string> data = Game1.content.Load<Dictionary<int, string>>("Data\\fruitTrees");
+                    var saplingIndex = data.FirstOrDefault(d => int.Parse(d.Value.Split('/')[0]) == fruitTree.treeType).Key;
+                    var saplingName = Game1.objectInformation.ContainsKey(saplingIndex) ? Game1.objectInformation[saplingIndex].Split('/')[0] : String.Empty;
+                    if (!fruitTree.modData.ContainsKey("AlternativeTextureName") || !fruitTree.modData.ContainsKey("AlternativeTextureVariation"))
+                    {
+                        // Assign default modData
+                        var instanceSeasonName = $"{AlternativeTextureModel.TextureType.FruitTree}_{saplingName}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
+                        PatchTemplate.AssignDefaultModData(fruitTree, instanceSeasonName, true);
+                    }
+
+                    tool.modData[SPRAY_CAN_FLAG] = $"{modelType}_{saplingName}";
+                }
                 else
                 {
                     if (terrainFeature != null)
@@ -635,6 +662,37 @@ namespace AlternativeTextures
                                     grass.modData["AlternativeTextureOwner"] = actualSelectedModel.Owner;
                                     grass.modData["AlternativeTextureName"] = actualSelectedModel.TextureName;
                                     grass.modData["AlternativeTextureVariation"] = actualSelectedVariation;
+                                }
+                            }
+                            else if (terrainFeature is Tree tree)
+                            {
+                                var modelType = AlternativeTextureModel.TextureType.Tree;
+                                if (tool.modData[SPRAY_CAN_FLAG] == $"{modelType}_{PatchTemplate.GetTreeTypeString(tree)}")
+                                {
+                                    tree.modData["AlternativeTextureOwner"] = actualSelectedModel.Owner;
+                                    tree.modData["AlternativeTextureName"] = actualSelectedModel.TextureName;
+                                    tree.modData["AlternativeTextureVariation"] = actualSelectedVariation;
+                                }
+                                else
+                                {
+                                    Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.invalid_copied_texture", new { textureName = tool.modData[SPRAY_CAN_FLAG] }), 3) { timeLeft = 2000 });
+                                }
+                            }
+                            else if (terrainFeature is FruitTree fruitTree)
+                            {
+                                var modelType = AlternativeTextureModel.TextureType.FruitTree;
+                                Dictionary<int, string> data = Game1.content.Load<Dictionary<int, string>>("Data\\fruitTrees");
+                                var saplingIndex = data.FirstOrDefault(d => int.Parse(d.Value.Split('/')[0]) == fruitTree.treeType).Key;
+                                var saplingName = Game1.objectInformation.ContainsKey(saplingIndex) ? Game1.objectInformation[saplingIndex].Split('/')[0] : String.Empty;
+                                if (tool.modData[SPRAY_CAN_FLAG] == $"{modelType}_{saplingName}")
+                                {
+                                    fruitTree.modData["AlternativeTextureOwner"] = actualSelectedModel.Owner;
+                                    fruitTree.modData["AlternativeTextureName"] = actualSelectedModel.TextureName;
+                                    fruitTree.modData["AlternativeTextureVariation"] = actualSelectedVariation;
+                                }
+                                else
+                                {
+                                    Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.invalid_copied_texture", new { textureName = tool.modData[SPRAY_CAN_FLAG] }), 3) { timeLeft = 2000 });
                                 }
                             }
                             else if (terrainFeature != null)
