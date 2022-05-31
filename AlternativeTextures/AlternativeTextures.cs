@@ -35,6 +35,7 @@ using xTile.Tiles;
 using Microsoft.Xna.Framework.Input;
 using StardewValley.GameData;
 using Newtonsoft.Json;
+using StardewValley.Buildings;
 
 namespace AlternativeTextures
 {
@@ -260,8 +261,10 @@ namespace AlternativeTextures
                 {
                     Helper.Input.Suppress(e.Button);
 
-                    RightClickSprayCan(tool, xTile, yTile);
-                    ToolPatch.UsePaintBucket(Game1.player.currentLocation, xTile, yTile, Game1.player, true);
+                    if (RightClickSprayCan(tool, xTile, yTile))
+                    {
+                        ToolPatch.UsePaintBucket(Game1.player.currentLocation, xTile, yTile, Game1.player, true);
+                    }
                 }
             }
         }
@@ -453,7 +456,7 @@ namespace AlternativeTextures
             }
         }
 
-        private void RightClickSprayCan(GenericTool tool, int xTile, int yTile)
+        private bool RightClickSprayCan(GenericTool tool, int xTile, int yTile)
         {
             // Verify that a supported object exists at the tile
             var cachedFlag = String.Empty;
@@ -465,6 +468,26 @@ namespace AlternativeTextures
             var placedObject = PatchTemplate.GetObjectAt(Game1.currentLocation, xTile, yTile);
             if (placedObject is null)
             {
+                if (Game1.currentLocation is Farm farm)
+                {
+                    var targetedBuilding = farm.getBuildingAt(new Vector2(xTile / 64, yTile / 64));
+                    if (farm.GetHouseRect().Contains(new Vector2(xTile / 64, yTile / 64)))
+                    {
+                        targetedBuilding = new Building();
+                        targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}";
+                        targetedBuilding.tileX.Value = farm.GetHouseRect().X;
+                        targetedBuilding.tileY.Value = farm.GetHouseRect().Y;
+                        targetedBuilding.tilesWide.Value = farm.GetHouseRect().Width;
+                        targetedBuilding.tilesHigh.Value = farm.GetHouseRect().Height;
+                    }
+
+                    if (targetedBuilding != null)
+                    {
+                        Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.spray_can_not_supported"), 3) { timeLeft = 2000 });
+                        return false;
+                    }
+                }
+
                 var terrainFeature = PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, xTile, yTile);
                 if (terrainFeature is Flooring flooring)
                 {
@@ -507,7 +530,8 @@ namespace AlternativeTextures
                 {
                     if (terrainFeature != null)
                     {
-                        Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.brush_not_supported"), 3) { timeLeft = 2000 });
+                        Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.spray_can_not_supported"), 3) { timeLeft = 2000 });
+                        return false;
                     }
                 }
             }
@@ -527,6 +551,8 @@ namespace AlternativeTextures
             {
                 Game1.player.modData[ENABLED_SPRAY_CAN_TEXTURES] = null;
             }
+
+            return true;
         }
 
         private void LeftClickSprayCan(GenericTool tool, int xTile, int yTile)
