@@ -38,6 +38,9 @@
 		<None Update="Framework\Assets\SprayCan.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<None Update="Framework\Assets\SprayCanRare.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 		<None Update="i18n\default.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>

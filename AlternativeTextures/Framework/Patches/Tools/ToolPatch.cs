@@ -116,7 +116,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
 
             if (__instance.modData.ContainsKey(AlternativeTextures.SPRAY_CAN_FLAG))
             {
-                spriteBatch.Draw(AlternativeTextures.assetManager.GetSprayCanTexture(), location + new Vector2(32f, 32f), new Rectangle(0, 0, 16, 16), color * transparency, 0f, new Vector2(8f, 8f), 4f * scaleSize, SpriteEffects.None, layerDepth);
+                spriteBatch.Draw(AlternativeTextures.assetManager.GetSprayCanTexture(__instance.modData.ContainsKey(AlternativeTextures.SPRAY_CAN_RARE)), location + new Vector2(32f, 32f), new Rectangle(0, 0, 16, 16), color * transparency, 0f, new Vector2(8f, 8f), 4f * scaleSize, SpriteEffects.None, layerDepth);
 
                 return false;
             }

@@ -151,6 +151,7 @@ namespace AlternativeTextures.Framework.UI
                 {
                     SetEnabledTexture(item.modData, true);
                 }
+                return;
             }
             else if (noneButton.containsPoint(x, y))
             {
@@ -158,6 +159,20 @@ namespace AlternativeTextures.Framework.UI
                 {
                     SetEnabledTexture(item.modData, false);
                 }
+                return;
+            }
+
+            if (_startingRow > 0 && this.backButton.containsPoint(x, y))
+            {
+                _startingRow--;
+                Game1.playSound("shiny4");
+                return;
+            }
+            if ((_maxRows + _startingRow) * _texturesPerRow < this.filteredTextureOptions.Count && this.forwardButton.containsPoint(x, y))
+            {
+                _startingRow++;
+                Game1.playSound("shiny4");
+                return;
             }
 
             foreach (ClickableTextureComponent c in this.availableTextures)
@@ -167,6 +182,7 @@ namespace AlternativeTextures.Framework.UI
                     SetEnabledTexture(c.item.modData);
                 }
             }
+
         }
 
         public override void draw(SpriteBatch b)

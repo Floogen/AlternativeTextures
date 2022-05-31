@@ -56,10 +56,15 @@ namespace AlternativeTextures.Framework.Patches
             return paintBrush;
         }
 
-        internal static GenericTool GetSprayCanTool()
+        internal static GenericTool GetSprayCanTool(bool isRare = false)
         {
             var sprayCan = new GenericTool(_helper.Translation.Get("tools.name.spray_can"), _helper.Translation.Get("tools.description.spray_can"), -1, 6, 6);
             sprayCan.modData[AlternativeTextures.SPRAY_CAN_FLAG] = null;
+
+            if (isRare || Game1.random.Next(100) <= 10)
+            {
+                sprayCan.modData[AlternativeTextures.SPRAY_CAN_RARE] = null;
+            }
 
             return sprayCan;
         }

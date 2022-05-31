@@ -21,6 +21,7 @@ namespace AlternativeTextures.Framework.Managers
         private Texture2D _paintBucketTexture;
         private Texture2D _scissorsTexture;
         private Texture2D _sprayCanTexture;
+        private Texture2D _sprayCanTextureRare;
         private Texture2D _paintBrushEmptyTexture;
         private Texture2D _paintBrushFilledTexture;
 
@@ -33,6 +34,7 @@ namespace AlternativeTextures.Framework.Managers
             _paintBucketTexture = helper.ModContent.Load<Texture2D>(Path.Combine(assetFolderPath, "PaintBucket.png"));
             _scissorsTexture = helper.ModContent.Load<Texture2D>(Path.Combine(assetFolderPath, "Scissors.png"));
             _sprayCanTexture = helper.ModContent.Load<Texture2D>(Path.Combine(assetFolderPath, "SprayCan.png"));
+            _sprayCanTextureRare = helper.ModContent.Load<Texture2D>(Path.Combine(assetFolderPath, "SprayCanRare.png"));
             _paintBrushEmptyTexture = helper.ModContent.Load<Texture2D>(Path.Combine(assetFolderPath, "PaintBrushEmpty.png"));
             _paintBrushFilledTexture = helper.ModContent.Load<Texture2D>(Path.Combine(assetFolderPath, "PaintBrushFilled.png"));
 
@@ -62,9 +64,9 @@ namespace AlternativeTextures.Framework.Managers
             return _scissorsTexture;
         }
 
-        internal Texture2D GetSprayCanTexture()
+        internal Texture2D GetSprayCanTexture(bool getRareTexture = false)
         {
-            return _sprayCanTexture;
+            return getRareTexture ? _sprayCanTextureRare : _sprayCanTexture;
         }
 
         internal Texture2D GetPaintBrushEmptyTexture()

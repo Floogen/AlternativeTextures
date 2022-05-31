@@ -57,6 +57,7 @@ namespace AlternativeTextures
         internal const string PAINT_BRUSH_SCALE = "AlternativeTextures.PaintBrushScale";
         internal const string SCISSORS_FLAG = "AlternativeTextures.ScissorsFlag";
         internal const string SPRAY_CAN_FLAG = "AlternativeTextures.SprayCanFlag";
+        internal const string SPRAY_CAN_RARE = "AlternativeTextures.SprayCanRare";
         internal const string SPRAY_CAN_RADIUS = "AlternativeTextures.SprayCanRadius";
 
         // Shared static helpers
@@ -1168,7 +1169,7 @@ namespace AlternativeTextures
                 { PatchTemplate.GetPaintBucketTool(), new int[2] { 500, 1 } },
                 { PatchTemplate.GetScissorsTool(), new int[2] { 500, 1 } },
                 { PatchTemplate.GetPaintBrushTool(), new int[2] { 500, 1 } },
-                { PatchTemplate.GetSprayCanTool(), new int[2] { 500, 1 } }
+                { PatchTemplate.GetSprayCanTool(true), new int[2] { 500, 1 } }
             };
             Game1.activeClickableMenu = new ShopMenu(items);
         }
