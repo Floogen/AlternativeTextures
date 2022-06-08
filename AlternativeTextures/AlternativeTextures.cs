@@ -468,26 +468,6 @@ namespace AlternativeTextures
             var placedObject = PatchTemplate.GetObjectAt(Game1.currentLocation, xTile, yTile);
             if (placedObject is null)
             {
-                if (Game1.currentLocation is Farm farm)
-                {
-                    var targetedBuilding = farm.getBuildingAt(new Vector2(xTile / 64, yTile / 64));
-                    if (farm.GetHouseRect().Contains(new Vector2(xTile / 64, yTile / 64)))
-                    {
-                        targetedBuilding = new Building();
-                        targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}";
-                        targetedBuilding.tileX.Value = farm.GetHouseRect().X;
-                        targetedBuilding.tileY.Value = farm.GetHouseRect().Y;
-                        targetedBuilding.tilesWide.Value = farm.GetHouseRect().Width;
-                        targetedBuilding.tilesHigh.Value = farm.GetHouseRect().Height;
-                    }
-
-                    if (targetedBuilding != null)
-                    {
-                        Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.spray_can_not_supported"), 3) { timeLeft = 2000 });
-                        return false;
-                    }
-                }
-
                 var terrainFeature = PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, xTile, yTile);
                 if (terrainFeature is Flooring flooring)
                 {
@@ -559,6 +539,16 @@ namespace AlternativeTextures
                     {
                         Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.spray_can_not_supported"), 3) { timeLeft = 2000 });
                         return false;
+                    }
+
+                    if (Game1.currentLocation is Farm farm)
+                    {
+                        var targetedBuilding = farm.getBuildingAt(new Vector2(xTile / 64, yTile / 64));
+                        if (targetedBuilding != null)
+                        {
+                            Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.spray_can_not_supported"), 3) { timeLeft = 2000 });
+                            return false;
+                        }
                     }
                 }
             }

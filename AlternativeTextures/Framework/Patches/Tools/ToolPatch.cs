@@ -187,7 +187,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
 
         internal static bool UsePaintBucket(GameLocation location, int x, int y, Farmer who, bool isSprayCan = false)
         {
-            if (location is Farm farm)
+            if (location is Farm farm && isSprayCan is false)
             {
                 var targetedBuilding = farm.getBuildingAt(new Vector2(x / 64, y / 64));
                 if (farm.GetHouseRect().Contains(new Vector2(x / 64, y / 64)))
