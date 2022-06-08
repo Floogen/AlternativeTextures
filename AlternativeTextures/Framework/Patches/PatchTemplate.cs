@@ -477,11 +477,15 @@ namespace AlternativeTextures.Framework.Patches
             var selectedVariation = Game1.random.Next(-1, textureModel.Variations);
             if (textureModel.ManualVariations.Count() > 0)
             {
-                var weightedSelection = textureModel.ManualVariations.Where(v => v.ChanceWeight >= Game1.random.NextDouble()).ToList();
+                var weightedSelection = textureModel.ManualVariations.Where(v => v.ChanceWeight > Game1.random.NextDouble()).ToList();
                 if (weightedSelection.Count > 0)
                 {
                     var randomWeightedSelection = Game1.random.Next(!textureModel.ManualVariations.Any(v => v.Id == -1) ? -1 : 0, weightedSelection.Count());
                     selectedVariation = randomWeightedSelection == -1 ? -1 : weightedSelection[randomWeightedSelection].Id;
+                }
+                else
+                {
+                    return AssignDefaultModData<T>(type, modelName, trackSeason, trackSheetId);
                 }
             }
 

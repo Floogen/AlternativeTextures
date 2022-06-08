@@ -28,8 +28,8 @@ namespace AlternativeTextures.Framework.Managers
             _helper = helper;
             _alternativeTextures = new List<AlternativeTextureModel>();
             _textureIdsInsensitive = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            _tokenToTextures = new Dictionary<string, Texture2D>();
-            _tokenToModel = new Dictionary<string, TokenModel>();
+            _tokenToTextures = new Dictionary<string, Texture2D>(StringComparer.OrdinalIgnoreCase);
+            _tokenToModel = new Dictionary<string, TokenModel>(StringComparer.OrdinalIgnoreCase);
         }
 
         public void AddAlternativeTexture(AlternativeTextureModel model)
