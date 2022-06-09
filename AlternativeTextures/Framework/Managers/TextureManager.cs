@@ -16,6 +16,7 @@ namespace AlternativeTextures.Framework.Managers
         private IMonitor _monitor;
         private IModHelper _helper;
         private List<AlternativeTextureModel> _alternativeTextures;
+        private List<string> _textureNames;
         private HashSet<string> _textureIdsInsensitive;
         private Dictionary<string, Texture2D> _tokenToTextures;
         private Dictionary<string, TokenModel> _tokenToModel;
@@ -27,6 +28,7 @@ namespace AlternativeTextures.Framework.Managers
             _monitor = monitor;
             _helper = helper;
             _alternativeTextures = new List<AlternativeTextureModel>();
+            _textureNames = new List<string>();
             _textureIdsInsensitive = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             _tokenToTextures = new Dictionary<string, Texture2D>(StringComparer.OrdinalIgnoreCase);
             _tokenToModel = new Dictionary<string, TokenModel>(StringComparer.OrdinalIgnoreCase);
@@ -54,8 +56,11 @@ namespace AlternativeTextures.Framework.Managers
             var token = $"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{textureModel.GetTokenId()}";
             _tokenToModel[token] = new TokenModel() { Id = token, AlternativeTexture = textureModel };
 
+            _textureNames.Add(textureModel.GetTokenId());
             foreach (int variation in textureModel.Textures.Keys)
             {
+                _textureNames.Add(textureModel.GetTokenId(variation));
+
                 token = $"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{textureModel.GetTokenId(variation)}";
                 _tokenToModel[token] = new TokenModel() { Id = token, Variation = variation, AlternativeTexture = textureModel };
             }
@@ -73,7 +78,7 @@ namespace AlternativeTextures.Framework.Managers
 
         public List<string> GetValidTextureNamesWithSeason()
         {
-            return _alternativeTextures.Select(t => t.GetTokenId()).ToList();
+            return _textureNames;
         }
 
         public bool DoesObjectHaveAlternativeTexture(int objectId)
