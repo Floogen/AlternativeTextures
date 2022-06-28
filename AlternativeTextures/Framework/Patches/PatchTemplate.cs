@@ -389,6 +389,11 @@ namespace AlternativeTextures.Framework.Patches
             return _helper.ModRegistry.IsLoaded("spacechase0.DynamicGameAssets");
         }
 
+        internal static bool IsSolidFoundationsUsed()
+        {
+            return _helper.ModRegistry.IsLoaded("PeacefulEnd.SolidFoundations");
+        }
+
         internal static bool IsDGAObject(object obj)
         {
             if (IsDGAUsed() && AlternativeTextures.apiManager.GetDynamicGameAssetsApi() is IDynamicGameAssetsApi api && api != null)
