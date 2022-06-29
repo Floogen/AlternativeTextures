@@ -346,6 +346,23 @@ namespace AlternativeTextures
                     tool.modData["AlternativeTextureName"] = grass.modData["AlternativeTextureName"];
                     tool.modData["AlternativeTextureVariation"] = grass.modData["AlternativeTextureVariation"];
                 }
+                else if (terrainFeature is Bush bush)
+                {
+                    var modelType = AlternativeTextureModel.TextureType.Bush;
+                    if (!bush.modData.ContainsKey("AlternativeTextureName") || !bush.modData.ContainsKey("AlternativeTextureVariation"))
+                    {
+                        // Assign default modData
+                        var instanceSeasonName = $"{modelType}_{PatchTemplate.GetBushTypeString(bush)}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
+                        PatchTemplate.AssignDefaultModData(bush, instanceSeasonName, true);
+                    }
+
+                    Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.texture_copied"), 2) { timeLeft = 1000 });
+                    tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{PatchTemplate.GetBushTypeString(bush)}";
+                    tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
+                    tool.modData["AlternativeTextureOwner"] = bush.modData["AlternativeTextureOwner"];
+                    tool.modData["AlternativeTextureName"] = bush.modData["AlternativeTextureName"];
+                    tool.modData["AlternativeTextureVariation"] = bush.modData["AlternativeTextureVariation"];
+                }
                 else
                 {
                     tool.modData[PAINT_BRUSH_FLAG] = String.Empty;
@@ -428,6 +445,20 @@ namespace AlternativeTextures
                             grass.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
                             grass.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
                             grass.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
+                        }
+                        else
+                        {
+                            Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.invalid_copied_texture", new { textureName = tool.modData[PAINT_BRUSH_FLAG] }), 3) { timeLeft = 2000 });
+                        }
+                    }
+                    else if (terrainFeature is Bush bush)
+                    {
+                        var modelType = AlternativeTextureModel.TextureType.Bush;
+                        if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_{PatchTemplate.GetBushTypeString(bush)}")
+                        {
+                            bush.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
+                            bush.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
+                            bush.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
                         }
                         else
                         {
