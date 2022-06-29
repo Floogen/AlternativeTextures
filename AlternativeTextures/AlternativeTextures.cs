@@ -311,7 +311,7 @@ namespace AlternativeTextures
                     tool.modData["AlternativeTextureName"] = flooring.modData["AlternativeTextureName"];
                     tool.modData["AlternativeTextureVariation"] = flooring.modData["AlternativeTextureVariation"];
                 }
-                else if (terrainFeature is HoeDirt hoeDirt)
+                else if (terrainFeature is HoeDirt hoeDirt && hoeDirt.crop is not null)
                 {
                     var modelType = AlternativeTextureModel.TextureType.Crop;
                     var instanceName = Game1.objectInformation.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectInformation[hoeDirt.crop.netSeedIndex.Value].Split('/')[0] : String.Empty;
@@ -422,7 +422,7 @@ namespace AlternativeTextures
                             Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.invalid_copied_texture", new { textureName = tool.modData[PAINT_BRUSH_FLAG] }), 3) { timeLeft = 2000 });
                         }
                     }
-                    else if (terrainFeature is HoeDirt hoeDirt)
+                    else if (terrainFeature is HoeDirt hoeDirt && hoeDirt.crop is not null)
                     {
                         var modelType = AlternativeTextureModel.TextureType.Crop;
                         var instanceName = Game1.objectInformation.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectInformation[hoeDirt.crop.netSeedIndex.Value].Split('/')[0] : String.Empty;
@@ -512,7 +512,7 @@ namespace AlternativeTextures
 
                     tool.modData[SPRAY_CAN_FLAG] = $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}";
                 }
-                else if (terrainFeature is HoeDirt hoeDirt)
+                else if (terrainFeature is HoeDirt hoeDirt && hoeDirt.crop is not null)
                 {
                     var modelType = AlternativeTextureModel.TextureType.Crop;
                     var instanceName = Game1.objectInformation.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectInformation[hoeDirt.crop.netSeedIndex.Value].Split('/')[0] : String.Empty;
@@ -664,7 +664,7 @@ namespace AlternativeTextures
                                     flooring.modData["AlternativeTextureVariation"] = actualSelectedVariation;
                                 }
                             }
-                            else if (terrainFeature is HoeDirt hoeDirt)
+                            else if (terrainFeature is HoeDirt hoeDirt && hoeDirt.crop is not null)
                             {
                                 var modelType = AlternativeTextureModel.TextureType.Crop;
                                 var instanceName = Game1.objectInformation.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectInformation[hoeDirt.crop.netSeedIndex.Value].Split('/')[0] : String.Empty;
