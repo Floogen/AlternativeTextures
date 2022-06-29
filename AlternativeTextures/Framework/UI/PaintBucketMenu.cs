@@ -4,6 +4,7 @@ using AlternativeTextures.Framework.Patches.Buildings;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Netcode;
 using Newtonsoft.Json;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
@@ -218,6 +219,13 @@ namespace AlternativeTextures.Framework.UI
                     sourceRect = new Rectangle(0, 0, 128, 32);
                     break;
                 case TextureType.Grass:
+                    _maxRows = 6;
+                    _texturesPerRow = 4;
+                    widthOffsetScale = 3;
+                    xOffset = 32;
+                    sourceRect = new Rectangle(0, 0, 15, 20);
+                    break;
+                case TextureType.Bush:
                     _maxRows = 6;
                     _texturesPerRow = 4;
                     widthOffsetScale = 3;
@@ -624,6 +632,12 @@ namespace AlternativeTextures.Framework.UI
                                 this.availableTextures[i].sourceRect = this.GetGrassSourceRect(textureModel, grass, 0, -1);
                                 this.availableTextures[i].draw(b, colorOverlay, 0.87f);
                             }
+                            else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Bush bush)
+                            {
+                                this.availableTextures[i].texture = Bush.texture.Value;
+                                this.availableTextures[i].sourceRect = this.GetBushSourceRect(textureModel, bush, 0, -1);
+                                this.availableTextures[i].draw(b, colorOverlay, 0.87f);
+                            }
                             else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Building building)
                             {
                                 BuildingPatch.ResetTextureReversePatch(building);
@@ -711,6 +725,12 @@ namespace AlternativeTextures.Framework.UI
                         {
                             this.availableTextures[i].texture = textureModel.GetTexture(variation);
                             this.availableTextures[i].sourceRect = this.GetGrassSourceRect(textureModel, grass, textureModel.TextureHeight, variation);
+                            this.availableTextures[i].draw(b, colorOverlay, 0.87f);
+                        }
+                        else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Bush bush)
+                        {
+                            this.availableTextures[i].texture = textureModel.GetTexture(variation);
+                            this.availableTextures[i].sourceRect = this.GetBushSourceRect(textureModel, bush, textureModel.TextureHeight, variation);
                             this.availableTextures[i].draw(b, colorOverlay, 0.87f);
                         }
                         else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Building building)
@@ -943,6 +963,16 @@ namespace AlternativeTextures.Framework.UI
 
             Rectangle source_rect = new Rectangle(0, 0, 15, 20);
             return source_rect;
+        }
+
+        private Rectangle GetBushSourceRect(AlternativeTextureModel textureModel, Bush bush, int textureHeight, int variation)
+        {
+            if (variation == -1)
+            {
+                bush.setUpSourceRect();
+                return AlternativeTextures.modHelper.Reflection.GetField<NetRectangle>(bush, "sourceRect").GetValue();
+            }
+            return new Rectangle(Math.Min(2, bush.getAge() / 10) * 16 + bush.tileSheetOffset.Value * 16, 0, 16, 32);
         }
 
         private Rectangle GetCharacterSourceRectangle(AlternativeTextureModel textureModel, Character character, int textureWidth, int textureHeight, int variation)
