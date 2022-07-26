@@ -36,6 +36,7 @@ using Microsoft.Xna.Framework.Input;
 using StardewValley.GameData;
 using Newtonsoft.Json;
 using StardewValley.Buildings;
+using StardewValley.Monsters;
 
 namespace AlternativeTextures
 {
@@ -157,6 +158,7 @@ namespace AlternativeTextures
             }
 
             // Add in our debug commands
+            helper.ConsoleCommands.Add("at_spawn_monsters", "Spawns monster(s) of a specified type and quantity at the current location.\n\nUsage: at_spawn_monsters [MONSTER_ID] (QUANTITY)", this.DebugSpawnMonsters);
             helper.ConsoleCommands.Add("at_spawn_gc", "Spawns a giant crop based given harvest product id (e.g. Melon == 254).\n\nUsage: at_spawn_gc [HARVEST_ID]", this.DebugSpawnGiantCrop);
             helper.ConsoleCommands.Add("at_spawn_rc", "Spawns a resource clump based given resource name (e.g. Stump).\n\nUsage: at_spawn_rc [RESOURCE_NAME]", this.DebugSpawnResourceClump);
             helper.ConsoleCommands.Add("at_spawn_child", "Spawns a child. Potentially buggy / gamebreaking, do not use. \n\nUsage: at_spawn_child [AGE] [IS_MALE] [SKIN_TONE]", this.DebugSpawnChild);
@@ -1138,6 +1140,31 @@ namespace AlternativeTextures
             }
 
             return true;
+        }
+
+        private void DebugSpawnMonsters(string command, string[] args)
+        {
+            if (args.Length == 0)
+            {
+                Monitor.Log($"Missing required arguments: [MONSTER_ID]", LogLevel.Warn);
+                return;
+            }
+
+            int amountToSpawn = 1;
+            if (args.Length > 1 && Int32.TryParse(args[1], out amountToSpawn) is false)
+            {
+                Monitor.Log($"Invalid count given for (QUANTITY)", LogLevel.Warn);
+                return;
+            }
+            Type monsterType = Type.GetType("StardewValley.Monsters." + args[0] + ",Stardew Valley");
+
+            Monitor.Log(Game1.player.getTileLocation().ToString(), LogLevel.Debug);
+            for (int i = 0; i < amountToSpawn; i++)
+            {
+                var monster = Activator.CreateInstance(monsterType, new object[] { Game1.player.getTileLocation() }) as Monster;
+                monster.Position = Game1.player.Position;
+                Game1.currentLocation.characters.Add(monster);
+            }
         }
 
         private void DebugSpawnGiantCrop(string command, string[] args)
