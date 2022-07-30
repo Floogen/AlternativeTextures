@@ -1,0 +1,25 @@
+{
+  "ItemName": "Wall Sconce",
+  "Type": "Furniture",
+  "TextureWidth": 32,
+  "TextureHeight": 32,
+  "Variations": 1,
+  "Animation": [
+    {
+      "Frame": 0,
+      "Duration": 200
+    },
+    {
+      "Frame": 1,
+      "Duration": 200
+    },
+    {
+      "Frame": 2,
+      "Duration": 200
+    },
+    {
+      "Frame": 3,
+      "Duration": 200
+    }
+  ]
+}
