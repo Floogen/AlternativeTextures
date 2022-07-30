@@ -93,6 +93,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
                 // Set xTileOffset if AlternativeTextureModel has an animation
                 var xTileOffset = 0;
+                int actualSourceIndexOffset = ___sourceIndexOffset.Value;
                 if (textureModel.HasAnimation(textureVariation))
                 {
                     if (!__instance.modData.ContainsKey("AlternativeTextureCurrentFrame") || !__instance.modData.ContainsKey("AlternativeTextureFrameIndex") || !__instance.modData.ContainsKey("AlternativeTextureFrameDuration") || !__instance.modData.ContainsKey("AlternativeTextureElapsedDuration"))
@@ -126,12 +127,14 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                     }
 
                     xTileOffset = currentFrame;
+                    actualSourceIndexOffset = 0;
                 }
 
                 Rectangle sourceRect = __instance.sourceRect.Value;
                 sourceRect.X -= __instance.defaultSourceRect.X;
-                sourceRect.X += (___sourceIndexOffset * sourceRect.Width) + (xTileOffset * sourceRect.Width);
+                sourceRect.X += (actualSourceIndexOffset * sourceRect.Width) + (xTileOffset * sourceRect.Width);
                 sourceRect.Y = textureOffset;
+
                 if (Furniture.isDrawingLocationFurniture)
                 {
                     if (__instance.HasSittingFarmers() && __instance.sourceRect.Right <= Furniture.furnitureFrontTexture.Width && __instance.sourceRect.Bottom <= Furniture.furnitureFrontTexture.Height)
