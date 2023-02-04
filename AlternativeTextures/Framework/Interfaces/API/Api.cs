@@ -1,17 +1,22 @@
 ﻿using AlternativeTextures.Framework.Models;
-using StardewModdingAPI;
-using System;
-using System.Linq;
-using Microsoft.Xna.Framework.Graphics;
+using AlternativeTextures.Framework.Patches;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Objects;
 using System.Collections.Generic;
+using System.Linq;
+using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.Interfaces.API
 {
     public interface IApi
     {
-        void AddAlternativeTexture(AlternativeTextureModel model, string owner, List<Texture2D> textures);
+        public void AddAlternativeTexture(AlternativeTextureModel model, string owner, Texture2D texture);
+        public void AddAlternativeTexture(AlternativeTextureModel model, string owner, List<Texture2D> textures);
+        public Texture2D GetTextureForObject(Object obj, out Rectangle sourceRect);
+        public void SetTextureForObject(Object obj);
     }
 
     public class Api : IApi
@@ -30,7 +35,7 @@ namespace AlternativeTextures.Framework.Interfaces.API
 
         public void AddAlternativeTexture(AlternativeTextureModel model, string owner, List<Texture2D> textures)
         {
-            if (String.IsNullOrEmpty(owner))
+            if (string.IsNullOrEmpty(owner))
             {
                 _framework.Monitor.Log($"Unable to add AlternativeTextureModel {model.GetNameWithSeason()}: Owner property is not set.");
                 return;
@@ -69,11 +74,11 @@ namespace AlternativeTextures.Framework.Interfaces.API
                 }
 
                 // Set the season (if any)
-                textureModel.Season = seasons.Count() == 0 ? String.Empty : seasons[s];
+                textureModel.Season = seasons.Count() == 0 ? string.Empty : seasons[s];
 
                 // Set the ModelName and TextureId
-                textureModel.ModelName = String.IsNullOrEmpty(textureModel.Season) ? String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName) : String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName, "_", textureModel.Season);
-                textureModel.TextureId = String.Concat(textureModel.Owner, ".", textureModel.ModelName);
+                textureModel.ModelName = string.IsNullOrEmpty(textureModel.Season) ? string.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName) : string.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName, "_", textureModel.Season);
+                textureModel.TextureId = string.Concat(textureModel.Owner, ".", textureModel.ModelName);
 
                 // Verify we are given a singular texture, if not then stitch them all together
                 if (textures.Count() > 1)
@@ -95,12 +100,12 @@ namespace AlternativeTextures.Framework.Interfaces.API
                         variation++;
                     }
 
-                    textureModel.TileSheetPath = String.Empty;
+                    textureModel.TileSheetPath = string.Empty;
                 }
                 else
                 {
                     // Load in the single vertical texture
-                    textureModel.TileSheetPath = String.Empty;
+                    textureModel.TileSheetPath = string.Empty;
                     Texture2D singularTexture = textures.First();
                     if (singularTexture.Height >= AlternativeTextureModel.MAX_TEXTURE_HEIGHT)
                     {
@@ -137,6 +142,106 @@ namespace AlternativeTextures.Framework.Interfaces.API
                     _framework.Monitor.Log(textureModel.ToString(), LogLevel.Trace);
                 }
             }
+        }
+
+        public Texture2D GetTextureForObject(Object obj, out Rectangle sourceRect)
+        {
+            sourceRect = new Rectangle();
+            if (!obj.modData.TryGetValue("AlternativeTextureName", out var str))
+                return null;
+            var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(str);
+            if (textureModel is null)
+            {
+                return null;
+            }
+            var textureVariation = int.Parse(obj.modData["AlternativeTextureVariation"]);
+            if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
+            {
+                return null;
+            }
+            var textureOffset = textureModel.GetTextureOffset(textureVariation);
+
+            // Get the current X index for the source tile
+            var xTileOffset = obj.modData.ContainsKey("AlternativeTextureSheetId") ? obj.ParentSheetIndex - int.Parse(obj.modData["AlternativeTextureSheetId"]) : 0;
+            if (obj.showNextIndex.Value)
+            {
+                xTileOffset += 1;
+            }
+
+            // Override xTileOffset if AlternativeTextureModel has an animation
+            if (textureModel.HasAnimation(textureVariation))
+            {
+                if (!obj.modData.ContainsKey("AlternativeTextureCurrentFrame") || !obj.modData.ContainsKey("AlternativeTextureFrameIndex") || !obj.modData.ContainsKey("AlternativeTextureFrameDuration") || !obj.modData.ContainsKey("AlternativeTextureElapsedDuration"))
+                {
+                    obj.modData["AlternativeTextureCurrentFrame"] = "0";
+                    obj.modData["AlternativeTextureFrameIndex"] = "0";
+                    obj.modData["AlternativeTextureFrameDuration"] = textureModel.GetAnimationDataAtIndex(textureVariation, 0).Duration.ToString();// Animation.ElementAt(0).Duration.ToString();
+                    obj.modData["AlternativeTextureElapsedDuration"] = "0";
+                }
+
+                var currentFrame = int.Parse(obj.modData["AlternativeTextureCurrentFrame"]);
+                var frameIndex = int.Parse(obj.modData["AlternativeTextureFrameIndex"]);
+                var frameDuration = int.Parse(obj.modData["AlternativeTextureFrameDuration"]);
+                var elapsedDuration = int.Parse(obj.modData["AlternativeTextureElapsedDuration"]);
+
+                if (elapsedDuration >= frameDuration)
+                {
+                    frameIndex = frameIndex + 1 >= textureModel.GetAnimationData(textureVariation).Count() ? 0 : frameIndex + 1;
+
+                    var animationData = textureModel.GetAnimationDataAtIndex(textureVariation, frameIndex);
+                    currentFrame = animationData.Frame;
+
+                    obj.modData["AlternativeTextureCurrentFrame"] = currentFrame.ToString();
+                    obj.modData["AlternativeTextureFrameIndex"] = frameIndex.ToString();
+                    obj.modData["AlternativeTextureFrameDuration"] = animationData.Duration.ToString();
+                    obj.modData["AlternativeTextureElapsedDuration"] = "0";
+                }
+                else
+                {
+                    obj.modData["AlternativeTextureElapsedDuration"] = (elapsedDuration + Game1.currentGameTime.ElapsedGameTime.Milliseconds).ToString();
+                }
+
+                xTileOffset = currentFrame;
+            }
+            sourceRect = new Rectangle(xTileOffset * textureModel.TextureWidth, textureOffset, textureModel.TextureWidth, textureModel.TextureHeight);
+            return textureModel.GetTexture(textureVariation);
+        }
+        public void SetTextureForObject(Object obj)
+        {
+
+            if (obj is null)
+            {
+                return;
+            }
+
+            var modelType = obj is Furniture ? AlternativeTextureModel.TextureType.Furniture : AlternativeTextureModel.TextureType.Craftable;
+            var instanceName = $"{modelType}_{PatchTemplate.GetObjectName(obj)}";
+            var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
+            if (PatchTemplate.HasCachedTextureName(obj) is true)
+            {
+                return;
+            }
+            else if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
+            {
+                var result = Game1.random.Next(2) > 0 ? PatchTemplate.AssignModData(obj, instanceSeasonName, true, obj.bigCraftable.Value) : PatchTemplate.AssignModData(obj, instanceName, false, obj.bigCraftable.Value);
+                return;
+            }
+            else
+            {
+                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
+                {
+                    PatchTemplate.AssignModData(obj, instanceName, false, obj.bigCraftable.Value);
+                    return;
+                }
+
+                if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
+                {
+                    PatchTemplate.AssignModData(obj, instanceSeasonName, true, obj.bigCraftable.Value);
+                    return;
+                }
+            }
+
+            PatchTemplate.AssignDefaultModData(obj, instanceSeasonName, true, obj.bigCraftable.Value);
         }
     }
 }
