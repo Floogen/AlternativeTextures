@@ -75,6 +75,7 @@ namespace AlternativeTextures
 
         // Utilities
         internal static FpsCounter fpsCounter;
+        private static Api _api;
 
         // Tool related variables
         private Point _lastSprayCanTile = new Point();
@@ -96,6 +97,7 @@ namespace AlternativeTextures
 
             // Setup our utilities
             fpsCounter = new FpsCounter();
+            _api = new Api(this);
 
             // Load our Harmony patches
             try
@@ -165,6 +167,8 @@ namespace AlternativeTextures
             helper.ConsoleCommands.Add("at_set_age", "Sets age for all children in location. Potentially buggy / gamebreaking, do not use. \n\nUsage: at_set_age [AGE]", this.DebugSetAge);
             helper.ConsoleCommands.Add("at_display_fps", "Displays FPS counter. Use again to disable. \n\nUsage: at_display_fps", delegate { _displayFPS = !_displayFPS; });
             helper.ConsoleCommands.Add("at_paint_shop", "Shows the carpenter shop with the paint bucket for sale.\n\nUsage: at_paint_shop", this.DebugShowPaintShop);
+            helper.ConsoleCommands.Add("at_set_object_texture", "Sets the texture of the object below the player.\n\nUsage: at_set_object_texture [TEXTURE_ID] (VARIATION_NUMBER) (SEASON)", this.DebugSetTexture);
+            helper.ConsoleCommands.Add("at_clear_texture", "Clears the texture of the object below the player.\n\nUsage: at_clear_texture", this.DebugClearTexture);
             helper.ConsoleCommands.Add("at_reload", "Reloads all Alternative Texture content packs.\n\nUsage: at_reload", delegate { this.LoadContentPacks(); });
 
             // Hook into GameLoop events
@@ -739,7 +743,7 @@ namespace AlternativeTextures
 
         public override object GetApi()
         {
-            return new Api(this);
+            return _api;
         }
 
         private void OnGameLaunched(object sender, GameLaunchedEventArgs e)
@@ -1303,6 +1307,50 @@ namespace AlternativeTextures
                 { PatchTemplate.GetSprayCanTool(true), new int[2] { 500, 1 } }
             };
             Game1.activeClickableMenu = new ShopMenu(items);
+        }
+
+        private void DebugSetTexture(string command, string[] args)
+        {
+            if (args.Length == 0)
+            {
+                Monitor.Log($"Missing required arguments: [TEXTURE_ID]", LogLevel.Warn);
+                return;
+            }
+
+            string season = null;
+            if (args.Length > 1)
+            {
+                season = args[1];
+            }
+
+            int variation = 0;
+            if (args.Length > 2 && Int32.TryParse(args[2], out int parsedVariation))
+            {
+                variation = parsedVariation;
+            }
+
+            var objectBelowPlayer = PatchTemplate.GetObjectAt(Game1.currentLocation, Game1.player.getTileX() * 64, (Game1.player.getTileY() + 1) * 64);
+            if (objectBelowPlayer is null)
+            {
+                Monitor.Log($"No object detected below the player!", LogLevel.Warn);
+                return;
+            }
+            monitor.Log($"Attempting to change texture of {objectBelowPlayer.Name} to {args[0]}", LogLevel.Debug);
+
+            _api.SetTextureForObject(objectBelowPlayer, args[0], season, variation);
+        }
+
+        private void DebugClearTexture(string command, string[] args)
+        {
+            var objectBelowPlayer = PatchTemplate.GetObjectAt(Game1.currentLocation, Game1.player.getTileX() * 64, (Game1.player.getTileY() + 1) * 64);
+            if (objectBelowPlayer is null)
+            {
+                Monitor.Log($"No object detected below the player!", LogLevel.Warn);
+                return;
+            }
+            monitor.Log($"Clearing the texture of {objectBelowPlayer.Name}", LogLevel.Debug);
+
+            _api.ClearTextureForObject(objectBelowPlayer);
         }
 
         private string CleanContentPackNameForConfig(string contentPackName)
