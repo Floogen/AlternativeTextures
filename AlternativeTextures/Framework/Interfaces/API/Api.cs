@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Object = StardewValley.Object;
@@ -35,7 +36,7 @@ namespace AlternativeTextures.Framework.Interfaces.API
 
         public void AddAlternativeTexture(AlternativeTextureModel model, string owner, List<Texture2D> textures)
         {
-            if (string.IsNullOrEmpty(owner))
+            if (String.IsNullOrEmpty(owner))
             {
                 _framework.Monitor.Log($"Unable to add AlternativeTextureModel {model.GetNameWithSeason()}: Owner property is not set.");
                 return;
@@ -74,11 +75,11 @@ namespace AlternativeTextures.Framework.Interfaces.API
                 }
 
                 // Set the season (if any)
-                textureModel.Season = seasons.Count() == 0 ? string.Empty : seasons[s];
+                textureModel.Season = seasons.Count() == 0 ? String.Empty : seasons[s];
 
                 // Set the ModelName and TextureId
-                textureModel.ModelName = string.IsNullOrEmpty(textureModel.Season) ? string.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName) : string.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName, "_", textureModel.Season);
-                textureModel.TextureId = string.Concat(textureModel.Owner, ".", textureModel.ModelName);
+                textureModel.ModelName = String.IsNullOrEmpty(textureModel.Season) ? String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName) : String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName, "_", textureModel.Season);
+                textureModel.TextureId = String.Concat(textureModel.Owner, ".", textureModel.ModelName);
 
                 // Verify we are given a singular texture, if not then stitch them all together
                 if (textures.Count() > 1)
@@ -100,12 +101,12 @@ namespace AlternativeTextures.Framework.Interfaces.API
                         variation++;
                     }
 
-                    textureModel.TileSheetPath = string.Empty;
+                    textureModel.TileSheetPath = String.Empty;
                 }
                 else
                 {
                     // Load in the single vertical texture
-                    textureModel.TileSheetPath = string.Empty;
+                    textureModel.TileSheetPath = String.Empty;
                     Texture2D singularTexture = textures.First();
                     if (singularTexture.Height >= AlternativeTextureModel.MAX_TEXTURE_HEIGHT)
                     {
