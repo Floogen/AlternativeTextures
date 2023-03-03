@@ -172,41 +172,13 @@ namespace AlternativeTextures.Framework.Interfaces.API
             // Override xTileOffset if AlternativeTextureModel has an animation
             if (textureModel.HasAnimation(textureVariation))
             {
-                if (!obj.modData.ContainsKey("AlternativeTextureCurrentFrame") || !obj.modData.ContainsKey("AlternativeTextureFrameIndex") || !obj.modData.ContainsKey("AlternativeTextureFrameDuration") || !obj.modData.ContainsKey("AlternativeTextureElapsedDuration"))
-                {
-                    obj.modData["AlternativeTextureCurrentFrame"] = "0";
-                    obj.modData["AlternativeTextureFrameIndex"] = "0";
-                    obj.modData["AlternativeTextureFrameDuration"] = textureModel.GetAnimationDataAtIndex(textureVariation, 0).Duration.ToString();// Animation.ElementAt(0).Duration.ToString();
-                    obj.modData["AlternativeTextureElapsedDuration"] = "0";
-                }
-
-                var currentFrame = int.Parse(obj.modData["AlternativeTextureCurrentFrame"]);
-                var frameIndex = int.Parse(obj.modData["AlternativeTextureFrameIndex"]);
-                var frameDuration = int.Parse(obj.modData["AlternativeTextureFrameDuration"]);
-                var elapsedDuration = int.Parse(obj.modData["AlternativeTextureElapsedDuration"]);
-
-                if (elapsedDuration >= frameDuration)
-                {
-                    frameIndex = frameIndex + 1 >= textureModel.GetAnimationData(textureVariation).Count() ? 0 : frameIndex + 1;
-
-                    var animationData = textureModel.GetAnimationDataAtIndex(textureVariation, frameIndex);
-                    currentFrame = animationData.Frame;
-
-                    obj.modData["AlternativeTextureCurrentFrame"] = currentFrame.ToString();
-                    obj.modData["AlternativeTextureFrameIndex"] = frameIndex.ToString();
-                    obj.modData["AlternativeTextureFrameDuration"] = animationData.Duration.ToString();
-                    obj.modData["AlternativeTextureElapsedDuration"] = "0";
-                }
-                else
-                {
-                    obj.modData["AlternativeTextureElapsedDuration"] = (elapsedDuration + Game1.currentGameTime.ElapsedGameTime.Milliseconds).ToString();
-                }
-
-                xTileOffset = currentFrame;
+                xTileOffset = obj.modData.ContainsKey("AlternativeTextureCurrentFrame") is false ? 0 : int.Parse(obj.modData["AlternativeTextureCurrentFrame"]);
             }
             sourceRect = new Rectangle(xTileOffset * textureModel.TextureWidth, textureOffset, textureModel.TextureWidth, textureModel.TextureHeight);
+
             return textureModel.GetTexture(textureVariation);
         }
+
         public void SetTextureForObject(Object obj)
         {
 
