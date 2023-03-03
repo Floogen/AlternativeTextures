@@ -1,4 +1,5 @@
-﻿using AlternativeTextures.Framework.Models;
+﻿using AlternativeTextures.Framework.Managers;
+using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.Patches;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -18,6 +19,7 @@ namespace AlternativeTextures.Framework.Interfaces.API
         public void AddAlternativeTexture(AlternativeTextureModel model, string owner, List<Texture2D> textures);
         public Texture2D GetTextureForObject(Object obj, out Rectangle sourceRect);
         public void SetTextureForObject(Object obj);
+        public void SetTextureForObject(Object obj, string texturePackId, string optionalSeason = null, int optionalVariation = 0);
     }
 
     public class Api : IApi
@@ -217,6 +219,32 @@ namespace AlternativeTextures.Framework.Interfaces.API
             }
 
             PatchTemplate.AssignDefaultModData(obj, instanceSeasonName, true, obj.bigCraftable.Value);
+        }
+
+        public void SetTextureForObject(Object obj, string texturePackId, string optionalSeason = null, int optionalVariation = 0)
+        {
+            if (obj is null)
+            {
+                return;
+            }
+
+            var modelType = PatchTemplate.GetTextureType(obj);
+            var instanceName = $"{modelType}_{PatchTemplate.GetObjectName(obj)}";
+            if (String.IsNullOrEmpty(optionalSeason) is false)
+            {
+                optionalSeason = optionalSeason.ToLower();
+                instanceName = $"{instanceName}_{optionalSeason}";
+            }
+            var modelName = String.Concat(texturePackId, ".", instanceName);
+
+            // Verify texture exists before applying change
+            if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTextureById(modelName))
+            {
+                obj.modData["AlternativeTextureOwner"] = texturePackId;
+                obj.modData["AlternativeTextureName"] = modelName;
+                obj.modData["AlternativeTextureVariation"] = optionalVariation.ToString();
+                obj.modData["AlternativeTextureSeason"] = String.IsNullOrEmpty(optionalSeason) ? String.Empty : optionalSeason;
+            }
         }
     }
 }
