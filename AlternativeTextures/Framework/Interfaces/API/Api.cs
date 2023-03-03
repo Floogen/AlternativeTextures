@@ -148,8 +148,11 @@ namespace AlternativeTextures.Framework.Interfaces.API
         public Texture2D GetTextureForObject(Object obj, out Rectangle sourceRect)
         {
             sourceRect = new Rectangle();
-            if (!obj.modData.TryGetValue("AlternativeTextureName", out var str))
+            if (obj.modData.TryGetValue("AlternativeTextureName", out var str) is false)
+            {
                 return null;
+            }
+
             var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(str);
             if (textureModel is null)
             {
@@ -181,7 +184,6 @@ namespace AlternativeTextures.Framework.Interfaces.API
 
         public void SetTextureForObject(Object obj)
         {
-
             if (obj is null)
             {
                 return;
@@ -196,7 +198,7 @@ namespace AlternativeTextures.Framework.Interfaces.API
             }
             else if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
             {
-                var result = Game1.random.Next(2) > 0 ? PatchTemplate.AssignModData(obj, instanceSeasonName, true, obj.bigCraftable.Value) : PatchTemplate.AssignModData(obj, instanceName, false, obj.bigCraftable.Value);
+                _ = Game1.random.Next(2) > 0 ? PatchTemplate.AssignModData(obj, instanceSeasonName, true, obj.bigCraftable.Value) : PatchTemplate.AssignModData(obj, instanceName, false, obj.bigCraftable.Value);
                 return;
             }
             else
