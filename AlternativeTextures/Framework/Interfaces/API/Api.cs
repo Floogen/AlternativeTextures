@@ -215,7 +215,7 @@ namespace AlternativeTextures.Framework.Interfaces.API
                 return;
             }
 
-            var modelType = obj is Furniture ? AlternativeTextureModel.TextureType.Furniture : AlternativeTextureModel.TextureType.Craftable;
+            var modelType = PatchTemplate.GetTextureType(obj);
             var instanceName = $"{modelType}_{PatchTemplate.GetObjectName(obj)}";
             var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
             if (PatchTemplate.HasCachedTextureName(obj) is true)
