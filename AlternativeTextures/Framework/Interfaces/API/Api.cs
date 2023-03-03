@@ -20,6 +20,7 @@ namespace AlternativeTextures.Framework.Interfaces.API
         public Texture2D GetTextureForObject(Object obj, out Rectangle sourceRect);
         public void SetTextureForObject(Object obj);
         public void SetTextureForObject(Object obj, string texturePackId, string optionalSeason = null, int optionalVariation = 0);
+        public void ClearTextureForObject(Object obj);
     }
 
     public class Api : IApi
@@ -245,6 +246,22 @@ namespace AlternativeTextures.Framework.Interfaces.API
                 obj.modData["AlternativeTextureVariation"] = optionalVariation.ToString();
                 obj.modData["AlternativeTextureSeason"] = String.IsNullOrEmpty(optionalSeason) ? String.Empty : optionalSeason;
             }
+        }
+
+        public void ClearTextureForObject(Object obj)
+        {
+            if (obj is null)
+            {
+                return;
+            }
+
+            var modelType = PatchTemplate.GetTextureType(obj);
+            var instanceName = $"{modelType}_{PatchTemplate.GetObjectName(obj)}";
+
+            obj.modData["AlternativeTextureOwner"] = AlternativeTextures.DEFAULT_OWNER;
+            obj.modData["AlternativeTextureName"] = $"{AlternativeTextures.DEFAULT_OWNER}.{instanceName}";
+            obj.modData["AlternativeTextureVariation"] = $"{-1}";
+            obj.modData["AlternativeTextureSeason"] = String.Empty;
         }
     }
 }
