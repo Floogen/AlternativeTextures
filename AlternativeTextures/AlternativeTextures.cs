@@ -505,8 +505,22 @@ namespace AlternativeTextures
             var placedObject = PatchTemplate.GetObjectAt(Game1.currentLocation, xTile, yTile);
             if (placedObject is null)
             {
+                var resourceClump = PatchTemplate.GetResourceClumpAt(Game1.currentLocation, xTile, yTile);
                 var terrainFeature = PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, xTile, yTile);
-                if (terrainFeature is Flooring flooring)
+                if (resourceClump is GiantCrop giantCrop)
+                {
+                    var modelType = AlternativeTextureModel.TextureType.GiantCrop;
+                    var instanceName = Game1.objectInformation.ContainsKey(giantCrop.parentSheetIndex.Value) ? Game1.objectInformation[giantCrop.parentSheetIndex.Value].Split('/')[0] : String.Empty;
+                    if (!giantCrop.modData.ContainsKey("AlternativeTextureName") || !giantCrop.modData.ContainsKey("AlternativeTextureVariation"))
+                    {
+                        // Assign default modData
+                        var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(giantCrop.currentLocation)}";
+                        PatchTemplate.AssignDefaultModData(giantCrop, instanceSeasonName, true);
+                    }
+
+                    tool.modData[SPRAY_CAN_FLAG] = $"{modelType}_{instanceName}";
+                }
+                else if (terrainFeature is Flooring flooring)
                 {
                     var modelType = AlternativeTextureModel.TextureType.Flooring;
                     if (!flooring.modData.ContainsKey("AlternativeTextureName") || !flooring.modData.ContainsKey("AlternativeTextureVariation"))
@@ -655,8 +669,21 @@ namespace AlternativeTextures
                         var actualSelectedVariation = actualSelectedModel.Variations[selectedVariationIndex].ToString();
 
                         // Verify that a supported object exists at the tile
+                        var resourceClump = PatchTemplate.GetResourceClumpAt(Game1.currentLocation, actualX, actualY);
                         var terrainFeature = PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, actualX, actualY);
-                        if (terrainFeature is Flooring flooring)
+                        if (resourceClump is GiantCrop giantCrop)
+                        {
+                            var modelType = AlternativeTextureModel.TextureType.GiantCrop;
+                            var instanceName = Game1.objectInformation.ContainsKey(giantCrop.parentSheetIndex.Value) ? Game1.objectInformation[giantCrop.parentSheetIndex.Value].Split('/')[0] : String.Empty;
+                            if (tool.modData[SPRAY_CAN_FLAG] == $"{modelType}_{instanceName}")
+                            {
+                                giantCrop.modData["AlternativeTextureOwner"] = actualSelectedModel.Owner;
+                                giantCrop.modData["AlternativeTextureName"] = actualSelectedModel.TextureName;
+                                giantCrop.modData["AlternativeTextureVariation"] = actualSelectedVariation;
+                                continue;
+                            }
+                        }
+                        else if (terrainFeature is Flooring flooring)
                         {
                             var modelType = AlternativeTextureModel.TextureType.Flooring;
                             if (tool.modData[SPRAY_CAN_FLAG] == $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}")
