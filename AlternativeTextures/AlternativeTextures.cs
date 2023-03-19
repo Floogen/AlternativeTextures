@@ -127,10 +127,7 @@ namespace AlternativeTextures
                 new IndoorPotPatch(monitor, helper).Apply(harmony);
                 new PhonePatch(monitor, helper).Apply(harmony);
                 new TorchPatch(monitor, helper).Apply(harmony);
-                /*
-                 * Not supported:
-                 * - Wood Chipper
-                 */
+                new WoodChipperPatch(monitor, helper).Apply(harmony);
 
                 // Start of entity patches
                 new CharacterPatch(monitor, helper).Apply(harmony);
