@@ -37,6 +37,7 @@ using StardewValley.GameData;
 using Newtonsoft.Json;
 using StardewValley.Buildings;
 using StardewValley.Monsters;
+using AlternativeTextures.Framework.Patches.SMAPI;
 
 namespace AlternativeTextures
 {
@@ -76,6 +77,8 @@ namespace AlternativeTextures
         // Utilities
         internal static FpsCounter fpsCounter;
         private static Api _api;
+        internal static Dictionary<string, int[]> locationsToMailboxTileIds;
+        internal static Dictionary<string, string[]> locationsToMailboxTileSheets;
 
         // Tool related variables
         private Point _lastSprayCanTile = new Point();
@@ -98,6 +101,16 @@ namespace AlternativeTextures
             // Setup our utilities
             fpsCounter = new FpsCounter();
             _api = new Api(this);
+            locationsToMailboxTileIds = new Dictionary<string, int[]>()
+            {
+                { "Farm", new int[] { 1930, 1955 } },
+                { "IslandWest", new int[] { 739, 771 } },
+            };
+            locationsToMailboxTileSheets = new Dictionary<string, string[]>()
+            {
+                { "Farm", new string[] { "spring_outdoorsTileSheet", "summer_outdoorsTileSheet", "fall_outdoorsTileSheet", "winter_outdoorsTileSheet" } },
+                { "IslandWest", new string[] { "island_tilesheet_1" } }
+            };
 
             // Load our Harmony patches
             try
@@ -145,6 +158,9 @@ namespace AlternativeTextures
                 // Start of location patches
                 new GameLocationPatch(monitor, helper).Apply(harmony);
                 new FarmPatch(monitor, helper).Apply(harmony);
+
+                // Start of SMAPI patches
+                new DisplayDevicePatch(monitor, helper).Apply(harmony);
 
                 // Paint tool related patches
                 new UtilityPatch(monitor, helper).Apply(harmony);
