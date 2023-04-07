@@ -53,18 +53,30 @@ namespace AlternativeTextures.Framework.UI
         protected Vector2 _position;
         protected TextureType _textureType;
 
+        protected string _textureOwnerKey;
+        protected string _textureNameKey;
+        protected string _textureVariationKey;
+        protected string _textureSeasonKey;
+        protected string _textureDisplayNameKey;
+
         private bool _isSprayCan;
         protected Dictionary<string, SelectedTextureModel> _selectedIdsToModels;
 
-        public PaintBucketMenu(Object target, Vector2 position, TextureType textureType, string modelName, string uiTitle = "Paint Bucket", int textureTileWidth = -1, bool isSprayCan = false) : base(0, 0, 832, 576, showUpperRightCloseButton: true)
+        public PaintBucketMenu(Object target, Vector2 position, TextureType textureType, string modelName, string uiTitle = "Paint Bucket", int textureTileWidth = -1, bool isSprayCan = false, string textureOwnerKey = "AlternativeTextureOwner", string textureNameKey = "AlternativeTextureName", string textureVariationKey = "AlternativeTextureVariation", string textureSeasonKey = "AlternativeTextureSeason", string textureDisplayNameKey = "AlternativeTextureDisplayName") : base(0, 0, 832, 576, showUpperRightCloseButton: true)
         {
-            if (!target.modData.ContainsKey("AlternativeTextureOwner") || !target.modData.ContainsKey("AlternativeTextureName"))
+            if (!target.modData.ContainsKey(textureOwnerKey) || !target.modData.ContainsKey(textureNameKey))
             {
                 this.exitThisMenu();
                 return;
             }
             _title = uiTitle;
             _isSprayCan = isSprayCan;
+
+            _textureOwnerKey = textureOwnerKey;
+            _textureNameKey = textureNameKey;
+            _textureVariationKey = textureVariationKey;
+            _textureSeasonKey = textureSeasonKey;
+            _textureDisplayNameKey = textureDisplayNameKey;
 
             // Set up menu structure
             if (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.ko || LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.fr)
@@ -86,13 +98,13 @@ namespace AlternativeTextures.Framework.UI
                     for (int v = 0; v < manualVariations.Count(); v++)
                     {
                         var objectWithVariation = target.getOne();
-                        objectWithVariation.modData["AlternativeTextureOwner"] = availableModels[m].Owner;
-                        objectWithVariation.modData["AlternativeTextureName"] = availableModels[m].GetId();
-                        objectWithVariation.modData["AlternativeTextureVariation"] = manualVariations[v].Id.ToString();
-                        objectWithVariation.modData["AlternativeTextureSeason"] = availableModels[m].Season;
-                        objectWithVariation.modData["AlternativeTextureDisplayName"] = manualVariations[v].Name;
+                        objectWithVariation.modData[textureOwnerKey] = availableModels[m].Owner;
+                        objectWithVariation.modData[textureNameKey] = availableModels[m].GetId();
+                        objectWithVariation.modData[textureVariationKey] = manualVariations[v].Id.ToString();
+                        objectWithVariation.modData[textureSeasonKey] = availableModels[m].Season;
+                        objectWithVariation.modData[textureDisplayNameKey] = manualVariations[v].Name;
 
-                        if (AlternativeTextures.modConfig.IsTextureVariationDisabled(objectWithVariation.modData["AlternativeTextureName"], manualVariations[v].Id))
+                        if (AlternativeTextures.modConfig.IsTextureVariationDisabled(objectWithVariation.modData[textureNameKey], manualVariations[v].Id))
                         {
                             continue;
                         }
@@ -112,13 +124,13 @@ namespace AlternativeTextures.Framework.UI
                     for (int v = 0; v < availableModels[m].Variations; v++)
                     {
                         var objectWithVariation = target.getOne();
-                        objectWithVariation.modData["AlternativeTextureOwner"] = availableModels[m].Owner;
-                        objectWithVariation.modData["AlternativeTextureName"] = availableModels[m].GetId();
-                        objectWithVariation.modData["AlternativeTextureVariation"] = v.ToString();
-                        objectWithVariation.modData["AlternativeTextureSeason"] = availableModels[m].Season;
-                        objectWithVariation.modData["AlternativeTextureDisplayName"] = String.Empty;
+                        objectWithVariation.modData[textureOwnerKey] = availableModels[m].Owner;
+                        objectWithVariation.modData[textureNameKey] = availableModels[m].GetId();
+                        objectWithVariation.modData[textureVariationKey] = v.ToString();
+                        objectWithVariation.modData[textureSeasonKey] = availableModels[m].Season;
+                        objectWithVariation.modData[textureDisplayNameKey] = String.Empty;
 
-                        if (AlternativeTextures.modConfig.IsTextureVariationDisabled(objectWithVariation.modData["AlternativeTextureName"], v))
+                        if (AlternativeTextures.modConfig.IsTextureVariationDisabled(objectWithVariation.modData[textureNameKey], v))
                         {
                             continue;
                         }
@@ -146,12 +158,12 @@ namespace AlternativeTextures.Framework.UI
                         continue;
                     }
 
-                    decoration.modData["AlternativeTextureOwner"] = AlternativeTextures.DEFAULT_OWNER;
-                    decoration.modData["AlternativeTextureName"] = $"{decoration.modData["AlternativeTextureOwner"]}.{modelName}";
-                    decoration.modData["AlternativeTextureVariation"] = decoration.ParentSheetIndex.ToString();
-                    decoration.modData["AlternativeTextureSeason"] = String.Empty;
+                    decoration.modData[textureOwnerKey] = AlternativeTextures.DEFAULT_OWNER;
+                    decoration.modData[textureNameKey] = $"{decoration.modData[textureOwnerKey]}.{modelName}";
+                    decoration.modData[textureVariationKey] = decoration.ParentSheetIndex.ToString();
+                    decoration.modData[textureSeasonKey] = String.Empty;
 
-                    if (AlternativeTextures.modConfig.IsTextureVariationDisabled(decoration.modData["AlternativeTextureName"], decoration.ParentSheetIndex))
+                    if (AlternativeTextures.modConfig.IsTextureVariationDisabled(decoration.modData[textureNameKey], decoration.ParentSheetIndex))
                     {
                         continue;
                     }
@@ -165,10 +177,10 @@ namespace AlternativeTextures.Framework.UI
             else
             {
                 var vanillaObject = target.getOne();
-                vanillaObject.modData["AlternativeTextureOwner"] = AlternativeTextures.DEFAULT_OWNER;
-                vanillaObject.modData["AlternativeTextureName"] = $"{vanillaObject.modData["AlternativeTextureOwner"]}.{modelName}";
-                vanillaObject.modData["AlternativeTextureVariation"] = $"{-1}";
-                vanillaObject.modData["AlternativeTextureSeason"] = String.Empty;
+                vanillaObject.modData[textureOwnerKey] = AlternativeTextures.DEFAULT_OWNER;
+                vanillaObject.modData[textureNameKey] = $"{vanillaObject.modData[textureOwnerKey]}.{modelName}";
+                vanillaObject.modData[textureVariationKey] = $"{-1}";
+                vanillaObject.modData[textureSeasonKey] = String.Empty;
 
                 if (target is Furniture)
                 {
@@ -405,7 +417,7 @@ namespace AlternativeTextures.Framework.UI
                 }
                 else
                 {
-                    filteredTextureOptions = cachedTextureOptions.Where(i => !i.modData["AlternativeTextureName"].Contains(AlternativeTextures.DEFAULT_OWNER) && AlternativeTextures.textureManager.GetSpecificTextureModel(i.modData["AlternativeTextureName"]) is AlternativeTextureModel model && model.HasKeyword(i.modData["AlternativeTextureVariation"], _searchBox.Text)).ToList();
+                    filteredTextureOptions = cachedTextureOptions.Where(i => !i.modData[_textureNameKey].Contains(AlternativeTextures.DEFAULT_OWNER) && AlternativeTextures.textureManager.GetSpecificTextureModel(i.modData[_textureNameKey]) is AlternativeTextureModel model && model.HasKeyword(i.modData[_textureVariationKey], _searchBox.Text)).ToList();
                 }
             }
         }
@@ -459,7 +471,7 @@ namespace AlternativeTextures.Framework.UI
 
                         building.resetTexture();
 
-                        if (building is ShippingBin shippingBin && shippingBin.modData["AlternativeTextureOwner"] == AlternativeTextures.DEFAULT_OWNER)
+                        if (building is ShippingBin shippingBin && shippingBin.modData[_textureOwnerKey] == AlternativeTextures.DEFAULT_OWNER)
                         {
                             shippingBin.initLid();
                         }
@@ -489,8 +501,8 @@ namespace AlternativeTextures.Framework.UI
 
                         if (room != -1)
                         {
-                            int variation = Int32.Parse(c.item.modData["AlternativeTextureVariation"]);
-                            var decorationKey = c.item.modData["AlternativeTextureOwner"] == AlternativeTextures.DEFAULT_OWNER ? variation.ToString() : $"{c.item.modData["AlternativeTextureName"]}:{variation}";
+                            int variation = Int32.Parse(c.item.modData[_textureVariationKey]);
+                            var decorationKey = c.item.modData[_textureOwnerKey] == AlternativeTextures.DEFAULT_OWNER ? variation.ToString() : $"{c.item.modData[_textureNameKey]}:{variation}";
                             if (isFloor)
                             {
                                 if (variation == -1)
@@ -577,17 +589,17 @@ namespace AlternativeTextures.Framework.UI
                     if (textureIndex < filteredTextureOptions.Count)
                     {
                         var target = filteredTextureOptions[textureIndex];
-                        var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(target.modData["AlternativeTextureName"]);
-                        var variation = Int32.Parse(target.modData["AlternativeTextureVariation"]);
+                        var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(target.modData[_textureNameKey]);
+                        var variation = Int32.Parse(target.modData[_textureVariationKey]);
 
                         Color colorOverlay = Color.White;
-                        if (_selectedIdsToModels is not null && (_selectedIdsToModels.ContainsKey(target.modData["AlternativeTextureName"]) is false || _selectedIdsToModels[target.modData["AlternativeTextureName"]].Owner != target.modData["AlternativeTextureOwner"] || _selectedIdsToModels[target.modData["AlternativeTextureName"]].Variations.Contains(variation) is false))
+                        if (_selectedIdsToModels is not null && (_selectedIdsToModels.ContainsKey(target.modData[_textureNameKey]) is false || _selectedIdsToModels[target.modData[_textureNameKey]].Owner != target.modData[_textureOwnerKey] || _selectedIdsToModels[target.modData[_textureNameKey]].Variations.Contains(variation) is false))
                         {
                             colorOverlay = new Color(128, 128, 128, 100);
                         }
 
                         this.availableTextures[i].item = target;
-                        if (variation == -1 || target.modData["AlternativeTextureOwner"] == AlternativeTextures.DEFAULT_OWNER)
+                        if (variation == -1 || target.modData[_textureOwnerKey] == AlternativeTextures.DEFAULT_OWNER)
                         {
                             if (PatchTemplate.IsDGAUsed() && PatchTemplate.IsDGAObject(PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_position.X, (int)_position.Y)))
                             {
@@ -800,16 +812,16 @@ namespace AlternativeTextures.Framework.UI
             var hoverDisplayName = "Hover over an item to see its texture name!";
             if (this.hovered != null && this.hovered.item != null)
             {
-                if (this.hovered.item.modData.ContainsKey("AlternativeTextureOwner") && this.hovered.item.modData.ContainsKey("AlternativeTextureVariation"))
+                if (this.hovered.item.modData.ContainsKey(_textureOwnerKey) && this.hovered.item.modData.ContainsKey(_textureVariationKey))
                 {
-                    if (this.hovered.item.modData.ContainsKey("AlternativeTextureDisplayName") && !String.IsNullOrEmpty(this.hovered.item.modData["AlternativeTextureDisplayName"]))
+                    if (this.hovered.item.modData.ContainsKey(_textureDisplayNameKey) && !String.IsNullOrEmpty(this.hovered.item.modData[_textureDisplayNameKey]))
                     {
-                        hoverInfoText = String.Concat(this.hovered.item.modData["AlternativeTextureOwner"], " > ", Int32.Parse(this.hovered.item.modData["AlternativeTextureVariation"]) + 1);
-                        hoverDisplayName = this.hovered.item.modData["AlternativeTextureDisplayName"];
+                        hoverInfoText = String.Concat(this.hovered.item.modData[_textureOwnerKey], " > ", Int32.Parse(this.hovered.item.modData[_textureVariationKey]) + 1);
+                        hoverDisplayName = this.hovered.item.modData[_textureDisplayNameKey];
                     }
                     else
                     {
-                        hoverDisplayName = String.Concat(this.hovered.item.modData["AlternativeTextureOwner"], " > ", Int32.Parse(this.hovered.item.modData["AlternativeTextureVariation"]) + 1);
+                        hoverDisplayName = String.Concat(this.hovered.item.modData[_textureOwnerKey], " > ", Int32.Parse(this.hovered.item.modData[_textureVariationKey]) + 1);
                     }
                 }
             }
