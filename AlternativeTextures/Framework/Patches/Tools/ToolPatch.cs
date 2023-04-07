@@ -21,6 +21,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static AlternativeTextures.Framework.Models.AlternativeTextureModel;
+using static StardewValley.Minigames.TargetGame;
 using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.Patches.Tools
@@ -472,6 +473,46 @@ namespace AlternativeTextures.Framework.Patches.Tools
 
                     return CancelUsing(who);
                 }
+            }
+
+            // Check for mailbox
+            if (location.doesTileHaveProperty(x / 64, y / 64, "Action", "Buildings") == "Mailbox" || location.doesTileHaveProperty(x / 64, (y + 64) / 64, "Action", "Buildings") == "Mailbox")
+            {
+                var modelType = AlternativeTextureModel.TextureType.Building;
+                if (!location.modData.ContainsKey("AlternativeTextureName.Mailbox") || !location.modData["AlternativeTextureName.Mailbox"].Contains("Mailbox"))
+                {
+                    var textureModel = new AlternativeTextureModel() { Owner = AlternativeTextures.DEFAULT_OWNER, Season = Game1.currentSeason };
+
+                    location.modData["AlternativeTextureOwner.Mailbox"] = textureModel.Owner;
+                    location.modData["AlternativeTextureName.Mailbox"] = String.Concat(textureModel.Owner, ".", $"{modelType}_{"Mailbox"}_{Game1.currentSeason}");
+
+                    if (!String.IsNullOrEmpty(textureModel.Season))
+                    {
+                        location.modData["AlternativeTextureSeason.Mailbox"] = Game1.currentSeason;
+                    }
+
+                    location.modData["AlternativeTextureVariation.Mailbox"] = "-1";
+                }
+
+                bool usedSecondaryTile = string.IsNullOrEmpty(location.doesTileHaveProperty(x / 64, y / 64, "Action", "Buildings")) && location.doesTileHaveProperty(x / 64, (y + 64) / 64, "Action", "Buildings") == "Mailbox";
+                var mailboxObj = new Object(100, 1, isRecipe: false, -1)
+                {
+                    TileLocation = new Vector2(x / 64, (y + (usedSecondaryTile ? 64 : 0)) / 64)
+                };
+
+                foreach (string key in location.modData.Keys)
+                {
+                    mailboxObj.modData[key] = location.modData[key];
+                }
+
+                var modelName = mailboxObj.modData["AlternativeTextureName.Mailbox"].Replace($"{mailboxObj.modData["AlternativeTextureOwner.Mailbox"]}.", String.Empty);
+                if (mailboxObj.modData.ContainsKey("AlternativeTextureSeason.Mailbox") && !String.IsNullOrEmpty(mailboxObj.modData["AlternativeTextureSeason.Mailbox"]))
+                {
+                    modelName = modelName.Replace($"_{mailboxObj.modData["AlternativeTextureSeason.Mailbox"]}", String.Empty);
+                }
+
+                // Display texture menu
+                Game1.activeClickableMenu = new PaintBucketMenu(mailboxObj, mailboxObj.TileLocation * 64f, TextureType.Craftable, modelName, _helper.Translation.Get("tools.name.paint_bucket"), isSprayCan: false, textureOwnerKey: "AlternativeTextureOwner.Mailbox", textureNameKey: "AlternativeTextureName.Mailbox", textureVariationKey: "AlternativeTextureVariation.Mailbox", textureSeasonKey: "AlternativeTextureSeason.Mailbox", textureDisplayNameKey: "AlternativeTextureDisplayName.Mailbox");
             }
 
             return CancelUsing(who);

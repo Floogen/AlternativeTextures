@@ -486,6 +486,13 @@ namespace AlternativeTextures.Framework.UI
                         farm.houseSource.Value = new Rectangle(0, 144 * (((int)Game1.MasterPlayer.houseUpgradeLevel == 3) ? 2 : ((int)Game1.MasterPlayer.houseUpgradeLevel)), 160, 144);
                         farm.ApplyHousePaint();
                     }
+                    else if (Game1.currentLocation.doesTileHaveProperty((int)_position.X / 64, (int)_position.Y / 64, "Action", "Buildings") == "Mailbox")
+                    {
+                        foreach (string key in c.item.modData.Keys)
+                        {
+                            Game1.currentLocation.modData[key] = c.item.modData[key];
+                        }
+                    }
                     else if (Game1.currentLocation is DecoratableLocation decoratableLocation && (decoratableLocation.getFloorAt(new Point((int)_position.X, (int)_position.Y)) != -1 || decoratableLocation.getWallForRoomAt(new Point((int)_position.X, (int)_position.Y)) != -1))
                     {
                         var room = 0;
@@ -696,6 +703,11 @@ namespace AlternativeTextures.Framework.UI
                                 BuildingPatch.ResetTextureReversePatch(targetedBuilding);
                                 b.Draw(house_texture, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), farm.houseSource, targetedBuilding.color, 0f, new Vector2(0f, 0f), _buildingScale, SpriteEffects.None, 0.89f);
                             }
+                            else if (Game1.currentLocation.doesTileHaveProperty((int)_position.X / 64, (int)_position.Y / 64, "Action", "Buildings") == "Mailbox")
+                            {
+                                Texture2D mailboxTexture = Game1.content.Load<Texture2D>($"Maps\\{Game1.currentSeason.ToLower()}_outdoorsTileSheet");
+                                b.Draw(mailboxTexture, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), new Rectangle(80, 1232, 16, 32), Color.White, 0f, new Vector2(0f, 0f), 4f, SpriteEffects.None, 0.89f);
+                            }
                             else if (Game1.currentLocation is DecoratableLocation decoratableLocation && (decoratableLocation.getFloorAt(new Point((int)_position.X, (int)_position.Y)) != -1 || decoratableLocation.getWallForRoomAt(new Point((int)_position.X, (int)_position.Y)) != -1))
                             {
                                 var which = variation;
@@ -791,6 +803,12 @@ namespace AlternativeTextures.Framework.UI
                             targetedBuilding.tilesHigh.Value = farm.GetHouseRect().Height + 1;
 
                             b.Draw(BuildingPatch.GetBuildingTextureWithPaint(targetedBuilding, textureModel, variation, true), new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), new Rectangle(0, 0, farm.houseSource.Width, farm.houseSource.Height), targetedBuilding.color, 0f, new Vector2(0f, 0f), _buildingScale, SpriteEffects.None, 0.89f);
+                        }
+                        else if (Game1.currentLocation.doesTileHaveProperty((int)_position.X / 64, (int)_position.Y / 64, "Action", "Buildings") == "Mailbox")
+                        {
+                            this.availableTextures[i].texture = textureModel.GetTexture(variation);
+                            this.availableTextures[i].sourceRect = new Rectangle(0, textureModel.GetTextureOffset(variation), 16, 32);
+                            this.availableTextures[i].draw(b, colorOverlay, 0.87f);
                         }
                         else if (Game1.currentLocation is DecoratableLocation decoratableLocation && (decoratableLocation.getFloorAt(new Point((int)_position.X, (int)_position.Y)) != -1 || decoratableLocation.getWallForRoomAt(new Point((int)_position.X, (int)_position.Y)) != -1))
                         {
