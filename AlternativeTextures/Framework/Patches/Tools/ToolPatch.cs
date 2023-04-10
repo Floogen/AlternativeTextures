@@ -513,6 +513,12 @@ namespace AlternativeTextures.Framework.Patches.Tools
                         modelName = modelName.Replace($"_{mailboxObj.modData["AlternativeTextureSeason.Mailbox"]}", String.Empty);
                     }
 
+                    if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
+                    {
+                        Game1.addHUDMessage(new HUDMessage(_helper.Translation.Get("messages.warning.no_textures_for_season", new { itemName = modelName }), 3));
+                        return CancelUsing(who);
+                    }
+
                     // Display texture menu
                     Game1.activeClickableMenu = new PaintBucketMenu(mailboxObj, mailboxObj.TileLocation * 64f, TextureType.Craftable, modelName, _helper.Translation.Get("tools.name.paint_bucket"), isSprayCan: false, textureOwnerKey: "AlternativeTextureOwner.Mailbox", textureNameKey: "AlternativeTextureName.Mailbox", textureVariationKey: "AlternativeTextureVariation.Mailbox", textureSeasonKey: "AlternativeTextureSeason.Mailbox", textureDisplayNameKey: "AlternativeTextureDisplayName.Mailbox");
 
