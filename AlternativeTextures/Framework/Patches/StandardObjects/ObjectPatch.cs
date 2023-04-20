@@ -1,4 +1,5 @@
 ﻿using AlternativeTextures.Framework.Models;
+using AlternativeTextures.Framework.Utilities;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -56,15 +57,15 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
         internal static bool DrawPrefix(Object __instance, SpriteBatch spriteBatch, int x, int y, float alpha = 1f)
         {
-            if (__instance.modData.ContainsKey("AlternativeTextureName"))
+            if (__instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
             {
-                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
+                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME]);
                 if (textureModel is null)
                 {
                     return true;
                 }
 
-                var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
+                var textureVariation = Int32.Parse(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION]);
                 if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
                 {
                     return true;
@@ -72,7 +73,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 var textureOffset = textureModel.GetTextureOffset(textureVariation);
 
                 // Get the current X index for the source tile
-                var xTileOffset = __instance.modData.ContainsKey("AlternativeTextureSheetId") ? __instance.ParentSheetIndex - Int32.Parse(__instance.modData["AlternativeTextureSheetId"]) : 0;
+                var xTileOffset = __instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_SHEET_ID) ? __instance.ParentSheetIndex - Int32.Parse(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SHEET_ID]) : 0;
                 if (__instance.showNextIndex)
                 {
                     xTileOffset += 1;
@@ -215,42 +216,42 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
         internal static bool DrawPlacementBoundsPrefix(Object __instance, SpriteBatch spriteBatch, GameLocation location)
         {
-            if (__instance.modData.ContainsKey("AlternativeTextureName"))
+            if (__instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
             {
-                __instance.modData["AlternativeTextureNameCached"] = __instance.modData["AlternativeTextureName"];
-                __instance.modData.Remove("AlternativeTextureName");
+                __instance.modData["AlternativeTextureNameCached"] = __instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME];
+                __instance.modData.Remove(ModDataKeys.ALTERNATIVE_TEXTURE_NAME);
             }
             return true;
         }
 
         internal static void DayUpdatePostfix(Object __instance, GameLocation location)
         {
-            if (__instance.modData.ContainsKey("AlternativeTextureName"))
+            if (__instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
             {
-                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
+                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME]);
                 if (textureModel is null)
                 {
                     return;
                 }
 
-                var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
+                var textureVariation = Int32.Parse(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION]);
                 if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
                 {
                     return;
                 }
 
-                if (__instance.modData.ContainsKey("AlternativeTextureSheetId") && __instance.ParentSheetIndex != Int32.Parse(__instance.modData["AlternativeTextureSheetId"]))
+                if (__instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_SHEET_ID) && __instance.ParentSheetIndex != Int32.Parse(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SHEET_ID]))
                 {
-                    __instance.modData["AlternativeTextureSheetId"] = __instance.ParentSheetIndex.ToString();
+                    __instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SHEET_ID] = __instance.ParentSheetIndex.ToString();
                 }
             }
         }
 
         internal static void RotPostfix(Object __instance)
         {
-            if (__instance.modData.ContainsKey("AlternativeTextureName"))
+            if (__instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
             {
-                __instance.modData["AlternativeTextureVariation"] = "-1";
+                __instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = "-1";
             }
         }
 
@@ -268,7 +269,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 var terrainFeature = GetTerrainFeatureAt(location, x, y);
                 if (terrainFeature is Flooring flooring)
                 {
-                    flooring.modData["AlternativeTextureSheetId"] = __instance.ParentSheetIndex.ToString();
+                    flooring.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SHEET_ID] = __instance.ParentSheetIndex.ToString();
 
                     var flooringName = $"{AlternativeTextureModel.TextureType.Flooring}_{GetFlooringName(flooring)}";
                     var flooringSeasonName = $"{flooringName}_{Game1.currentSeason}";

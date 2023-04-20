@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using AlternativeTextures.Framework.Utilities;
+using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Netcode;
@@ -26,20 +27,20 @@ namespace AlternativeTextures.Framework.Patches.Buildings
 
         internal static bool DrawPrefix(Stable __instance, NetFloat ___alpha, SpriteBatch b)
         {
-            if (__instance.maxOccupants == TRACTOR_GARAGE_ID && __instance.modData.ContainsKey("AlternativeTextureName"))
+            if (__instance.maxOccupants == TRACTOR_GARAGE_ID && __instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
             {
                 if (__instance.isMoving || __instance.daysOfConstructionLeft > 0)
                 {
                     return true;
                 }
 
-                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
+                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME]);
                 if (textureModel is null)
                 {
                     return true;
                 }
 
-                var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
+                var textureVariation = Int32.Parse(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION]);
                 if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
                 {
                     return true;

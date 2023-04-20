@@ -1,5 +1,6 @@
 ﻿using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.Patches;
+using AlternativeTextures.Framework.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
@@ -149,7 +150,7 @@ namespace AlternativeTextures.Framework.Interfaces.API
         public Texture2D GetTextureForObject(Object obj, out Rectangle sourceRect)
         {
             sourceRect = new Rectangle();
-            if (obj.modData.TryGetValue("AlternativeTextureName", out var str) is false)
+            if (obj.modData.TryGetValue(ModDataKeys.ALTERNATIVE_TEXTURE_NAME, out var str) is false)
             {
                 return null;
             }
@@ -159,7 +160,7 @@ namespace AlternativeTextures.Framework.Interfaces.API
             {
                 return null;
             }
-            var textureVariation = int.Parse(obj.modData["AlternativeTextureVariation"]);
+            var textureVariation = int.Parse(obj.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION]);
             if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
             {
                 return null;
@@ -167,7 +168,7 @@ namespace AlternativeTextures.Framework.Interfaces.API
             var textureOffset = textureModel.GetTextureOffset(textureVariation);
 
             // Get the current X index for the source tile
-            var xTileOffset = obj.modData.ContainsKey("AlternativeTextureSheetId") ? obj.ParentSheetIndex - int.Parse(obj.modData["AlternativeTextureSheetId"]) : 0;
+            var xTileOffset = obj.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_SHEET_ID) ? obj.ParentSheetIndex - int.Parse(obj.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SHEET_ID]) : 0;
             if (obj.showNextIndex.Value)
             {
                 xTileOffset += 1;
@@ -239,10 +240,10 @@ namespace AlternativeTextures.Framework.Interfaces.API
             // Verify texture exists before applying change
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTextureById(modelName))
             {
-                obj.modData["AlternativeTextureOwner"] = texturePackId;
-                obj.modData["AlternativeTextureName"] = modelName;
-                obj.modData["AlternativeTextureVariation"] = optionalVariation.ToString();
-                obj.modData["AlternativeTextureSeason"] = String.IsNullOrEmpty(optionalSeason) ? String.Empty : optionalSeason;
+                obj.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = texturePackId;
+                obj.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = modelName;
+                obj.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = optionalVariation.ToString();
+                obj.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON] = String.IsNullOrEmpty(optionalSeason) ? String.Empty : optionalSeason;
             }
         }
 
@@ -256,10 +257,10 @@ namespace AlternativeTextures.Framework.Interfaces.API
             var modelType = PatchTemplate.GetTextureType(obj);
             var instanceName = $"{modelType}_{PatchTemplate.GetObjectName(obj)}";
 
-            obj.modData["AlternativeTextureOwner"] = AlternativeTextures.DEFAULT_OWNER;
-            obj.modData["AlternativeTextureName"] = $"{AlternativeTextures.DEFAULT_OWNER}.{instanceName}";
-            obj.modData["AlternativeTextureVariation"] = $"{-1}";
-            obj.modData["AlternativeTextureSeason"] = String.Empty;
+            obj.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = AlternativeTextures.DEFAULT_OWNER;
+            obj.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = $"{AlternativeTextures.DEFAULT_OWNER}.{instanceName}";
+            obj.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = $"{-1}";
+            obj.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON] = String.Empty;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AlternativeTextures.Framework.Interfaces;
 using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.Patches.Entities;
+using AlternativeTextures.Framework.Utilities;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
@@ -385,7 +386,7 @@ namespace AlternativeTextures.Framework.Patches
             {
                 if (!probe)
                 {
-                    obj.modData["AlternativeTextureName"] = obj.modData["AlternativeTextureNameCached"];
+                    obj.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = obj.modData["AlternativeTextureNameCached"];
                     obj.modData.Remove("AlternativeTextureNameCached");
                 }
 
@@ -529,85 +530,85 @@ namespace AlternativeTextures.Framework.Patches
 
         private static void AssignObjectModData(Object obj, string modelName, AlternativeTextureModel textureModel, int variation, bool trackSeason = false, bool trackSheetId = false)
         {
-            obj.modData["AlternativeTextureOwner"] = textureModel.Owner;
-            obj.modData["AlternativeTextureName"] = String.Concat(textureModel.Owner, ".", modelName);
+            obj.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = textureModel.Owner;
+            obj.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = String.Concat(textureModel.Owner, ".", modelName);
 
             if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
             {
-                obj.modData["AlternativeTextureSeason"] = Game1.currentSeason;
+                obj.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON] = Game1.currentSeason;
             }
 
             if (trackSheetId)
             {
-                obj.modData["AlternativeTextureSheetId"] = obj.ParentSheetIndex.ToString();
+                obj.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SHEET_ID] = obj.ParentSheetIndex.ToString();
             }
 
-            obj.modData["AlternativeTextureVariation"] = variation.ToString();
+            obj.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = variation.ToString();
         }
 
         private static void AssignTerrainFeatureModData(TerrainFeature terrain, string modelName, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
         {
-            terrain.modData["AlternativeTextureOwner"] = textureModel.Owner;
-            terrain.modData["AlternativeTextureName"] = String.Concat(textureModel.Owner, ".", modelName);
+            terrain.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = textureModel.Owner;
+            terrain.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = String.Concat(textureModel.Owner, ".", modelName);
 
             if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
             {
-                terrain.modData["AlternativeTextureSeason"] = Game1.GetSeasonForLocation(terrain.currentLocation);
+                terrain.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON] = Game1.GetSeasonForLocation(terrain.currentLocation);
             }
 
-            terrain.modData["AlternativeTextureVariation"] = variation.ToString();
+            terrain.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = variation.ToString();
         }
 
         private static void AssignCharacterModData(Character character, string modelName, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
         {
-            character.modData["AlternativeTextureOwner"] = textureModel.Owner;
-            character.modData["AlternativeTextureName"] = String.Concat(textureModel.Owner, ".", modelName);
+            character.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = textureModel.Owner;
+            character.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = String.Concat(textureModel.Owner, ".", modelName);
 
             if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
             {
-                character.modData["AlternativeTextureSeason"] = Game1.GetSeasonForLocation(character.currentLocation);
+                character.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON] = Game1.GetSeasonForLocation(character.currentLocation);
             }
 
-            character.modData["AlternativeTextureVariation"] = variation.ToString();
+            character.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = variation.ToString();
         }
 
         private static void AssignBuildingModData(Building building, string modelName, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
         {
-            building.modData["AlternativeTextureOwner"] = textureModel.Owner;
-            building.modData["AlternativeTextureName"] = String.Concat(textureModel.Owner, ".", modelName);
+            building.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = textureModel.Owner;
+            building.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = String.Concat(textureModel.Owner, ".", modelName);
 
             if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
             {
-                building.modData["AlternativeTextureSeason"] = Game1.currentSeason;
+                building.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON] = Game1.currentSeason;
             }
 
-            building.modData["AlternativeTextureVariation"] = variation.ToString();
+            building.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = variation.ToString();
         }
 
         private static void AssignDecoratableLocationModData(DecoratableLocation decoratableLocation, string modelName, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
         {
-            decoratableLocation.modData["AlternativeTextureOwner"] = textureModel.Owner;
-            decoratableLocation.modData["AlternativeTextureName"] = String.Concat(textureModel.Owner, ".", modelName);
+            decoratableLocation.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = textureModel.Owner;
+            decoratableLocation.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = String.Concat(textureModel.Owner, ".", modelName);
 
             if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
             {
-                decoratableLocation.modData["AlternativeTextureSeason"] = Game1.currentSeason;
+                decoratableLocation.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON] = Game1.currentSeason;
             }
 
-            decoratableLocation.modData["AlternativeTextureVariation"] = variation.ToString();
+            decoratableLocation.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = variation.ToString();
         }
 
         private static void AssignFarmModData(Farm farm, string modelName, AlternativeTextureModel textureModel, int variation, bool trackSeason = false)
         {
-            farm.modData["AlternativeTextureOwner"] = textureModel.Owner;
-            farm.modData["AlternativeTextureName"] = String.Concat(textureModel.Owner, ".", modelName);
+            farm.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = textureModel.Owner;
+            farm.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = String.Concat(textureModel.Owner, ".", modelName);
 
             if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
             {
-                farm.modData["AlternativeTextureSeason"] = Game1.currentSeason;
+                farm.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON] = Game1.currentSeason;
             }
 
-            farm.modData["AlternativeTextureVariation"] = variation.ToString();
+            farm.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = variation.ToString();
         }
     }
 }

@@ -314,7 +314,7 @@ namespace AlternativeTextures
                 {
                     var modelType = AlternativeTextureModel.TextureType.GiantCrop;
                     var instanceName = Game1.objectInformation.ContainsKey(giantCrop.parentSheetIndex.Value) ? Game1.objectInformation[giantCrop.parentSheetIndex.Value].Split('/')[0] : String.Empty;
-                    if (!giantCrop.modData.ContainsKey("AlternativeTextureName") || !giantCrop.modData.ContainsKey("AlternativeTextureVariation"))
+                    if (!giantCrop.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !giantCrop.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                     {
                         // Assign default modData
                         var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(giantCrop.currentLocation)}";
@@ -324,14 +324,14 @@ namespace AlternativeTextures
                     Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.texture_copied"), 2) { timeLeft = 1000 });
                     tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{instanceName}";
                     tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
-                    tool.modData["AlternativeTextureOwner"] = giantCrop.modData["AlternativeTextureOwner"];
-                    tool.modData["AlternativeTextureName"] = giantCrop.modData["AlternativeTextureName"];
-                    tool.modData["AlternativeTextureVariation"] = giantCrop.modData["AlternativeTextureVariation"];
+                    tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = giantCrop.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER];
+                    tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = giantCrop.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME];
+                    tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = giantCrop.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION];
                 }
                 else if (terrainFeature is Flooring flooring)
                 {
                     var modelType = AlternativeTextureModel.TextureType.Flooring;
-                    if (!flooring.modData.ContainsKey("AlternativeTextureName") || !flooring.modData.ContainsKey("AlternativeTextureVariation"))
+                    if (!flooring.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !flooring.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                     {
                         // Assign default modData
                         var instanceSeasonName = $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
@@ -341,15 +341,15 @@ namespace AlternativeTextures
                     Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.texture_copied"), 2) { timeLeft = 1000 });
                     tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}";
                     tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
-                    tool.modData["AlternativeTextureOwner"] = flooring.modData["AlternativeTextureOwner"];
-                    tool.modData["AlternativeTextureName"] = flooring.modData["AlternativeTextureName"];
-                    tool.modData["AlternativeTextureVariation"] = flooring.modData["AlternativeTextureVariation"];
+                    tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = flooring.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER];
+                    tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = flooring.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME];
+                    tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = flooring.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION];
                 }
                 else if (terrainFeature is HoeDirt hoeDirt && hoeDirt.crop is not null)
                 {
                     var modelType = AlternativeTextureModel.TextureType.Crop;
                     var instanceName = Game1.objectInformation.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectInformation[hoeDirt.crop.netSeedIndex.Value].Split('/')[0] : String.Empty;
-                    if (!hoeDirt.modData.ContainsKey("AlternativeTextureName") || !hoeDirt.modData.ContainsKey("AlternativeTextureVariation"))
+                    if (!hoeDirt.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !hoeDirt.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                     {
                         // Assign default modData
                         var instanceSeasonName = $"{modelType}_{instanceName}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
@@ -359,14 +359,14 @@ namespace AlternativeTextures
                     Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.texture_copied"), 2) { timeLeft = 1000 });
                     tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{instanceName}";
                     tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
-                    tool.modData["AlternativeTextureOwner"] = hoeDirt.modData["AlternativeTextureOwner"];
-                    tool.modData["AlternativeTextureName"] = hoeDirt.modData["AlternativeTextureName"];
-                    tool.modData["AlternativeTextureVariation"] = hoeDirt.modData["AlternativeTextureVariation"];
+                    tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = hoeDirt.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER];
+                    tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = hoeDirt.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME];
+                    tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = hoeDirt.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION];
                 }
                 else if (terrainFeature is Grass grass)
                 {
                     var modelType = AlternativeTextureModel.TextureType.Grass;
-                    if (!grass.modData.ContainsKey("AlternativeTextureName") || !grass.modData.ContainsKey("AlternativeTextureVariation"))
+                    if (!grass.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !grass.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                     {
                         // Assign default modData
                         var instanceSeasonName = $"{modelType}_Grass_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
@@ -376,14 +376,14 @@ namespace AlternativeTextures
                     Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.texture_copied"), 2) { timeLeft = 1000 });
                     tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_Grass";
                     tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
-                    tool.modData["AlternativeTextureOwner"] = grass.modData["AlternativeTextureOwner"];
-                    tool.modData["AlternativeTextureName"] = grass.modData["AlternativeTextureName"];
-                    tool.modData["AlternativeTextureVariation"] = grass.modData["AlternativeTextureVariation"];
+                    tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = grass.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER];
+                    tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = grass.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME];
+                    tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = grass.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION];
                 }
                 else if (terrainFeature is Bush bush)
                 {
                     var modelType = AlternativeTextureModel.TextureType.Bush;
-                    if (!bush.modData.ContainsKey("AlternativeTextureName") || !bush.modData.ContainsKey("AlternativeTextureVariation"))
+                    if (!bush.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !bush.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                     {
                         // Assign default modData
                         var instanceSeasonName = $"{modelType}_{PatchTemplate.GetBushTypeString(bush)}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
@@ -393,9 +393,9 @@ namespace AlternativeTextures
                     Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.texture_copied"), 2) { timeLeft = 1000 });
                     tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{PatchTemplate.GetBushTypeString(bush)}";
                     tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
-                    tool.modData["AlternativeTextureOwner"] = bush.modData["AlternativeTextureOwner"];
-                    tool.modData["AlternativeTextureName"] = bush.modData["AlternativeTextureName"];
-                    tool.modData["AlternativeTextureVariation"] = bush.modData["AlternativeTextureVariation"];
+                    tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = bush.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER];
+                    tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = bush.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME];
+                    tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = bush.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION];
                 }
                 else
                 {
@@ -414,7 +414,7 @@ namespace AlternativeTextures
             else
             {
                 var modelType = placedObject is Furniture ? AlternativeTextureModel.TextureType.Furniture : AlternativeTextureModel.TextureType.Craftable;
-                if (!placedObject.modData.ContainsKey("AlternativeTextureName") || !placedObject.modData.ContainsKey("AlternativeTextureVariation"))
+                if (!placedObject.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !placedObject.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                 {
                     var instanceSeasonName = $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}_{Game1.currentSeason}";
                     PatchTemplate.AssignDefaultModData(placedObject, instanceSeasonName, true);
@@ -423,9 +423,9 @@ namespace AlternativeTextures
                 Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.texture_copied"), 2) { timeLeft = 1000 });
                 tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}";
                 tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
-                tool.modData["AlternativeTextureOwner"] = placedObject.modData["AlternativeTextureOwner"];
-                tool.modData["AlternativeTextureName"] = placedObject.modData["AlternativeTextureName"];
-                tool.modData["AlternativeTextureVariation"] = placedObject.modData["AlternativeTextureVariation"];
+                tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = placedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER];
+                tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = placedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME];
+                tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = placedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION];
             }
         }
 
@@ -449,9 +449,9 @@ namespace AlternativeTextures
                         var instanceName = Game1.objectInformation.ContainsKey(giantCrop.parentSheetIndex.Value) ? Game1.objectInformation[giantCrop.parentSheetIndex.Value].Split('/')[0] : String.Empty;
                         if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_{instanceName}")
                         {
-                            giantCrop.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
-                            giantCrop.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
-                            giantCrop.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
+                            giantCrop.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER];
+                            giantCrop.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME];
+                            giantCrop.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION];
                         }
                         else
                         {
@@ -463,9 +463,9 @@ namespace AlternativeTextures
                         var modelType = AlternativeTextureModel.TextureType.Flooring;
                         if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}")
                         {
-                            flooring.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
-                            flooring.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
-                            flooring.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
+                            flooring.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER];
+                            flooring.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME];
+                            flooring.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION];
                         }
                         else
                         {
@@ -478,9 +478,9 @@ namespace AlternativeTextures
                         var instanceName = Game1.objectInformation.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectInformation[hoeDirt.crop.netSeedIndex.Value].Split('/')[0] : String.Empty;
                         if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_{instanceName}")
                         {
-                            hoeDirt.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
-                            hoeDirt.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
-                            hoeDirt.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
+                            hoeDirt.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER];
+                            hoeDirt.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME];
+                            hoeDirt.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION];
                         }
                         else
                         {
@@ -492,9 +492,9 @@ namespace AlternativeTextures
                         var modelType = AlternativeTextureModel.TextureType.Grass;
                         if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_Grass")
                         {
-                            grass.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
-                            grass.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
-                            grass.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
+                            grass.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER];
+                            grass.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME];
+                            grass.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION];
                         }
                         else
                         {
@@ -506,9 +506,9 @@ namespace AlternativeTextures
                         var modelType = AlternativeTextureModel.TextureType.Bush;
                         if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_{PatchTemplate.GetBushTypeString(bush)}")
                         {
-                            bush.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
-                            bush.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
-                            bush.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
+                            bush.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER];
+                            bush.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME];
+                            bush.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION];
                         }
                         else
                         {
@@ -525,9 +525,9 @@ namespace AlternativeTextures
                     var modelType = placedObject is Furniture ? AlternativeTextureModel.TextureType.Furniture : AlternativeTextureModel.TextureType.Craftable;
                     if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}")
                     {
-                        placedObject.modData["AlternativeTextureOwner"] = tool.modData["AlternativeTextureOwner"];
-                        placedObject.modData["AlternativeTextureName"] = tool.modData["AlternativeTextureName"];
-                        placedObject.modData["AlternativeTextureVariation"] = tool.modData["AlternativeTextureVariation"];
+                        placedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER];
+                        placedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME];
+                        placedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION];
                     }
                     else
                     {
@@ -555,7 +555,7 @@ namespace AlternativeTextures
                 {
                     var modelType = AlternativeTextureModel.TextureType.GiantCrop;
                     var instanceName = Game1.objectInformation.ContainsKey(giantCrop.parentSheetIndex.Value) ? Game1.objectInformation[giantCrop.parentSheetIndex.Value].Split('/')[0] : String.Empty;
-                    if (!giantCrop.modData.ContainsKey("AlternativeTextureName") || !giantCrop.modData.ContainsKey("AlternativeTextureVariation"))
+                    if (!giantCrop.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !giantCrop.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                     {
                         // Assign default modData
                         var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(giantCrop.currentLocation)}";
@@ -567,7 +567,7 @@ namespace AlternativeTextures
                 else if (terrainFeature is Flooring flooring)
                 {
                     var modelType = AlternativeTextureModel.TextureType.Flooring;
-                    if (!flooring.modData.ContainsKey("AlternativeTextureName") || !flooring.modData.ContainsKey("AlternativeTextureVariation"))
+                    if (!flooring.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !flooring.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                     {
                         // Assign default modData
                         var instanceSeasonName = $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
@@ -580,7 +580,7 @@ namespace AlternativeTextures
                 {
                     var modelType = AlternativeTextureModel.TextureType.Crop;
                     var instanceName = Game1.objectInformation.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectInformation[hoeDirt.crop.netSeedIndex.Value].Split('/')[0] : String.Empty;
-                    if (!hoeDirt.modData.ContainsKey("AlternativeTextureName") || !hoeDirt.modData.ContainsKey("AlternativeTextureVariation"))
+                    if (!hoeDirt.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !hoeDirt.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                     {
                         // Assign default modData
                         var instanceSeasonName = $"{modelType}_{instanceName}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
@@ -592,7 +592,7 @@ namespace AlternativeTextures
                 else if (terrainFeature is Grass grass)
                 {
                     var modelType = AlternativeTextureModel.TextureType.Grass;
-                    if (!grass.modData.ContainsKey("AlternativeTextureName") || !grass.modData.ContainsKey("AlternativeTextureVariation"))
+                    if (!grass.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !grass.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                     {
                         // Assign default modData
                         var instanceSeasonName = $"{modelType}_Grass_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
@@ -604,7 +604,7 @@ namespace AlternativeTextures
                 else if (terrainFeature is Tree tree)
                 {
                     var modelType = AlternativeTextureModel.TextureType.Tree;
-                    if (!tree.modData.ContainsKey("AlternativeTextureName") || !tree.modData.ContainsKey("AlternativeTextureVariation"))
+                    if (!tree.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !tree.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                     {
                         // Assign default modData
                         var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Tree}_{PatchTemplate.GetTreeTypeString(tree)}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
@@ -619,7 +619,7 @@ namespace AlternativeTextures
                     Dictionary<int, string> data = Game1.content.Load<Dictionary<int, string>>("Data\\fruitTrees");
                     var saplingIndex = data.FirstOrDefault(d => int.Parse(d.Value.Split('/')[0]) == fruitTree.treeType).Key;
                     var saplingName = Game1.objectInformation.ContainsKey(saplingIndex) ? Game1.objectInformation[saplingIndex].Split('/')[0] : String.Empty;
-                    if (!fruitTree.modData.ContainsKey("AlternativeTextureName") || !fruitTree.modData.ContainsKey("AlternativeTextureVariation"))
+                    if (!fruitTree.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !fruitTree.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                     {
                         // Assign default modData
                         var instanceSeasonName = $"{AlternativeTextureModel.TextureType.FruitTree}_{saplingName}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
@@ -649,7 +649,7 @@ namespace AlternativeTextures
             else
             {
                 var modelType = placedObject is Furniture ? AlternativeTextureModel.TextureType.Furniture : AlternativeTextureModel.TextureType.Craftable;
-                if (!placedObject.modData.ContainsKey("AlternativeTextureName") || !placedObject.modData.ContainsKey("AlternativeTextureVariation"))
+                if (!placedObject.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !placedObject.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                 {
                     var instanceSeasonName = $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}_{Game1.currentSeason}";
                     PatchTemplate.AssignDefaultModData(placedObject, instanceSeasonName, true);
@@ -721,9 +721,9 @@ namespace AlternativeTextures
                             var instanceName = Game1.objectInformation.ContainsKey(giantCrop.parentSheetIndex.Value) ? Game1.objectInformation[giantCrop.parentSheetIndex.Value].Split('/')[0] : String.Empty;
                             if (tool.modData[SPRAY_CAN_FLAG] == $"{modelType}_{instanceName}")
                             {
-                                giantCrop.modData["AlternativeTextureOwner"] = actualSelectedModel.Owner;
-                                giantCrop.modData["AlternativeTextureName"] = actualSelectedModel.TextureName;
-                                giantCrop.modData["AlternativeTextureVariation"] = actualSelectedVariation;
+                                giantCrop.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = actualSelectedModel.Owner;
+                                giantCrop.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = actualSelectedModel.TextureName;
+                                giantCrop.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = actualSelectedVariation;
                                 continue;
                             }
                         }
@@ -732,9 +732,9 @@ namespace AlternativeTextures
                             var modelType = AlternativeTextureModel.TextureType.Flooring;
                             if (tool.modData[SPRAY_CAN_FLAG] == $"{modelType}_{PatchTemplate.GetFlooringName(flooring)}")
                             {
-                                flooring.modData["AlternativeTextureOwner"] = actualSelectedModel.Owner;
-                                flooring.modData["AlternativeTextureName"] = actualSelectedModel.TextureName;
-                                flooring.modData["AlternativeTextureVariation"] = actualSelectedVariation;
+                                flooring.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = actualSelectedModel.Owner;
+                                flooring.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = actualSelectedModel.TextureName;
+                                flooring.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = actualSelectedVariation;
                                 continue;
                             }
                         }
@@ -744,9 +744,9 @@ namespace AlternativeTextures
                             var instanceName = Game1.objectInformation.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectInformation[hoeDirt.crop.netSeedIndex.Value].Split('/')[0] : String.Empty;
                             if (tool.modData[SPRAY_CAN_FLAG] == $"{modelType}_{instanceName}")
                             {
-                                hoeDirt.modData["AlternativeTextureOwner"] = actualSelectedModel.Owner;
-                                hoeDirt.modData["AlternativeTextureName"] = actualSelectedModel.TextureName;
-                                hoeDirt.modData["AlternativeTextureVariation"] = actualSelectedVariation;
+                                hoeDirt.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = actualSelectedModel.Owner;
+                                hoeDirt.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = actualSelectedModel.TextureName;
+                                hoeDirt.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = actualSelectedVariation;
                                 continue;
                             }
                         }
@@ -755,9 +755,9 @@ namespace AlternativeTextures
                             var modelType = AlternativeTextureModel.TextureType.Grass;
                             if (tool.modData[SPRAY_CAN_FLAG] == $"{modelType}_Grass")
                             {
-                                grass.modData["AlternativeTextureOwner"] = actualSelectedModel.Owner;
-                                grass.modData["AlternativeTextureName"] = actualSelectedModel.TextureName;
-                                grass.modData["AlternativeTextureVariation"] = actualSelectedVariation;
+                                grass.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = actualSelectedModel.Owner;
+                                grass.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = actualSelectedModel.TextureName;
+                                grass.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = actualSelectedVariation;
                                 continue;
                             }
                         }
@@ -766,9 +766,9 @@ namespace AlternativeTextures
                             var modelType = AlternativeTextureModel.TextureType.Tree;
                             if (tool.modData[SPRAY_CAN_FLAG] == $"{modelType}_{PatchTemplate.GetTreeTypeString(tree)}")
                             {
-                                tree.modData["AlternativeTextureOwner"] = actualSelectedModel.Owner;
-                                tree.modData["AlternativeTextureName"] = actualSelectedModel.TextureName;
-                                tree.modData["AlternativeTextureVariation"] = actualSelectedVariation;
+                                tree.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = actualSelectedModel.Owner;
+                                tree.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = actualSelectedModel.TextureName;
+                                tree.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = actualSelectedVariation;
                                 continue;
                             }
                             else
@@ -784,9 +784,9 @@ namespace AlternativeTextures
                             var saplingName = Game1.objectInformation.ContainsKey(saplingIndex) ? Game1.objectInformation[saplingIndex].Split('/')[0] : String.Empty;
                             if (tool.modData[SPRAY_CAN_FLAG] == $"{modelType}_{saplingName}")
                             {
-                                fruitTree.modData["AlternativeTextureOwner"] = actualSelectedModel.Owner;
-                                fruitTree.modData["AlternativeTextureName"] = actualSelectedModel.TextureName;
-                                fruitTree.modData["AlternativeTextureVariation"] = actualSelectedVariation;
+                                fruitTree.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = actualSelectedModel.Owner;
+                                fruitTree.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = actualSelectedModel.TextureName;
+                                fruitTree.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = actualSelectedVariation;
                                 continue;
                             }
                             else
@@ -801,9 +801,9 @@ namespace AlternativeTextures
                             var modelType = placedObject is Furniture ? AlternativeTextureModel.TextureType.Furniture : AlternativeTextureModel.TextureType.Craftable;
                             if (tool.modData[SPRAY_CAN_FLAG] == $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}")
                             {
-                                placedObject.modData["AlternativeTextureOwner"] = actualSelectedModel.Owner;
-                                placedObject.modData["AlternativeTextureName"] = actualSelectedModel.TextureName;
-                                placedObject.modData["AlternativeTextureVariation"] = actualSelectedVariation;
+                                placedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = actualSelectedModel.Owner;
+                                placedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = actualSelectedModel.TextureName;
+                                placedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = actualSelectedVariation;
                                 continue;
                             }
                         }
@@ -1518,7 +1518,7 @@ namespace AlternativeTextures
 
         private void ConvertBadTypedObjectToNormalType(GameLocation location)
         {
-            foreach (var obj in location.objects.Values.Where(o => o.modData.ContainsKey("AlternativeTextureName")))
+            foreach (var obj in location.objects.Values.Where(o => o.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME)))
             {
                 if (obj.Type == "Craftable" || obj.Type == "Unknown")
                 {

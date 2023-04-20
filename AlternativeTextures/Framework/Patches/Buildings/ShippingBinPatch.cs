@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using AlternativeTextures.Framework.Utilities;
+using HarmonyLib;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
@@ -24,15 +25,15 @@ namespace AlternativeTextures.Framework.Patches.Buildings
 
         internal static bool UpdatePrefix(ShippingBin __instance, TemporaryAnimatedSprite ___shippingBinLid, Rectangle ___shippingBinLidOpenArea, Vector2 ____lidGenerationPosition, GameTime time)
         {
-            if (___shippingBinLid != null && __instance.modData.ContainsKey("AlternativeTextureName"))
+            if (___shippingBinLid != null && __instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
             {
-                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
+                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME]);
                 if (textureModel is null)
                 {
                     return true;
                 }
 
-                var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
+                var textureVariation = Int32.Parse(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION]);
                 if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
                 {
                     return true;
@@ -52,15 +53,15 @@ namespace AlternativeTextures.Framework.Patches.Buildings
 
         internal static void InitLidPostfix(ShippingBin __instance, TemporaryAnimatedSprite ___shippingBinLid, Rectangle ___shippingBinLidOpenArea, Vector2 ____lidGenerationPosition)
         {
-            if (___shippingBinLid != null && __instance.modData.ContainsKey("AlternativeTextureName"))
+            if (___shippingBinLid != null && __instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
             {
-                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
+                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME]);
                 if (textureModel is null)
                 {
                     return;
                 }
 
-                var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
+                var textureVariation = Int32.Parse(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION]);
                 if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
                 {
                     return;

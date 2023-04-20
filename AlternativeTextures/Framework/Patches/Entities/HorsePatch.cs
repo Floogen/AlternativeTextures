@@ -1,4 +1,5 @@
 ﻿using AlternativeTextures.Framework.Models;
+using AlternativeTextures.Framework.Utilities;
 using HarmonyLib;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
@@ -61,18 +62,18 @@ namespace AlternativeTextures.Framework.Patches.Entities
         private static int GetHeadTextureYOffset(Horse horse)
         {
             int yOffset = 96;
-            if (!horse.modData.ContainsKey("AlternativeTextureName"))
+            if (!horse.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
             {
                 return yOffset;
             }
 
-            var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(horse.modData["AlternativeTextureName"]);
+            var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(horse.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME]);
             if (textureModel is null)
             {
                 return yOffset;
             }
 
-            var textureVariation = Int32.Parse(horse.modData["AlternativeTextureVariation"]);
+            var textureVariation = Int32.Parse(horse.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION]);
             if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
             {
                 return yOffset;
@@ -83,18 +84,18 @@ namespace AlternativeTextures.Framework.Patches.Entities
 
         private static void HandleVariations(Horse horse)
         {
-            if (!horse.modData.ContainsKey("AlternativeTextureName"))
+            if (!horse.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
             {
                 return;
             }
 
-            var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(horse.modData["AlternativeTextureName"]);
+            var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(horse.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME]);
             if (textureModel is null)
             {
                 return;
             }
 
-            var textureVariation = Int32.Parse(horse.modData["AlternativeTextureVariation"]);
+            var textureVariation = Int32.Parse(horse.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION]);
             if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
             {
                 return;
@@ -108,15 +109,15 @@ namespace AlternativeTextures.Framework.Patches.Entities
         [HarmonyBefore(new string[] { "Goldenrevolver.HorseOverhaul" })]
         private static void DrawPostfix(Horse __instance, SpriteBatch b)
         {
-            if (__instance.modData.ContainsKey("AlternativeTextureName"))
+            if (__instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
             {
-                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
+                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME]);
                 if (textureModel is null)
                 {
                     return;
                 }
 
-                var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
+                var textureVariation = Int32.Parse(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION]);
                 if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
                 {
                     return;
