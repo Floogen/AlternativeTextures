@@ -1,9 +1,7 @@
 ﻿using AlternativeTextures.Framework.Interfaces;
 using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.Patches.Entities;
-using HarmonyLib;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;

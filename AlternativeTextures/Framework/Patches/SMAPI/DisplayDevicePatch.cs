@@ -1,20 +1,14 @@
 ﻿using AlternativeTextures.Framework.Models;
-using AlternativeTextures.Framework.Patches;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Graphics.PackedVector;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Buildings;
-using StardewValley.Locations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using xTile.Dimensions;
 using xTile.Display;
-using xTile.Layers;
 using xTile.Tiles;
 
 namespace AlternativeTextures.Framework.Patches.SMAPI

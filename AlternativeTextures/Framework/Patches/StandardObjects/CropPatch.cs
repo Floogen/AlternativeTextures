@@ -1,18 +1,11 @@
-﻿using AlternativeTextures;
-using HarmonyLib;
+﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Locations;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.Patches.StandardObjects
 {
@@ -52,7 +45,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
         [HarmonyBefore(new string[] { "spacechase0.DynamicGameAssets" })]
         private static bool DrawPrefix(Crop __instance, Vector2 ___origin, Vector2 ___drawPosition, Rectangle ___sourceRect, Rectangle ___coloredSourceRect, float ___coloredLayerDepth, Vector2 ___smallestTileSizeOrigin, float ___layerDepth, SpriteBatch b, Vector2 tileLocation, Color toTint, float rotation)
         {
-            
+
             if (Game1.currentLocation.terrainFeatures.TryGetValue(tileLocation, out TerrainFeature hoeDirt) && hoeDirt is HoeDirt && hoeDirt.modData.ContainsKey("AlternativeTextureName"))
             {
                 var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(hoeDirt.modData["AlternativeTextureName"]);

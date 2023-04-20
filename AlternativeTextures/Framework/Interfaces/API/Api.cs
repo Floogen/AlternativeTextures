@@ -1,11 +1,9 @@
-﻿using AlternativeTextures.Framework.Managers;
-using AlternativeTextures.Framework.Models;
+﻿using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.Patches;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;

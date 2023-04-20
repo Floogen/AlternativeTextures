@@ -1,23 +1,11 @@
-﻿using AlternativeTextures;
-using AlternativeTextures.Framework.Models;
-using AlternativeTextures.Framework.Utilities.Extensions;
-using HarmonyLib;
+﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Netcode;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
-using StardewValley.Characters;
-using StardewValley.Locations;
-using StardewValley.Objects;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.Patches.Buildings
 {
@@ -60,7 +48,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
 
                 __instance.drawShadow(b);
                 b.Draw(paintedTexture, Game1.GlobalToLocal(Game1.viewport, new Vector2((int)__instance.tileX * 64, (int)__instance.tileY * 64 + (int)__instance.tilesHigh * 64)), paintedTexture.Bounds, __instance.color.Value * ___alpha, 0f, new Vector2(0f, __instance.texture.Value.Bounds.Height), 4f, SpriteEffects.None, (float)(((int)__instance.tileY + (int)__instance.tilesHigh - 1) * 64) / 10000f);
-                
+
                 return false;
             }
 

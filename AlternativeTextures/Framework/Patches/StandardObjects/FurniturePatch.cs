@@ -1,5 +1,4 @@
-﻿using AlternativeTextures;
-using AlternativeTextures.Framework.Models;
+﻿using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.UI;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
@@ -7,14 +6,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Netcode;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Locations;
 using StardewValley.Objects;
-using StardewValley.Tools;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.Patches.StandardObjects

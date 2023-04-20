@@ -1,5 +1,4 @@
-﻿using AlternativeTextures;
-using AlternativeTextures.Framework.Models;
+﻿using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.UI;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
@@ -9,19 +8,14 @@ using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Buildings;
-using StardewValley.Characters;
 using StardewValley.Locations;
 using StardewValley.Menus;
-using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static AlternativeTextures.Framework.Models.AlternativeTextureModel;
-using static StardewValley.Minigames.TargetGame;
 using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.Patches.Tools

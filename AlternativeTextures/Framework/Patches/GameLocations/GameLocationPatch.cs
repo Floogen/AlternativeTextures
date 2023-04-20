@@ -1,19 +1,11 @@
-﻿using AlternativeTextures;
-using AlternativeTextures.Framework.Models;
+﻿using AlternativeTextures.Framework.Models;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Locations;
-using StardewValley.Objects;
 using StardewValley.Tools;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.Patches.GameLocations
 {
@@ -145,7 +137,7 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
                 var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
 
                 if (!String.Equals(__instance.modData["AlternativeTextureName"], instanceName, StringComparison.OrdinalIgnoreCase) && !String.Equals(__instance.modData["AlternativeTextureName"], instanceSeasonName, StringComparison.OrdinalIgnoreCase))
-                {                    
+                {
                     __instance.modData["AlternativeTextureName"] = String.Concat(__instance.modData["AlternativeTextureOwner"], ".", $"{AlternativeTextureModel.TextureType.Building}_{buildingType}");
                     if (__instance.modData.ContainsKey("AlternativeTextureSeason") && !String.IsNullOrEmpty(__instance.modData["AlternativeTextureSeason"]))
                     {
