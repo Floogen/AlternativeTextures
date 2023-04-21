@@ -1031,7 +1031,12 @@ namespace AlternativeTextures
 
                         var parentFolderName = textureFolder.Parent.FullName.Replace(contentPack.DirectoryPath + Path.DirectorySeparatorChar, String.Empty);
                         var modelPath = Path.Combine(parentFolderName, textureFolder.Name, "texture.json");
-                        var seasons = contentPack.ReadJsonFile<AlternativeTextureModel>(modelPath).Seasons;
+
+                        var model = contentPack.ReadJsonFile<AlternativeTextureModel>(modelPath);
+                        model.Owner = contentPack.Manifest.UniqueID;
+                        model.Type = model.GetTextureType();
+
+                        var seasons = model.Seasons;
                         for (int s = 0; s < 4; s++)
                         {
                             if ((seasons.Count() == 0 && s > 0) || (seasons.Count() > 0 && s >= seasons.Count()))
@@ -1040,9 +1045,7 @@ namespace AlternativeTextures
                             }
 
                             // Parse the model and assign it the content pack's owner
-                            AlternativeTextureModel textureModel = contentPack.ReadJsonFile<AlternativeTextureModel>(modelPath);
-                            textureModel.Owner = contentPack.Manifest.UniqueID;
-                            textureModel.Type = textureModel.GetTextureType();
+                            AlternativeTextureModel textureModel = model.ShallowCopy();
 
                             // Override Grass Alternative Texture pack ItemNames to always be Grass, in order to be compatible with translations 
                             textureModel.ItemName = textureModel.Type == "Grass" ? "Grass" : textureModel.ItemName;
