@@ -1035,11 +1035,18 @@ namespace AlternativeTextures
                         var parentFolderName = textureFolder.Parent.FullName.Replace(contentPack.DirectoryPath + Path.DirectorySeparatorChar, String.Empty);
                         var modelPath = Path.Combine(parentFolderName, textureFolder.Name, "texture.json");
 
-                        var model = contentPack.ReadJsonFile<AlternativeTextureModel>(modelPath);
-                        model.Owner = contentPack.Manifest.UniqueID;
-                        model.Type = model.GetTextureType();
+                        var baseModel = contentPack.ReadJsonFile<AlternativeTextureModel>(modelPath);
+                        baseModel.Owner = contentPack.Manifest.UniqueID;
+                        baseModel.Type = baseModel.GetTextureType();
 
-                        var seasons = model.Seasons;
+                        // Add to ItemName to CollectiveNames if ItemName is given
+                        if (String.IsNullOrEmpty(baseModel.ItemName) is false)
+                        {
+                            baseModel.CollectiveNames.Add(baseModel.ItemName);
+                        }
+
+                        // Attempt to add an instance of each season
+                        var seasons = baseModel.Seasons;
                         for (int s = 0; s < 4; s++)
                         {
                             if ((seasons.Count() == 0 && s > 0) || (seasons.Count() > 0 && s >= seasons.Count()))
@@ -1047,99 +1054,105 @@ namespace AlternativeTextures
                                 continue;
                             }
 
-                            // Parse the model and assign it the content pack's owner
-                            AlternativeTextureModel textureModel = model.ShallowCopy();
-
-                            // Override Grass Alternative Texture pack ItemNames to always be Grass, in order to be compatible with translations 
-                            textureModel.ItemName = textureModel.Type == "Grass" ? "Grass" : textureModel.ItemName;
-                            if (String.IsNullOrEmpty(textureModel.ItemName))
+                            // Attempt to add each instance under CollectiveNames
+                            foreach (string itemName in baseModel.CollectiveNames)
                             {
-                                Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: Missing the ItemName property!", LogLevel.Warn);
-                                continue;
-                            }
+                                // Parse the model and assign it the content pack's owner
+                                AlternativeTextureModel textureModel = baseModel.ShallowCopy();
 
-                            // Add the UniqueId to the top-level Keywords
-                            textureModel.Keywords.Add(contentPack.Manifest.UniqueID);
+                                // Override Grass Alternative Texture pack ItemName to always be Grass, in order to be compatible with translations 
+                                textureModel.ItemName = textureModel.Type == "Grass" ? "Grass" : itemName;
 
-                            // Add the top-level Keywords to any ManualVariations.Keywords
-                            foreach (var variation in textureModel.ManualVariations)
-                            {
-                                variation.Keywords.AddRange(textureModel.Keywords);
-                            }
-
-                            // Set the season (if any)
-                            textureModel.Season = seasons.Count() == 0 ? String.Empty : seasons[s];
-
-                            // Set the ModelName and TextureId
-                            textureModel.ModelName = String.IsNullOrEmpty(textureModel.Season) ? String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName) : String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName, "_", textureModel.Season);
-                            textureModel.TextureId = String.Concat(textureModel.Owner, ".", textureModel.ModelName);
-
-                            // Verify we are given a texture and if so, track it
-                            if (!File.Exists(Path.Combine(textureFolder.FullName, "texture.png")))
-                            {
-                                // No texture.png found, may be using split texture files (texture_1.png, texture_2.png, etc.)
-                                var textureFilePaths = Directory.GetFiles(textureFolder.FullName, "texture_*.png")
-                                    .Select(t => Path.GetFileName(t))
-                                    .Where(t => t.Any(char.IsDigit))
-                                    .OrderBy(t => Int32.Parse(Regex.Match(t, @"\d+").Value));
-
-                                if (textureFilePaths.Count() == 0)
+                                // Verify that ItemName or ItemNames is given
+                                if (textureModel.CollectiveNames.Count == 0)
                                 {
-                                    Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: No associated texture.png or split textures (texture_1.png, texture_2.png, etc.) given. See the log for additional details.", LogLevel.Warn);
-                                    Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: No associated texture.png or split textures (texture_1.png, texture_2.png, etc.) found in the following path: {textureFolder.FullName}", LogLevel.Trace);
-                                    continue;
-                                }
-                                else if (textureModel.IsDecoration())
-                                {
-                                    Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: Split textures (texture_1.png, texture_2.png, etc.) are not allowed for Decoration types (wallpapers / floors)!", LogLevel.Warn);
-                                    continue;
-                                }
-                                if (textureModel.GetVariations() < textureFilePaths.Count())
-                                {
-                                    Monitor.Log($"Warning for alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: There are less variations specified in texture.json than split textures files", LogLevel.Warn);
-                                }
-
-                                // Load in the first texture_#.png to get its dimensions for creating stitchedTexture
-                                if (!StitchTexturesToModel(textureModel, contentPack, Path.Combine(parentFolderName, textureFolder.Name), textureFilePaths.Take(textureModel.GetVariations())))
-                                {
+                                    Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: Missing the ItemName or CollectiveNames property!", LogLevel.Warn);
                                     continue;
                                 }
 
-                                textureModel.TileSheetPath = contentPack.ModContent.GetInternalAssetName(Path.Combine(parentFolderName, textureFolder.Name, textureFilePaths.First())).Name;
-                            }
-                            else
-                            {
-                                // Load in the single vertical texture
-                                textureModel.TileSheetPath = contentPack.ModContent.GetInternalAssetName(Path.Combine(parentFolderName, textureFolder.Name, "texture.png")).Name;
-                                Texture2D singularTexture = contentPack.ModContent.Load<Texture2D>(textureModel.TileSheetPath);
-                                if (singularTexture.Height >= AlternativeTextureModel.MAX_TEXTURE_HEIGHT)
+                                // Add the UniqueId to the top-level Keywords
+                                textureModel.Keywords.Add(contentPack.Manifest.UniqueID);
+
+                                // Add the top-level Keywords to any ManualVariations.Keywords
+                                foreach (var variation in textureModel.ManualVariations)
                                 {
-                                    Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: The texture {textureModel.TextureId} has a height larger than 16384!\nPlease split it into individual textures (e.g. texture_0.png, texture_1.png, etc.) to resolve this issue.", LogLevel.Warn);
-                                    continue;
+                                    variation.Keywords.AddRange(textureModel.Keywords);
                                 }
-                                else if (textureModel.IsDecoration())
+
+                                // Set the season (if any)
+                                textureModel.Season = seasons.Count() == 0 ? String.Empty : seasons[s];
+
+                                // Set the ModelName and TextureId
+                                textureModel.ModelName = String.IsNullOrEmpty(textureModel.Season) ? String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName) : String.Concat(textureModel.GetTextureType(), "_", textureModel.ItemName, "_", textureModel.Season);
+                                textureModel.TextureId = String.Concat(textureModel.Owner, ".", textureModel.ModelName);
+
+                                // Verify we are given a texture and if so, track it
+                                if (!File.Exists(Path.Combine(textureFolder.FullName, "texture.png")))
                                 {
-                                    if (singularTexture.Width < 256)
+                                    // No texture.png found, may be using split texture files (texture_1.png, texture_2.png, etc.)
+                                    var textureFilePaths = Directory.GetFiles(textureFolder.FullName, "texture_*.png")
+                                        .Select(t => Path.GetFileName(t))
+                                        .Where(t => t.Any(char.IsDigit))
+                                        .OrderBy(t => Int32.Parse(Regex.Match(t, @"\d+").Value));
+
+                                    if (textureFilePaths.Count() == 0)
                                     {
-                                        Monitor.Log($"Unable to add alternative texture for {textureModel.ItemName} from {contentPack.Manifest.Name}: The required image width is 256 for Decoration types (wallpapers / floors). Please correct the image's width manually.", LogLevel.Warn);
+                                        Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: No associated texture.png or split textures (texture_1.png, texture_2.png, etc.) given. See the log for additional details.", LogLevel.Warn);
+                                        Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: No associated texture.png or split textures (texture_1.png, texture_2.png, etc.) found in the following path: {textureFolder.FullName}", LogLevel.Trace);
+                                        continue;
+                                    }
+                                    else if (textureModel.IsDecoration())
+                                    {
+                                        Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: Split textures (texture_1.png, texture_2.png, etc.) are not allowed for Decoration types (wallpapers / floors)!", LogLevel.Warn);
+                                        continue;
+                                    }
+                                    if (textureModel.GetVariations() < textureFilePaths.Count())
+                                    {
+                                        Monitor.Log($"Warning for alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: There are less variations specified in texture.json than split textures files", LogLevel.Warn);
+                                    }
+
+                                    // Load in the first texture_#.png to get its dimensions for creating stitchedTexture
+                                    if (!StitchTexturesToModel(textureModel, contentPack, Path.Combine(parentFolderName, textureFolder.Name), textureFilePaths.Take(textureModel.GetVariations())))
+                                    {
                                         continue;
                                     }
 
-                                    textureModel.Textures[0] = singularTexture;
+                                    textureModel.TileSheetPath = contentPack.ModContent.GetInternalAssetName(Path.Combine(parentFolderName, textureFolder.Name, textureFilePaths.First())).Name;
                                 }
-                                else if (!SplitVerticalTexturesToModel(textureModel, contentPack.Manifest.Name, singularTexture))
+                                else
                                 {
-                                    continue;
+                                    // Load in the single vertical texture
+                                    textureModel.TileSheetPath = contentPack.ModContent.GetInternalAssetName(Path.Combine(parentFolderName, textureFolder.Name, "texture.png")).Name;
+                                    Texture2D singularTexture = contentPack.ModContent.Load<Texture2D>(textureModel.TileSheetPath);
+                                    if (singularTexture.Height >= AlternativeTextureModel.MAX_TEXTURE_HEIGHT)
+                                    {
+                                        Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: The texture {textureModel.TextureId} has a height larger than 16384!\nPlease split it into individual textures (e.g. texture_0.png, texture_1.png, etc.) to resolve this issue.", LogLevel.Warn);
+                                        continue;
+                                    }
+                                    else if (textureModel.IsDecoration())
+                                    {
+                                        if (singularTexture.Width < 256)
+                                        {
+                                            Monitor.Log($"Unable to add alternative texture for {textureModel.ItemName} from {contentPack.Manifest.Name}: The required image width is 256 for Decoration types (wallpapers / floors). Please correct the image's width manually.", LogLevel.Warn);
+                                            continue;
+                                        }
+
+                                        textureModel.Textures[0] = singularTexture;
+                                    }
+                                    else if (!SplitVerticalTexturesToModel(textureModel, contentPack.Manifest.Name, singularTexture))
+                                    {
+                                        continue;
+                                    }
                                 }
-                            }
 
-                            // Track the texture model
-                            textureManager.AddAlternativeTexture(textureModel);
+                                // Track the texture model
+                                textureManager.AddAlternativeTexture(textureModel);
 
-                            // Log it
-                            if (modConfig.OutputTextureDataToLog)
-                            {
-                                Monitor.Log(textureModel.ToString(), LogLevel.Trace);
+                                // Log it
+                                if (modConfig.OutputTextureDataToLog)
+                                {
+                                    Monitor.Log(textureModel.ToString(), LogLevel.Trace);
+                                }
                             }
                         }
                     }
