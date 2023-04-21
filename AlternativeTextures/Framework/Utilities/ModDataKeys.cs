@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AlternativeTextures.Framework.Utilities
+﻿namespace AlternativeTextures.Framework.Utilities
 {
     public static class ModDataKeys
     {
