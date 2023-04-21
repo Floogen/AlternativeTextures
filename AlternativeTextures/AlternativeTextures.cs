@@ -1003,13 +1003,14 @@ namespace AlternativeTextures
 
         private void LoadContentPacks()
         {
-            Stopwatch stopwatch = Stopwatch.StartNew();
+            Stopwatch collectiveLoadingStopwatch = Stopwatch.StartNew();
 
             // Load owned content packs
             foreach (IContentPack contentPack in Helper.ContentPacks.GetOwned())
             {
                 Monitor.Log($"Loading textures from pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} by {contentPack.Manifest.Author}", LogLevel.Debug);
 
+                Stopwatch individualLoadingStopwatch = Stopwatch.StartNew();
                 try
                 {
                     var textureFolders = new DirectoryInfo(Path.Combine(contentPack.DirectoryPath, "Textures")).GetDirectories("*", SearchOption.AllDirectories);
@@ -1166,10 +1167,13 @@ namespace AlternativeTextures
                 {
                     Monitor.Log($"Error loading content pack {contentPack.Manifest.Name}: {ex}", LogLevel.Error);
                 }
+
+                individualLoadingStopwatch.Stop();
+                monitor.Log($"[{contentPack.Manifest.Name}] finished loading in {Math.Round(individualLoadingStopwatch.ElapsedMilliseconds / 1000f, 2)} seconds", LogLevel.Trace);
             }
 
-            stopwatch.Stop();
-            monitor.Log($"Finished loading all content packs in {Math.Round(stopwatch.ElapsedMilliseconds / 1000f, 2)} seconds", LogLevel.Trace);
+            collectiveLoadingStopwatch.Stop();
+            monitor.Log($"Finished loading all content packs in {Math.Round(collectiveLoadingStopwatch.ElapsedMilliseconds / 1000f, 2)} seconds", LogLevel.Trace);
         }
 
         internal bool SplitVerticalTexturesToModel(AlternativeTextureModel textureModel, string contentPackName, Texture2D verticalTexture)
