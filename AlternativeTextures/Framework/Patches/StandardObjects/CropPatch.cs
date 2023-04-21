@@ -1,18 +1,12 @@
-﻿using AlternativeTextures;
+﻿using AlternativeTextures.Framework.Utilities;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Locations;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.Patches.StandardObjects
 {
@@ -52,16 +46,16 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
         [HarmonyBefore(new string[] { "spacechase0.DynamicGameAssets" })]
         private static bool DrawPrefix(Crop __instance, Vector2 ___origin, Vector2 ___drawPosition, Rectangle ___sourceRect, Rectangle ___coloredSourceRect, float ___coloredLayerDepth, Vector2 ___smallestTileSizeOrigin, float ___layerDepth, SpriteBatch b, Vector2 tileLocation, Color toTint, float rotation)
         {
-            
-            if (Game1.currentLocation.terrainFeatures.TryGetValue(tileLocation, out TerrainFeature hoeDirt) && hoeDirt is HoeDirt && hoeDirt.modData.ContainsKey("AlternativeTextureName"))
+
+            if (Game1.currentLocation.terrainFeatures.TryGetValue(tileLocation, out TerrainFeature hoeDirt) && hoeDirt is HoeDirt && hoeDirt.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
             {
-                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(hoeDirt.modData["AlternativeTextureName"]);
+                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(hoeDirt.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME]);
                 if (textureModel is null)
                 {
                     return true;
                 }
 
-                var textureVariation = Int32.Parse(hoeDirt.modData["AlternativeTextureVariation"]);
+                var textureVariation = Int32.Parse(hoeDirt.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION]);
                 if (__instance.dead || textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
                 {
                     return true;
@@ -119,15 +113,15 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             }
 
             var hoeDirt = gardenPot.hoeDirt.Value;
-            if (hoeDirt != null && hoeDirt.modData.ContainsKey("AlternativeTextureName"))
+            if (hoeDirt != null && hoeDirt.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
             {
-                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(hoeDirt.modData["AlternativeTextureName"]);
+                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(hoeDirt.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME]);
                 if (textureModel is null)
                 {
                     return true;
                 }
 
-                var textureVariation = Int32.Parse(hoeDirt.modData["AlternativeTextureVariation"]);
+                var textureVariation = Int32.Parse(hoeDirt.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION]);
                 if (__instance.dead || textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
                 {
                     return true;

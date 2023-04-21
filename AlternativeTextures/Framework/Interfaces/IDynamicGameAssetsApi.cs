@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace AlternativeTextures.Framework.Interfaces
+﻿namespace AlternativeTextures.Framework.Interfaces
 {
     public interface IDynamicGameAssetsApi
     {

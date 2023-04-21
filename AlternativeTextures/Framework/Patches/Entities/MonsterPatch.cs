@@ -1,21 +1,12 @@
-﻿using AlternativeTextures;
-using AlternativeTextures.Framework.Models;
+﻿using AlternativeTextures.Framework.Models;
+using AlternativeTextures.Framework.Utilities;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Netcode;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Characters;
-using StardewValley.Locations;
 using StardewValley.Monsters;
-using StardewValley.Objects;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.Patches.Entities
 {
@@ -44,7 +35,7 @@ namespace AlternativeTextures.Framework.Patches.Entities
                 return;
             }
 
-            var textureVariation = Int32.Parse(monster.modData["AlternativeTextureVariation"]);
+            var textureVariation = Int32.Parse(monster.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION]);
             if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
             {
                 monster.Sprite.loadedTexture = String.Empty;
@@ -58,9 +49,9 @@ namespace AlternativeTextures.Framework.Patches.Entities
 
         private static bool DrawPrefix(Monster __instance, SpriteBatch b)
         {
-            if (__instance.modData.ContainsKey("AlternativeTextureName"))
+            if (__instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
             {
-                SetTexture(__instance, AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]));
+                SetTexture(__instance, AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME]));
             }
 
             return true;
@@ -68,12 +59,12 @@ namespace AlternativeTextures.Framework.Patches.Entities
 
         private static void UpdatePostfix(Monster __instance, GameTime time, GameLocation location)
         {
-            if (!__instance.modData.ContainsKey("AlternativeTextureName"))
+            if (!__instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
             {
                 return;
             }
 
-            if (__instance.Sprite.textureName.Value.IndexOf("_dangerous", StringComparison.OrdinalIgnoreCase) >= 0 && __instance.modData["AlternativeTextureName"].IndexOf("_dangerous", StringComparison.OrdinalIgnoreCase) == -1)
+            if (__instance.Sprite.textureName.Value.IndexOf("_dangerous", StringComparison.OrdinalIgnoreCase) >= 0 && __instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME].IndexOf("_dangerous", StringComparison.OrdinalIgnoreCase) == -1)
             {
                 var instanceName = $"{AlternativeTextureModel.TextureType.Character}_{GetCharacterName(__instance)}_dangerous";
                 var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(__instance.currentLocation)}";
@@ -101,14 +92,14 @@ namespace AlternativeTextures.Framework.Patches.Entities
                 AssignDefaultModData(__instance, instanceSeasonName, true);
             }
 
-            var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]);
+            var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME]);
             if (textureModel is null)
             {
                 __instance.Sprite.loadedTexture = String.Empty;
                 return;
             }
 
-            var textureVariation = Int32.Parse(__instance.modData["AlternativeTextureVariation"]);
+            var textureVariation = Int32.Parse(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION]);
             if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
             {
                 __instance.Sprite.loadedTexture = String.Empty;
@@ -123,9 +114,9 @@ namespace AlternativeTextures.Framework.Patches.Entities
 
         private static void ReloadSpritePostfix(Monster __instance)
         {
-            if (__instance.modData.ContainsKey("AlternativeTextureName"))
+            if (__instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
             {
-                SetTexture(__instance, AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData["AlternativeTextureName"]));
+                SetTexture(__instance, AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME]));
             }
         }
 

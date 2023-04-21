@@ -1,12 +1,12 @@
 ﻿using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.Patches;
 using AlternativeTextures.Framework.Patches.Buildings;
+using AlternativeTextures.Framework.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Netcode;
 using Newtonsoft.Json;
-using StardewModdingAPI;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Buildings;
@@ -17,9 +17,6 @@ using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using static AlternativeTextures.Framework.Models.AlternativeTextureModel;
 using Object = StardewValley.Object;
 
@@ -62,7 +59,7 @@ namespace AlternativeTextures.Framework.UI
         private bool _isSprayCan;
         protected Dictionary<string, SelectedTextureModel> _selectedIdsToModels;
 
-        public PaintBucketMenu(Object target, Vector2 position, TextureType textureType, string modelName, string uiTitle = "Paint Bucket", int textureTileWidth = -1, bool isSprayCan = false, string textureOwnerKey = "AlternativeTextureOwner", string textureNameKey = "AlternativeTextureName", string textureVariationKey = "AlternativeTextureVariation", string textureSeasonKey = "AlternativeTextureSeason", string textureDisplayNameKey = "AlternativeTextureDisplayName") : base(0, 0, 832, 576, showUpperRightCloseButton: true)
+        public PaintBucketMenu(Object target, Vector2 position, TextureType textureType, string modelName, string uiTitle = "Paint Bucket", int textureTileWidth = -1, bool isSprayCan = false, string textureOwnerKey = ModDataKeys.ALTERNATIVE_TEXTURE_OWNER, string textureNameKey = ModDataKeys.ALTERNATIVE_TEXTURE_NAME, string textureVariationKey = ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION, string textureSeasonKey = ModDataKeys.ALTERNATIVE_TEXTURE_SEASON, string textureDisplayNameKey = ModDataKeys.ALTERNATIVE_TEXTURE_DISPLAY_NAME) : base(0, 0, 832, 576, showUpperRightCloseButton: true)
         {
             if (!target.modData.ContainsKey(textureOwnerKey) || !target.modData.ContainsKey(textureNameKey))
             {

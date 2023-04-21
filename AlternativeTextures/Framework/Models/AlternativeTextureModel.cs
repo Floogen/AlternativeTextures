@@ -1,12 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using StardewModdingAPI;
 using StardewValley;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AlternativeTextures.Framework.Models
 {
@@ -14,6 +11,7 @@ namespace AlternativeTextures.Framework.Models
     {
         public string Owner { get; set; }
         public string ItemName { get; set; }
+        public List<string> CollectiveNames { get; set; } = new List<string>();
         internal int ItemId { get; set; } = -1;
         public string Type { get; set; }
         [Obsolete("No longer used due SMAPI 3.14.0 allowing for passive invalidation checks.")]
