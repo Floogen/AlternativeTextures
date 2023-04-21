@@ -31,6 +31,7 @@ using StardewValley.TerrainFeatures;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -1002,6 +1003,8 @@ namespace AlternativeTextures
 
         private void LoadContentPacks()
         {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
             // Load owned content packs
             foreach (IContentPack contentPack in Helper.ContentPacks.GetOwned())
             {
@@ -1146,6 +1149,9 @@ namespace AlternativeTextures
                     Monitor.Log($"Error loading content pack {contentPack.Manifest.Name}: {ex}", LogLevel.Error);
                 }
             }
+
+            stopwatch.Stop();
+            monitor.Log($"Finished loading all content packs in {Math.Round(stopwatch.ElapsedMilliseconds / 1000f, 2)} seconds", LogLevel.Trace);
         }
 
         internal bool SplitVerticalTexturesToModel(AlternativeTextureModel textureModel, string contentPackName, Texture2D verticalTexture)
