@@ -1066,7 +1066,8 @@ namespace AlternativeTextures
                                 // Verify that ItemName or ItemNames is given
                                 if (textureModel.CollectiveNames.Count == 0)
                                 {
-                                    Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: Missing the ItemName or CollectiveNames property!", LogLevel.Warn);
+                                    Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: Missing the ItemName or CollectiveNames property! See the log for additional details.", LogLevel.Warn);
+                                    Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: Missing the ItemName or CollectiveNames property found in the following path: {textureFolder.FullName}", LogLevel.Trace);
                                     continue;
                                 }
 
@@ -1103,12 +1104,14 @@ namespace AlternativeTextures
                                     }
                                     else if (textureModel.IsDecoration())
                                     {
-                                        Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: Split textures (texture_1.png, texture_2.png, etc.) are not allowed for Decoration types (wallpapers / floors)!", LogLevel.Warn);
+                                        Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: Split textures (texture_1.png, texture_2.png, etc.) are not allowed for Decoration types (wallpapers / floors). See the log for additional details.", LogLevel.Warn);
+                                        Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: Split textures (texture_1.png, texture_2.png, etc.) are not allowed for Decoration types (wallpapers / floors). Located in the following path: {textureFolder.FullName}", LogLevel.Trace);
                                         continue;
                                     }
                                     if (textureModel.GetVariations() < textureFilePaths.Count())
                                     {
-                                        Monitor.Log($"Warning for alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: There are less variations specified in texture.json than split textures files", LogLevel.Warn);
+                                        Monitor.Log($"Warning for alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: There are less variations specified in texture.json than split textures files. See the log for additional details.", LogLevel.Warn);
+                                        Monitor.Log($"Warning for alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: There are less variations specified in texture.json than split textures files found in the following path: {textureFolder.FullName}", LogLevel.Trace);
                                     }
 
                                     // Load in the first texture_#.png to get its dimensions for creating stitchedTexture
@@ -1126,14 +1129,16 @@ namespace AlternativeTextures
                                     Texture2D singularTexture = contentPack.ModContent.Load<Texture2D>(textureModel.TileSheetPath);
                                     if (singularTexture.Height >= AlternativeTextureModel.MAX_TEXTURE_HEIGHT)
                                     {
-                                        Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: The texture {textureModel.TextureId} has a height larger than 16384!\nPlease split it into individual textures (e.g. texture_0.png, texture_1.png, etc.) to resolve this issue.", LogLevel.Warn);
+                                        Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: The texture {textureModel.TextureId} has a height larger than 16384!\nPlease split it into individual textures (e.g. texture_0.png, texture_1.png, etc.) to resolve this issue. See the log for additional details.", LogLevel.Warn);
+                                        Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: The texture {textureModel.TextureId} has a height larger than 16384!\nPlease split it into individual textures (e.g. texture_0.png, texture_1.png, etc.) to resolve this issue. Located in the following path: {textureFolder.FullName}", LogLevel.Trace);
                                         continue;
                                     }
                                     else if (textureModel.IsDecoration())
                                     {
                                         if (singularTexture.Width < 256)
                                         {
-                                            Monitor.Log($"Unable to add alternative texture for {textureModel.ItemName} from {contentPack.Manifest.Name}: The required image width is 256 for Decoration types (wallpapers / floors). Please correct the image's width manually.", LogLevel.Warn);
+                                            Monitor.Log($"Unable to add alternative texture for {textureModel.ItemName} from {contentPack.Manifest.Name}: The required image width is 256 for Decoration types (wallpapers / floors). Please correct the image's width manually. See the log for additional details.", LogLevel.Warn);
+                                            Monitor.Log($"Unable to add alternative texture for {textureModel.ItemName} from {contentPack.Manifest.Name}: The required image width is 256 for Decoration types (wallpapers / floors). Please correct the image's width manually at the following path: {textureFolder.FullName}", LogLevel.Trace);
                                             continue;
                                         }
 
