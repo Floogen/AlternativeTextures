@@ -530,14 +530,19 @@ namespace AlternativeTextures.Framework.Patches.Tools
             if (character != null)
             {
                 // Assign default data if none exists
+                var modelType = AlternativeTextureModel.TextureType.Character;
                 if (!character.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
                 {
-                    var modelType = AlternativeTextureModel.TextureType.Character;
                     var instanceSeasonName = $"{modelType}_{GetCharacterName(character)}_{Game1.currentSeason}";
                     AssignDefaultModData(character, instanceSeasonName, true);
                 }
 
                 var modelName = character.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME].Replace($"{character.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER]}.", String.Empty);
+                if (modelName.Contains(GetCharacterName(character), StringComparison.OrdinalIgnoreCase) is false)
+                {
+                    modelName = $"{modelType}_{GetCharacterName(character)}_{Game1.currentSeason}";
+                }
+
                 if (character.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_SEASON) && !String.IsNullOrEmpty(character.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON]))
                 {
                     modelName = modelName.Replace($"_{character.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON]}", String.Empty);
