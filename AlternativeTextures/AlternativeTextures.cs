@@ -59,6 +59,7 @@ namespace AlternativeTextures
         internal const string SPRAY_CAN_FLAG = "AlternativeTextures.SprayCanFlag";
         internal const string SPRAY_CAN_RARE = "AlternativeTextures.SprayCanRare";
         internal const string SPRAY_CAN_RADIUS = "AlternativeTextures.SprayCanRadius";
+        internal const string CATALOGUE_FLAG = "AlternativeTextures.CatalogueFlag";
 
         // Shared static helpers
         internal static IMonitor monitor;
@@ -282,6 +283,10 @@ namespace AlternativeTextures
                         ToolPatch.UsePaintBucket(Game1.player.currentLocation, xTile, yTile, Game1.player, true);
                     }
                 }
+                else if (tool.modData.ContainsKey(CATALOGUE_FLAG))
+                {
+                    ToolPatch.UseTextureCatalogue(Game1.player);
+                }
             }
         }
 
@@ -299,6 +304,10 @@ namespace AlternativeTextures
                 else if (tool.modData.ContainsKey(SPRAY_CAN_FLAG))
                 {
                     LeftClickSprayCan(tool, xTile, yTile);
+                }
+                else if (tool.modData.ContainsKey(CATALOGUE_FLAG))
+                {
+                    ToolPatch.UseTextureCatalogue(Game1.player);
                 }
             }
         }
@@ -1412,7 +1421,8 @@ namespace AlternativeTextures
                 { PatchTemplate.GetPaintBucketTool(), new int[2] { 500, 1 } },
                 { PatchTemplate.GetScissorsTool(), new int[2] { 500, 1 } },
                 { PatchTemplate.GetPaintBrushTool(), new int[2] { 500, 1 } },
-                { PatchTemplate.GetSprayCanTool(true), new int[2] { 500, 1 } }
+                { PatchTemplate.GetSprayCanTool(true), new int[2] { 500, 1 } },
+                { PatchTemplate.GetCatalogueTool(), new int[2] { 500, 1 } }
             };
             Game1.activeClickableMenu = new ShopMenu(items);
         }

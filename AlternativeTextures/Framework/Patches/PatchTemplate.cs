@@ -68,6 +68,14 @@ namespace AlternativeTextures.Framework.Patches
             return sprayCan;
         }
 
+        internal static GenericTool GetCatalogueTool()
+        {
+            var catalogue = new GenericTool(_helper.Translation.Get("tools.name.catalogue"), _helper.Translation.Get("tools.description.catalogue"), -1, 6, 6);
+            catalogue.modData[AlternativeTextures.CATALOGUE_FLAG] = null;
+
+            return catalogue;
+        }
+
         internal static string GetObjectName(Object obj)
         {
             // Perform separate check for DGA objects, before using check for vanilla objects

@@ -13,6 +13,9 @@
 		<EmbeddedResource Remove="releases\**" />
 		<None Remove="releases\**" />
 	</ItemGroup>
+	<ItemGroup>
+	  <None Remove="Framework\Assets\Catalogue.png" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -28,6 +31,9 @@
 		</Content>
 		<Content Include="Framework\Assets\PaintBucket.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Framework\Assets\Catalogue.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Framework\Assets\Scissors.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
