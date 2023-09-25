@@ -24,9 +24,12 @@ namespace AlternativeTextures.Framework.UI
         private int _currentObjectIndex;
         private int _currentButtonNeighborID;
 
-        private TextBox _searchBox;
-        private string _cachedTextValue;
+        private string _selectedObjectName;
+        private bool _isDisplayingAlternativeTextures;
 
+        private TextBox _searchBox;
+        private string _previousTextValue;
+        private string _cachedTextValue;
 
         private List<ClickableTextureComponent> _tabButtons;
         private List<ClickableComponent> _objectButtons;
@@ -200,7 +203,6 @@ namespace AlternativeTextures.Framework.UI
             }
         }
 
-
         private void RepositionTabs()
         {
             for (int i = 0; i < _tabButtons.Count; i++)
@@ -270,16 +272,40 @@ namespace AlternativeTextures.Framework.UI
 
         private void SetTextFilter(string text)
         {
-            _cachedTextValue = text;
+            _previousTextValue = text;
 
             _currentlyDisplayedObjects = string.IsNullOrEmpty(text) ? _currentlyDisplayedObjects : _currentlyDisplayedObjects.Where(o => o.Name.Contains(text, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+
+        private void SetSelectedObjectedName(string name)
+        {
+            _selectedObjectName = name;
+            if (string.IsNullOrEmpty(name)) 
+            {
+                // Restore the old search value, if any
+                _searchBox.Text = _cachedTextValue;
+                _previousTextValue = string.Empty;
+            }
+            else
+            {
+                _cachedTextValue = _searchBox.Text;
+                _searchBox.Text = string.Empty;
+                _previousTextValue = string.Empty;
+            }
         }
 
         public override void receiveKeyPress(Keys key)
         {
             if (key == Keys.Escape && base.readyToClose())
             {
-                base.exitThisMenu();
+                if (_isDisplayingAlternativeTextures)
+                {
+                    SetSelectedObjectedName(string.Empty);
+                }
+                else
+                {
+                    base.exitThisMenu();
+                }
             }
         }
 
@@ -290,12 +316,14 @@ namespace AlternativeTextures.Framework.UI
                 return;
             }
 
+            // Handle tab buttons
             for (int k = 0; k < _tabButtons.Count; k++)
             {
                 if (_tabButtons[k].containsPoint(x, y))
                 {
                     SetTabFilter(k);
                     SetTextFilter(_searchBox.Text);
+                    SetSelectedObjectedName(string.Empty);
                     Game1.playSound("shwip");
 
                     if (Game1.options.snappyMenus && Game1.options.gamepadControls)
@@ -303,6 +331,18 @@ namespace AlternativeTextures.Framework.UI
                         this.snapCursorToCurrentSnappedComponent();
                     }
                 }
+            }
+
+            // Handle object buttons
+            for (int k = 0; k < _objectButtons.Count; k++)
+            {
+                if (_currentlyDisplayedObjects.Count == 0 || _currentObjectIndex + k >= _currentlyDisplayedObjects.Count || !_objectButtons[k].containsPoint(x, y))
+                {
+                    continue;
+                }
+
+                SetSelectedObjectedName(_currentlyDisplayedObjects[_currentObjectIndex + k].Name);
+                break;
             }
         }
 
@@ -321,19 +361,23 @@ namespace AlternativeTextures.Framework.UI
         {
             base.update(time);
 
-            if (_searchBox.Text != _cachedTextValue)
+            // Handle search box changes
+            if (_searchBox.Text != _previousTextValue)
             {
                 SetTabFilter(_currentTabIndex);
                 SetTextFilter(_searchBox.Text);
             }
 
+            // Handle adjusting the tabs, if needed
             RepositionTabs();
+
+            // Change display if an object has been selected to view textures
+            _isDisplayingAlternativeTextures = string.IsNullOrEmpty(_selectedObjectName) is false;
         }
 
         public override void draw(SpriteBatch b)
         {
             b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.75f);
-            SpriteText.drawStringWithScrollCenteredAt(b, AlternativeTextures.modHelper.Translation.Get("ui.labels.catalogue"), base.xPositionOnScreen + base.width / 6, base.yPositionOnScreen - 64);
             IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), base.xPositionOnScreen, base.yPositionOnScreen, base.width, base.height, Color.White, 4f);
 
             // Draw the tabs
@@ -345,33 +389,42 @@ namespace AlternativeTextures.Framework.UI
             // Draw the search box
             _searchBox.Draw(b);
 
-            // Draw the display objects
-            Texture2D purchase_texture = Game1.mouseCursors;
-            Rectangle purchase_item_rect = new Rectangle(384, 396, 15, 15);
-            Rectangle purchase_item_background = new Rectangle(296, 363, 18, 18);
-            Color purchase_selected_color = Color.Wheat;
-            for (int k = 0; k < _objectButtons.Count; k++)
+            string titleBarText = AlternativeTextures.modHelper.Translation.Get("ui.labels.catalogue");
+            if (_isDisplayingAlternativeTextures)
             {
-                if (_currentlyDisplayedObjects.Count == 0)
+                titleBarText = $"{titleBarText} > {_selectedObjectName}";
+            }
+            else
+            {
+                // Draw the display objects
+                Texture2D purchaseTexture = Game1.mouseCursors;
+                Rectangle purchaseTextureRectangle = new Rectangle(384, 396, 15, 15);
+                Rectangle purchaseTextureBackground = new Rectangle(296, 363, 18, 18);
+                Color purchaseTextColor = Color.Wheat;
+                for (int k = 0; k < _objectButtons.Count; k++)
                 {
-                    break;
-                }
-                else if (_currentObjectIndex + k >= _currentlyDisplayedObjects.Count)
-                {
-                    continue;
-                }
+                    if (_currentlyDisplayedObjects.Count == 0)
+                    {
+                        break;
+                    }
+                    else if (_currentObjectIndex + k >= _currentlyDisplayedObjects.Count)
+                    {
+                        continue;
+                    }
 
-                IClickableMenu.drawTextureBox(b, purchase_texture, purchase_item_rect, _objectButtons[k].bounds.X, _objectButtons[k].bounds.Y, _objectButtons[k].bounds.Width, _objectButtons[k].bounds.Height, (_objectButtons[k].containsPoint(Game1.getOldMouseX(), Game1.getOldMouseY())) ? purchase_selected_color : Color.White, 4f, drawShadow: false);
-                Object item = _currentlyDisplayedObjects[_currentObjectIndex + k];
+                    IClickableMenu.drawTextureBox(b, purchaseTexture, purchaseTextureRectangle, _objectButtons[k].bounds.X, _objectButtons[k].bounds.Y, _objectButtons[k].bounds.Width, _objectButtons[k].bounds.Height, (_objectButtons[k].containsPoint(Game1.getOldMouseX(), Game1.getOldMouseY())) ? purchaseTextColor : Color.White, 4f, drawShadow: false);
+                    Object item = _currentlyDisplayedObjects[_currentObjectIndex + k];
 
-                string displayName = item.DisplayName;
-                if (item.ShouldDrawIcon())
-                {
-                    b.Draw(purchase_texture, new Vector2(_objectButtons[k].bounds.X + 32 - 12, _objectButtons[k].bounds.Y + 24 - 12), purchase_item_background, Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1f);
-                    item.drawInMenu(b, new Vector2(_objectButtons[k].bounds.X + 32 - 8, _objectButtons[k].bounds.Y + 24 - 8), 1f, 1f, 0.9f, StackDrawType.Draw_OneInclusive, Color.White, drawShadow: true);
-                    SpriteText.drawString(b, displayName, _objectButtons[k].bounds.X + 96 + 8, _objectButtons[k].bounds.Y + 28, 999999, -1, 999999, 1f, 0.88f, junimoText: false, -1, "");
+                    string displayName = item.DisplayName;
+                    if (item.ShouldDrawIcon())
+                    {
+                        b.Draw(purchaseTexture, new Vector2(_objectButtons[k].bounds.X + 32 - 12, _objectButtons[k].bounds.Y + 24 - 12), purchaseTextureBackground, Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1f);
+                        item.drawInMenu(b, new Vector2(_objectButtons[k].bounds.X + 32 - 8, _objectButtons[k].bounds.Y + 24 - 8), 1f, 1f, 0.9f, StackDrawType.Draw_OneInclusive, Color.White, drawShadow: true);
+                        SpriteText.drawString(b, displayName, _objectButtons[k].bounds.X + 96 + 8, _objectButtons[k].bounds.Y + 28, 999999, -1, 999999, 1f, 0.88f, junimoText: false, -1, "");
+                    }
                 }
             }
+            SpriteText.drawStringWithScrollCenteredAt(b, titleBarText, base.xPositionOnScreen + SpriteText.getWidthOfString(titleBarText) / 2, base.yPositionOnScreen - 64);
 
             Game1.mouseCursorTransparency = 1f;
             base.drawMouse(b);
