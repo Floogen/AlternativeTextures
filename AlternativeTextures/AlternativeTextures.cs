@@ -829,6 +829,11 @@ namespace AlternativeTextures
                 apiManager.HookIntoJsonAssets(Helper);
             }
 
+            if (Helper.ModRegistry.IsLoaded("spacechase0.MoreGiantCrops"))
+            {
+                apiManager.HookIntoMoreGiantCrops(Helper);
+            }
+
             if (Helper.ModRegistry.IsLoaded("spacechase0.DynamicGameAssets"))
             {
                 apiManager.HookIntoDynamicGameAssets(Helper);
@@ -1302,7 +1307,7 @@ namespace AlternativeTextures
                 xTile = (int)tile.Key.X;
                 yTile = (int)tile.Key.Y;
 
-                if ((int.Parse(args[0]) == 276 || int.Parse(args[0]) == 190 || int.Parse(args[0]) == 254) && xTile != 0 && yTile != 0)
+                if (xTile != 0 && yTile != 0)
                 {
                     for (int x = xTile - 1; x <= xTile + 1; x++)
                     {
