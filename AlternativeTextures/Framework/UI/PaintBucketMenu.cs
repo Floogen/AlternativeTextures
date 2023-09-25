@@ -246,7 +246,6 @@ namespace AlternativeTextures.Framework.UI
                     _texturesPerRow = 4;
                     widthOffsetScale = 3;
                     xOffset = 32;
-                    sourceRect = new Rectangle(0, 0, 15, 20);
                     break;
                 case TextureType.Furniture:
                     if (sourceRect.Height >= 64)
@@ -1025,7 +1024,13 @@ namespace AlternativeTextures.Framework.UI
                 bush.setUpSourceRect();
                 return AlternativeTextures.modHelper.Reflection.GetField<NetRectangle>(bush, "sourceRect").GetValue();
             }
-            return new Rectangle(Math.Min(2, bush.getAge() / 10) * 16 + bush.tileSheetOffset.Value * 16, 0, 16, 32);
+
+            if (bush.size.Value == Bush.greenTeaBush)
+            {
+                return new Rectangle(Math.Min(2, bush.getAge() / 10) * 16 + bush.tileSheetOffset.Value * 16, variation, 16, 32);
+            }
+            var vanillaSourceRect = AlternativeTextures.modHelper.Reflection.GetField<NetRectangle>(bush, "sourceRect").GetValue();
+            return new Rectangle(bush.tileSheetOffset.Value == 1 && bush.inBloom(Game1.GetSeasonForLocation(bush.currentLocation), Game1.dayOfMonth) ? 32 : 0, 0, vanillaSourceRect.Width, vanillaSourceRect.Height);
         }
 
         private Rectangle GetCharacterSourceRectangle(AlternativeTextureModel textureModel, Character character, int textureWidth, int textureHeight, int variation)

@@ -372,6 +372,11 @@ namespace AlternativeTextures.Framework.Patches.Tools
                         var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Grass}_Grass_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
                         AssignDefaultModData(targetedTerrain, instanceSeasonName, true);
                     }
+                    else if (targetedTerrain is Bush bush)
+                    {
+                        var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Bush}_{PatchTemplate.GetBushTypeString(bush)}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
+                        AssignDefaultModData(targetedTerrain, instanceSeasonName, true);
+                    }
                     else
                     {
                         return CancelUsing(who);
@@ -393,9 +398,10 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 // Display texture menu
                 var terrainObj = new Object(100, 1, isRecipe: false, -1)
                 {
-                    TileLocation = targetedTerrain.currentTileLocation,
+                    TileLocation = new Vector2(x, y) / 64f,
                     modData = targetedTerrain.modData
                 };
+
                 Game1.activeClickableMenu = GetMenu(terrainObj, terrainObj.TileLocation * 64f, GetTextureType(targetedTerrain), modelName, _helper.Translation.Get("tools.name.paint_bucket"), isSprayCan: isSprayCan);
 
                 return CancelUsing(who);
