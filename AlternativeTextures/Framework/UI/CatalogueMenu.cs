@@ -1,4 +1,6 @@
 ﻿using AlternativeTextures.Framework.Models;
+using AlternativeTextures.Framework.Patches;
+using AlternativeTextures.Framework.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -9,6 +11,8 @@ using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static AlternativeTextures.Framework.Models.AlternativeTextureModel;
+using static StardewValley.Minigames.TargetGame;
 using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.UI
@@ -17,12 +21,18 @@ namespace AlternativeTextures.Framework.UI
     {
         private List<Object> _displayableObjects;
         private List<Object> _currentlyDisplayedObjects;
+        private List<Item> _displayableTextures;
+        private List<Item> _currentlyDisplayedTextures;
 
         private const int PAGE_SIZE = 5;
 
         private int _currentTabIndex;
         private int _currentObjectIndex;
         private int _currentButtonNeighborID;
+
+        private int _startingRow = 0;
+        private int _texturesPerRow = 6;
+        private int _maxRows = 4;
 
         private string _selectedObjectName;
         private bool _isDisplayingAlternativeTextures;
@@ -33,6 +43,7 @@ namespace AlternativeTextures.Framework.UI
 
         private List<ClickableTextureComponent> _tabButtons;
         private List<ClickableComponent> _objectButtons;
+        private List<ClickableTextureComponent> _alternativeTextureButtons = new List<ClickableTextureComponent>();
 
         private enum Filter
         {
@@ -57,7 +68,6 @@ namespace AlternativeTextures.Framework.UI
             base.yPositionOnScreen = (int)topLeft.Y;
 
             // Set the items to display
-            // TODO: Filter this so it only uses furniture that have alternative textures available
             _displayableObjects = new List<Object>();
             _currentlyDisplayedObjects = new List<Object>();
             foreach (Object item in Utility.getAllFurnituresForFree().Keys)
@@ -75,6 +85,10 @@ namespace AlternativeTextures.Framework.UI
                 _displayableObjects.Add(item);
                 _currentlyDisplayedObjects.Add(item);
             }
+
+            // Establish the texture lists
+            _displayableTextures = new List<Item>();
+            _currentlyDisplayedTextures = new List<Item>();
 
             // Establish the object buttons
             _objectButtons = new List<ClickableComponent>();
@@ -226,6 +240,7 @@ namespace AlternativeTextures.Framework.UI
 
             // Reset the currently object index
             _currentObjectIndex = 0;
+            _startingRow = 0;
 
             // Refresh view to filter based on the new tab
             _currentlyDisplayedObjects.Clear();
@@ -277,20 +292,120 @@ namespace AlternativeTextures.Framework.UI
             _currentlyDisplayedObjects = string.IsNullOrEmpty(text) ? _currentlyDisplayedObjects : _currentlyDisplayedObjects.Where(o => o.Name.Contains(text, StringComparison.OrdinalIgnoreCase)).ToList();
         }
 
-        private void SetSelectedObjectedName(string name)
+        private void SetSelectedObjected(Object selectedObject)
         {
-            _selectedObjectName = name;
-            if (string.IsNullOrEmpty(name)) 
+            _startingRow = 0;
+            _selectedObjectName = selectedObject is null ? string.Empty : selectedObject.Name;
+
+            if (string.IsNullOrEmpty(_selectedObjectName)) 
             {
                 // Restore the old search value, if any
                 _searchBox.Text = _cachedTextValue;
                 _previousTextValue = string.Empty;
+
+                return;
             }
             else
             {
                 _cachedTextValue = _searchBox.Text;
                 _searchBox.Text = string.Empty;
                 _previousTextValue = string.Empty;
+            }
+
+            // Get the textures available
+            string modelName = $"{AlternativeTextureModel.TextureType.Furniture}_{_selectedObjectName}";
+            var availableModels = AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation));
+
+            _displayableTextures = new List<Item>();
+            _currentlyDisplayedTextures = new List<Item>();
+            for (int m = 0; m < availableModels.Count; m++)
+            {
+                var manualVariations = availableModels[m].ManualVariations.Where(v => v.Id != -1).ToList();
+                if (manualVariations.Count() > 0)
+                {
+                    for (int v = 0; v < manualVariations.Count(); v++)
+                    {
+                        var objectWithVariation = selectedObject.getOne();
+                        objectWithVariation.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = availableModels[m].Owner;
+                        objectWithVariation.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = availableModels[m].GetId();
+                        objectWithVariation.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = manualVariations[v].Id.ToString();
+                        objectWithVariation.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON] = availableModels[m].Season;
+                        objectWithVariation.modData[ModDataKeys.ALTERNATIVE_TEXTURE_DISPLAY_NAME] = manualVariations[v].Name;
+
+                        if (AlternativeTextures.modConfig.IsTextureVariationDisabled(objectWithVariation.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME], manualVariations[v].Id))
+                        {
+                            continue;
+                        }
+
+                        if (selectedObject is Furniture furniture)
+                        {
+                            (objectWithVariation as Furniture).currentRotation.Value = furniture.currentRotation.Value;
+                            (objectWithVariation as Furniture).updateRotation();
+                        }
+
+                        _currentlyDisplayedTextures.Add(objectWithVariation);
+                        _displayableTextures.Add(objectWithVariation);
+                    }
+                }
+                else
+                {
+                    for (int v = 0; v < availableModels[m].Variations; v++)
+                    {
+                        var objectWithVariation = selectedObject.getOne();
+                        objectWithVariation.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = availableModels[m].Owner;
+                        objectWithVariation.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = availableModels[m].GetId();
+                        objectWithVariation.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = v.ToString();
+                        objectWithVariation.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON] = availableModels[m].Season;
+                        objectWithVariation.modData[ModDataKeys.ALTERNATIVE_TEXTURE_DISPLAY_NAME] = String.Empty;
+
+                        if (AlternativeTextures.modConfig.IsTextureVariationDisabled(objectWithVariation.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME], v))
+                        {
+                            continue;
+                        }
+
+                        if (selectedObject is Furniture furniture)
+                        {
+                            (objectWithVariation as Furniture).currentRotation.Value = furniture.currentRotation.Value;
+                            (objectWithVariation as Furniture).updateRotation();
+                        }
+
+                        _currentlyDisplayedTextures.Add(objectWithVariation);
+                        _displayableTextures.Add(objectWithVariation);
+                    }
+                }
+            }
+
+            // Establish the alternative texture buttons
+            _alternativeTextureButtons = new List<ClickableTextureComponent>();
+
+            var sourceRect = PaintBucketMenu.GetSourceRectangle(availableModels.First(), selectedObject, availableModels.First().TextureWidth, availableModels.First().TextureHeight, -1);
+            if (sourceRect.Height >= 64)
+            {
+                _maxRows = 2;
+            }
+            else if (sourceRect.Height >= 32)
+            {
+                _maxRows = 3;
+                _texturesPerRow = 6;
+            }
+            else if (sourceRect.Height <= 16)
+            {
+                sourceRect.Height = 32;
+            }
+            for (int r = 0; r < _maxRows; r++)
+            {
+                for (int c = 0; c < _texturesPerRow; c++)
+                {
+                    var componentId = c + r * _texturesPerRow;
+                    _alternativeTextureButtons.Add(new ClickableTextureComponent(new Rectangle(base.xPositionOnScreen + IClickableMenu.borderWidth + 32 + componentId % _texturesPerRow * 128, base.yPositionOnScreen + sourceRect.Height + 32 + componentId / _texturesPerRow * (4 * sourceRect.Height), 4 * sourceRect.Width, 4 * sourceRect.Height), availableModels.First().GetTexture(0), new Rectangle(), 4f, false)
+                    {
+                        myID = componentId,
+                        downNeighborID = componentId + _texturesPerRow,
+                        upNeighborID = r >= _texturesPerRow ? componentId - _texturesPerRow : -1,
+                        rightNeighborID = c == 5 ? 9997 : componentId + 1,
+                        leftNeighborID = c > 0 ? componentId - 1 : 9998
+                    });
+                }
             }
         }
 
@@ -300,7 +415,7 @@ namespace AlternativeTextures.Framework.UI
             {
                 if (_isDisplayingAlternativeTextures)
                 {
-                    SetSelectedObjectedName(string.Empty);
+                    SetSelectedObjected(null);
                 }
                 else
                 {
@@ -323,7 +438,7 @@ namespace AlternativeTextures.Framework.UI
                 {
                     SetTabFilter(k);
                     SetTextFilter(_searchBox.Text);
-                    SetSelectedObjectedName(string.Empty);
+                    SetSelectedObjected(null);
                     Game1.playSound("shwip");
 
                     if (Game1.options.snappyMenus && Game1.options.gamepadControls)
@@ -336,12 +451,12 @@ namespace AlternativeTextures.Framework.UI
             // Handle object buttons
             for (int k = 0; k < _objectButtons.Count; k++)
             {
-                if (_currentlyDisplayedObjects.Count == 0 || _currentObjectIndex + k >= _currentlyDisplayedObjects.Count || !_objectButtons[k].containsPoint(x, y))
+                if (_isDisplayingAlternativeTextures is true || _currentlyDisplayedObjects.Count == 0 || _currentObjectIndex + k >= _currentlyDisplayedObjects.Count || !_objectButtons[k].containsPoint(x, y))
                 {
                     continue;
                 }
 
-                SetSelectedObjectedName(_currentlyDisplayedObjects[_currentObjectIndex + k].Name);
+                SetSelectedObjected(_currentlyDisplayedObjects[_currentObjectIndex + k]);
                 break;
             }
         }
@@ -351,8 +466,21 @@ namespace AlternativeTextures.Framework.UI
             base.receiveScrollWheelAction(direction);
 
             int offset = direction > 0 ? 1 : -1;
+
             _currentObjectIndex = Math.Max(0, _currentObjectIndex - offset);
             _currentObjectIndex = Math.Min(_currentObjectIndex, _currentlyDisplayedObjects.Count - PAGE_SIZE);
+
+            if (direction > 0 && _startingRow > 0)
+            {
+                _startingRow--;
+            }
+            else if (direction < 0 && (_maxRows + _startingRow) * _texturesPerRow < _currentlyDisplayedTextures.Count)
+            {
+                _startingRow++;
+            }
+
+            Game1.playSound("shiny4");
+
             //this.setScrollBarToCurrentIndex();
             UpdateSaleButtonNeighbors();
         }
@@ -393,6 +521,19 @@ namespace AlternativeTextures.Framework.UI
             if (_isDisplayingAlternativeTextures)
             {
                 titleBarText = $"{titleBarText} > {_selectedObjectName}";
+
+                for (int i = 0; i < _alternativeTextureButtons.Count; i++)
+                {
+                    _alternativeTextureButtons[i].item = null;
+                    _alternativeTextureButtons[i].texture = null;
+
+                    var textureIndex = i + _startingRow * _texturesPerRow;
+                    if (textureIndex < _currentlyDisplayedTextures.Count)
+                    {
+                        _alternativeTextureButtons[i].item = _currentlyDisplayedTextures[textureIndex];
+                        _alternativeTextureButtons[i].item.drawInMenu(b, new Vector2(_alternativeTextureButtons[i].bounds.X, _alternativeTextureButtons[i].bounds.Y + 96f), 2f, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
+                    }
+                }
             }
             else
             {
@@ -419,7 +560,8 @@ namespace AlternativeTextures.Framework.UI
                     if (item.ShouldDrawIcon())
                     {
                         b.Draw(purchaseTexture, new Vector2(_objectButtons[k].bounds.X + 32 - 12, _objectButtons[k].bounds.Y + 24 - 12), purchaseTextureBackground, Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1f);
-                        item.drawInMenu(b, new Vector2(_objectButtons[k].bounds.X + 32 - 8, _objectButtons[k].bounds.Y + 24 - 8), 1f, 1f, 0.9f, StackDrawType.Draw_OneInclusive, Color.White, drawShadow: true);
+                        item.drawInMenu(b, new Vector2(_objectButtons[k].bounds.X + 32 - 8, _objectButtons[k].bounds.Y + 24 - 8), 1f, 1f, 0.9f, StackDrawType.Hide, Color.White, drawShadow: true);
+                        Utility.drawTinyDigits(item.Stack, b, new Vector2(_objectButtons[k].bounds.X + 32 - 8, _objectButtons[k].bounds.Y + 24 - 8) + new Vector2((float)(64 - Utility.getWidthOfTinyDigitString(item.Stack, 3f)) + 4f, 64f - 18f + 2f), 3f, 1f, Color.White);
                         SpriteText.drawString(b, displayName, _objectButtons[k].bounds.X + 96 + 8, _objectButtons[k].bounds.Y + 28, 999999, -1, 999999, 1f, 0.88f, junimoText: false, -1, "");
                     }
                 }

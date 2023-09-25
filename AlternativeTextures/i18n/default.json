@@ -10,7 +10,7 @@
   "tools.description.paint_brush": "Allows you to copy a texture and apply it other objects of the same type.",
   "tools.description.scissors": "Allows you to apply different textures to entities.",
   "tools.description.spray_can": "Allows you to apply random textures to objects within a radius.",
-  "tools.description.catalogue": "Lists available alternative textures.",
+  "tools.description.catalogue": "Lists all available alternative textures.",
 
   // Messages
   "messages.warning.no_textures_for_season": "{{itemName}} has no alternative textures for this season!",

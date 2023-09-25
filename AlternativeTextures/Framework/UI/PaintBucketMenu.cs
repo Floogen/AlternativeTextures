@@ -611,7 +611,7 @@ namespace AlternativeTextures.Framework.UI
                             else if (_textureTarget is Fence)
                             {
                                 this.availableTextures[i].texture = (_textureTarget as Fence).loadFenceTexture();
-                                this.availableTextures[i].sourceRect = this.GetFenceSourceRect(textureModel, _textureTarget as Fence, this.availableTextures[i].sourceRect.Height, -1);
+                                this.availableTextures[i].sourceRect = PaintBucketMenu.GetFenceSourceRect(textureModel, _textureTarget as Fence, this.availableTextures[i].sourceRect.Height, -1);
                                 this.availableTextures[i].draw(b, colorOverlay, 0.87f);
                             }
                             else if (_textureType is TextureType.Character && PatchTemplate.GetCharacterAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Character character && character != null)
@@ -877,13 +877,13 @@ namespace AlternativeTextures.Framework.UI
             }
         }
 
-        private Rectangle GetSourceRectangle(AlternativeTextureModel textureModel, Object target, int textureWidth, int textureHeight, int variation)
+        internal static Rectangle GetSourceRectangle(AlternativeTextureModel textureModel, Object target, int textureWidth, int textureHeight, int variation)
         {
             var textureOffset = variation > 0 ? textureModel.GetTextureOffset(variation) : 0;
             var sourceRect = new Rectangle(0, textureOffset, textureWidth, textureHeight);
             if (target is Fence fence)
             {
-                sourceRect = this.GetFenceSourceRect(textureModel, fence, textureHeight, variation);
+                sourceRect = PaintBucketMenu.GetFenceSourceRect(textureModel, fence, textureHeight, variation);
             }
             else if (target is Furniture furniture)
             {
@@ -899,7 +899,7 @@ namespace AlternativeTextures.Framework.UI
             return sourceRect;
         }
 
-        private Rectangle GetFenceSourceRect(AlternativeTextureModel textureModel, Fence fence, int textureHeight, int variation)
+        private static Rectangle GetFenceSourceRect(AlternativeTextureModel textureModel, Fence fence, int textureHeight, int variation)
         {
             int sourceRectPosition = 1;
             var textureOffset = variation == -1 ? 0 : textureModel.GetTextureOffset(variation);
