@@ -633,8 +633,23 @@ namespace AlternativeTextures.Framework.UI
                             }
                             else if (PatchTemplate.GetResourceClumpAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is GiantCrop giantCrop)
                             {
-                                this.availableTextures[i].texture = Game1.cropSpriteSheet;
-                                this.availableTextures[i].sourceRect = new Rectangle(112 + (int)giantCrop.which * 48, 512, 48, 63);
+                                var jsonAssetsApi = AlternativeTextures.apiManager.GetJsonAssetsApi();
+                                var moreGiantCropsApi = AlternativeTextures.apiManager.GetMoreGiantCropsApi();
+                                if (jsonAssetsApi is not null && jsonAssetsApi.TryGetGiantCropSprite(giantCrop.parentSheetIndex.Value, out Lazy<Texture2D> jsonAssetGiantCrop))
+                                {
+                                    this.availableTextures[i].texture = jsonAssetGiantCrop.Value;
+                                    this.availableTextures[i].sourceRect = new Rectangle(0, 0, 48, 63);
+                                }
+                                else if (moreGiantCropsApi is not null && moreGiantCropsApi.GetTexture(giantCrop.parentSheetIndex.Value) is Texture2D moreGiantCropsTexture)
+                                {
+                                    this.availableTextures[i].texture = moreGiantCropsTexture;
+                                    this.availableTextures[i].sourceRect = new Rectangle(0, 0, 48, 63);
+                                }
+                                else
+                                {
+                                    this.availableTextures[i].texture = Game1.cropSpriteSheet;
+                                    this.availableTextures[i].sourceRect = new Rectangle(112 + (int)giantCrop.which * 48, 512, 48, 63);
+                                }
                                 this.availableTextures[i].draw(b, colorOverlay, 0.87f);
                             }
                             else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Tree tree)

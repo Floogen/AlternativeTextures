@@ -7,6 +7,7 @@ namespace AlternativeTextures.Framework.Managers
     {
         private IMonitor _monitor;
         private IJsonAssetsApi _jsonAssetsApi;
+        private IMoreGiantCropsApi _moreGiantCropsApi;
         private IDynamicGameAssetsApi _dynamicGameAssetsApi;
         private IContentPatcherApi _contentPatcherApi;
         private IGenericModConfigMenuApi _genericModConfigMenuApi;
@@ -27,6 +28,20 @@ namespace AlternativeTextures.Framework.Managers
             }
 
             _monitor.Log("Successfully hooked into spacechase0.JsonAssets.", LogLevel.Debug);
+            return true;
+        }
+
+        internal bool HookIntoMoreGiantCrops(IModHelper helper)
+        {
+            _moreGiantCropsApi = helper.ModRegistry.GetApi<IMoreGiantCropsApi>("spacechase0.MoreGiantCrops");
+
+            if (_moreGiantCropsApi is null)
+            {
+                _monitor.Log("Failed to hook into spacechase0.MoreGiantCrops.", LogLevel.Error);
+                return false;
+            }
+
+            _monitor.Log("Successfully hooked into spacechase0.MoreGiantCrops.", LogLevel.Debug);
             return true;
         }
 
@@ -76,6 +91,12 @@ namespace AlternativeTextures.Framework.Managers
         {
             return _jsonAssetsApi;
         }
+
+        internal IMoreGiantCropsApi GetMoreGiantCropsApi()
+        {
+            return _moreGiantCropsApi;
+        }
+
         internal IDynamicGameAssetsApi GetDynamicGameAssetsApi()
         {
             return _dynamicGameAssetsApi;
