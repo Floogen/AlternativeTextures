@@ -283,10 +283,6 @@ namespace AlternativeTextures
                         ToolPatch.UsePaintBucket(Game1.player.currentLocation, xTile, yTile, Game1.player, true);
                     }
                 }
-                else if (tool.modData.ContainsKey(CATALOGUE_FLAG))
-                {
-                    ToolPatch.UseTextureCatalogue(Game1.player);
-                }
             }
         }
 
