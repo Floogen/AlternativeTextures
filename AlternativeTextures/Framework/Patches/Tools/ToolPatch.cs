@@ -602,7 +602,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
 
         internal static bool UseTextureCatalogue(Farmer who)
         {
-            Game1.activeClickableMenu = new CatalogueMenu();
+            Game1.activeClickableMenu = new CatalogueMenu(who);
 
             return CancelUsing(who);
         }

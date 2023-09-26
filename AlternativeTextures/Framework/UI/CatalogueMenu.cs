@@ -4,10 +4,12 @@ using AlternativeTextures.Framework.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
 using StardewValley.Objects;
+using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +19,8 @@ namespace AlternativeTextures.Framework.UI
 {
     internal class CatalogueMenu : IClickableMenu
     {
+        private Farmer _owner;
+
         private List<Object> _displayableObjects;
         private List<Object> _currentlyDisplayedObjects;
         private List<Item> _displayableTextures;
@@ -34,6 +38,10 @@ namespace AlternativeTextures.Framework.UI
 
         private string _selectedObjectName;
         private string _hoverText;
+
+        private string _paintBrushWarningText;
+        private float _paintBrushWarningAlpha;
+
         private bool _isDisplayingAlternativeTextures;
 
         private TextBox _searchBox;
@@ -56,8 +64,11 @@ namespace AlternativeTextures.Framework.UI
             Decorations
         };
 
-        public CatalogueMenu() : base(0, 0, 900, 600, showUpperRightCloseButton: false)
+        public CatalogueMenu(Farmer who) : base(0, 0, 900, 600, showUpperRightCloseButton: false)
         {
+            // Set the owner
+            _owner = who;
+
             // Set up menu structure
             if (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.ko || LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.fr)
             {
@@ -424,7 +435,7 @@ namespace AlternativeTextures.Framework.UI
                 for (int c = 0; c < _texturesPerRow; c++)
                 {
                     var componentId = c + r * _texturesPerRow;
-                    _alternativeTextureButtons.Add(new ClickableTextureComponent(new Rectangle(base.xPositionOnScreen + IClickableMenu.borderWidth + 32 + componentId % _texturesPerRow * 128, base.yPositionOnScreen + sourceRect.Height + 128 + componentId / _texturesPerRow * (4 * sourceRect.Height), 4 * sourceRect.Width, 4 * sourceRect.Height), availableModels.First().GetTexture(0), new Rectangle(), 4f, false)
+                    _alternativeTextureButtons.Add(new ClickableTextureComponent(new Rectangle(base.xPositionOnScreen + IClickableMenu.borderWidth + 32 + componentId % _texturesPerRow * 128, base.yPositionOnScreen + sourceRect.Height + 128 + componentId / _texturesPerRow * (4 * sourceRect.Height), 4 * sourceRect.Width, 4 * sourceRect.Height), availableModels.First().GetTexture(0), new Rectangle(), 2f, false)
                     {
                         myID = componentId,
                         downNeighborID = componentId + _texturesPerRow,
@@ -489,6 +500,39 @@ namespace AlternativeTextures.Framework.UI
 
                 SetSelectedObjected(_currentlyDisplayedObjects[_currentObjectIndex + k]);
                 break;
+            }
+
+            // Handle alternative texture buttons
+            for (int i = 0; i < _alternativeTextureButtons.Count; i++)
+            {
+                if (_isDisplayingAlternativeTextures is false || _alternativeTextureButtons[i].containsPoint(x, y) is false)
+                {
+                    continue;
+                }
+
+                var modelType = AlternativeTextureModel.TextureType.Furniture;
+                if (_alternativeTextureButtons[i].item is null || !_alternativeTextureButtons[i].item.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !_alternativeTextureButtons[i].item.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
+                {
+                    break;
+                }
+
+                // Get the paint brush, if applicable
+                if (_owner is not null && _owner.Items.FirstOrDefault(i => i is GenericTool tool && tool.modData.ContainsKey(AlternativeTextures.PAINT_BRUSH_FLAG)) is GenericTool tool)
+                {
+                    _paintBrushWarningText = AlternativeTextures.modHelper.Translation.Get("ui.labels.paint_brush.copied");
+
+                    tool.modData[AlternativeTextures.PAINT_BRUSH_FLAG] = $"{modelType}_{PatchTemplate.GetObjectName((Object)_alternativeTextureButtons[i].item)}";
+                    tool.modData[AlternativeTextures.PAINT_BRUSH_SCALE] = 0.5f.ToString();
+                    tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = _alternativeTextureButtons[i].item.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER];
+                    tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = _alternativeTextureButtons[i].item.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME];
+                    tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = _alternativeTextureButtons[i].item.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION];
+                }
+                else
+                {
+                    _paintBrushWarningText = AlternativeTextures.modHelper.Translation.Get("ui.labels.paint_brush.not_found");
+                }
+
+                _paintBrushWarningAlpha = 1f;
             }
 
             // Handle filter
@@ -618,6 +662,9 @@ namespace AlternativeTextures.Framework.UI
                 SetTextFilter(_searchBox.Text);
             }
 
+            // Adjust alphas
+            _paintBrushWarningAlpha = Math.Max(0f, _paintBrushWarningAlpha - 0.005f);
+
             // Handle adjusting the tabs, if needed
             RepositionTabs();
         }
@@ -692,6 +739,12 @@ namespace AlternativeTextures.Framework.UI
 
             // Draw the hover text
             IClickableMenu.drawHoverText(b, _hoverText, Game1.smallFont);
+
+            // Draw Paint Brush notification
+            if (string.IsNullOrEmpty(_paintBrushWarningText) is false)
+            {
+                Utility.drawTextWithShadow(b, _paintBrushWarningText, Game1.smallFont, new Vector2(base.xPositionOnScreen + 32, base.yPositionOnScreen + base.height - 64), Color.Black * _paintBrushWarningAlpha, shadowIntensity: 0f);
+            }
 
             Game1.mouseCursorTransparency = 1f;
             base.drawMouse(b);

@@ -26,5 +26,7 @@
   "messages.info.cleared_brush": "Cleared brush!",
 
   // UI
-  "ui.labels.catalogue": "Catalogue"
+  "ui.labels.catalogue": "Catalogue",
+  "ui.labels.paint_brush.copied": "Copied texture to your Paint Brush!",
+  "ui.labels.paint_brush.not_found": "Unable to copy texture: No Paint Brush found within your inventory!"
 }
