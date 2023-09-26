@@ -415,7 +415,7 @@ namespace AlternativeTextures.Framework.UI
             _alternativeTextureButtons = new List<ClickableTextureComponent>();
 
             var sourceRect = PaintBucketMenu.GetSourceRectangle(availableModels.First(), selectedObject, availableModels.First().TextureWidth, availableModels.First().TextureHeight, -1);
-            if (sourceRect.Height >= 64)
+            if (sourceRect.Height >= 48)
             {
                 _maxRows = 2;
                 sourceRect.Height = 32;
@@ -695,8 +695,21 @@ namespace AlternativeTextures.Framework.UI
                     var textureIndex = i + _startingRow * _texturesPerRow;
                     if (textureIndex < _currentlyDisplayedTextures.Count)
                     {
+                        var textureObject = _currentlyDisplayedTextures[textureIndex];
+                        var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(textureObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME]);;
+                        var variation = int.Parse(textureObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION]);
+
                         _alternativeTextureButtons[i].item = _currentlyDisplayedTextures[textureIndex];
-                        _alternativeTextureButtons[i].item.drawInMenu(b, new Vector2(_alternativeTextureButtons[i].bounds.X, _alternativeTextureButtons[i].bounds.Y), _alternativeTextureButtons[i].scale, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
+                        if (PatchTemplate.IsDGAUsed() && PatchTemplate.IsDGAObject(_selectedObject))
+                        {
+                            var offset = textureModel.TextureHeight <= 16 ? 32 : 0;
+                            _alternativeTextureButtons[i].texture = textureModel.GetTexture(variation);
+                            b.Draw(_alternativeTextureButtons[i].texture, new Vector2((float)_alternativeTextureButtons[i].bounds.X + (float)(_alternativeTextureButtons[i].sourceRect.Width / 2) * _alternativeTextureButtons[i].baseScale, (float)_alternativeTextureButtons[i].bounds.Y + (float)(_alternativeTextureButtons[i].sourceRect.Height / 2) * _alternativeTextureButtons[i].baseScale + offset), _alternativeTextureButtons[i].sourceRect, Color.White, 0f, new Vector2(_alternativeTextureButtons[i].sourceRect.Width / 2, _alternativeTextureButtons[i].sourceRect.Height / 2), _alternativeTextureButtons[i].scale, SpriteEffects.None, 0.87f);
+                        }
+                        else
+                        {
+                            _alternativeTextureButtons[i].item.drawInMenu(b, new Vector2(_alternativeTextureButtons[i].bounds.X, _alternativeTextureButtons[i].bounds.Y), _alternativeTextureButtons[i].scale, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
+                        }
                     }
                 }
 
