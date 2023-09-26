@@ -65,6 +65,12 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 __result = _helper.Translation.Get("tools.name.spray_can");
                 return;
             }
+
+            if (__instance.modData.ContainsKey(AlternativeTextures.CATALOGUE_FLAG))
+            {
+                __result = _helper.Translation.Get("tools.name.catalogue");
+                return;
+            }
         }
 
         private static void GetDescriptionPostfix(Tool __instance, ref string __result)
@@ -90,6 +96,12 @@ namespace AlternativeTextures.Framework.Patches.Tools
             if (__instance.modData.ContainsKey(AlternativeTextures.SPRAY_CAN_FLAG))
             {
                 __result = _helper.Translation.Get("tools.description.spray_can");
+                return;
+            }
+
+            if (__instance.modData.ContainsKey(AlternativeTextures.CATALOGUE_FLAG))
+            {
+                __result = _helper.Translation.Get("tools.description.catalogue");
                 return;
             }
         }
@@ -134,6 +146,13 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 return false;
             }
 
+            if (__instance.modData.ContainsKey(AlternativeTextures.CATALOGUE_FLAG))
+            {
+                spriteBatch.Draw(AlternativeTextures.assetManager.GetCatalogueTexture(), location + new Vector2(32f, 32f), new Rectangle(0, 0, 16, 16), color * transparency, 0f, new Vector2(8f, 8f), 4f * scaleSize, SpriteEffects.None, layerDepth);
+
+                return false;
+            }
+
             return true;
         }
 
@@ -163,6 +182,12 @@ namespace AlternativeTextures.Framework.Patches.Tools
             }
 
             if (__instance.modData.ContainsKey(AlternativeTextures.PAINT_BRUSH_FLAG))
+            {
+                __result = true;
+                return CancelUsing(who);
+            }
+
+            if (__instance.modData.ContainsKey(AlternativeTextures.CATALOGUE_FLAG))
             {
                 __result = true;
                 return CancelUsing(who);
@@ -372,6 +397,11 @@ namespace AlternativeTextures.Framework.Patches.Tools
                         var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Grass}_Grass_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
                         AssignDefaultModData(targetedTerrain, instanceSeasonName, true);
                     }
+                    else if (targetedTerrain is Bush bush)
+                    {
+                        var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Bush}_{PatchTemplate.GetBushTypeString(bush)}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
+                        AssignDefaultModData(targetedTerrain, instanceSeasonName, true);
+                    }
                     else
                     {
                         return CancelUsing(who);
@@ -393,9 +423,10 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 // Display texture menu
                 var terrainObj = new Object(100, 1, isRecipe: false, -1)
                 {
-                    TileLocation = targetedTerrain.currentTileLocation,
+                    TileLocation = new Vector2(x, y) / 64f,
                     modData = targetedTerrain.modData
                 };
+
                 Game1.activeClickableMenu = GetMenu(terrainObj, terrainObj.TileLocation * 64f, GetTextureType(targetedTerrain), modelName, _helper.Translation.Get("tools.name.paint_bucket"), isSprayCan: isSprayCan);
 
                 return CancelUsing(who);
@@ -566,6 +597,13 @@ namespace AlternativeTextures.Framework.Patches.Tools
 
                 return CancelUsing(who);
             }
+            return CancelUsing(who);
+        }
+
+        internal static bool UseTextureCatalogue(Farmer who)
+        {
+            Game1.activeClickableMenu = new CatalogueMenu(who);
+
             return CancelUsing(who);
         }
 

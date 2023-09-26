@@ -59,6 +59,7 @@ namespace AlternativeTextures
         internal const string SPRAY_CAN_FLAG = "AlternativeTextures.SprayCanFlag";
         internal const string SPRAY_CAN_RARE = "AlternativeTextures.SprayCanRare";
         internal const string SPRAY_CAN_RADIUS = "AlternativeTextures.SprayCanRadius";
+        internal const string CATALOGUE_FLAG = "AlternativeTextures.CatalogueFlag";
 
         // Shared static helpers
         internal static IMonitor monitor;
@@ -299,6 +300,10 @@ namespace AlternativeTextures
                 else if (tool.modData.ContainsKey(SPRAY_CAN_FLAG))
                 {
                     LeftClickSprayCan(tool, xTile, yTile);
+                }
+                else if (tool.modData.ContainsKey(CATALOGUE_FLAG))
+                {
+                    ToolPatch.UseTextureCatalogue(Game1.player);
                 }
             }
         }
@@ -829,6 +834,11 @@ namespace AlternativeTextures
                 apiManager.HookIntoJsonAssets(Helper);
             }
 
+            if (Helper.ModRegistry.IsLoaded("spacechase0.MoreGiantCrops"))
+            {
+                apiManager.HookIntoMoreGiantCrops(Helper);
+            }
+
             if (Helper.ModRegistry.IsLoaded("spacechase0.DynamicGameAssets"))
             {
                 apiManager.HookIntoDynamicGameAssets(Helper);
@@ -1038,6 +1048,8 @@ namespace AlternativeTextures
 
                         var baseModel = contentPack.ReadJsonFile<AlternativeTextureModel>(modelPath);
                         baseModel.Owner = contentPack.Manifest.UniqueID;
+                        baseModel.PackName = contentPack.Manifest.Name;
+                        baseModel.Author = contentPack.Manifest.Author;
                         baseModel.Type = baseModel.GetTextureType();
 
                         // Add to ItemName to CollectiveNames if ItemName is given
@@ -1302,7 +1314,7 @@ namespace AlternativeTextures
                 xTile = (int)tile.Key.X;
                 yTile = (int)tile.Key.Y;
 
-                if ((int.Parse(args[0]) == 276 || int.Parse(args[0]) == 190 || int.Parse(args[0]) == 254) && xTile != 0 && yTile != 0)
+                if (xTile != 0 && yTile != 0)
                 {
                     for (int x = xTile - 1; x <= xTile + 1; x++)
                     {
@@ -1407,7 +1419,8 @@ namespace AlternativeTextures
                 { PatchTemplate.GetPaintBucketTool(), new int[2] { 500, 1 } },
                 { PatchTemplate.GetScissorsTool(), new int[2] { 500, 1 } },
                 { PatchTemplate.GetPaintBrushTool(), new int[2] { 500, 1 } },
-                { PatchTemplate.GetSprayCanTool(true), new int[2] { 500, 1 } }
+                { PatchTemplate.GetSprayCanTool(true), new int[2] { 500, 1 } },
+                { PatchTemplate.GetCatalogueTool(), new int[2] { 500, 1 } }
             };
             Game1.activeClickableMenu = new ShopMenu(items);
         }
