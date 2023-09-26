@@ -662,7 +662,7 @@ namespace AlternativeTextures.Framework.UI
             }
 
             // Adjust alphas
-            _paintBrushWarningAlpha = Math.Max(0f, _paintBrushWarningAlpha - 0.005f);
+            _paintBrushWarningAlpha = _isDisplayingAlternativeTextures ? Math.Max(0f, _paintBrushWarningAlpha - 0.005f) : 0f;
 
             // Handle adjusting the tabs, if needed
             RepositionTabs();
