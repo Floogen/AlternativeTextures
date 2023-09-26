@@ -35,7 +35,7 @@ namespace AlternativeTextures.Framework.UI
         private int _texturesPerRow = 6;
         private int _maxRows = 4;
 
-        private string _selectedObjectName;
+        private Object _selectedObject;
         private string _hoverText;
 
         private string _paintBrushWarningText;
@@ -331,9 +331,9 @@ namespace AlternativeTextures.Framework.UI
         private void SetSelectedObjected(Object selectedObject)
         {
             _startingRow = 0;
-            _selectedObjectName = selectedObject is null ? string.Empty : selectedObject.Name;
+            _selectedObject = selectedObject;
 
-            if (string.IsNullOrEmpty(_selectedObjectName))
+            if (_selectedObject is null)
             {
                 // Restore the old search value, if any
                 _searchBox.Text = _cachedTextValue;
@@ -349,7 +349,7 @@ namespace AlternativeTextures.Framework.UI
             }
 
             // Get the textures available
-            string modelName = $"{AlternativeTextureModel.TextureType.Furniture}_{_selectedObjectName}";
+            string modelName = $"{AlternativeTextureModel.TextureType.Furniture}_{_selectedObject.Name}";
             var availableModels = AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation));
 
             _displayableTextures = new List<Item>();
@@ -652,7 +652,7 @@ namespace AlternativeTextures.Framework.UI
             base.update(time);
 
             // Change display if an object has been selected to view textures
-            _isDisplayingAlternativeTextures = string.IsNullOrEmpty(_selectedObjectName) is false;
+            _isDisplayingAlternativeTextures = _selectedObject is not null;
 
             // Handle search box changes
             if (_searchBox.Text != _previousTextValue)
@@ -683,9 +683,9 @@ namespace AlternativeTextures.Framework.UI
             _searchBox.Draw(b);
 
             string titleBarText = AlternativeTextures.modHelper.Translation.Get("ui.labels.catalogue");
-            if (_isDisplayingAlternativeTextures)
+            if (_isDisplayingAlternativeTextures && _selectedObject is not null)
             {
-                titleBarText = $"{titleBarText} > {_selectedObjectName}";
+                titleBarText = $"{titleBarText} > {_selectedObject.DisplayName}";
 
                 for (int i = 0; i < _alternativeTextureButtons.Count; i++)
                 {
