@@ -4,7 +4,6 @@ using AlternativeTextures.Framework.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using StardewModdingAPI;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
@@ -334,7 +333,7 @@ namespace AlternativeTextures.Framework.UI
             _startingRow = 0;
             _selectedObjectName = selectedObject is null ? string.Empty : selectedObject.Name;
 
-            if (string.IsNullOrEmpty(_selectedObjectName)) 
+            if (string.IsNullOrEmpty(_selectedObjectName))
             {
                 // Restore the old search value, if any
                 _searchBox.Text = _cachedTextValue;
