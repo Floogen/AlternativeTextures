@@ -1052,6 +1052,8 @@ namespace AlternativeTextures
 
                         var baseModel = contentPack.ReadJsonFile<AlternativeTextureModel>(modelPath);
                         baseModel.Owner = contentPack.Manifest.UniqueID;
+                        baseModel.PackName = contentPack.Manifest.Name;
+                        baseModel.Author = contentPack.Manifest.Author;
                         baseModel.Type = baseModel.GetTextureType();
 
                         // Add to ItemName to CollectiveNames if ItemName is given

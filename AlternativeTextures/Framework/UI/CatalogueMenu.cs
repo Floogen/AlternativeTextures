@@ -11,8 +11,6 @@ using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static AlternativeTextures.Framework.Models.AlternativeTextureModel;
-using static StardewValley.Minigames.TargetGame;
 using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.UI
@@ -35,11 +33,14 @@ namespace AlternativeTextures.Framework.UI
         private int _maxRows = 4;
 
         private string _selectedObjectName;
+        private string _hoverText;
         private bool _isDisplayingAlternativeTextures;
 
         private TextBox _searchBox;
         private string _previousTextValue;
         private string _cachedTextValue;
+
+        private FilterDropDown _searchFilterOptions;
 
         private List<ClickableTextureComponent> _tabButtons;
         private List<ClickableComponent> _objectButtons;
@@ -166,6 +167,12 @@ namespace AlternativeTextures.Framework.UI
                 Text = String.Empty
             };
 
+            // Establish the search options
+            List<string> options = new List<string>() { "None", "Author", "Pack Name", "Tags" };
+            _searchFilterOptions = new FilterDropDown("Filter", 0) { dropDownDisplayOptions = options, dropDownOptions = options };
+            _searchFilterOptions.bounds = new Rectangle(_searchBox.X + _searchBox.Width + 16, _searchBox.Y - 1, 256, 48);
+            _searchFilterOptions.RecalculateBounds();
+
             Game1.keyboardDispatcher.Subscriber = this._searchBox;
             _searchBox.Selected = true;
 
@@ -289,7 +296,26 @@ namespace AlternativeTextures.Framework.UI
         {
             _previousTextValue = text;
 
-            _currentlyDisplayedObjects = string.IsNullOrEmpty(text) ? _currentlyDisplayedObjects : _currentlyDisplayedObjects.Where(o => o.Name.Contains(text, StringComparison.OrdinalIgnoreCase)).ToList();
+            if (_isDisplayingAlternativeTextures)
+            {
+                switch (_searchFilterOptions.selectedOption)
+                {
+                    case 0:
+                    case 3:
+                        _currentlyDisplayedTextures = _displayableTextures.Where(i => !i.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME].Contains(AlternativeTextures.DEFAULT_OWNER) && AlternativeTextures.textureManager.GetSpecificTextureModel(i.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME]) is AlternativeTextureModel model && model.HasKeyword(i.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION], _searchBox.Text)).ToList();
+                        break;
+                    case 1:
+                        _currentlyDisplayedTextures = _displayableTextures.Where(i => !i.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME].Contains(AlternativeTextures.DEFAULT_OWNER) && AlternativeTextures.textureManager.GetSpecificTextureModel(i.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME]) is AlternativeTextureModel model && model.Author.Contains(_searchBox.Text, StringComparison.OrdinalIgnoreCase)).ToList();
+                        break;
+                    case 2:
+                        _currentlyDisplayedTextures = _displayableTextures.Where(i => !i.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME].Contains(AlternativeTextures.DEFAULT_OWNER) && AlternativeTextures.textureManager.GetSpecificTextureModel(i.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME]) is AlternativeTextureModel model && model.PackName.Contains(_searchBox.Text, StringComparison.OrdinalIgnoreCase)).ToList();
+                        break;
+                }
+            }
+            else
+            {
+                _currentlyDisplayedObjects = string.IsNullOrEmpty(text) ? _currentlyDisplayedObjects : _currentlyDisplayedObjects.Where(o => o.Name.Contains(text, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
         }
 
         private void SetSelectedObjected(Object selectedObject)
@@ -382,6 +408,7 @@ namespace AlternativeTextures.Framework.UI
             if (sourceRect.Height >= 64)
             {
                 _maxRows = 2;
+                sourceRect.Height = 32;
             }
             else if (sourceRect.Height >= 32)
             {
@@ -397,7 +424,7 @@ namespace AlternativeTextures.Framework.UI
                 for (int c = 0; c < _texturesPerRow; c++)
                 {
                     var componentId = c + r * _texturesPerRow;
-                    _alternativeTextureButtons.Add(new ClickableTextureComponent(new Rectangle(base.xPositionOnScreen + IClickableMenu.borderWidth + 32 + componentId % _texturesPerRow * 128, base.yPositionOnScreen + sourceRect.Height + 32 + componentId / _texturesPerRow * (4 * sourceRect.Height), 4 * sourceRect.Width, 4 * sourceRect.Height), availableModels.First().GetTexture(0), new Rectangle(), 4f, false)
+                    _alternativeTextureButtons.Add(new ClickableTextureComponent(new Rectangle(base.xPositionOnScreen + IClickableMenu.borderWidth + 32 + componentId % _texturesPerRow * 128, base.yPositionOnScreen + sourceRect.Height + 128 + componentId / _texturesPerRow * (4 * sourceRect.Height), 4 * sourceRect.Width, 4 * sourceRect.Height), availableModels.First().GetTexture(0), new Rectangle(), 4f, false)
                     {
                         myID = componentId,
                         downNeighborID = componentId + _texturesPerRow,
@@ -436,9 +463,13 @@ namespace AlternativeTextures.Framework.UI
             {
                 if (_tabButtons[k].containsPoint(x, y))
                 {
+                    if (_isDisplayingAlternativeTextures)
+                    {
+                        SetSelectedObjected(null);
+                    }
+
                     SetTabFilter(k);
                     SetTextFilter(_searchBox.Text);
-                    SetSelectedObjected(null);
                     Game1.playSound("shwip");
 
                     if (Game1.options.snappyMenus && Game1.options.gamepadControls)
@@ -458,6 +489,34 @@ namespace AlternativeTextures.Framework.UI
 
                 SetSelectedObjected(_currentlyDisplayedObjects[_currentObjectIndex + k]);
                 break;
+            }
+
+            // Handle filter
+            if (_searchFilterOptions.bounds.Contains(x, y) || (_searchFilterOptions.IsClicked && _searchFilterOptions.dropDownBounds.Contains(x, y)))
+            {
+                _searchFilterOptions.receiveLeftClick(x, y);
+            }
+        }
+
+        public override void leftClickHeld(int x, int y)
+        {
+            base.leftClickHeld(x, y);
+
+            // Handle filter
+            if (_searchFilterOptions.bounds.Contains(x, y) || (_searchFilterOptions.IsClicked && _searchFilterOptions.dropDownBounds.Contains(x, y)))
+            {
+                _searchFilterOptions.leftClickHeld(x, y);
+            }
+        }
+
+        public override void releaseLeftClick(int x, int y)
+        {
+            base.releaseLeftClick(x, y);
+
+            // Handle filter
+            if (_searchFilterOptions.bounds.Contains(x, y) || _searchFilterOptions.dropDownBounds.Contains(x, y))
+            {
+                _searchFilterOptions.leftClickReleased(x, y);
             }
         }
 
@@ -485,9 +544,72 @@ namespace AlternativeTextures.Framework.UI
             UpdateSaleButtonNeighbors();
         }
 
+        public override void performHoverAction(int x, int y)
+        {
+            if (Game1.IsFading())
+            {
+                return;
+            }
+            _hoverText = string.Empty;
+
+            if (_searchFilterOptions.IsClicked && _searchFilterOptions.dropDownBounds.Contains(x, y))
+            {
+                return;
+            }
+
+            var maxScale = 2f;
+            foreach (ClickableTextureComponent c in _alternativeTextureButtons)
+            {
+                if (c.containsPoint(x, y))
+                {
+                    c.scale = Math.Min(c.scale + 0.05f, maxScale + 0.1f);
+                    if (c.item is not null && c.item.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) && AlternativeTextures.textureManager.GetSpecificTextureModel(c.item.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME]) is AlternativeTextureModel alternativeTextureModel)
+                    {
+                        string optionalDisplayName = string.Empty;
+                        if (c.item.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_DISPLAY_NAME) && !String.IsNullOrEmpty(c.item.modData[ModDataKeys.ALTERNATIVE_TEXTURE_DISPLAY_NAME]))
+                        {
+                            optionalDisplayName = $"Display Name: {c.item.modData[ModDataKeys.ALTERNATIVE_TEXTURE_DISPLAY_NAME]}";
+                        }
+
+                        List<string> keywords = alternativeTextureModel.Keywords;
+                        if (int.TryParse(c.item.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION], out int variation) && alternativeTextureModel.ManualVariations.Any(v => v.Id == variation))
+                        {
+                            keywords.AddRange(alternativeTextureModel.ManualVariations[variation].Keywords);
+                        }
+                        keywords = keywords.Distinct().ToList();
+
+                        string keywordsText = string.Empty;
+                        string keywordsTemp = string.Empty;
+                        foreach (string keyword in keywords)
+                        {
+                            keywordsTemp += string.IsNullOrEmpty(keywordsTemp) ? keyword : $", {keyword}";
+
+                            if (keywordsTemp.Length > 24 || keywords.Last() == keyword)
+                            {
+                                keywordsText += string.IsNullOrEmpty(keywordsText) ? keywordsTemp : $",\n {keywordsTemp}";
+                                keywordsTemp = string.Empty;
+                            }
+                        }
+
+                        _hoverText = $"Pack: {alternativeTextureModel.PackName}\nAuthor: {alternativeTextureModel.Author}{optionalDisplayName}\nVariation: {c.item.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION]}\nKeywords: {keywordsText}";
+                    }
+                }
+                else
+                {
+                    c.scale = Math.Max(maxScale, c.scale - 0.025f);
+                }
+            }
+
+            //this.forwardButton.tryHover(x, y, 0.2f);
+            //this.backButton.tryHover(x, y, 0.2f);
+        }
+
         public override void update(GameTime time)
         {
             base.update(time);
+
+            // Change display if an object has been selected to view textures
+            _isDisplayingAlternativeTextures = string.IsNullOrEmpty(_selectedObjectName) is false;
 
             // Handle search box changes
             if (_searchBox.Text != _previousTextValue)
@@ -498,9 +620,6 @@ namespace AlternativeTextures.Framework.UI
 
             // Handle adjusting the tabs, if needed
             RepositionTabs();
-
-            // Change display if an object has been selected to view textures
-            _isDisplayingAlternativeTextures = string.IsNullOrEmpty(_selectedObjectName) is false;
         }
 
         public override void draw(SpriteBatch b)
@@ -531,9 +650,12 @@ namespace AlternativeTextures.Framework.UI
                     if (textureIndex < _currentlyDisplayedTextures.Count)
                     {
                         _alternativeTextureButtons[i].item = _currentlyDisplayedTextures[textureIndex];
-                        _alternativeTextureButtons[i].item.drawInMenu(b, new Vector2(_alternativeTextureButtons[i].bounds.X, _alternativeTextureButtons[i].bounds.Y + 96f), 2f, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
+                        _alternativeTextureButtons[i].item.drawInMenu(b, new Vector2(_alternativeTextureButtons[i].bounds.X, _alternativeTextureButtons[i].bounds.Y), _alternativeTextureButtons[i].scale, 1f, 0.87f, StackDrawType.Hide, Color.White, false);
                     }
                 }
+
+                // Draw the filter options box
+                _searchFilterOptions.draw(b, 0, 0);
             }
             else
             {
@@ -567,6 +689,9 @@ namespace AlternativeTextures.Framework.UI
                 }
             }
             SpriteText.drawStringWithScrollCenteredAt(b, titleBarText, base.xPositionOnScreen + SpriteText.getWidthOfString(titleBarText) / 2, base.yPositionOnScreen - 64);
+
+            // Draw the hover text
+            IClickableMenu.drawHoverText(b, _hoverText, Game1.smallFont);
 
             Game1.mouseCursorTransparency = 1f;
             base.drawMouse(b);
