@@ -162,7 +162,8 @@ namespace AlternativeTextures.Framework.Patches.Buildings
 
             var textureWidth = building.CanBePainted() || canBePaintedOverride ? xOffset : textureModel.TextureWidth;
 
-            var texture2D = textureModel.GetTexture(textureVariation).CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(0, yOffset, textureWidth, textureModel.TextureHeight));
+            var baseTexture = textureModel.GetTexture(textureVariation);
+            var texture2D = baseTexture.CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(0, yOffset, baseTexture.Width, baseTexture.Height));
             if (building.paintedTexture != null)
             {
                 building.paintedTexture = null;
