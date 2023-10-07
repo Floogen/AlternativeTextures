@@ -160,10 +160,12 @@ namespace AlternativeTextures.Framework.Patches.Buildings
             var xOffset = building.tilesWide * 16;
             var yOffset = textureModel.GetTextureOffset(textureVariation);
 
-            var textureWidth = building.CanBePainted() || canBePaintedOverride ? xOffset : textureModel.TextureWidth;
-
             var baseTexture = textureModel.GetTexture(textureVariation);
-            var texture2D = baseTexture.CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(0, yOffset, baseTexture.Width, baseTexture.Height));
+
+            // Note: Shipping Bins have special handling for texture width to ensure backwards compatability
+            var textureWidth = building.CanBePainted() || canBePaintedOverride ? xOffset : building is ShippingBin ? textureModel.TextureWidth : baseTexture.Width;
+
+            var texture2D = baseTexture.CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(0, yOffset, textureWidth, baseTexture.Height));
             if (building.paintedTexture != null)
             {
                 building.paintedTexture = null;
