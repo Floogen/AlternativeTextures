@@ -1,0 +1,25 @@
+{
+  "ItemName": "Auto-Petter",
+  "Type": "Craftable",
+  "TextureWidth": 16,
+  "TextureHeight": 32,
+  "Variations": 1,
+  "Animation": [
+    {
+      "Frame": 0,
+      "Duration": 1000
+    },
+    {
+      "Frame": 1,
+      "Duration": 1000
+    },
+    {
+      "Frame": 0,
+      "Duration": 1000
+    },
+    {
+      "Frame": 2,
+      "Duration": 1000
+    }
+  ]
+}
