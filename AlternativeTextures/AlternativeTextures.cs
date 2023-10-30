@@ -7,6 +7,7 @@ using AlternativeTextures.Framework.Patches;
 using AlternativeTextures.Framework.Patches.Buildings;
 using AlternativeTextures.Framework.Patches.Entities;
 using AlternativeTextures.Framework.Patches.GameLocations;
+using AlternativeTextures.Framework.Patches.ShopLocations;
 using AlternativeTextures.Framework.Patches.SMAPI;
 using AlternativeTextures.Framework.Patches.SpecialObjects;
 using AlternativeTextures.Framework.Patches.StandardObjects;
@@ -155,13 +156,13 @@ namespace AlternativeTextures
 
                 // Start of location patches
                 new GameLocationPatch(monitor, helper).Apply(harmony);
+                new ShopBuilderPatch(monitor, helper).Apply(harmony);
                 new FarmPatch(monitor, helper).Apply(harmony);
 
                 // Start of SMAPI patches
                 new DisplayDevicePatch(monitor, helper).Apply(harmony);
 
                 // Paint tool related patches
-                new UtilityPatch(monitor, helper).Apply(harmony);
                 new ToolPatch(monitor, helper).Apply(harmony);
             }
             catch (Exception e)
