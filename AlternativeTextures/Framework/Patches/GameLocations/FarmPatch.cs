@@ -24,13 +24,15 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
 
         internal void Apply(Harmony harmony)
         {
-            harmony.Patch(AccessTools.Method(_object, nameof(Farm.ApplyHousePaint), null), postfix: new HarmonyMethod(GetType(), nameof(ApplyHousePaintPostfix)));
-            harmony.Patch(AccessTools.Method(_object, nameof(Farm.DayUpdate), new[] { typeof(int) }), postfix: new HarmonyMethod(GetType(), nameof(DayUpdatePostfix)));
+            //harmony.Patch(AccessTools.Method(_object, nameof(Farm.ApplyHousePaint), null), postfix: new HarmonyMethod(GetType(), nameof(ApplyHousePaintPostfix)));
+            //harmony.Patch(AccessTools.Method(_object, nameof(Farm.DayUpdate), new[] { typeof(int) }), postfix: new HarmonyMethod(GetType(), nameof(DayUpdatePostfix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Farm.draw), new[] { typeof(SpriteBatch) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
 
-            harmony.CreateReversePatcher(AccessTools.Method(typeof(BuildableGameLocation), nameof(BuildableGameLocation.draw), new[] { typeof(SpriteBatch) }), new HarmonyMethod(GetType(), nameof(BaseDrawReversePatch))).Patch();
+            harmony.CreateReversePatcher(AccessTools.Method(typeof(GameLocation), nameof(GameLocation.draw), new[] { typeof(SpriteBatch) }), new HarmonyMethod(GetType(), nameof(BaseDrawReversePatch))).Patch();
         }
 
+        // TODO: Handle the new house painting logic
+        /*
         private static void ApplyHousePaintPostfix(Farm __instance)
         {
             if (__instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
@@ -82,6 +84,7 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
         {
             ApplyHousePaintPostfix(__instance);
         }
+        */
 
         private static bool DrawPrefix(Farm __instance, TemporaryAnimatedSprite ___shippingBinLid, SpriteBatch b)
         {
@@ -114,6 +117,8 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
                 }
                 b.Draw(Game1.mouseCursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(entry_position_tile.X + 3, entry_position_tile.Y + 2) * 64f), Building.rightShadow, Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1E-05f);
 
+                // TODO: Handle the new house painting logic
+                /*
                 // Custom farmhouse logic
                 Color house_draw_color = Color.White;
                 if (__instance.frameHouseColor.HasValue)
@@ -130,6 +135,9 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
 
                 Vector2 house_draw_position = new Vector2(entry_position_world.X - 384f, entry_position_world.Y - 440f);
                 b.Draw(house_texture, Game1.GlobalToLocal(Game1.viewport, house_draw_position), new Rectangle(0, 0, 160, 144), house_draw_color, 0f, Vector2.Zero, 4f, SpriteEffects.None, (house_draw_position.Y + 230f) / 10000f);
+
+                */
+
 
                 // Do rest of vanilla logic
                 if (Game1.mailbox.Count > 0)
@@ -155,7 +163,7 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
             return true;
         }
 
-        public static void BaseDrawReversePatch(BuildableGameLocation __instance, SpriteBatch b)
+        public static void BaseDrawReversePatch(GameLocation __instance, SpriteBatch b)
         {
             new NotImplementedException("It's a stub!");
         }

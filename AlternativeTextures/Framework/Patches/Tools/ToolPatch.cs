@@ -221,14 +221,16 @@ namespace AlternativeTextures.Framework.Patches.Tools
             if (location is Farm farm && isSprayCan is false)
             {
                 var targetedBuilding = farm.getBuildingAt(new Vector2(x / 64, y / 64));
-                if (farm.GetHouseRect().Contains(new Vector2(x / 64, y / 64)))
+
+                var farmerHouse = farm.GetMainFarmHouse();
+                if (farmerHouse == targetedBuilding)
                 {
                     targetedBuilding = new Building();
                     targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}";
-                    targetedBuilding.tileX.Value = farm.GetHouseRect().X;
-                    targetedBuilding.tileY.Value = farm.GetHouseRect().Y;
-                    targetedBuilding.tilesWide.Value = farm.GetHouseRect().Width;
-                    targetedBuilding.tilesHigh.Value = farm.GetHouseRect().Height;
+                    targetedBuilding.tileX.Value = farmerHouse.tileX.Value;
+                    targetedBuilding.tileY.Value = farmerHouse.tileY.Value;
+                    targetedBuilding.tilesWide.Value = farmerHouse.tilesWide.Value;
+                    targetedBuilding.tilesHigh.Value = farmerHouse.tilesHigh.Value;
 
                     var modelType = AlternativeTextureModel.TextureType.Building;
                     if (!farm.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !farm.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME].Contains(targetedBuilding.buildingType.Value))
@@ -266,12 +268,12 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     }
 
                     // Verify this building has a texture we can target
-                    if (!farm.GetHouseRect().Contains(new Vector2(x / 64, y / 64)))
+                    if (farmerHouse != targetedBuilding)
                     {
                         var texturePath = PathUtilities.NormalizePath(Path.Combine(targetedBuilding.textureName() + ".png"));
                         try
                         {
-                            _ = _helper.Content.Load<Texture2D>(Path.Combine(targetedBuilding.textureName()), ContentSource.GameContent);
+                            _ = _helper.GameContent.Load<Texture2D>(Path.Combine(targetedBuilding.textureName()));
                             _monitor.Log($"{modelName} has a targetable texture within Buildings: {texturePath}", LogLevel.Trace);
                         }
                         catch (ContentLoadException ex)
@@ -281,11 +283,12 @@ namespace AlternativeTextures.Framework.Patches.Tools
                         }
                     }
                     // Display texture menu
-                    var buildingObj = new Object(100, 1, isRecipe: false, -1)
+                    var buildingObj = new Object("100", 1, isRecipe: false, -1)
                     {
-                        TileLocation = new Vector2(targetedBuilding.tileX, targetedBuilding.tileY),
-                        modData = targetedBuilding.modData
+                        TileLocation = new Vector2(targetedBuilding.tileX.Value, targetedBuilding.tileY.Value)
                     };
+                    buildingObj.modData.SetFromSerialization(targetedBuilding.modData);
+
                     Game1.activeClickableMenu = GetMenu(buildingObj, buildingObj.TileLocation * 64f, GetTextureType(targetedBuilding), modelName, _helper.Translation.Get("tools.name.paint_bucket"), textureTileWidth: targetedBuilding.tilesWide, isSprayCan: isSprayCan);
 
                     return CancelUsing(who);
@@ -337,9 +340,9 @@ namespace AlternativeTextures.Framework.Patches.Tools
             {
                 if (!giantCrop.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
                 {
-                    var instanceName = Game1.objectInformation.ContainsKey(giantCrop.parentSheetIndex.Value) ? Game1.objectInformation[giantCrop.parentSheetIndex.Value].Split('/')[0] : String.Empty;
+                    var instanceName = Game1.objectData.ContainsKey(giantCrop.Id) ? Game1.objectData[giantCrop.Id].Name : String.Empty;
                     instanceName = $"{AlternativeTextureModel.TextureType.GiantCrop}_{instanceName}";
-                    var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(giantCrop.currentLocation)}";
+                    var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(giantCrop.Location)}";
                     AssignDefaultModData(targetedResouceClump, instanceSeasonName, true);
                 }
 
@@ -356,11 +359,11 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 }
 
                 // Display texture menu
-                var terrainObj = new Object(100, 1, isRecipe: false, -1)
+                var terrainObj = new Object("100", 1, isRecipe: false, -1)
                 {
-                    TileLocation = targetedResouceClump.tile.Value,
-                    modData = targetedResouceClump.modData
+                    TileLocation = targetedResouceClump.Tile
                 };
+                terrainObj.modData.SetFromSerialization(targetedResouceClump.modData);
 
                 Game1.activeClickableMenu = GetMenu(terrainObj, terrainObj.TileLocation * 64f, GetTextureType(targetedResouceClump), modelName, _helper.Translation.Get("tools.name.paint_bucket"), isSprayCan: isSprayCan);
 
@@ -390,15 +393,14 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     else if (targetedTerrain is FruitTree fruitTree)
                     {
                         Dictionary<int, string> data = Game1.content.Load<Dictionary<int, string>>("Data\\fruitTrees");
-                        var saplingIndex = data.FirstOrDefault(d => int.Parse(d.Value.Split('/')[0]) == fruitTree.treeType).Key;
-                        var saplingName = Game1.objectInformation.ContainsKey(saplingIndex) ? Game1.objectInformation[saplingIndex].Split('/')[0] : String.Empty;
+                        var saplingName = Game1.fruitTreeData.ContainsKey(fruitTree.treeId) ? Game1.objectData[fruitTree.treeId].Name : String.Empty;
 
                         var instanceSeasonName = $"{AlternativeTextureModel.TextureType.FruitTree}_{saplingName}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
                         AssignDefaultModData(targetedTerrain, instanceSeasonName, true);
                     }
                     else if (targetedTerrain is HoeDirt dirt && dirt.crop is not null)
                     {
-                        var instanceName = Game1.objectInformation.ContainsKey(dirt.crop.netSeedIndex.Value) ? Game1.objectInformation[dirt.crop.netSeedIndex.Value].Split('/')[0] : String.Empty;
+                        var instanceName = Game1.objectData.ContainsKey(dirt.crop.netSeedIndex.Value) ? Game1.objectData[dirt.crop.netSeedIndex.Value].Name : String.Empty;
                         var instanceSeasonName = $"{AlternativeTextureModel.TextureType.Crop}_{instanceName}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
                         AssignDefaultModData(targetedTerrain, instanceSeasonName, true);
                     }
@@ -431,11 +433,11 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 }
 
                 // Display texture menu
-                var terrainObj = new Object(100, 1, isRecipe: false, -1)
+                var terrainObj = new Object("100", 1, isRecipe: false, -1)
                 {
-                    TileLocation = new Vector2(x, y) / 64f,
-                    modData = targetedTerrain.modData
+                    TileLocation = new Vector2(x, y) / 64f
                 };
+                terrainObj.modData.SetFromSerialization(targetedTerrain.modData);
 
                 Game1.activeClickableMenu = GetMenu(terrainObj, terrainObj.TileLocation * 64f, GetTextureType(targetedTerrain), modelName, _helper.Translation.Get("tools.name.paint_bucket"), isSprayCan: isSprayCan);
 
@@ -446,8 +448,8 @@ namespace AlternativeTextures.Framework.Patches.Tools
             {
                 Point tile = new Point(x / 64, y / 64);
 
-                var wallId = decoratableLocation.getWallForRoomAt(tile);
-                if (wallId != -1)
+                var wallId = decoratableLocation.GetWallpaperID(tile.X, tile.Y);
+                if (string.IsNullOrEmpty(wallId) is false)
                 {
                     if (!decoratableLocation.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !decoratableLocation.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME].Contains("Wallpaper"))
                     {
@@ -468,18 +470,18 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     }
 
                     // Display texture menu
-                    var locationObj = new Object(100, 1, isRecipe: false, -1)
+                    var locationObj = new Object("100", 1, isRecipe: false, -1)
                     {
-                        TileLocation = Utility.PointToVector2(tile),
-                        modData = decoratableLocation.modData
+                        TileLocation = Utility.PointToVector2(tile)
                     };
+                    locationObj.modData.SetFromSerialization(decoratableLocation.modData);
                     Game1.activeClickableMenu = GetMenu(locationObj, locationObj.TileLocation, GetTextureType(decoratableLocation), modelName, _helper.Translation.Get("tools.name.paint_bucket"), isSprayCan: isSprayCan);
 
                     return CancelUsing(who);
                 }
 
-                var floorId = decoratableLocation.getFloorAt(tile);
-                if (floorId != -1)
+                var floorId = decoratableLocation.GetFloorID(tile.X, tile.Y);
+                if (string.IsNullOrEmpty(floorId) is false)
                 {
                     if (!decoratableLocation.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !decoratableLocation.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME].Contains("Floor"))
                     {
@@ -500,11 +502,11 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     }
 
                     // Display texture menu
-                    var locationObj = new Object(100, 1, isRecipe: false, -1)
+                    var locationObj = new Object("100", 1, isRecipe: false, -1)
                     {
-                        TileLocation = Utility.PointToVector2(tile),
-                        modData = decoratableLocation.modData
+                        TileLocation = Utility.PointToVector2(tile)
                     };
+                    locationObj.modData.SetFromSerialization(decoratableLocation.modData);
                     Game1.activeClickableMenu = GetMenu(locationObj, locationObj.TileLocation, GetTextureType(decoratableLocation), modelName, _helper.Translation.Get("tools.name.paint_bucket"), isSprayCan: isSprayCan);
 
                     return CancelUsing(who);
@@ -533,7 +535,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     }
 
                     bool usedSecondaryTile = string.IsNullOrEmpty(location.doesTileHaveProperty(x / 64, y / 64, "Action", "Buildings")) && location.doesTileHaveProperty(x / 64, (y + 64) / 64, "Action", "Buildings") == "Mailbox";
-                    var mailboxObj = new Object(100, 1, isRecipe: false, -1)
+                    var mailboxObj = new Object("100", 1, isRecipe: false, -1)
                     {
                         TileLocation = new Vector2(x / 64, (y + (usedSecondaryTile ? 64 : 0)) / 64)
                     };
@@ -596,13 +598,14 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 }
 
                 // Display texture menu
-                var obj = new Object(100, 1, isRecipe: false, -1)
+                var obj = new Object("100", 1, isRecipe: false, -1)
                 {
                     Name = character.Name,
                     displayName = character.displayName,
-                    TileLocation = character.getTileLocation(),
-                    modData = character.modData
+                    TileLocation = character.Tile
                 };
+                obj.modData.SetFromSerialization(character.modData);
+
                 Game1.activeClickableMenu = new PaintBucketMenu(obj, obj.TileLocation * 64f, GetTextureType(character), modelName, uiTitle: _helper.Translation.Get("tools.name.scissors"));
 
                 return CancelUsing(who);

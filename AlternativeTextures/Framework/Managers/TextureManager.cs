@@ -126,7 +126,7 @@ namespace AlternativeTextures.Framework.Managers
             return _alternativeTextures.First(t => String.Equals(t.GetId(), textureId, StringComparison.OrdinalIgnoreCase));
         }
 
-        public List<AlternativeTextureModel> GetAvailableTextureModels(string objectName, string season)
+        public List<AlternativeTextureModel> GetAvailableTextureModels(string objectName, Season season)
         {
             if (!DoesObjectHaveAlternativeTexture(objectName) && !DoesObjectHaveAlternativeTexture(String.Concat(objectName, "_", season)))
             {

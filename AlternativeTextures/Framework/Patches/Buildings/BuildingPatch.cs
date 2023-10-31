@@ -4,6 +4,7 @@ using AlternativeTextures.Framework.Utilities.Extensions;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Netcode;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
@@ -15,6 +16,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
     internal class BuildingPatch : PatchTemplate
     {
         private readonly Type _entity = typeof(Building);
+        private const int TRACTOR_GARAGE_ID = -794739;
 
         internal BuildingPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
@@ -25,6 +27,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
         {
             harmony.Patch(AccessTools.Method(_entity, nameof(Building.Update), new[] { typeof(GameTime) }), postfix: new HarmonyMethod(GetType(), nameof(UpdatePostfix)));
             harmony.Patch(AccessTools.Method(_entity, nameof(Building.resetTexture), null), prefix: new HarmonyMethod(GetType(), nameof(ResetTexturePrefix)));
+            harmony.Patch(AccessTools.Method(_entity, nameof(Building.draw), new[] { typeof(SpriteBatch) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
             if (PatchTemplate.IsSolidFoundationsUsed())
             {
                 try
@@ -41,7 +44,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                 }
             }
 
-            harmony.Patch(AccessTools.Constructor(_entity, new[] { typeof(BluePrint), typeof(Vector2) }), postfix: new HarmonyMethod(GetType(), nameof(BuildingPostfix)));
+            harmony.Patch(AccessTools.Constructor(_entity, new[] { typeof(string), typeof(Vector2) }), postfix: new HarmonyMethod(GetType(), nameof(BuildingPostfix)));
 
             harmony.CreateReversePatcher(AccessTools.Method(_entity, nameof(Building.resetTexture), null), new HarmonyMethod(GetType(), nameof(ResetTextureReversePatch))).Patch();
         }
@@ -96,17 +99,17 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                             bool topY = yWater == (int)building.tileY;
                             if (num)
                             {
-                                b.Draw(Game1.mouseCursors, new Vector2(x + xWater * 64 + 32, y + (yWater + 1) * 64 - (int)Game1.currentLocation.waterPosition - 32), new Rectangle(Game1.currentLocation.waterAnimationIndex * 64, 2064 + (((xWater + yWater) % 2 != 0) ? ((!Game1.currentLocation.waterTileFlip) ? 128 : 0) : (Game1.currentLocation.waterTileFlip ? 128 : 0)), 64, 32 + (int)Game1.currentLocation.waterPosition - 5), Game1.currentLocation.waterColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
+                                b.Draw(Game1.mouseCursors, new Vector2(x + xWater * 64 + 32, y + (yWater + 1) * 64 - (int)Game1.currentLocation.waterPosition - 32), new Rectangle(Game1.currentLocation.waterAnimationIndex * 64, 2064 + (((xWater + yWater) % 2 != 0) ? ((!Game1.currentLocation.waterTileFlip) ? 128 : 0) : (Game1.currentLocation.waterTileFlip ? 128 : 0)), 64, 32 + (int)Game1.currentLocation.waterPosition - 5), Game1.currentLocation.waterColor.Value, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
                             }
                             else
                             {
-                                b.Draw(Game1.mouseCursors, new Vector2(x + xWater * 64 + 32, y + yWater * 64 + 32 - (int)((!topY) ? Game1.currentLocation.waterPosition : 0f)), new Rectangle(Game1.currentLocation.waterAnimationIndex * 64, 2064 + (((xWater + yWater) % 2 != 0) ? ((!Game1.currentLocation.waterTileFlip) ? 128 : 0) : (Game1.currentLocation.waterTileFlip ? 128 : 0)) + (topY ? ((int)Game1.currentLocation.waterPosition) : 0), 64, 64 + (topY ? ((int)(0f - Game1.currentLocation.waterPosition)) : 0)), Game1.currentLocation.waterColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
+                                b.Draw(Game1.mouseCursors, new Vector2(x + xWater * 64 + 32, y + yWater * 64 + 32 - (int)((!topY) ? Game1.currentLocation.waterPosition : 0f)), new Rectangle(Game1.currentLocation.waterAnimationIndex * 64, 2064 + (((xWater + yWater) % 2 != 0) ? ((!Game1.currentLocation.waterTileFlip) ? 128 : 0) : (Game1.currentLocation.waterTileFlip ? 128 : 0)) + (topY ? ((int)Game1.currentLocation.waterPosition) : 0), 64, 64 + (topY ? ((int)(0f - Game1.currentLocation.waterPosition)) : 0)), Game1.currentLocation.waterColor.Value, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
                             }
                         }
                     }
-                    b.Draw(texture, new Vector2(x, y), new Rectangle(0, 0, 80, 80), building.color.Value * alpha, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 1f);
-                    b.Draw(texture, new Vector2(x + 32, y + 24 + ((Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 2500.0 < 1250.0) ? 4 : 0)), new Rectangle(16, 160, 48, 7), building.color.Value * alpha, 0f, Vector2.Zero, scale, SpriteEffects.None, 1f);
-                    b.Draw(texture, new Vector2(x, y - 64), new Rectangle(80, fishPond.nettingStyle.Value * 48, 80, 48), building.color.Value * alpha, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 1f);
+                    b.Draw(texture, new Vector2(x, y), new Rectangle(0, 0, 80, 80), building.color * alpha, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 1f);
+                    b.Draw(texture, new Vector2(x + 32, y + 24 + ((Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 2500.0 < 1250.0) ? 4 : 0)), new Rectangle(16, 160, 48, 7), building.color * alpha, 0f, Vector2.Zero, scale, SpriteEffects.None, 1f);
+                    b.Draw(texture, new Vector2(x, y - 64), new Rectangle(80, fishPond.nettingStyle.Value * 48, 80, 48), building.color * alpha, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 1f);
                     return;
                 case GreenhouseBuilding greenhouse:
                     Rectangle rectangle = greenhouse.getSourceRect();
@@ -114,7 +117,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                     return;
                 case JunimoHut junimoHut:
                     //building.drawShadow(b, x, y);
-                    b.Draw(texture, new Vector2(x, y), junimoHut.sourceRect, building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
+                    b.Draw(texture, new Vector2(x, y), junimoHut.getSourceRect(), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
                     return;
                 case Mill mill:
                     b.Draw(texture, new Vector2(x, y), building.getSourceRectForMenu(), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
@@ -149,6 +152,37 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                 {
                     return GetBuildingTextureWithPaint(__instance, textureModel, textureVariation);
                 });
+                return false;
+            }
+
+            return true;
+        }
+
+        internal static bool DrawPrefix(Building __instance, float ___alpha, SpriteBatch b)
+        {
+            if (__instance is Stable || __instance.maxOccupants == TRACTOR_GARAGE_ID && __instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
+            {
+                if (__instance.isMoving || __instance.daysOfConstructionLeft > 0)
+                {
+                    return true;
+                }
+
+                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME]);
+                if (textureModel is null)
+                {
+                    return true;
+                }
+
+                var textureVariation = Int32.Parse(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION]);
+                if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
+                {
+                    return true;
+                }
+                var paintedTexture = BuildingPatch.GetBuildingTextureWithPaint(__instance, textureModel, textureVariation);
+
+                __instance.drawShadow(b);
+                b.Draw(paintedTexture, Game1.GlobalToLocal(Game1.viewport, new Vector2((int)__instance.tileX * 64, (int)__instance.tileY * 64 + (int)__instance.tilesHigh * 64)), paintedTexture.Bounds, __instance.color * ___alpha, 0f, new Vector2(0f, __instance.texture.Value.Bounds.Height), 4f, SpriteEffects.None, (float)(((int)__instance.tileY + (int)__instance.tilesHigh - 1) * 64) / 10000f);
+
                 return false;
             }
 
@@ -289,7 +323,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
             }
         }
 
-        private static void BuildingPostfix(Building __instance, BluePrint blueprint, Vector2 tileLocation)
+        private static void BuildingPostfix(Building __instance, string type, Vector2 tile)
         {
             var instanceName = $"{AlternativeTextureModel.TextureType.Building}_{GetBuildingName(__instance)}";
             var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";

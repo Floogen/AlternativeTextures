@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.GameData.FloorsAndPaths;
 using StardewValley.TerrainFeatures;
 using System;
 
@@ -21,12 +22,12 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
         internal void Apply(Harmony harmony)
         {
-            harmony.Patch(AccessTools.Method(_object, nameof(Flooring.draw), new[] { typeof(SpriteBatch), typeof(Vector2) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
+            harmony.Patch(AccessTools.Method(_object, nameof(Flooring.draw), new[] { typeof(SpriteBatch) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Flooring.drawInMenu), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(Vector2), typeof(float), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawInMenuPrefix)));
-            harmony.Patch(AccessTools.Method(_object, nameof(Flooring.seasonUpdate), new[] { typeof(bool) }), postfix: new HarmonyMethod(GetType(), nameof(SeasonUpdatePostfix)));
+            harmony.Patch(AccessTools.Method(typeof(TerrainFeature), nameof(TerrainFeature.seasonUpdate), new[] { typeof(bool) }), postfix: new HarmonyMethod(GetType(), nameof(SeasonUpdatePostfix)));
         }
 
-        private static bool DrawPrefix(Flooring __instance, byte ___neighborMask, SpriteBatch spriteBatch, Vector2 tileLocation)
+        private static bool DrawPrefix(Flooring __instance, byte ___neighborMask, SpriteBatch spriteBatch)
         {
             if (__instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
             {
@@ -43,7 +44,10 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 }
                 var textureOffset = textureModel.GetTextureOffset(textureVariation);
 
-                if (__instance.cornerDecoratedBorders.Value)
+                Vector2 tileLocation = __instance.Tile;
+
+                FloorPathData data = __instance.GetData();
+                if (data.ConnectType is FloorPathConnectType.CornerDecorated)
                 {
                     int border_size = 6;
                     if ((___neighborMask & 9) == 9 && (___neighborMask & 0x20) == 0)
@@ -63,7 +67,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                         spriteBatch.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f + 64f - (float)(border_size * 4))), new Rectangle(64 - border_size, textureOffset, border_size, border_size), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, (tileLocation.Y * 64f + 2f + tileLocation.X / 10000f) / 20000f);
                     }
                 }
-                else if (!__instance.isPathway)
+                else if (data.ConnectType is not FloorPathConnectType.Path)
                 {
                     if ((___neighborMask & 9) == 9 && (___neighborMask & 0x20) == 0)
                     {
@@ -81,7 +85,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                     {
                         spriteBatch.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f + 48f)), new Rectangle(60, textureOffset, 4, 4), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, (tileLocation.Y * 64f + 2f + tileLocation.X / 10000f) / 20000f);
                     }
-                    if (!__instance.drawContouredShadow.Value)
+                    if (data.ShadowType is not FloorPathShadowType.Contoured)
                     {
                         spriteBatch.Draw(Game1.staminaRect, new Rectangle((int)(tileLocation.X * 64f) - 4 - Game1.viewport.X, (int)(tileLocation.Y * 64f) + 4 - Game1.viewport.Y, 64, 64), Color.Black * 0.33f);
                     }
@@ -89,12 +93,12 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
                 byte drawSum = (byte)(___neighborMask & 0xFu);
                 int sourceRectPosition = Flooring.drawGuide[drawSum];
-                if ((bool)__instance.isSteppingStone)
+                if (data.ConnectType is FloorPathConnectType.Random)
                 {
                     sourceRectPosition = Flooring.drawGuideList[__instance.whichView.Value];
                 }
 
-                if ((bool)__instance.drawContouredShadow)
+                if (data.ShadowType is FloorPathShadowType.Contoured)
                 {
                     Color shadow_color = Color.Black;
                     shadow_color.A = (byte)((float)(int)shadow_color.A * 0.33f);
@@ -158,15 +162,15 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             return true;
         }
 
-        private static void SeasonUpdatePostfix(Flooring __instance, bool onLoad)
+        private static void SeasonUpdatePostfix(TerrainFeature __instance, bool onLoad)
         {
-            if (__instance is null || __instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_OWNER) is false || __instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) is false)
+            if (__instance is not Flooring flooring || __instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_OWNER) is false || __instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) is false)
             {
                 return;
             }
 
-            var season = Game1.GetSeasonForLocation(__instance.currentLocation);
-            var seasonalName = String.Concat(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER], ".", $"{AlternativeTextureModel.TextureType.Flooring}_{GetFlooringName(__instance)}_{season}");
+            var season = Game1.GetSeasonForLocation(__instance.Location).ToString();
+            var seasonalName = String.Concat(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER], ".", $"{AlternativeTextureModel.TextureType.Flooring}_{GetFlooringName(flooring)}_{season}");
             if ((__instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) && __instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_SEASON) && !String.IsNullOrEmpty(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON]) && !String.Equals(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON], season, StringComparison.OrdinalIgnoreCase)) || AlternativeTextures.textureManager.DoesObjectHaveAlternativeTextureById(seasonalName))
             {
                 __instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON] = season;

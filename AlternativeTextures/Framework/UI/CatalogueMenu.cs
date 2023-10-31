@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
+using StardewValley.Internal;
 using StardewValley.Menus;
 using StardewValley.Objects;
 using StardewValley.Tools;
@@ -81,11 +82,13 @@ namespace AlternativeTextures.Framework.UI
             // Set the items to display
             _displayableObjects = new List<Object>();
             _currentlyDisplayedObjects = new List<Object>();
-            foreach (Object item in Utility.getAllFurnituresForFree().Keys)
+
+            var allFurniture = ItemQueryResolver.TryResolve("ALL_ITEMS (F)", context: null);
+            foreach (Object item in allFurniture.Where(f => f.Item is Furniture).Select(f => f.Item as Object))
             {
                 // Set the stack based on the amount of available textures for the item
                 var instanceName = $"{AlternativeTextureModel.TextureType.Furniture}_{item.Name}";
-                int texturesAvailable = AlternativeTextures.textureManager.GetAvailableTextureModels(instanceName, Game1.player.currentLocation.GetSeasonForLocation()).Sum(t => t.Variations);
+                int texturesAvailable = AlternativeTextures.textureManager.GetAvailableTextureModels(instanceName, Game1.player.currentLocation.GetSeason()).Sum(t => t.Variations);
 
                 item.stack.Value = texturesAvailable;
                 if (texturesAvailable == 0)

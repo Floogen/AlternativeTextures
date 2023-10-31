@@ -33,7 +33,7 @@ namespace AlternativeTextures.Framework.Patches
 
         internal static GenericTool GetPaintBucketTool()
         {
-            var paintBucket = new GenericTool(_helper.Translation.Get("tools.name.paint_bucket"), _helper.Translation.Get("tools.description.paint_bucket"), -1, 6, 6);
+            var paintBucket = new GenericTool();
             paintBucket.modData[AlternativeTextures.PAINT_BUCKET_FLAG] = true.ToString();
 
             return paintBucket;
@@ -41,7 +41,7 @@ namespace AlternativeTextures.Framework.Patches
 
         internal static GenericTool GetScissorsTool()
         {
-            var scissors = new GenericTool(_helper.Translation.Get("tools.name.scissors"), _helper.Translation.Get("tools.description.scissors"), -1, 6, 6);
+            var scissors = new GenericTool();
             scissors.modData[AlternativeTextures.SCISSORS_FLAG] = true.ToString();
 
             return scissors;
@@ -49,7 +49,7 @@ namespace AlternativeTextures.Framework.Patches
 
         internal static GenericTool GetPaintBrushTool()
         {
-            var paintBrush = new GenericTool(_helper.Translation.Get("tools.name.paint_brush"), _helper.Translation.Get("tools.description.paint_brush"), -1, 6, 6);
+            var paintBrush = new GenericTool();
             paintBrush.modData[AlternativeTextures.PAINT_BRUSH_FLAG] = null;
 
             return paintBrush;
@@ -57,7 +57,7 @@ namespace AlternativeTextures.Framework.Patches
 
         internal static GenericTool GetSprayCanTool(bool isRare = false)
         {
-            var sprayCan = new GenericTool(_helper.Translation.Get("tools.name.spray_can"), _helper.Translation.Get("tools.description.spray_can"), -1, 6, 6);
+            var sprayCan = new GenericTool();
             sprayCan.modData[AlternativeTextures.SPRAY_CAN_FLAG] = null;
 
             if (isRare || Game1.random.Next(100) <= 10)
@@ -70,7 +70,7 @@ namespace AlternativeTextures.Framework.Patches
 
         internal static GenericTool GetCatalogueTool()
         {
-            var catalogue = new GenericTool(_helper.Translation.Get("tools.name.catalogue"), _helper.Translation.Get("tools.description.catalogue"), -1, 6, 6);
+            var catalogue = new GenericTool();
             catalogue.modData[AlternativeTextures.CATALOGUE_FLAG] = null;
 
             return catalogue;
@@ -90,35 +90,35 @@ namespace AlternativeTextures.Framework.Patches
 
             if (obj.bigCraftable)
             {
-                if (!Game1.bigCraftablesInformation.ContainsKey(obj.parentSheetIndex))
+                if (!Game1.bigCraftableData.ContainsKey(obj.ItemId))
                 {
                     return obj.name;
                 }
 
-                return Game1.bigCraftablesInformation[obj.parentSheetIndex].Split('/')[0];
+                return Game1.bigCraftableData[obj.ItemId].Name;
             }
             else if (obj is Furniture)
             {
-                var dataSheet = Game1.content.LoadBase<Dictionary<int, string>>("Data\\Furniture");
-                if (!dataSheet.ContainsKey(obj.parentSheetIndex))
+                var dataSheet = Game1.content.LoadBase<Dictionary<string, string>>("Data\\Furniture");
+                if (!dataSheet.ContainsKey(obj.ItemId))
                 {
                     return obj.name;
                 }
 
-                return dataSheet[obj.parentSheetIndex].Split('/')[0];
+                return dataSheet[obj.ItemId].Split('/')[0];
             }
             else
             {
-                if (obj is Fence fence && fence.isGate)
+                if (obj is Fence fence && fence.isGate.Value)
                 {
-                    return Game1.objectInformation[325].Split('/')[0];
+                    return Game1.objectData["(O)325"].Name;
                 }
-                if (!Game1.objectInformation.ContainsKey(obj.parentSheetIndex))
+                if (!Game1.objectData.ContainsKey(obj.ItemId))
                 {
                     return obj.name;
                 }
 
-                return Game1.objectInformation[obj.parentSheetIndex].Split('/')[0];
+                return Game1.bigCraftableData[obj.ItemId].Name;
             }
         }
 
@@ -136,11 +136,11 @@ namespace AlternativeTextures.Framework.Patches
             if (character is FarmAnimal animal)
             {
                 var animalName = animal.type.Value;
-                if (animal.age < animal.ageWhenMature)
+                if (animal.isBaby())
                 {
                     animalName = "Baby" + (animal.type.Value.Equals("Duck") ? "White Chicken" : animal.type.Value);
                 }
-                else if (animal.showDifferentTextureWhenReadyForHarvest && animal.currentProduce <= 0)
+                else if (string.IsNullOrEmpty(animal.GetAnimalData().HarvestedTexture) is false && string.IsNullOrEmpty(animal.currentProduce.Value) is true)
                 {
                     animalName = "Sheared" + animalName;
                 }
@@ -226,7 +226,7 @@ namespace AlternativeTextures.Framework.Patches
             {
                 if (location.largeTerrainFeatures is not null)
                 {
-                    return location.largeTerrainFeatures.FirstOrDefault(t => t is not null && t.tilePosition.Value == tile);
+                    return location.largeTerrainFeatures.FirstOrDefault(t => t is not null && t.Tile == tile);
                 }
                 return null;
             }
@@ -286,45 +286,9 @@ namespace AlternativeTextures.Framework.Patches
             return location.isCharacterAtTile(tileLocation);
         }
 
-        internal static int GetFloorSheetId(Flooring floor)
-        {
-            var matchedFloor = Game1.objectInformation.Where(p => p.Value.Split('/')[0] == GetFlooringName(floor));
-            return matchedFloor.Count() == 0 ? -1 : matchedFloor.First().Key;
-        }
-
         internal static string GetFlooringName(Flooring floor)
         {
-            switch (floor.whichFloor.Value)
-            {
-                case 0:
-                    return "Wood Floor";
-                case 1:
-                    return "Stone Floor";
-                case 2:
-                    return "Weathered Floor";
-                case 3:
-                    return "Crystal Floor";
-                case 4:
-                    return "Straw Floor";
-                case 5:
-                    return "Gravel Path";
-                case 6:
-                    return "Wood Path";
-                case 7:
-                    return "Crystal Path";
-                case 8:
-                    return "Cobblestone Path";
-                case 9:
-                    return "Stepping Stone Path";
-                case 10:
-                    return "Brick Floor";
-                case 11:
-                    return "Rustic Plank Floor";
-                case 12:
-                    return "Stone Walkway Floor";
-                default:
-                    return String.Empty;
-            }
+            return Game1.objectData.ContainsKey(floor.GetData().ItemId) ? Game1.objectData[floor.GetData().ItemId].Name : string.Empty;
         }
 
         internal static string GetTreeTypeString(Tree tree)
@@ -575,7 +539,7 @@ namespace AlternativeTextures.Framework.Patches
 
             if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
             {
-                terrain.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON] = Game1.GetSeasonForLocation(terrain.currentLocation);
+                terrain.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON] = Game1.GetSeasonForLocation(terrain.Location).ToString();
             }
 
             terrain.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = variation.ToString();
@@ -588,7 +552,7 @@ namespace AlternativeTextures.Framework.Patches
 
             if (trackSeason && !String.IsNullOrEmpty(textureModel.Season))
             {
-                character.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON] = Game1.GetSeasonForLocation(character.currentLocation);
+                character.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON] = Game1.GetSeasonForLocation(character.currentLocation).ToString();
             }
 
             character.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION] = variation.ToString();
