@@ -693,6 +693,25 @@ namespace AlternativeTextures.Framework.UI
                                 this.availableTextures[i].sourceRect = this.GetBushSourceRect(textureModel, bush, 0, -1);
                                 this.availableTextures[i].draw(b, colorOverlay, 0.87f);
                             }
+                            else if (Game1.currentLocation is Farm farm && farm.GetMainFarmHouse().occupiesTile(new Vector2(_position.X, _position.Y) / 64))
+                            {
+                                var farmerHouse = farm.GetMainFarmHouse();
+
+                                var targetedBuilding = new Building();
+                                targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}";
+                                targetedBuilding.netBuildingPaintColor = farm.housePaintColor;
+                                targetedBuilding.tileX.Value = farmerHouse.tileX.Value;
+                                targetedBuilding.tileY.Value = farmerHouse.tileY.Value;
+
+                                Texture2D house_texture = BuildingPainter.Apply(Farm.houseTextures, "Buildings\\houses_PaintMask", farmerHouse.netBuildingPaintColor.Value);
+                                if (house_texture is null)
+                                {
+                                    house_texture = Farm.houseTextures;
+                                }
+
+                                BuildingPatch.ResetTextureReversePatch(targetedBuilding);
+                                b.Draw(house_texture, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), farmerHouse.getSourceRect(), targetedBuilding.color, 0f, new Vector2(0f, 0f), _buildingScale, SpriteEffects.None, 0.89f);
+                            }
                             else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Building building)
                             {
                                 BuildingPatch.ResetTextureReversePatch(building);
@@ -703,25 +722,6 @@ namespace AlternativeTextures.Framework.UI
                                     b.Draw(Game1.mouseCursors, new Vector2(this.availableTextures[i].bounds.X + 4, this.availableTextures[i].bounds.Y - 20), new Rectangle(134, 226, 30, 25), colorOverlay, 0f, Vector2.Zero, _buildingScale, SpriteEffects.None, 1f);
                                 }
                             }
-                            // TODO: Handle the new house painting logic
-                            /*
-                            else if (Game1.currentLocation is Farm farm && farm.GetHouseRect().Contains(new Vector2(_position.X, _position.Y) / 64))
-                            {
-                                var targetedBuilding = new Building();
-                                targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}";
-                                targetedBuilding.tilesWide.Value = farm.GetHouseRect().Width;
-                                targetedBuilding.tilesHigh.Value = farm.GetHouseRect().Height;
-
-                                Texture2D house_texture = BuildingPainter.Apply(Farm.houseTextures, "Buildings\\houses_PaintMask", farm.housePaintColor);
-                                if (house_texture is null)
-                                {
-                                    house_texture = Farm.houseTextures;
-                                }
-
-                                BuildingPatch.ResetTextureReversePatch(targetedBuilding);
-                                b.Draw(house_texture, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), farm.houseSource, targetedBuilding.color, 0f, new Vector2(0f, 0f), _buildingScale, SpriteEffects.None, 0.89f);
-                            }
-                            */
                             else if (Game1.currentLocation.doesTileHaveProperty((int)_position.X / 64, (int)_position.Y / 64, "Action", "Buildings") == "Mailbox")
                             {
                                 Texture2D mailboxTexture = Game1.content.Load<Texture2D>($"Maps\\{Game1.currentSeason.ToLower()}_outdoorsTileSheet");
@@ -802,6 +802,20 @@ namespace AlternativeTextures.Framework.UI
                             this.availableTextures[i].sourceRect = this.GetBushSourceRect(textureModel, bush, textureModel.TextureHeight, variation);
                             this.availableTextures[i].draw(b, colorOverlay, 0.87f);
                         }
+                        else if (Game1.currentLocation is Farm farm && farm.GetMainFarmHouse().occupiesTile(new Vector2(_position.X, _position.Y) / 64))
+                        {
+                            var farmerHouse = farm.GetMainFarmHouse();
+
+                            var targetedBuilding = new Building();
+                            targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}";
+                            targetedBuilding.netBuildingPaintColor = farm.housePaintColor;
+                            targetedBuilding.tileX.Value = farmerHouse.tileX.Value;
+                            targetedBuilding.tileY.Value = farmerHouse.tileY.Value;
+                            targetedBuilding.tilesWide.Value = farmerHouse.tilesWide.Value;
+                            targetedBuilding.tilesHigh.Value = farmerHouse.tilesHigh.Value;
+
+                            b.Draw(BuildingPatch.GetBuildingTextureWithPaint(targetedBuilding, textureModel, variation, true), new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), new Rectangle(0, 0, farmerHouse.getSourceRect().Width, farmerHouse.getSourceRect().Height), targetedBuilding.color, 0f, new Vector2(0f, 0f), _buildingScale, SpriteEffects.None, 0.89f);
+                        }
                         else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Building building)
                         {
                             BuildingPatch.CondensedDrawInMenu(building, BuildingPatch.GetBuildingTextureWithPaint(building, textureModel, variation), b, this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y, _buildingScale);
@@ -810,27 +824,6 @@ namespace AlternativeTextures.Framework.UI
                             {
                                 b.Draw(textureModel.GetTexture(variation), new Vector2(this.availableTextures[i].bounds.X + 4, this.availableTextures[i].bounds.Y - 20), new Rectangle(32, textureModel.GetTextureOffset(variation), 30, 25), colorOverlay, 0f, Vector2.Zero, _buildingScale, SpriteEffects.None, 1f);
                             }
-                        }
-                        // TODO: Handle the new house painting logic
-                        /*
-                        else if (Game1.currentLocation is Farm farm && farm.GetHouseRect().Contains(new Vector2(_position.X, _position.Y) / 64))
-                        {
-                            var targetedBuilding = new Building();
-                            targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}";
-                            targetedBuilding.netBuildingPaintColor = farm.housePaintColor;
-                            targetedBuilding.tileX.Value = farm.GetHouseRect().X;
-                            targetedBuilding.tileY.Value = farm.GetHouseRect().Y;
-                            targetedBuilding.tilesWide.Value = farm.GetHouseRect().Width + 1;
-                            targetedBuilding.tilesHigh.Value = farm.GetHouseRect().Height + 1;
-
-                            b.Draw(BuildingPatch.GetBuildingTextureWithPaint(targetedBuilding, textureModel, variation, true), new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), new Rectangle(0, 0, farm.houseSource.Width, farm.houseSource.Height), targetedBuilding.color, 0f, new Vector2(0f, 0f), _buildingScale, SpriteEffects.None, 0.89f);
-                        }
-                        */
-                        else if (Game1.currentLocation.doesTileHaveProperty((int)_position.X / 64, (int)_position.Y / 64, "Action", "Buildings") == "Mailbox")
-                        {
-                            this.availableTextures[i].texture = textureModel.GetTexture(variation);
-                            this.availableTextures[i].sourceRect = new Rectangle(0, textureModel.GetTextureOffset(variation), 16, 32);
-                            this.availableTextures[i].draw(b, colorOverlay, 0.87f);
                         }
                         else if (Game1.currentLocation is DecoratableLocation decoratableLocation && (string.IsNullOrEmpty(decoratableLocation.GetFloorID((int)_position.X, (int)_position.Y)) is false || string.IsNullOrEmpty(decoratableLocation.GetWallpaperID((int)_position.X, (int)_position.Y)) is false))
                         {

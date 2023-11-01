@@ -256,7 +256,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
             {
                 return null;
             }
-            if (!color.RequiresRecolor())
+            if (color is null || !color.RequiresRecolor())
             {
                 return null;
             }
