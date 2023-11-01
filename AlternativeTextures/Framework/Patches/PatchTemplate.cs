@@ -216,7 +216,7 @@ namespace AlternativeTextures.Framework.Patches
         internal static Building GetBuildingAt(GameLocation location, int x, int y)
         {
             Vector2 tile = new Vector2(x / 64, y / 64);
-            if (location is Farm farm && farm.buildings.FirstOrDefault(b => b.occupiesTile(tile)) is Building building && building != null)
+            if (location.buildings.FirstOrDefault(b => b.occupiesTile(tile)) is Building building && building != null)
             {
                 return building;
             }
