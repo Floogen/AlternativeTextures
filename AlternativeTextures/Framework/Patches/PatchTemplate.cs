@@ -76,6 +76,11 @@ namespace AlternativeTextures.Framework.Patches
             return catalogue;
         }
 
+        internal static string GetModelNameWithoutSeason(string modelName, string season)
+        {
+            return modelName.Replace($"_{season}", String.Empty, StringComparison.OrdinalIgnoreCase);
+        }
+
         internal static string GetObjectName(Object obj)
         {
             // Perform separate check for DGA objects, before using check for vanilla objects
