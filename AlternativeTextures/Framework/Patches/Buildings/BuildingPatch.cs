@@ -8,6 +8,7 @@ using Netcode;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
+using StardewValley.GameData.Buildings;
 using System;
 using System.Collections.Generic;
 
@@ -75,18 +76,6 @@ namespace AlternativeTextures.Framework.Patches.Buildings
         {
             switch (building)
             {
-                case Barn barn:
-                    //building.drawShadow(b, x, y);
-                    b.Draw(texture, new Vector2(x, y) + new Vector2(building.animalDoor.X, building.animalDoor.Y + 3) * 16f * scale, new Rectangle(64, 112, 32, 16), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0.888f);
-                    b.Draw(texture, new Vector2(x, y) + new Vector2(building.animalDoor.X, (float)building.animalDoor.Y + 2.25f) * 16f * scale, new Rectangle(0, 112, 32, 16), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, (float)(((int)building.tileY + (int)building.tilesHigh - 1) * 64) / 10000f - 1E-07f);
-                    b.Draw(texture, new Vector2(x, y), new Rectangle(0, 0, 112, 112), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
-                    return;
-                case Coop coop:
-                    //building.drawShadow(b, x, y);
-                    b.Draw(texture, new Vector2(x, y) + new Vector2(building.animalDoor.X, building.animalDoor.Y + 4) * 16f * scale, new Rectangle(16, 112, 16, 16), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 1E-06f);
-                    b.Draw(texture, new Vector2(x, y) + new Vector2(building.animalDoor.X, (float)building.animalDoor.Y + 3.5f) * 16f * scale, new Rectangle(0, 112, 16, 15), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, (float)(((int)building.tileY + (int)building.tilesHigh) * 64) / 10000f - 1E-07f);
-                    b.Draw(texture, new Vector2(x, y), new Rectangle(0, 0, 96, 112), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
-                    return;
                 case FishPond fishPond:
                     y += 32;
                     //building.drawShadow(b, x, y);
@@ -107,27 +96,63 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                             }
                         }
                     }
-                    b.Draw(texture, new Vector2(x, y), new Rectangle(0, 0, 80, 80), building.color * alpha, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 1f);
-                    b.Draw(texture, new Vector2(x + 32, y + 24 + ((Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 2500.0 < 1250.0) ? 4 : 0)), new Rectangle(16, 160, 48, 7), building.color * alpha, 0f, Vector2.Zero, scale, SpriteEffects.None, 1f);
-                    b.Draw(texture, new Vector2(x, y - 64), new Rectangle(80, fishPond.nettingStyle.Value * 48, 80, 48), building.color * alpha, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 1f);
-                    return;
-                case GreenhouseBuilding greenhouse:
-                    Rectangle rectangle = greenhouse.getSourceRect();
-                    b.Draw(texture, new Vector2(x, y + 128), rectangle, building.color, 0f, new Vector2(0f, rectangle.Height / 2), scale, SpriteEffects.None, 0.89f);
+                    b.Draw(texture, new Vector2(x, y), new Rectangle(0, 0, 80, 80), Color.White * alpha, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 1f);
+                    b.Draw(texture, new Vector2(x + 32, y + 24 + ((Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 2500.0 < 1250.0) ? 4 : 0)), new Rectangle(16, 160, 48, 7), Color.White * alpha, 0f, Vector2.Zero, scale, SpriteEffects.None, 1f);
+                    b.Draw(texture, new Vector2(x, y - 64), new Rectangle(80, fishPond.nettingStyle.Value * 48, 80, 48), Color.White * alpha, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 1f);
                     return;
                 case JunimoHut junimoHut:
                     //building.drawShadow(b, x, y);
-                    b.Draw(texture, new Vector2(x, y), junimoHut.getSourceRect(), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
-                    return;
-                case Mill mill:
-                    b.Draw(texture, new Vector2(x, y), building.getSourceRectForMenu(), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
-                    b.Draw(texture, new Vector2(x + 32, y + 4), new Rectangle(64 + (int)Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 800 / 89 * 32 % 160, (int)Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 800 / 89 * 32 / 160 * 32, 32, 32), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.9f);
+                    b.Draw(texture, new Vector2(x, y), junimoHut.getSourceRect(), Color.White, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
                     return;
                 case ShippingBin shippingBin:
-                case Stable stable:
                 default:
                     //building.drawShadow(b, x, y);
-                    b.Draw(texture, new Vector2(x, y), building.getSourceRect(), building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
+                    //b.Draw(texture, new Vector2(x, y), building.getSourceRect(), Color.White, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, 0.89f);
+
+                    BuildingData data = building.GetData();
+                    if (data != null)
+                    {
+                        x += (int)(data.DrawOffset.X * 4f);
+                        y += (int)(data.DrawOffset.Y * 4f);
+                    }
+                    float baseSortY = (int)building.tilesHigh * 64;
+                    float sortY = baseSortY;
+                    if (data != null)
+                    {
+                        sortY -= data.SortTileOffset * 64f;
+                    }
+                    sortY /= 10000f;
+                    if (building.ShouldDrawShadow(data))
+                    {
+                        building.drawShadow(b, x, y);
+                    }
+                    Rectangle mainSourceRect = building.getSourceRect();
+                    b.Draw(building.texture.Value, new Vector2(x, y), mainSourceRect, building.color, 0f, new Vector2(0f, 0f), 4f, SpriteEffects.None, sortY);
+                    if (data?.DrawLayers == null)
+                    {
+                        return;
+                    }
+                    foreach (BuildingDrawLayer drawLayer in data.DrawLayers)
+                    {
+                        if (drawLayer.OnlyDrawIfChestHasContents == null)
+                        {
+                            sortY = baseSortY - drawLayer.SortTileOffset * 64f;
+                            sortY += 1f;
+                            if (drawLayer.DrawInBackground)
+                            {
+                                sortY = 0f;
+                            }
+                            sortY /= 10000f;
+                            Rectangle sourceRect = drawLayer.GetSourceRect((int)Game1.currentGameTime.TotalGameTime.TotalMilliseconds);
+                            sourceRect = building.ApplySourceRectOffsets(sourceRect);
+                            Texture2D layerTexture = building.texture.Value;
+                            if (drawLayer.Texture != null)
+                            {
+                                layerTexture = Game1.content.Load<Texture2D>(drawLayer.Texture);
+                            }
+                            b.Draw(layerTexture, new Vector2(x, y) + drawLayer.DrawPosition * 4f, sourceRect, Color.White, 0f, new Vector2(0f, 0f), 4f, SpriteEffects.None, sortY);
+                        }
+                    }
                     return;
             }
         }
