@@ -642,7 +642,6 @@ namespace AlternativeTextures.Framework.UI
                             }
                             else if (PatchTemplate.GetResourceClumpAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is GiantCrop giantCrop)
                             {
-                                var jsonAssetsApi = AlternativeTextures.apiManager.GetJsonAssetsApi();
                                 var moreGiantCropsApi = AlternativeTextures.apiManager.GetMoreGiantCropsApi();
                                 if (moreGiantCropsApi is not null && moreGiantCropsApi.GetTexture(giantCrop.parentSheetIndex.Value) is Texture2D moreGiantCropsTexture)
                                 {

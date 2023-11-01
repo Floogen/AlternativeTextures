@@ -808,12 +808,6 @@ namespace AlternativeTextures
             // Set our default configuration file
             modConfig = Helper.ReadConfig<ModConfig>();
 
-            // Hook into the APIs we utilize
-            if (Helper.ModRegistry.IsLoaded("spacechase0.JsonAssets"))
-            {
-                apiManager.HookIntoJsonAssets(Helper);
-            }
-
             if (Helper.ModRegistry.IsLoaded("spacechase0.MoreGiantCrops"))
             {
                 apiManager.HookIntoMoreGiantCrops(Helper);
