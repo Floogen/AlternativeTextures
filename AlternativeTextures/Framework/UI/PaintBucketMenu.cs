@@ -793,7 +793,7 @@ namespace AlternativeTextures.Framework.UI
 
                             var targetedBuilding = new Building();
                             targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}";
-                            targetedBuilding.netBuildingPaintColor = farm.housePaintColor;
+                            targetedBuilding.netBuildingPaintColor.Value = farmerHouse.netBuildingPaintColor.Value;
                             targetedBuilding.tileX.Value = farmerHouse.tileX.Value;
                             targetedBuilding.tileY.Value = farmerHouse.tileY.Value;
                             targetedBuilding.tilesWide.Value = farmerHouse.tilesWide.Value;

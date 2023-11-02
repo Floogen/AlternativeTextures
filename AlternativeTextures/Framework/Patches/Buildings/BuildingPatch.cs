@@ -49,6 +49,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
             harmony.Patch(AccessTools.Constructor(_entity, new[] { typeof(string), typeof(Vector2) }), postfix: new HarmonyMethod(GetType(), nameof(BuildingPostfix)));
 
             harmony.CreateReversePatcher(AccessTools.Method(_entity, nameof(Building.resetTexture), null), new HarmonyMethod(GetType(), nameof(ResetTextureReversePatch))).Patch();
+            harmony.CreateReversePatcher(AccessTools.Method(_entity, nameof(Building.getSourceRect), null), new HarmonyMethod(GetType(), nameof(GetSourceRectReversePatch))).Patch();
         }
 
         private static void UpdatePostfix(Building __instance, GameTime time)
@@ -296,16 +297,21 @@ namespace AlternativeTextures.Framework.Patches.Buildings
 
             // Note: Shipping Bins have special handling for texture width to ensure backwards compatability
             var textureWidth = building is ShippingBin ? textureModel.TextureWidth : baseTexture.Width;
+            if (building.CanBePainted() || canBePaintedOverride)
+            {
+                textureWidth /= 2;
+            }
 
             var texture2D = baseTexture.CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(0, yOffset, textureWidth, baseTexture.Height));
             if (building.paintedTexture != null)
             {
+                building.paintedTexture.Dispose();
                 building.paintedTexture = null;
             }
 
-            if ((building.CanBePainted() || canBePaintedOverride) && xOffset * 2 <= textureModel.GetTexture(textureVariation).Width)
+            if (building.CanBePainted() || canBePaintedOverride)
             {
-                var paintedTexture2D = textureModel.GetTexture(textureVariation).CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(xOffset, yOffset, xOffset, textureModel.TextureHeight));
+                var paintedTexture2D = textureModel.GetTexture(textureVariation).CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(textureWidth, yOffset, textureWidth, textureModel.TextureHeight));
                 building.paintedTexture = GetPaintedOverlay(building, texture2D, paintedTexture2D, building.netBuildingPaintColor.Value);
                 if (building.paintedTexture != null)
                 {
@@ -452,6 +458,11 @@ namespace AlternativeTextures.Framework.Patches.Buildings
         public static void ResetTextureReversePatch(Building __instance)
         {
             new NotImplementedException("It's a stub!");
+        }
+
+        public static Rectangle GetSourceRectReversePatch(Building __instance)
+        {
+            return new Rectangle();
         }
     }
 }
