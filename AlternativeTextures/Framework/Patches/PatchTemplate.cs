@@ -178,8 +178,12 @@ namespace AlternativeTextures.Framework.Patches
             {
                 return "Tractor Garage";
             }
+            else if (building.buildingType.Value == "Farmhouse")
+            {
+                return $"{building.buildingType.Value}_{Game1.MasterPlayer.HouseUpgradeLevel}";
+            }
 
-            return building.buildingType;
+            return building.buildingType.Value;
         }
 
         internal static Object GetObjectAt(GameLocation location, int x, int y)

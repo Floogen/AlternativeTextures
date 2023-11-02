@@ -478,19 +478,6 @@ namespace AlternativeTextures.Framework.UI
                             shippingBin.initLid();
                         }
                     }
-                    // TODO: Handle the new house painting logic
-                    /*
-                    else if (Game1.currentLocation is Farm farm && farm.GetHouseRect().Contains(new Vector2(_position.X, _position.Y) / 64))
-                    {
-                        foreach (string key in c.item.modData.Keys)
-                        {
-                            farm.modData[key] = c.item.modData[key];
-                        }
-
-                        farm.houseSource.Value = new Rectangle(0, 144 * (((int)Game1.MasterPlayer.houseUpgradeLevel == 3) ? 2 : ((int)Game1.MasterPlayer.houseUpgradeLevel)), 160, 144);
-                        farm.ApplyHousePaint();
-                    }
-                    */
                     else if (Game1.currentLocation.doesTileHaveProperty((int)_position.X / 64, (int)_position.Y / 64, "Action", "Buildings") == "Mailbox")
                     {
                         foreach (string key in c.item.modData.Keys)

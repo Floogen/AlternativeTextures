@@ -28,6 +28,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
         {
             harmony.Patch(AccessTools.Method(_entity, nameof(Building.Update), new[] { typeof(GameTime) }), postfix: new HarmonyMethod(GetType(), nameof(UpdatePostfix)));
             harmony.Patch(AccessTools.Method(_entity, nameof(Building.resetTexture), null), prefix: new HarmonyMethod(GetType(), nameof(ResetTexturePrefix)));
+            harmony.Patch(AccessTools.Method(_entity, nameof(Building.getSourceRect), null), postfix: new HarmonyMethod(GetType(), nameof(GetSourceRectPostfix)));
             harmony.Patch(AccessTools.Method(_entity, nameof(Building.draw), new[] { typeof(SpriteBatch) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
             if (PatchTemplate.IsSolidFoundationsUsed())
             {
@@ -124,10 +125,10 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                     sortY /= 10000f;
                     if (building.ShouldDrawShadow(data))
                     {
-                        building.drawShadow(b, x, y);
+                        //building.drawShadow(b, x, y);
                     }
                     Rectangle mainSourceRect = building.getSourceRect();
-                    b.Draw(building.texture.Value, new Vector2(x, y), mainSourceRect, building.color, 0f, new Vector2(0f, 0f), 4f, SpriteEffects.None, sortY);
+                    b.Draw(texture, new Vector2(x, y), mainSourceRect, building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, sortY);
                     if (data?.DrawLayers == null)
                     {
                         return;
@@ -150,7 +151,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                             {
                                 layerTexture = Game1.content.Load<Texture2D>(drawLayer.Texture);
                             }
-                            b.Draw(layerTexture, new Vector2(x, y) + drawLayer.DrawPosition * 4f, sourceRect, Color.White, 0f, new Vector2(0f, 0f), 4f, SpriteEffects.None, sortY);
+                            b.Draw(layerTexture, new Vector2(x, y) + drawLayer.DrawPosition * scale, sourceRect, Color.White, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, sortY);
                         }
                     }
                     return;
@@ -183,9 +184,44 @@ namespace AlternativeTextures.Framework.Patches.Buildings
             return true;
         }
 
+        private static void GetSourceRectPostfix(Building __instance, ref Rectangle __result)
+        {
+            if (__instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) is false)
+            {
+                return;
+            }
+
+            var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME]);
+            if (textureModel is null)
+            {
+                return;
+            }
+
+            var textureVariation = Int32.Parse(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION]);
+            if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
+            {
+                return;
+            }
+
+            var xOffset = __instance.tilesWide * 16;
+            var yOffset = textureModel.GetTextureOffset(textureVariation);
+
+            var baseTexture = textureModel.GetTexture(textureVariation);
+
+            // Note: Shipping Bins have special handling for texture width to ensure backwards compatability
+            var textureWidth = __instance is ShippingBin ? textureModel.TextureWidth : __result.Width;
+
+            __result = new Rectangle(0, yOffset, textureWidth, baseTexture.Height);
+        }
+
         internal static bool DrawPrefix(Building __instance, float ___alpha, SpriteBatch b)
         {
-            if (__instance is Stable || __instance.maxOccupants == TRACTOR_GARAGE_ID && __instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
+            if (__instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) is false)
+            {
+                return true;
+            }
+
+            if (__instance is Stable || __instance.maxOccupants == TRACTOR_GARAGE_ID)
             {
                 if (__instance.isMoving || __instance.daysOfConstructionLeft > 0)
                 {
@@ -222,7 +258,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
             var baseTexture = textureModel.GetTexture(textureVariation);
 
             // Note: Shipping Bins have special handling for texture width to ensure backwards compatability
-            var textureWidth = building.CanBePainted() || canBePaintedOverride ? xOffset : building is ShippingBin ? textureModel.TextureWidth : baseTexture.Width;
+            var textureWidth = building is ShippingBin ? textureModel.TextureWidth : baseTexture.Width;
 
             var texture2D = baseTexture.CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(0, yOffset, textureWidth, baseTexture.Height));
             if (building.paintedTexture != null)

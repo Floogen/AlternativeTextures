@@ -107,9 +107,9 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
             }
 
             // Check for animals, if __instance is an applicable location
-            if ((__instance is Farm farm && farm.animals != null) || (__instance is AnimalHouse animalHouse && animalHouse.animals != null))
+            if (__instance.animals != null)
             {
-                var animals = __instance is Farm ? (__instance as Farm).animals.Values : (__instance as AnimalHouse).animals.Values;
+                var animals = __instance.animals.Values;
                 for (int k = animals.Count() - 1; k >= 0; k--)
                 {
                     var farmAnimal = animals.ElementAt(k);
@@ -138,8 +138,6 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
                 var instanceName = String.Concat(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER], ".", $"{AlternativeTextureModel.TextureType.Building}_{buildingType}");
                 var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
 
-                // TODO: Handle the new house painting logic
-                /*
                 if (!String.Equals(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME], instanceName, StringComparison.OrdinalIgnoreCase) && !String.Equals(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME], instanceSeasonName, StringComparison.OrdinalIgnoreCase))
                 {
                     __instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = String.Concat(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER], ".", $"{AlternativeTextureModel.TextureType.Building}_{buildingType}");
@@ -147,12 +145,8 @@ namespace AlternativeTextures.Framework.Patches.GameLocations
                     {
                         __instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON] = Game1.currentSeason;
                         __instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = String.Concat(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME], "_", __instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON]);
-
-                        houseFarm.houseSource.Value = new Rectangle(0, 144 * (((int)Game1.MasterPlayer.houseUpgradeLevel == 3) ? 2 : ((int)Game1.MasterPlayer.houseUpgradeLevel)), 160, 144);
-                        houseFarm.ApplyHousePaint();
                     }
                 }
-                */
             }
         }
     }
