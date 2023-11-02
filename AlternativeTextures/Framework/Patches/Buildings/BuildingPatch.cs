@@ -287,14 +287,14 @@ namespace AlternativeTextures.Framework.Patches.Buildings
 
             var baseTexture = textureModel.GetTexture(textureVariation);
 
-            bool canReallyBePainted = building.CanBePainted() || canBePaintedOverride;
+            bool canReallyBePainted = (building.CanBePainted() || canBePaintedOverride) && textureModel.IgnoreBuildingColorMask is false;
 
             if (building.paintedTexture != null)
             {
                 building.paintedTexture = null;
             }
 
-            var textureWidth = building.CanBePainted() || canBePaintedOverride ? baseTexture.Width / 2 : building is ShippingBin ? textureModel.TextureWidth : baseTexture.Width;
+            var textureWidth = canReallyBePainted ? baseTexture.Width / 2 : building is ShippingBin ? textureModel.TextureWidth : baseTexture.Width;
 
             var texture2D = baseTexture.CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(0, yOffset, textureWidth, baseTexture.Height));
             if (canReallyBePainted)

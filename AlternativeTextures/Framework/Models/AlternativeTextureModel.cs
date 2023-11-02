@@ -18,6 +18,7 @@ namespace AlternativeTextures.Framework.Models
         public string Type { get; set; }
         [Obsolete("No longer used due SMAPI 3.14.0 allowing for passive invalidation checks.")]
         public bool EnableContentPatcherCheck { get; set; }
+        public bool IgnoreBuildingColorMask { get; set; } // Only usable by Type == "Building"
         public List<string> Keywords { get; set; } = new List<string>();
         public List<string> Seasons { get; set; } = new List<string>(); // For use by mod user to determine which seasons the texture is valid for
         internal string Season { get; set; } // Used by framework to split the Seasons property into individual AlternativeTextureModel models
