@@ -1155,6 +1155,9 @@ namespace AlternativeTextures
                 monitor.Log($"[{contentPack.Manifest.Name}] finished loading in {Math.Round(individualLoadingStopwatch.ElapsedMilliseconds / 1000f, 2)} seconds", LogLevel.Trace);
             }
 
+            // Clear the wallpaper / flooring cache
+            Helper.GameContent.InvalidateCache("Data/AdditionalWallpaperFlooring");
+
             collectiveLoadingStopwatch.Stop();
             monitor.Log($"Finished loading all content packs in {Math.Round(collectiveLoadingStopwatch.ElapsedMilliseconds / 1000f, 2)} seconds", LogLevel.Trace);
         }
