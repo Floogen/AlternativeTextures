@@ -11,6 +11,7 @@ using StardewValley.Buildings;
 using StardewValley.GameData.Buildings;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AlternativeTextures.Framework.Patches.Buildings
 {
@@ -239,12 +240,49 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                 {
                     return true;
                 }
+
                 var paintedTexture = BuildingPatch.GetBuildingTextureWithPaint(__instance, textureModel, textureVariation);
 
                 __instance.drawShadow(b);
                 b.Draw(paintedTexture, Game1.GlobalToLocal(Game1.viewport, new Vector2((int)__instance.tileX * 64, (int)__instance.tileY * 64 + (int)__instance.tilesHigh * 64)), paintedTexture.Bounds, __instance.color * ___alpha, 0f, new Vector2(0f, __instance.texture.Value.Bounds.Height), 4f, SpriteEffects.None, (float)(((int)__instance.tileY + (int)__instance.tilesHigh - 1) * 64) / 10000f);
 
                 return false;
+            }
+            else if (__instance.buildingType.Value == "Farmhouse" && __instance.GetParentLocation().modData.ContainsKey("AlternativeTextureName.Mailbox"))
+            {
+                BuildingData data = __instance.GetData();
+                if (data is null)
+                {
+                    return true;
+                }
+
+                // Set the default texture, if the existing one is a Alternative Textures token
+                var drawLayer = data.DrawLayers.FirstOrDefault(l => l.Id == "Default_Mailbox");
+                if (drawLayer is null)
+                {
+                    return true;
+                }
+                else if (AlternativeTextures.textureManager.GetModelByToken(drawLayer.Texture) is not null)
+                {
+                    drawLayer.Texture = "Buildings\\Mailbox";
+                }
+
+                // Handle mailbox
+                var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(Game1.currentLocation.modData["AlternativeTextureName.Mailbox"]);
+                if (textureModel is null || Game1.currentLocation.modData.TryGetValue("AlternativeTextureVariation.Mailbox", out string rawVariationIndex) is false)
+                {
+                    return true;
+                }
+                var textureVariation = Int32.Parse(rawVariationIndex);
+                if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
+                {
+                    return true;
+                }
+
+                // Set the layer to use the AT token for the texture
+                drawLayer.Texture = $"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{textureModel.GetTokenId(textureVariation)}";
+
+                return true;
             }
 
             return true;
