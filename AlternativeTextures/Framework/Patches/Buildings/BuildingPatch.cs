@@ -128,7 +128,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                     {
                         //building.drawShadow(b, x, y);
                     }
-                    Rectangle mainSourceRect = building.getSourceRect();
+                    Rectangle mainSourceRect = GetSourceRectReversePatch(building);
                     b.Draw(texture, new Vector2(x, y), mainSourceRect, building.color, 0f, new Vector2(0f, 0f), scale, SpriteEffects.None, sortY);
                     if (data?.DrawLayers == null)
                     {
@@ -204,15 +204,8 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                 return;
             }
 
-            var xOffset = __instance.tilesWide * 16;
             var yOffset = textureModel.GetTextureOffset(textureVariation);
-
-            var baseTexture = textureModel.GetTexture(textureVariation);
-
-            // Note: Shipping Bins have special handling for texture width to ensure backwards compatability
-            var textureWidth = __instance is ShippingBin ? textureModel.TextureWidth : __result.Width;
-
-            __result = new Rectangle(0, yOffset, textureWidth, baseTexture.Height);
+            __result = new Rectangle(0, yOffset, __result.Width, __result.Height);
         }
 
         internal static bool DrawPrefix(Building __instance, float ___alpha, SpriteBatch b)
@@ -290,28 +283,23 @@ namespace AlternativeTextures.Framework.Patches.Buildings
 
         internal static Texture2D GetBuildingTextureWithPaint(Building building, AlternativeTextureModel textureModel, int textureVariation, bool canBePaintedOverride = false)
         {
-            var xOffset = building.tilesWide * 16;
             var yOffset = textureModel.GetTextureOffset(textureVariation);
 
             var baseTexture = textureModel.GetTexture(textureVariation);
 
-            // Note: Shipping Bins have special handling for texture width to ensure backwards compatability
-            var textureWidth = building is ShippingBin ? textureModel.TextureWidth : baseTexture.Width;
-            if (building.CanBePainted() || canBePaintedOverride)
-            {
-                textureWidth /= 2;
-            }
+            bool canReallyBePainted = building.CanBePainted() || canBePaintedOverride;
 
-            var texture2D = baseTexture.CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(0, yOffset, textureWidth, baseTexture.Height));
             if (building.paintedTexture != null)
             {
-                building.paintedTexture.Dispose();
                 building.paintedTexture = null;
             }
 
-            if (building.CanBePainted() || canBePaintedOverride)
+            var textureWidth = building.CanBePainted() || canBePaintedOverride ? baseTexture.Width / 2 : building is ShippingBin ? textureModel.TextureWidth : baseTexture.Width;
+
+            var texture2D = baseTexture.CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(0, yOffset, textureWidth, baseTexture.Height));
+            if (canReallyBePainted)
             {
-                var paintedTexture2D = textureModel.GetTexture(textureVariation).CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(textureWidth, yOffset, textureWidth, textureModel.TextureHeight));
+                var paintedTexture2D = baseTexture.CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(textureWidth, yOffset, textureWidth, baseTexture.Height));
                 building.paintedTexture = GetPaintedOverlay(building, texture2D, paintedTexture2D, building.netBuildingPaintColor.Value);
                 if (building.paintedTexture != null)
                 {

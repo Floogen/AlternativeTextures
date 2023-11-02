@@ -783,16 +783,9 @@ namespace AlternativeTextures.Framework.UI
                         else if (Game1.currentLocation is Farm farm && farm.GetMainFarmHouse().occupiesTile(new Vector2(_position.X, _position.Y) / 64))
                         {
                             var farmerHouse = farm.GetMainFarmHouse();
+                            var sourceRectangle = BuildingPatch.GetSourceRectReversePatch(farmerHouse);
 
-                            var targetedBuilding = new Building();
-                            targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}";
-                            targetedBuilding.netBuildingPaintColor.Value = farmerHouse.netBuildingPaintColor.Value;
-                            targetedBuilding.tileX.Value = farmerHouse.tileX.Value;
-                            targetedBuilding.tileY.Value = farmerHouse.tileY.Value;
-                            targetedBuilding.tilesWide.Value = farmerHouse.tilesWide.Value;
-                            targetedBuilding.tilesHigh.Value = farmerHouse.tilesHigh.Value;
-
-                            b.Draw(BuildingPatch.GetBuildingTextureWithPaint(targetedBuilding, textureModel, variation, true), new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), new Rectangle(0, 0, farmerHouse.getSourceRect().Width, farmerHouse.getSourceRect().Height), targetedBuilding.color, 0f, new Vector2(0f, 0f), _buildingScale, SpriteEffects.None, 0.89f);
+                            b.Draw(BuildingPatch.GetBuildingTextureWithPaint(farmerHouse, textureModel, variation, true), new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), new Rectangle(0, 0, sourceRectangle.Width, sourceRectangle.Height), farmerHouse.color, 0f, new Vector2(0f, 0f), _buildingScale, SpriteEffects.None, 0.89f);
                         }
                         else if (Game1.currentLocation is Farm mailBoxFarm && mailBoxFarm.GetMainMailboxPosition() is Point mailboxPosition && mailboxPosition.X == (_position.X / 64) && (mailboxPosition.Y == (_position.Y / 64) || mailboxPosition.Y == (_position.Y / 64) + 1))
                         {
