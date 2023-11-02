@@ -15,7 +15,6 @@ using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using static AlternativeTextures.Framework.Models.AlternativeTextureModel;
 using Object = StardewValley.Object;
 

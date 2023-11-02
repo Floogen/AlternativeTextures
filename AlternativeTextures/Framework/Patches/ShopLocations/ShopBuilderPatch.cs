@@ -1,15 +1,10 @@
-﻿using AlternativeTextures.Framework.Utilities;
-using HarmonyLib;
+﻿using HarmonyLib;
 using StardewModdingAPI;
+using StardewValley;
 using StardewValley.GameData.Shops;
 using StardewValley.Internal;
-using StardewValley.Tools;
-using StardewValley;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AlternativeTextures.Framework.Patches.ShopLocations
 {
