@@ -682,20 +682,13 @@ namespace AlternativeTextures.Framework.UI
                             {
                                 var farmerHouse = farm.GetMainFarmHouse();
 
-                                var targetedBuilding = new Building();
-                                targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}";
-                                targetedBuilding.netBuildingPaintColor = farm.housePaintColor;
-                                targetedBuilding.tileX.Value = farmerHouse.tileX.Value;
-                                targetedBuilding.tileY.Value = farmerHouse.tileY.Value;
-
                                 Texture2D house_texture = BuildingPainter.Apply(Farm.houseTextures, "Buildings\\houses_PaintMask", farmerHouse.netBuildingPaintColor.Value);
                                 if (house_texture is null)
                                 {
                                     house_texture = Farm.houseTextures;
                                 }
 
-                                BuildingPatch.ResetTextureReversePatch(targetedBuilding);
-                                b.Draw(house_texture, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), farmerHouse.getSourceRect(), targetedBuilding.color, 0f, new Vector2(0f, 0f), _buildingScale, SpriteEffects.None, 0.89f);
+                                b.Draw(house_texture, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), BuildingPatch.GetSourceRectReversePatch(farmerHouse), farmerHouse.color, 0f, new Vector2(0f, 0f), _buildingScale, SpriteEffects.None, 0.89f);
                             }
                             else if (Game1.currentLocation is Farm mailBoxFarm && mailBoxFarm.GetMainMailboxPosition() is Point mailboxPosition && mailboxPosition.X == (_position.X / 64) && (mailboxPosition.Y == (_position.Y / 64) || mailboxPosition.Y == (_position.Y / 64) + 1))
                             {
