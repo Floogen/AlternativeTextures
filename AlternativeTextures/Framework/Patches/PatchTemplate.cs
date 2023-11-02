@@ -123,7 +123,7 @@ namespace AlternativeTextures.Framework.Patches
                     return obj.name;
                 }
 
-                return Game1.bigCraftableData[obj.ItemId].Name;
+                return Game1.objectData[obj.ItemId].Name;
             }
         }
 
