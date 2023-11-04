@@ -98,13 +98,6 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                     sourceRectPosition = Flooring.drawGuideList[__instance.whichView.Value];
                 }
 
-                if (data.ShadowType is FloorPathShadowType.Contoured)
-                {
-                    Color shadow_color = Color.Black;
-                    shadow_color.A = (byte)((float)(int)shadow_color.A * 0.33f);
-                    spriteBatch.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f)) + new Vector2(-4f, 4f), new Rectangle(sourceRectPosition * 16 % 256, (sourceRectPosition / 16 * 16) + textureOffset, 16, 16), shadow_color, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1E-10f);
-                }
-
                 spriteBatch.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f)), new Rectangle(sourceRectPosition * 16 % 256, (sourceRectPosition / 16 * 16) + textureOffset, 16, 16), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1E-09f);
 
                 return false;
