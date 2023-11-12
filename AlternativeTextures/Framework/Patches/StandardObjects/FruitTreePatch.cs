@@ -150,6 +150,11 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
         private static void FruitTreePostfix(FruitTree __instance)
         {
             string id = __instance.treeId.Value;
+            
+            if (string.IsNullOrEmpty(id))
+            {
+                return;
+            }
 
             var saplingName = Game1.objectData.ContainsKey(id) ? Game1.objectData[id].Name : String.Empty;
             var instanceName = $"{AlternativeTextureModel.TextureType.FruitTree}_{saplingName}";
