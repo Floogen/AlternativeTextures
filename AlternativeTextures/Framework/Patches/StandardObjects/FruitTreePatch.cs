@@ -26,6 +26,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
         {
             harmony.Patch(AccessTools.Method(_object, nameof(FruitTree.draw), new[] { typeof(SpriteBatch) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
             harmony.Patch(AccessTools.Method(_object, nameof(FruitTree.seasonUpdate), new[] { typeof(bool) }), postfix: new HarmonyMethod(GetType(), nameof(SeasonUpdatePostfix)));
+            harmony.Patch(AccessTools.Constructor(typeof(FruitTree), null), postfix: new HarmonyMethod(GetType(), nameof(FruitTreePostfix)));
             harmony.Patch(AccessTools.Constructor(typeof(FruitTree), new[] { typeof(string), typeof(int) }), postfix: new HarmonyMethod(GetType(), nameof(FruitTreePostfix)));
 
             if (PatchTemplate.IsDGAUsed())
