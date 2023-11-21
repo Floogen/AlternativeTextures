@@ -104,7 +104,7 @@ namespace AlternativeTextures.Framework.Patches
             }
             else if (obj is Furniture)
             {
-                var dataSheet = Game1.content.LoadBase<Dictionary<string, string>>("Data\\Furniture");
+                var dataSheet = Game1.content.Load<Dictionary<string, string>>("Data\\Furniture");
                 if (!dataSheet.ContainsKey(obj.ItemId))
                 {
                     return obj.name;
