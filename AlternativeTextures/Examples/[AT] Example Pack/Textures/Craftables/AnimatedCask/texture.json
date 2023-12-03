@@ -1,0 +1,43 @@
+{
+  "ItemName": "Cask",
+  "Type": "Craftable",
+  "TextureWidth": 16,
+  "TextureHeight": 32,
+  "ManualVariations": [
+    {
+      "Id": 0,
+      "Animation": [
+        {
+          "Frame": 0,
+          "Duration": 500,
+          "Type": "Default"
+        },
+        {
+          "Frame": 1,
+          "Duration": 500,
+          "Type": "MachineActive"
+        },
+        {
+          "Frame": 2,
+          "Duration": 500,
+          "Type": "MachineActive"
+        },
+        {
+          "Frame": 3,
+          "Duration": 500,
+          "Type": "MachineActive"
+        },
+        {
+          "Frame": 4,
+          "Duration": 500,
+          "Type": "MachineIdle"
+        },
+        {
+          "Frame": 5,
+          "Duration": 500,
+          "Type": "MachineIdle"
+        }
+      ]
+    }
+  ]
+}
