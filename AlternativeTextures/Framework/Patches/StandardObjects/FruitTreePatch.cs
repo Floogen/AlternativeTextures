@@ -150,7 +150,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
         private static void FruitTreePostfix(FruitTree __instance)
         {
             string id = __instance.treeId.Value;
-            
+
             if (string.IsNullOrEmpty(id))
             {
                 return;

@@ -8,7 +8,6 @@ using StardewValley;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using System;
-using System.Linq;
 using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.Patches.StandardObjects

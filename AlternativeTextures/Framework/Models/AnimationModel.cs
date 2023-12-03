@@ -1,5 +1,4 @@
 ﻿using AlternativeTextures.Framework.Enums;
-using System;
 
 namespace AlternativeTextures.Framework.Models
 {
