@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using AlternativeTextures.Framework.Enums;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using System;
@@ -105,6 +106,20 @@ namespace AlternativeTextures.Framework.Models
             return GetAnimationData(variation).ElementAt(index);
         }
 
+        public int GetNextValidFrameFromIndex(int variation, int index, bool isMachineActive)
+        {
+            var animationData = GetAnimationData(variation);
+
+            index += 1;
+            if (index >= GetAnimationData(variation).Count())
+            {
+                index = 0;
+                return index;
+            }
+
+            return IsFrameValid(variation, index, isMachineActive) ? index : GetNextValidFrameFromIndex(variation, index, isMachineActive);
+        }
+
         public Texture2D GetTexture(int variation)
         {
             if (Textures.ContainsKey(variation))
@@ -165,6 +180,17 @@ namespace AlternativeTextures.Framework.Models
         public bool HasTint(int variation)
         {
             return ManualVariations.Any(v => v.Id == variation && v.HasTint());
+        }
+
+        internal bool IsFrameValid(int variation, int currentFrame, bool isMachineActive)
+        {
+            var animationData = GetAnimationDataAtIndex(variation, currentFrame);
+            if (animationData is null || (animationData.Type is FrameType.MachineActive && isMachineActive is false) || (animationData.Type is FrameType.MachineIdle && isMachineActive is true))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public override string ToString()

@@ -95,9 +95,10 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                     var frameDuration = Int32.Parse(__instance.modData["AlternativeTextureFrameDuration"]);
                     var elapsedDuration = Int32.Parse(__instance.modData["AlternativeTextureElapsedDuration"]);
 
-                    if (elapsedDuration >= frameDuration)
+                    bool isMachineActive = __instance.MinutesUntilReady > 0;
+                    if (elapsedDuration >= frameDuration || textureModel.IsFrameValid(textureVariation, currentFrame, isMachineActive) is false)
                     {
-                        frameIndex = frameIndex + 1 >= textureModel.GetAnimationData(textureVariation).Count() ? 0 : frameIndex + 1;
+                        frameIndex = textureModel.GetNextValidFrameFromIndex(textureVariation, frameIndex, isMachineActive);
 
                         var animationData = textureModel.GetAnimationDataAtIndex(textureVariation, frameIndex);
                         currentFrame = animationData.Frame;
