@@ -216,11 +216,11 @@ namespace AlternativeTextures
                 {
                     List<ModWallpaperOrFlooring> moddedDecorations = asset.GetData<List<ModWallpaperOrFlooring>>();
 
-                    foreach (var textureModel in textureManager.GetAllTextures().Where(t => t.IsDecoration() && !moddedDecorations.Any(d => d.ID == t.GetId())))
+                    foreach (var textureModel in textureManager.GetAllTextures().Where(t => t.IsDecoration() && !moddedDecorations.Any(d => d.Id == t.GetId())))
                     {
                         var decoration = new ModWallpaperOrFlooring()
                         {
-                            ID = textureModel.GetId(),
+                            Id = textureModel.GetId(),
                             Texture = $"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{textureModel.GetTokenId()}",
                             IsFlooring = String.Equals(textureModel.ItemName, "Floor", StringComparison.OrdinalIgnoreCase),
                             Count = textureModel.GetVariations()

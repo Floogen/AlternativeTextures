@@ -154,7 +154,7 @@ namespace AlternativeTextures.Framework.UI
                 var allDecorations = ItemQueryResolver.TryResolve(modelName.Contains("Floor") ? "ALL_ITEMS (FL)" : "ALL_ITEMS (WP)", context: null);
                 foreach (Wallpaper decoration in allDecorations.Where(d => d.Item is Wallpaper wallpaper).Select(d => d.Item as Wallpaper))
                 {
-                    if (!String.IsNullOrEmpty(decoration.modDataID.Value))
+                    if (!String.IsNullOrEmpty(decoration.setId.Value))
                     {
                         continue;
                     }
