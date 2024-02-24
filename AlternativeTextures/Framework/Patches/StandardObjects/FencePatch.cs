@@ -22,7 +22,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
         internal void Apply(Harmony harmony)
         {
             harmony.Patch(AccessTools.Method(_object, nameof(Fence.draw), new[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
-            harmony.Patch(AccessTools.Method(_object, nameof(Fence.performObjectDropInAction), new[] { typeof(Item), typeof(bool), typeof(Farmer) }), postfix: new HarmonyMethod(GetType(), nameof(PerformObjectDropInActionPostfix)));
+            harmony.Patch(AccessTools.Method(_object, nameof(Fence.performObjectDropInAction), new[] { typeof(Item), typeof(bool), typeof(Farmer), typeof(bool) }), postfix: new HarmonyMethod(GetType(), nameof(PerformObjectDropInActionPostfix)));
 
             if (PatchTemplate.IsDGAUsed())
             {
@@ -151,12 +151,12 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             return true;
         }
 
-        private static void PerformObjectDropInActionPostfix(Fence __instance, bool __result, Item dropIn, bool probe, Farmer who)
+        private static void PerformObjectDropInActionPostfix(Fence __instance, bool __result, Item dropInItem, bool probe, Farmer who, bool returnFalseIfItemConsumed = false)
         {
             // Assign Gate modData to this fence (if applicable)
-            if (dropIn.parentSheetIndex == 325 && __result)
+            if (dropInItem.parentSheetIndex == 325 && __result)
             {
-                var instanceName = $"{AlternativeTextureModel.TextureType.Craftable}_{Game1.objectData[dropIn.ItemId].Name}";
+                var instanceName = $"{AlternativeTextureModel.TextureType.Craftable}_{Game1.objectData[dropInItem.ItemId].Name}";
                 var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
 
                 if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
