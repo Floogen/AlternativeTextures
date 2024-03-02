@@ -114,10 +114,6 @@ namespace AlternativeTextures.Framework.Patches
             }
             else
             {
-                if (obj is Fence fence && fence.isGate.Value)
-                {
-                    return Game1.objectData["(O)325"].Name;
-                }
                 if (!Game1.objectData.ContainsKey(obj.ItemId))
                 {
                     return obj.name;
