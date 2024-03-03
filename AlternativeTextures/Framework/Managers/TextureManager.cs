@@ -90,11 +90,6 @@ namespace AlternativeTextures.Framework.Managers
             return _textureNames;
         }
 
-        public bool DoesObjectHaveAlternativeTexture(int objectId)
-        {
-            return _alternativeTextures.Any(t => t.ItemId == objectId);
-        }
-
         public bool DoesObjectHaveAlternativeTexture(string objectName)
         {
             return _alternativeTextures.Any(t => String.Equals(t.GetNameWithSeason(), objectName, StringComparison.OrdinalIgnoreCase));
@@ -103,17 +98,6 @@ namespace AlternativeTextures.Framework.Managers
         public bool DoesObjectHaveAlternativeTextureById(string objectId)
         {
             return _textureIdsInsensitive.Contains(objectId);
-        }
-
-        public AlternativeTextureModel GetRandomTextureModel(int objectId)
-        {
-            if (!DoesObjectHaveAlternativeTexture(objectId))
-            {
-                return null;
-            }
-
-            var randomTexture = Game1.random.Next(_alternativeTextures.Select(t => t.ItemId == objectId).Count());
-            return _alternativeTextures[randomTexture];
         }
 
         public AlternativeTextureModel GetRandomTextureModel(string objectName)
