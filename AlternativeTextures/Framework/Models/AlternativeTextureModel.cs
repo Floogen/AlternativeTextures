@@ -122,12 +122,16 @@ namespace AlternativeTextures.Framework.Models
 
         public Texture2D GetTexture(int variation)
         {
-            if (Textures.ContainsKey(variation))
+            var texture = Textures.ContainsKey(variation) ? Textures[variation] : Textures[0];
+            if (texture.IsDisposed)
             {
-                return Textures[variation];
+                // TODO: Look into why textures are disposed when patched via Content Patcher
+                AlternativeTextures.monitor.LogOnce($"Error drawing the texture {TextureId}: It was incorrectly disposed!", StardewModdingAPI.LogLevel.Warn);
+                AlternativeTextures.monitor.LogOnce(this.ToString(), StardewModdingAPI.LogLevel.Trace);
+                return AlternativeTextures.textureManager.ErrorTexture;
             }
 
-            return Textures[0];
+            return texture;
         }
 
         public int GetTextureOffset(int variation)

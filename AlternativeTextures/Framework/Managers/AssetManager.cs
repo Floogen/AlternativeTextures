@@ -10,6 +10,8 @@ namespace AlternativeTextures.Framework.Managers
         internal string assetFolderPath;
         internal Dictionary<string, Texture2D> toolNames = new Dictionary<string, Texture2D>();
 
+        private IModHelper _helper;
+
         private Texture2D _paintBucketTexture;
         private Texture2D _scissorsTexture;
         private Texture2D _sprayCanTexture;
@@ -20,6 +22,8 @@ namespace AlternativeTextures.Framework.Managers
 
         public AssetManager(IModHelper helper)
         {
+            _helper = helper;
+
             // Get the asset folder path
             assetFolderPath = helper.ModContent.GetInternalAssetName(Path.Combine("Framework", "Assets")).Name;
 
@@ -45,37 +49,51 @@ namespace AlternativeTextures.Framework.Managers
             toolNames.Add($"{AlternativeTextures.TOOL_TOKEN_HEADER}PaintBrush_Empty", _paintBrushEmptyTexture);
             toolNames.Add($"{AlternativeTextures.TOOL_TOKEN_HEADER}PaintBrush_Filled", _paintBrushFilledTexture);
             toolNames.Add($"{AlternativeTextures.TOOL_TOKEN_HEADER}Catalogue", _catalogueTexture);
+        }
 
+        private Texture2D GetTextureSafely(ref Texture2D texture, string textureFileName)
+        {
+            if (texture is null || texture.IsDisposed)
+            {
+                if (texture is not null && texture.IsDisposed)
+                {
+                    // TODO: Look into why textures are disposed when patched via Content Patcher
+                    AlternativeTextures.monitor.LogOnce($"Error drawing the tool {textureFileName}: It was incorrectly disposed!", StardewModdingAPI.LogLevel.Warn);
+                }
+                texture = _helper.ModContent.Load<Texture2D>(Path.Combine(assetFolderPath, textureFileName));
+            }
+
+            return texture;
         }
 
         internal Texture2D GetPaintBucketTexture()
         {
-            return _paintBucketTexture;
+            return GetTextureSafely(ref _paintBucketTexture, "PaintBucket.png");
         }
 
         internal Texture2D GetScissorsTexture()
         {
-            return _scissorsTexture;
+            return GetTextureSafely(ref _scissorsTexture, "Scissors.png");
         }
 
         internal Texture2D GetSprayCanTexture(bool getRareTexture = false)
         {
-            return getRareTexture ? _sprayCanTextureRare : _sprayCanTexture;
+            return getRareTexture ? GetTextureSafely(ref _sprayCanTextureRare, "SprayCanRare.png") : GetTextureSafely(ref _sprayCanTexture, "SprayCan.png");
         }
 
         internal Texture2D GetPaintBrushEmptyTexture()
         {
-            return _paintBrushEmptyTexture;
+            return GetTextureSafely(ref _paintBrushEmptyTexture, "PaintBrushEmpty.png");
         }
 
         internal Texture2D GetPaintBrushFilledTexture()
         {
-            return _paintBrushFilledTexture;
+            return GetTextureSafely(ref _paintBrushFilledTexture, "PaintBrushFilled.png");
         }
 
         internal Texture2D GetCatalogueTexture()
         {
-            return _catalogueTexture;
+            return GetTextureSafely(ref _catalogueTexture, "Catalogue.png");
         }
     }
 }

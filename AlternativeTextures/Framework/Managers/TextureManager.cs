@@ -1,4 +1,5 @@
 ﻿using AlternativeTextures.Framework.Models;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
@@ -11,6 +12,8 @@ namespace AlternativeTextures.Framework.Managers
 {
     internal class TextureManager
     {
+        public readonly Texture2D ErrorTexture;
+
         private IMonitor _monitor;
         private IModHelper _helper;
         private List<AlternativeTextureModel> _alternativeTextures;
@@ -30,6 +33,14 @@ namespace AlternativeTextures.Framework.Managers
             _textureIdsInsensitive = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             _tokenToTextures = new Dictionary<string, Texture2D>(StringComparer.OrdinalIgnoreCase);
             _tokenToModel = new Dictionary<string, TokenModel>(StringComparer.OrdinalIgnoreCase);
+
+            ErrorTexture = new Texture2D(Game1.graphics.GraphicsDevice, 16, 16);
+            Color[] data = new Color[16 * 16];
+            for (int i = 0; i < data.Length; i++)
+            {
+                data[i] = Color.White;
+            }
+            ErrorTexture.SetData(data);
         }
 
         public void AddAlternativeTexture(AlternativeTextureModel model)
