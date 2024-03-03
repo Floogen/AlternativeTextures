@@ -7,9 +7,6 @@ namespace AlternativeTextures.Framework.Managers
 {
     internal class AssetManager
     {
-        // Tilesheet related for decorations (wallpaper / floor)
-        private TextureManager _textureManager;
-
         internal string assetFolderPath;
         internal Dictionary<string, Texture2D> toolNames = new Dictionary<string, Texture2D>();
 
@@ -21,7 +18,7 @@ namespace AlternativeTextures.Framework.Managers
         private Texture2D _paintBrushFilledTexture;
         private Texture2D _catalogueTexture;
 
-        public AssetManager(IModHelper helper, TextureManager textureManager)
+        public AssetManager(IModHelper helper)
         {
             // Get the asset folder path
             assetFolderPath = helper.ModContent.GetInternalAssetName(Path.Combine("Framework", "Assets")).Name;
@@ -49,8 +46,6 @@ namespace AlternativeTextures.Framework.Managers
             toolNames.Add($"{AlternativeTextures.TOOL_TOKEN_HEADER}PaintBrush_Filled", _paintBrushFilledTexture);
             toolNames.Add($"{AlternativeTextures.TOOL_TOKEN_HEADER}Catalogue", _catalogueTexture);
 
-            // Get the TextureMananger
-            _textureManager = textureManager;
         }
 
         internal Texture2D GetPaintBucketTexture()

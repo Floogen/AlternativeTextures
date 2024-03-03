@@ -90,7 +90,7 @@ namespace AlternativeTextures
             // Setup our managers
             textureManager = new TextureManager(monitor, helper);
             apiManager = new ApiManager(monitor);
-            assetManager = new AssetManager(helper, textureManager);
+            assetManager = new AssetManager(helper);
 
             // Setup our utilities
             fpsCounter = new FpsCounter();
