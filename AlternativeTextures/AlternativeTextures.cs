@@ -1023,10 +1023,25 @@ namespace AlternativeTextures
                         baseModel.Author = contentPack.Manifest.Author;
                         baseModel.Type = baseModel.GetTextureType();
 
-                        // Add to ItemName to CollectiveNames if ItemName is given
-                        if (String.IsNullOrEmpty(baseModel.ItemName) is false)
+                        // Add to ItemId to CollectiveIds if ItemName is given or add to ItemName to CollectiveNames if ItemName is given
+                        if (String.IsNullOrEmpty(baseModel.ItemId) is false)
+                        {
+                            baseModel.CollectiveIds.Add(baseModel.ItemId);
+                        }
+                        else if (String.IsNullOrEmpty(baseModel.ItemName) is false)
                         {
                             baseModel.CollectiveNames.Add(baseModel.ItemName);
+                        }
+
+                        // Combine the two collective lists
+                        var collectedCollective = new List<dynamic>();
+                        foreach (string itemName in baseModel.CollectiveNames)
+                        {
+                            collectedCollective.Add(new { Name = itemName, IsId = false });
+                        }
+                        foreach (string itemId in baseModel.CollectiveIds)
+                        {
+                            collectedCollective.Add(new { Name = itemId, IsId = true });
                         }
 
                         // Attempt to add an instance of each season
@@ -1039,19 +1054,27 @@ namespace AlternativeTextures
                             }
 
                             // Attempt to add each instance under CollectiveNames
-                            foreach (string itemName in baseModel.CollectiveNames)
+                            foreach (var textureData in collectedCollective)
                             {
                                 // Parse the model and assign it the content pack's owner
                                 AlternativeTextureModel textureModel = baseModel.ShallowCopy();
 
-                                // Override Grass Alternative Texture pack ItemName to always be Grass, in order to be compatible with translations 
-                                textureModel.ItemName = textureModel.Type == "Grass" ? "Grass" : itemName;
+                                // Set the ItemName or ItemId depending on IsId flag
+                                if (textureData.IsId is true)
+                                {
+                                    textureModel.ItemId = textureData.Name;
+                                }
+                                else
+                                {
+                                    // Override Grass Alternative Texture pack ItemName to always be Grass, in order to be compatible with translations 
+                                    textureModel.ItemName = textureModel.Type == "Grass" ? "Grass" : textureData.Name;
+                                }
 
                                 // Verify that ItemName or ItemNames is given
-                                if (textureModel.CollectiveNames.Count == 0)
+                                if (collectedCollective.Count() == 0)
                                 {
-                                    Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: Missing the ItemName or CollectiveNames property! See the log for additional details.", LogLevel.Warn);
-                                    Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: Missing the ItemName or CollectiveNames property found in the following path: {textureFolder.FullName}", LogLevel.Trace);
+                                    Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: Missing the ItemName, ItemId, CollectiveNames or CollectiveIds property! See the log for additional details.", LogLevel.Warn);
+                                    Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: Missing the ItemName, ItemId, CollectiveNames or CollectiveIds property found in the following path: {textureFolder.FullName}", LogLevel.Trace);
                                     continue;
                                 }
 

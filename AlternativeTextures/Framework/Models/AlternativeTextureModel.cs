@@ -17,6 +17,7 @@ namespace AlternativeTextures.Framework.Models
         private string _itemName;
         public string ItemId { get; set; }
         public List<string> CollectiveNames { get; set; } = new List<string>();
+        public List<string> CollectiveIds { get; set; } = new List<string>();
         public string Type { get; set; }
         [Obsolete("No longer used due SMAPI 3.14.0 allowing for passive invalidation checks.")]
         public bool EnableContentPatcherCheck { get; set; }
