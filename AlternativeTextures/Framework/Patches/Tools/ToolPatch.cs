@@ -336,8 +336,9 @@ namespace AlternativeTextures.Framework.Patches.Tools
                             return CancelUsing(who);
                         }
                     }
+
                     // Display texture menu
-                    var buildingObj = new Object("100", 1, isRecipe: false, -1)
+                    var buildingObj = new Object(targetedBuilding.buildingType.Value, 1, isRecipe: false, -1)
                     {
                         TileLocation = new Vector2(targetedBuilding.tileX.Value, targetedBuilding.tileY.Value)
                     };
@@ -359,13 +360,15 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     AssignDefaultModData(targetedObject, instanceSeasonName, true);
                 }
 
+                var itemId = $"{GetTextureType(targetedObject)}_{targetedObject.ItemId}_{Game1.currentSeason}";
                 var modelName = targetedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME].Replace($"{targetedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER]}.", String.Empty);
                 if (targetedObject.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_SEASON) && !String.IsNullOrEmpty(targetedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON]))
                 {
+                    itemId = GetModelNameWithoutSeason(itemId, targetedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON]);
                     modelName = GetModelNameWithoutSeason(modelName, targetedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON]);
                 }
 
-                if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
+                if (AlternativeTextures.textureManager.GetAvailableTextureModels(itemId, modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
                 {
                     var instanceSeasonName = $"{GetTextureType(targetedObject)}_{GetObjectName(targetedObject)}_{Game1.currentSeason}";
                     AssignDefaultModData(targetedObject, instanceSeasonName, true);
@@ -373,10 +376,11 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     modelName = targetedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME].Replace($"{targetedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER]}.", String.Empty);
                     if (targetedObject.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_SEASON) && !String.IsNullOrEmpty(targetedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON]))
                     {
+                        itemId = GetModelNameWithoutSeason(itemId, targetedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON]);
                         modelName = GetModelNameWithoutSeason(modelName, targetedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON]);
                     }
 
-                    if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
+                    if (AlternativeTextures.textureManager.GetAvailableTextureModels(itemId, modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
                     {
                         Game1.addHUDMessage(new HUDMessage(_helper.Translation.Get("messages.warning.no_textures_for_season", new { itemName = modelName }), 3));
                         return CancelUsing(who);

@@ -88,7 +88,7 @@ namespace AlternativeTextures.Framework.UI
             base.yPositionOnScreen = (int)topLeft.Y;
 
             // Populate the texture selection components
-            var availableModels = AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation));
+            var availableModels = AlternativeTextures.textureManager.GetAvailableTextureModels($"{textureType}_{target.ItemId}", modelName, Game1.GetSeasonForLocation(Game1.currentLocation));
             for (int m = 0; m < availableModels.Count; m++)
             {
                 var manualVariations = availableModels[m].ManualVariations.Where(v => v.Id != -1).ToList();

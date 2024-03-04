@@ -3,10 +3,13 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.GameData.HomeRenovations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using static AlternativeTextures.Framework.Models.AlternativeTextureModel;
+using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.Managers
 {
@@ -90,9 +93,9 @@ namespace AlternativeTextures.Framework.Managers
             return _textureNames;
         }
 
-        public bool DoesObjectHaveAlternativeTexture(string objectName)
+        public bool DoesObjectHaveAlternativeTexture(string objectName, bool isItemId = false)
         {
-            return _alternativeTextures.Any(t => String.Equals(t.GetNameWithSeason(), objectName, StringComparison.OrdinalIgnoreCase));
+            return _alternativeTextures.Any(t => t.IsUsingItemId() == isItemId && String.Equals(t.GetNameWithSeason(), objectName, StringComparison.OrdinalIgnoreCase));
         }
 
         public bool DoesObjectHaveAlternativeTextureById(string objectId)
@@ -121,16 +124,33 @@ namespace AlternativeTextures.Framework.Managers
             return _alternativeTextures.First(t => String.Equals(t.GetId(), textureId, StringComparison.OrdinalIgnoreCase));
         }
 
-        public List<AlternativeTextureModel> GetAvailableTextureModels(string objectName, Season season)
+        public List<AlternativeTextureModel> GetAvailableTextureModels(string modelName, Season season)
         {
-            if (!DoesObjectHaveAlternativeTexture(objectName) && !DoesObjectHaveAlternativeTexture(String.Concat(objectName, "_", season)))
+            string modelNameWithSeason = string.Concat(modelName, "_", season);
+
+            if (!DoesObjectHaveAlternativeTexture(modelName) && !DoesObjectHaveAlternativeTexture(modelNameWithSeason))
             {
                 return new List<AlternativeTextureModel>();
             }
 
-            var seasonalTextures = _alternativeTextures.Where(t => String.Equals(t.GetNameWithSeason(), String.Concat(objectName, "_", season), StringComparison.OrdinalIgnoreCase)).ToList();
-            seasonalTextures.AddRange(_alternativeTextures.Where(t => !seasonalTextures.Any(s => s.GetId() == t.GetId()) && String.Equals(t.GetNameWithSeason(), objectName, StringComparison.OrdinalIgnoreCase)));
+            var seasonalTextures = _alternativeTextures.Where(t => t.IsUsingItemId() is false && string.Equals(t.GetNameWithSeason(), modelNameWithSeason, StringComparison.OrdinalIgnoreCase)).ToList();
+            seasonalTextures.AddRange(_alternativeTextures.Where(t => t.IsUsingItemId() is false && !seasonalTextures.Any(s => s.GetId() == t.GetId()) && string.Equals(t.GetNameWithSeason(), modelName, StringComparison.OrdinalIgnoreCase)));
             return seasonalTextures;
+        }
+
+        public List<AlternativeTextureModel> GetAvailableTextureModels(string itemId, string modelName, Season season)
+        {
+            List<AlternativeTextureModel> textureModels = GetAvailableTextureModels(modelName, season);
+
+            string itemIdWithSeason = string.Concat(itemId, "_", season);
+            if (!DoesObjectHaveAlternativeTexture(itemId, isItemId: true) && !DoesObjectHaveAlternativeTexture(itemIdWithSeason, isItemId: true))
+            {
+                return textureModels;
+            }
+
+            var seasonalTextures = _alternativeTextures.Where(t => t.IsUsingItemId() && string.Equals(t.GetNameWithSeason(), itemIdWithSeason, StringComparison.OrdinalIgnoreCase)).ToList();
+            seasonalTextures.AddRange(_alternativeTextures.Where(t => t.IsUsingItemId() && !seasonalTextures.Any(s => s.GetId() == t.GetId()) && string.Equals(t.GetNameWithSeason(), itemId, StringComparison.OrdinalIgnoreCase)));
+            return textureModels.Concat(seasonalTextures).ToList();
         }
 
         public int GetVariationFromToken(string token)

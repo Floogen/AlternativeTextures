@@ -13,7 +13,9 @@ namespace AlternativeTextures.Framework.Models
         public string Owner { get; set; }
         public string PackName { get; set; }
         public string Author { get; set; }
-        public string ItemName { get; set; }
+        public string ItemName { get { return string.IsNullOrEmpty(_itemName) ? ItemId : _itemName; } set { _itemName = value; } }
+        private string _itemName;
+        public string ItemId { get; set; }
         public List<string> CollectiveNames { get; set; } = new List<string>();
         public string Type { get; set; }
         [Obsolete("No longer used due SMAPI 3.14.0 allowing for passive invalidation checks.")]
@@ -70,6 +72,11 @@ namespace AlternativeTextures.Framework.Models
         public string GetId()
         {
             return TextureId;
+        }
+
+        public bool IsUsingItemId()
+        {
+            return string.IsNullOrEmpty(ItemId) is false;
         }
 
         public string GetTokenId(int? variation = null)
