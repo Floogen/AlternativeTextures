@@ -51,6 +51,15 @@
         "Height": "16"
       },
       "Update": "OnDayStart"
+    },
+    {
+      "LogName": "AT ItemId Test",
+      "Action": "EditData",
+      "Target": "Data/Furniture",
+      "Entries": {
+        "PeacefulEnd.AlternativeTextures_TestChair": "Test Chair/chair/-1/-1/4/350/-1/AT Test Chair/0"
+      },
+      "Update": "OnDayStart"
     }
   ]
 }
