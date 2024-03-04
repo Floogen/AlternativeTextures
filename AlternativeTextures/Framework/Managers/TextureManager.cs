@@ -3,13 +3,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.GameData.HomeRenovations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using static AlternativeTextures.Framework.Models.AlternativeTextureModel;
-using Object = StardewValley.Object;
 
 namespace AlternativeTextures.Framework.Managers
 {
