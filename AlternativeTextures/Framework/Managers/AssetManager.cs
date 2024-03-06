@@ -13,9 +13,9 @@ namespace AlternativeTextures.Framework.Managers
         private IModHelper _helper;
 
         internal class TextureData
-        { 
+        {
             public string FilePath { get; set; }
-            public Texture2D Texture { get; set; } 
+            public Texture2D Texture { get; set; }
         }
 
         public AssetManager(IModHelper helper)
