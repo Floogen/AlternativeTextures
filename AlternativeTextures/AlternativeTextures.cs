@@ -12,6 +12,7 @@ using AlternativeTextures.Framework.Patches.SpecialObjects;
 using AlternativeTextures.Framework.Patches.StandardObjects;
 using AlternativeTextures.Framework.Patches.Tools;
 using AlternativeTextures.Framework.Utilities;
+using AlternativeTextures.Framework.Utilities.Extensions;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -176,7 +177,6 @@ namespace AlternativeTextures
 
             // Hook into the Content events
             helper.Events.Content.AssetRequested += OnContentAssetRequested;
-            helper.Events.Content.AssetsInvalidated += OnContentInvalidated;
             helper.Events.Content.AssetReady += OnContentAssetReady;
         }
 
@@ -187,22 +187,11 @@ namespace AlternativeTextures
             {
                 assetManager.toolKeyToData[asset.Name].Texture = Helper.GameContent.Load<Texture2D>(asset);
             }
-        }
-
-        private void OnContentInvalidated(object sender, AssetsInvalidatedEventArgs e)
-        {
-            foreach (var asset in e.Names)
+            else if (textureManager.GetTextureByToken(asset.Name) is Texture2D texture && texture is not null)
             {
-                if (assetManager.toolKeyToData.ContainsKey(asset.Name))
-                {
-                    //assetManager.toolNames[asset.Name] = Helper.GameContent.Load<Texture2D>(asset);
-                }
-                else if (AlternativeTextures.textureManager.GetTextureByToken(asset.Name) is Texture2D texture && texture is not null)
-                {
-                    var loadedTexture = Helper.GameContent.Load<Texture2D>(asset.Name);
+                var loadedTexture = Helper.GameContent.Load<Texture2D>(asset.Name);
 
-                    textureManager.UpdateTexture(asset.Name, loadedTexture);
-                }
+                textureManager.UpdateTexture(asset.Name, loadedTexture);
             }
         }
 
@@ -213,7 +202,9 @@ namespace AlternativeTextures
                 var asset = e.Name;
                 if (textureManager.GetModelByToken(asset.Name) is TokenModel tokenModel && tokenModel is not null)
                 {
-                    e.LoadFrom(() => tokenModel.AlternativeTexture.GetTexture(tokenModel.Variation), AssetLoadPriority.Exclusive);
+                    var originalTexture = tokenModel.AlternativeTexture.GetTexture(tokenModel.Variation);
+                    var clonedTexture = originalTexture.CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(0, 0, originalTexture.Width, originalTexture.Height));
+                    e.LoadFrom(() => clonedTexture, AssetLoadPriority.Exclusive);
                 }
                 else if (assetManager.toolKeyToData.ContainsKey(asset.Name))
                 {
