@@ -177,15 +177,25 @@ namespace AlternativeTextures
             // Hook into the Content events
             helper.Events.Content.AssetRequested += OnContentAssetRequested;
             helper.Events.Content.AssetsInvalidated += OnContentInvalidated;
+            helper.Events.Content.AssetReady += OnContentAssetReady;
+        }
+
+        private void OnContentAssetReady(object sender, AssetReadyEventArgs e)
+        {
+            var asset = e.Name;
+            if (assetManager.toolKeyToData.ContainsKey(asset.Name))
+            {
+                assetManager.toolKeyToData[asset.Name].Texture = Helper.GameContent.Load<Texture2D>(asset);
+            }
         }
 
         private void OnContentInvalidated(object sender, AssetsInvalidatedEventArgs e)
         {
             foreach (var asset in e.Names)
             {
-                if (assetManager.toolNames.ContainsKey(asset.Name))
+                if (assetManager.toolKeyToData.ContainsKey(asset.Name))
                 {
-                    assetManager.toolNames[asset.Name] = Helper.GameContent.Load<Texture2D>(asset);
+                    //assetManager.toolNames[asset.Name] = Helper.GameContent.Load<Texture2D>(asset);
                 }
                 else if (AlternativeTextures.textureManager.GetTextureByToken(asset.Name) is Texture2D texture && texture is not null)
                 {
@@ -205,9 +215,9 @@ namespace AlternativeTextures
                 {
                     e.LoadFrom(() => tokenModel.AlternativeTexture.GetTexture(tokenModel.Variation), AssetLoadPriority.Exclusive);
                 }
-                else if (assetManager.toolNames.ContainsKey(asset.Name))
+                else if (assetManager.toolKeyToData.ContainsKey(asset.Name))
                 {
-                    e.LoadFrom(() => assetManager.toolNames[asset.Name], AssetLoadPriority.Exclusive);
+                    e.LoadFromModFile<Texture2D>(assetManager.toolKeyToData[asset.Name].FilePath, AssetLoadPriority.Exclusive);
                 }
             }
             else if (e.NameWithoutLocale.IsEquivalentTo("Data/AdditionalWallpaperFlooring") && textureManager.GetValidTextureNamesWithSeason().Count > 0)
@@ -827,10 +837,9 @@ namespace AlternativeTextures
             Monitor.Log($"Finished loading Alternative Textures content packs", LogLevel.Debug);
 
             // Register tools
-            foreach (var tool in assetManager.toolNames.ToList())
+            foreach (var tool in assetManager.toolKeyToData.ToList())
             {
-                var loadedTexture = Helper.GameContent.Load<Texture2D>(tool.Key);
-                assetManager.toolNames[tool.Key] = loadedTexture;
+                assetManager.toolKeyToData[tool.Key].Texture = Helper.GameContent.Load<Texture2D>(tool.Key);
             }
 
             // Hook into GMCM, if applicable
