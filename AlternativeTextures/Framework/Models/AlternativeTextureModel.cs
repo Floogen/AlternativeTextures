@@ -18,7 +18,7 @@ namespace AlternativeTextures.Framework.Models
         public string ItemId { get; set; }
         public List<string> CollectiveNames { get; set; } = new List<string>();
         public List<string> CollectiveIds { get; set; } = new List<string>();
-        public string Type { get; set; }
+        public TextureType Type { get; set; }
         [Obsolete("No longer used due SMAPI 3.14.0 allowing for passive invalidation checks.")]
         public bool EnableContentPatcherCheck { get; set; }
         public bool IgnoreBuildingColorMask { get; set; } // Only usable by Type == "Building"
@@ -37,7 +37,7 @@ namespace AlternativeTextures.Framework.Models
         public List<AnimationModel> Animation { get; set; } = new List<AnimationModel>();
 
         public static int MAX_TEXTURE_HEIGHT { get { return 16384; } }
-        internal enum TextureType
+        public enum TextureType
         {
             Unknown,
             Craftable,
@@ -62,12 +62,7 @@ namespace AlternativeTextures.Framework.Models
 
         public string GetTextureType()
         {
-            if (!Enum.TryParse<TextureType>(Type.Trim(), true, out var textureType))
-            {
-                return TextureType.Unknown.ToString();
-            }
-
-            return textureType.ToString();
+            return Type.ToString();
         }
 
         public string GetId()

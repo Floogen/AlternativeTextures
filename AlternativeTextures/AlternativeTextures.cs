@@ -1021,7 +1021,6 @@ namespace AlternativeTextures
                         baseModel.Owner = contentPack.Manifest.UniqueID;
                         baseModel.PackName = contentPack.Manifest.Name;
                         baseModel.Author = contentPack.Manifest.Author;
-                        baseModel.Type = baseModel.GetTextureType();
 
                         // Add to ItemId to CollectiveIds if ItemName is given or add to ItemName to CollectiveNames if ItemName is given
                         if (String.IsNullOrEmpty(baseModel.ItemId) is false)
@@ -1067,7 +1066,7 @@ namespace AlternativeTextures
                                 else
                                 {
                                     // Override Grass Alternative Texture pack ItemName to always be Grass, in order to be compatible with translations 
-                                    textureModel.ItemName = textureModel.Type == "Grass" ? "Grass" : textureData.Name;
+                                    textureModel.ItemName = textureModel.Type.ToString() == "Grass" ? "Grass" : textureData.Name;
                                 }
 
                                 // Verify that ItemName or ItemNames is given
