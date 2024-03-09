@@ -1022,6 +1022,13 @@ namespace AlternativeTextures
                         baseModel.PackName = contentPack.Manifest.Name;
                         baseModel.Author = contentPack.Manifest.Author;
 
+                        // Handle SDV-related ItemName changes
+                        string originalItemName = baseModel.ItemName;
+                        if (baseModel.HandleNameChanges())
+                        {
+                            Monitor.Log($"The texture {baseModel.ItemName} from {contentPack.Manifest.Name} has an outdated ItemName that was handled automatically: {originalItemName} -> {baseModel.ItemName}", LogLevel.Trace);
+                        }
+
                         // Add to ItemId to CollectiveIds if ItemName is given or add to ItemName to CollectiveNames if ItemName is given
                         if (String.IsNullOrEmpty(baseModel.ItemId) is false)
                         {

@@ -199,6 +199,25 @@ namespace AlternativeTextures.Framework.Models
             return true;
         }
 
+        internal bool HandleNameChanges()
+        {
+            if (ItemName is null)
+            {
+                return false;
+            }
+
+            if (Type is TextureType.Building)
+            {
+                if (ItemName.Equals("Log Cabin", StringComparison.OrdinalIgnoreCase) || ItemName.Equals("Plank Cabin", StringComparison.OrdinalIgnoreCase) || ItemName.Equals("Stone Cabin", StringComparison.OrdinalIgnoreCase))
+                {
+                    ItemName = "Cabin";
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public override string ToString()
         {
             return $"\n[\n" +
