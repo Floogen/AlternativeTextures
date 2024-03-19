@@ -7,23 +7,22 @@ using AlternativeTextures.Framework.Patches;
 using AlternativeTextures.Framework.Patches.Buildings;
 using AlternativeTextures.Framework.Patches.Entities;
 using AlternativeTextures.Framework.Patches.GameLocations;
-using AlternativeTextures.Framework.Patches.SMAPI;
+using AlternativeTextures.Framework.Patches.ShopLocations;
 using AlternativeTextures.Framework.Patches.SpecialObjects;
 using AlternativeTextures.Framework.Patches.StandardObjects;
 using AlternativeTextures.Framework.Patches.Tools;
 using AlternativeTextures.Framework.Utilities;
+using AlternativeTextures.Framework.Utilities.Extensions;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Netcode;
 using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Characters;
 using StardewValley.GameData;
-using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Monsters;
 using StardewValley.Objects;
@@ -75,8 +74,6 @@ namespace AlternativeTextures
         // Utilities
         internal static FpsCounter fpsCounter;
         private static Api _api;
-        internal static Dictionary<string, int[]> locationsToMailboxTileIds;
-        internal static Dictionary<string, string[]> locationsToMailboxTileSheets;
 
         // Tool related variables
         private Point _lastSprayCanTile = new Point();
@@ -94,21 +91,11 @@ namespace AlternativeTextures
             // Setup our managers
             textureManager = new TextureManager(monitor, helper);
             apiManager = new ApiManager(monitor);
-            assetManager = new AssetManager(helper, textureManager);
+            assetManager = new AssetManager(helper);
 
             // Setup our utilities
             fpsCounter = new FpsCounter();
             _api = new Api(this);
-            locationsToMailboxTileIds = new Dictionary<string, int[]>()
-            {
-                { "Farm", new int[] { 1930, 1955 } },
-                { "IslandWest", new int[] { 739, 771 } },
-            };
-            locationsToMailboxTileSheets = new Dictionary<string, string[]>()
-            {
-                { "Farm", new string[] { "spring_outdoorsTileSheet", "summer_outdoorsTileSheet", "fall_outdoorsTileSheet", "winter_outdoorsTileSheet" } },
-                { "IslandWest", new string[] { "island_tilesheet_1" } }
-            };
 
             // Load our Harmony patches
             try
@@ -150,18 +137,13 @@ namespace AlternativeTextures
 
                 // Start of building patches
                 new BuildingPatch(monitor, helper).Apply(harmony);
-                new StablePatch(monitor, helper).Apply(harmony); // Specifically for Tractor Mod, to allow texture variations
                 new ShippingBinPatch(monitor, helper).Apply(harmony);
 
                 // Start of location patches
                 new GameLocationPatch(monitor, helper).Apply(harmony);
-                new FarmPatch(monitor, helper).Apply(harmony);
-
-                // Start of SMAPI patches
-                new DisplayDevicePatch(monitor, helper).Apply(harmony);
+                new ShopBuilderPatch(monitor, helper).Apply(harmony);
 
                 // Paint tool related patches
-                new UtilityPatch(monitor, helper).Apply(harmony);
                 new ToolPatch(monitor, helper).Apply(harmony);
             }
             catch (Exception e)
@@ -195,23 +177,21 @@ namespace AlternativeTextures
 
             // Hook into the Content events
             helper.Events.Content.AssetRequested += OnContentAssetRequested;
-            helper.Events.Content.AssetsInvalidated += OnContentInvalidated;
+            helper.Events.Content.AssetReady += OnContentAssetReady;
         }
 
-        private void OnContentInvalidated(object sender, AssetsInvalidatedEventArgs e)
+        private void OnContentAssetReady(object sender, AssetReadyEventArgs e)
         {
-            foreach (var asset in e.Names)
+            var asset = e.Name;
+            if (assetManager.toolKeyToData.ContainsKey(asset.Name))
             {
-                if (assetManager.toolNames.ContainsKey(asset.Name))
-                {
-                    assetManager.toolNames[asset.Name] = Helper.GameContent.Load<Texture2D>(asset);
-                }
-                else if (AlternativeTextures.textureManager.GetTextureByToken(asset.Name) is Texture2D texture && texture is not null)
-                {
-                    var loadedTexture = Helper.GameContent.Load<Texture2D>(asset.Name);
+                assetManager.toolKeyToData[asset.Name].Texture = Helper.GameContent.Load<Texture2D>(asset);
+            }
+            else if (textureManager.GetTextureByToken(asset.Name) is Texture2D texture && texture is not null)
+            {
+                var loadedTexture = Helper.GameContent.Load<Texture2D>(asset.Name);
 
-                    textureManager.UpdateTexture(asset.Name, loadedTexture);
-                }
+                textureManager.UpdateTexture(asset.Name, loadedTexture);
             }
         }
 
@@ -222,11 +202,13 @@ namespace AlternativeTextures
                 var asset = e.Name;
                 if (textureManager.GetModelByToken(asset.Name) is TokenModel tokenModel && tokenModel is not null)
                 {
-                    e.LoadFrom(() => tokenModel.AlternativeTexture.GetTexture(tokenModel.Variation), AssetLoadPriority.Exclusive);
+                    var originalTexture = tokenModel.AlternativeTexture.GetTexture(tokenModel.Variation);
+                    var clonedTexture = originalTexture.CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(0, 0, originalTexture.Width, originalTexture.Height));
+                    e.LoadFrom(() => clonedTexture, AssetLoadPriority.Exclusive);
                 }
-                else if (assetManager.toolNames.ContainsKey(asset.Name))
+                else if (assetManager.toolKeyToData.ContainsKey(asset.Name))
                 {
-                    e.LoadFrom(() => assetManager.toolNames[asset.Name], AssetLoadPriority.Exclusive);
+                    e.LoadFromModFile<Texture2D>(assetManager.toolKeyToData[asset.Name].FilePath, AssetLoadPriority.Exclusive);
                 }
             }
             else if (e.NameWithoutLocale.IsEquivalentTo("Data/AdditionalWallpaperFlooring") && textureManager.GetValidTextureNamesWithSeason().Count > 0)
@@ -235,11 +217,11 @@ namespace AlternativeTextures
                 {
                     List<ModWallpaperOrFlooring> moddedDecorations = asset.GetData<List<ModWallpaperOrFlooring>>();
 
-                    foreach (var textureModel in textureManager.GetAllTextures().Where(t => t.IsDecoration() && !moddedDecorations.Any(d => d.ID == t.GetId())))
+                    foreach (var textureModel in textureManager.GetAllTextures().Where(t => t.IsDecoration() && !moddedDecorations.Any(d => d.Id == t.GetId())))
                     {
                         var decoration = new ModWallpaperOrFlooring()
                         {
-                            ID = textureModel.GetId(),
+                            Id = textureModel.GetId(),
                             Texture = $"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{textureModel.GetTokenId()}",
                             IsFlooring = String.Equals(textureModel.ItemName, "Floor", StringComparison.OrdinalIgnoreCase),
                             Count = textureModel.GetVariations()
@@ -319,11 +301,11 @@ namespace AlternativeTextures
                 if (resourceClump is GiantCrop giantCrop)
                 {
                     var modelType = AlternativeTextureModel.TextureType.GiantCrop;
-                    var instanceName = Game1.objectInformation.ContainsKey(giantCrop.parentSheetIndex.Value) ? Game1.objectInformation[giantCrop.parentSheetIndex.Value].Split('/')[0] : String.Empty;
+                    var instanceName = Game1.objectData.ContainsKey(giantCrop.Id) ? Game1.objectData[giantCrop.Id].Name : String.Empty;
                     if (!giantCrop.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !giantCrop.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                     {
                         // Assign default modData
-                        var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(giantCrop.currentLocation)}";
+                        var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(giantCrop.Location)}";
                         PatchTemplate.AssignDefaultModData(giantCrop, instanceSeasonName, true);
                     }
 
@@ -354,7 +336,7 @@ namespace AlternativeTextures
                 else if (terrainFeature is HoeDirt hoeDirt && hoeDirt.crop is not null)
                 {
                     var modelType = AlternativeTextureModel.TextureType.Crop;
-                    var instanceName = Game1.objectInformation.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectInformation[hoeDirt.crop.netSeedIndex.Value].Split('/')[0] : String.Empty;
+                    var instanceName = Game1.objectData.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectData[hoeDirt.crop.netSeedIndex.Value].Name : String.Empty;
                     if (!hoeDirt.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !hoeDirt.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                     {
                         // Assign default modData
@@ -452,7 +434,7 @@ namespace AlternativeTextures
                     if (resourceClump is GiantCrop giantCrop)
                     {
                         var modelType = AlternativeTextureModel.TextureType.GiantCrop;
-                        var instanceName = Game1.objectInformation.ContainsKey(giantCrop.parentSheetIndex.Value) ? Game1.objectInformation[giantCrop.parentSheetIndex.Value].Split('/')[0] : String.Empty;
+                        var instanceName = Game1.objectData.ContainsKey(giantCrop.Id) ? Game1.objectData[giantCrop.Id].Name : String.Empty;
                         if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_{instanceName}")
                         {
                             giantCrop.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER];
@@ -481,7 +463,7 @@ namespace AlternativeTextures
                     else if (terrainFeature is HoeDirt hoeDirt && hoeDirt.crop is not null)
                     {
                         var modelType = AlternativeTextureModel.TextureType.Crop;
-                        var instanceName = Game1.objectInformation.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectInformation[hoeDirt.crop.netSeedIndex.Value].Split('/')[0] : String.Empty;
+                        var instanceName = Game1.objectData.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectData[hoeDirt.crop.netSeedIndex.Value].Name : String.Empty;
                         if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_{instanceName}")
                         {
                             hoeDirt.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER];
@@ -560,11 +542,11 @@ namespace AlternativeTextures
                 if (resourceClump is GiantCrop giantCrop)
                 {
                     var modelType = AlternativeTextureModel.TextureType.GiantCrop;
-                    var instanceName = Game1.objectInformation.ContainsKey(giantCrop.parentSheetIndex.Value) ? Game1.objectInformation[giantCrop.parentSheetIndex.Value].Split('/')[0] : String.Empty;
+                    var instanceName = Game1.objectData.ContainsKey(giantCrop.Id) ? Game1.objectData[giantCrop.Id].Name : String.Empty;
                     if (!giantCrop.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !giantCrop.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                     {
                         // Assign default modData
-                        var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(giantCrop.currentLocation)}";
+                        var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(giantCrop.Location)}";
                         PatchTemplate.AssignDefaultModData(giantCrop, instanceSeasonName, true);
                     }
 
@@ -585,7 +567,7 @@ namespace AlternativeTextures
                 else if (terrainFeature is HoeDirt hoeDirt && hoeDirt.crop is not null)
                 {
                     var modelType = AlternativeTextureModel.TextureType.Crop;
-                    var instanceName = Game1.objectInformation.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectInformation[hoeDirt.crop.netSeedIndex.Value].Split('/')[0] : String.Empty;
+                    var instanceName = Game1.objectData.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectData[hoeDirt.crop.netSeedIndex.Value].Name : String.Empty;
                     if (!hoeDirt.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !hoeDirt.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                     {
                         // Assign default modData
@@ -622,9 +604,7 @@ namespace AlternativeTextures
                 else if (terrainFeature is FruitTree fruitTree)
                 {
                     var modelType = AlternativeTextureModel.TextureType.FruitTree;
-                    Dictionary<int, string> data = Game1.content.Load<Dictionary<int, string>>("Data\\fruitTrees");
-                    var saplingIndex = data.FirstOrDefault(d => int.Parse(d.Value.Split('/')[0]) == fruitTree.treeType).Key;
-                    var saplingName = Game1.objectInformation.ContainsKey(saplingIndex) ? Game1.objectInformation[saplingIndex].Split('/')[0] : String.Empty;
+                    var saplingName = Game1.objectData.ContainsKey(fruitTree.treeId) ? Game1.objectData[fruitTree.treeId].Name : String.Empty;
                     if (!fruitTree.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !fruitTree.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                     {
                         // Assign default modData
@@ -724,7 +704,7 @@ namespace AlternativeTextures
                         if (resourceClump is GiantCrop giantCrop)
                         {
                             var modelType = AlternativeTextureModel.TextureType.GiantCrop;
-                            var instanceName = Game1.objectInformation.ContainsKey(giantCrop.parentSheetIndex.Value) ? Game1.objectInformation[giantCrop.parentSheetIndex.Value].Split('/')[0] : String.Empty;
+                            var instanceName = Game1.objectData.ContainsKey(giantCrop.Id) ? Game1.objectData[giantCrop.Id].Name : String.Empty;
                             if (tool.modData[SPRAY_CAN_FLAG] == $"{modelType}_{instanceName}")
                             {
                                 giantCrop.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = actualSelectedModel.Owner;
@@ -747,7 +727,7 @@ namespace AlternativeTextures
                         if (terrainFeature is HoeDirt hoeDirt && hoeDirt.crop is not null)
                         {
                             var modelType = AlternativeTextureModel.TextureType.Crop;
-                            var instanceName = Game1.objectInformation.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectInformation[hoeDirt.crop.netSeedIndex.Value].Split('/')[0] : String.Empty;
+                            var instanceName = Game1.objectData.ContainsKey(hoeDirt.crop.netSeedIndex.Value) ? Game1.objectData[hoeDirt.crop.netSeedIndex.Value].Name : String.Empty;
                             if (tool.modData[SPRAY_CAN_FLAG] == $"{modelType}_{instanceName}")
                             {
                                 hoeDirt.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = actualSelectedModel.Owner;
@@ -785,9 +765,7 @@ namespace AlternativeTextures
                         if (terrainFeature is FruitTree fruitTree)
                         {
                             var modelType = AlternativeTextureModel.TextureType.FruitTree;
-                            Dictionary<int, string> data = Game1.content.Load<Dictionary<int, string>>("Data\\fruitTrees");
-                            var saplingIndex = data.FirstOrDefault(d => int.Parse(d.Value.Split('/')[0]) == fruitTree.treeType).Key;
-                            var saplingName = Game1.objectInformation.ContainsKey(saplingIndex) ? Game1.objectInformation[saplingIndex].Split('/')[0] : String.Empty;
+                            var saplingName = Game1.fruitTreeData.ContainsKey(fruitTree.treeId) ? Game1.objectData[fruitTree.treeId].Name : String.Empty;
                             if (tool.modData[SPRAY_CAN_FLAG] == $"{modelType}_{saplingName}")
                             {
                                 fruitTree.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = actualSelectedModel.Owner;
@@ -828,12 +806,6 @@ namespace AlternativeTextures
             // Set our default configuration file
             modConfig = Helper.ReadConfig<ModConfig>();
 
-            // Hook into the APIs we utilize
-            if (Helper.ModRegistry.IsLoaded("spacechase0.JsonAssets"))
-            {
-                apiManager.HookIntoJsonAssets(Helper);
-            }
-
             if (Helper.ModRegistry.IsLoaded("spacechase0.MoreGiantCrops"))
             {
                 apiManager.HookIntoMoreGiantCrops(Helper);
@@ -856,10 +828,9 @@ namespace AlternativeTextures
             Monitor.Log($"Finished loading Alternative Textures content packs", LogLevel.Debug);
 
             // Register tools
-            foreach (var tool in assetManager.toolNames.ToList())
+            foreach (var tool in assetManager.toolKeyToData.ToList())
             {
-                var loadedTexture = Helper.GameContent.Load<Texture2D>(tool.Key);
-                assetManager.toolNames[tool.Key] = loadedTexture;
+                assetManager.toolKeyToData[tool.Key].Texture = Helper.GameContent.Load<Texture2D>(tool.Key);
             }
 
             // Hook into GMCM, if applicable
@@ -1050,12 +1021,33 @@ namespace AlternativeTextures
                         baseModel.Owner = contentPack.Manifest.UniqueID;
                         baseModel.PackName = contentPack.Manifest.Name;
                         baseModel.Author = contentPack.Manifest.Author;
-                        baseModel.Type = baseModel.GetTextureType();
 
-                        // Add to ItemName to CollectiveNames if ItemName is given
-                        if (String.IsNullOrEmpty(baseModel.ItemName) is false)
+                        // Handle SDV-related ItemName changes
+                        string originalItemName = baseModel.ItemName;
+                        if (baseModel.HandleNameChanges())
+                        {
+                            Monitor.Log($"The texture {baseModel.ItemName} from {contentPack.Manifest.Name} has an outdated ItemName that was handled automatically: {originalItemName} -> {baseModel.ItemName}", LogLevel.Trace);
+                        }
+
+                        // Add to ItemId to CollectiveIds if ItemName is given or add to ItemName to CollectiveNames if ItemName is given
+                        if (String.IsNullOrEmpty(baseModel.ItemId) is false)
+                        {
+                            baseModel.CollectiveIds.Add(baseModel.ItemId);
+                        }
+                        else if (String.IsNullOrEmpty(baseModel.ItemName) is false)
                         {
                             baseModel.CollectiveNames.Add(baseModel.ItemName);
+                        }
+
+                        // Combine the two collective lists
+                        var collectedCollective = new List<dynamic>();
+                        foreach (string itemName in baseModel.CollectiveNames)
+                        {
+                            collectedCollective.Add(new { Name = itemName, IsId = false });
+                        }
+                        foreach (string itemId in baseModel.CollectiveIds)
+                        {
+                            collectedCollective.Add(new { Name = itemId, IsId = true });
                         }
 
                         // Attempt to add an instance of each season
@@ -1068,19 +1060,27 @@ namespace AlternativeTextures
                             }
 
                             // Attempt to add each instance under CollectiveNames
-                            foreach (string itemName in baseModel.CollectiveNames)
+                            foreach (var textureData in collectedCollective)
                             {
                                 // Parse the model and assign it the content pack's owner
                                 AlternativeTextureModel textureModel = baseModel.ShallowCopy();
 
-                                // Override Grass Alternative Texture pack ItemName to always be Grass, in order to be compatible with translations 
-                                textureModel.ItemName = textureModel.Type == "Grass" ? "Grass" : itemName;
+                                // Set the ItemName or ItemId depending on IsId flag
+                                if (textureData.IsId is true)
+                                {
+                                    textureModel.ItemId = textureData.Name;
+                                }
+                                else
+                                {
+                                    // Override Grass Alternative Texture pack ItemName to always be Grass, in order to be compatible with translations 
+                                    textureModel.ItemName = textureModel.Type.ToString() == "Grass" ? "Grass" : textureData.Name;
+                                }
 
                                 // Verify that ItemName or ItemNames is given
-                                if (textureModel.CollectiveNames.Count == 0)
+                                if (collectedCollective.Count() == 0)
                                 {
-                                    Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: Missing the ItemName or CollectiveNames property! See the log for additional details.", LogLevel.Warn);
-                                    Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: Missing the ItemName or CollectiveNames property found in the following path: {textureFolder.FullName}", LogLevel.Trace);
+                                    Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: Missing the ItemName, ItemId, CollectiveNames or CollectiveIds property! See the log for additional details.", LogLevel.Warn);
+                                    Monitor.Log($"Unable to add alternative texture for {textureModel.Owner}: Missing the ItemName, ItemId, CollectiveNames or CollectiveIds property found in the following path: {textureFolder.FullName}", LogLevel.Trace);
                                     continue;
                                 }
 
@@ -1184,6 +1184,9 @@ namespace AlternativeTextures
                 monitor.Log($"[{contentPack.Manifest.Name}] finished loading in {Math.Round(individualLoadingStopwatch.ElapsedMilliseconds / 1000f, 2)} seconds", LogLevel.Trace);
             }
 
+            // Clear the wallpaper / flooring cache
+            Helper.GameContent.InvalidateCache("Data/AdditionalWallpaperFlooring");
+
             collectiveLoadingStopwatch.Stop();
             monitor.Log($"Finished loading all content packs in {Math.Round(collectiveLoadingStopwatch.ElapsedMilliseconds / 1000f, 2)} seconds", LogLevel.Trace);
         }
@@ -1276,10 +1279,10 @@ namespace AlternativeTextures
             }
             Type monsterType = Type.GetType("StardewValley.Monsters." + args[0] + ",Stardew Valley");
 
-            Monitor.Log(Game1.player.getTileLocation().ToString(), LogLevel.Debug);
+            Monitor.Log(Game1.player.Tile.ToString(), LogLevel.Debug);
             for (int i = 0; i < amountToSpawn; i++)
             {
-                var monster = Activator.CreateInstance(monsterType, new object[] { Game1.player.getTileLocation() }) as Monster;
+                var monster = Activator.CreateInstance(monsterType, new object[] { Game1.player.Tile }) as Monster;
                 monster.Position = Game1.player.Position;
                 Game1.currentLocation.characters.Add(monster);
             }
@@ -1306,7 +1309,7 @@ namespace AlternativeTextures
                 int yTile = 0;
                 var hoeDirt = tile.Value as HoeDirt;
 
-                if (hoeDirt.crop is null || hoeDirt.crop.indexOfHarvest != int.Parse(args[0]))
+                if (hoeDirt.crop is null || hoeDirt.crop.indexOfHarvest.Value != args[0])
                 {
                     continue;
                 }
@@ -1330,7 +1333,7 @@ namespace AlternativeTextures
                         }
                     }
 
-                    (environment as Farm).resourceClumps.Add(new GiantCrop(int.Parse(args[0]), new Vector2(xTile - 1, yTile - 1)));
+                    (environment as Farm).resourceClumps.Add(new GiantCrop(args[0], new Vector2(xTile - 1, yTile - 1)));
                 }
             }
         }
@@ -1355,7 +1358,7 @@ namespace AlternativeTextures
                 return;
             }
 
-            (Game1.currentLocation as Farm).resourceClumps.Add(new ResourceClump(600, 2, 2, Game1.player.getTileLocation() + new Vector2(1, 1)));
+            (Game1.currentLocation as Farm).resourceClumps.Add(new ResourceClump(600, 2, 2, Game1.player.Tile + new Vector2(1, 1)));
         }
 
         private void DebugSpawnChild(string command, string[] args)
@@ -1414,15 +1417,15 @@ namespace AlternativeTextures
 
         private void DebugShowPaintShop(string command, string[] args)
         {
-            var items = new Dictionary<ISalable, int[]>()
+            var items = new Dictionary<ISalable, ItemStockInformation>()
             {
-                { PatchTemplate.GetPaintBucketTool(), new int[2] { 500, 1 } },
-                { PatchTemplate.GetScissorsTool(), new int[2] { 500, 1 } },
-                { PatchTemplate.GetPaintBrushTool(), new int[2] { 500, 1 } },
-                { PatchTemplate.GetSprayCanTool(true), new int[2] { 500, 1 } },
-                { PatchTemplate.GetCatalogueTool(), new int[2] { 500, 1 } }
+                { PatchTemplate.GetPaintBucketTool(), new ItemStockInformation(500, 1) },
+                { PatchTemplate.GetScissorsTool(), new ItemStockInformation(500, 1) },
+                { PatchTemplate.GetPaintBrushTool(), new ItemStockInformation(500, 1) },
+                { PatchTemplate.GetSprayCanTool(true), new ItemStockInformation(500, 1) },
+                { PatchTemplate.GetCatalogueTool(), new ItemStockInformation(500, 1) }
             };
-            Game1.activeClickableMenu = new ShopMenu(items);
+            Game1.activeClickableMenu = new ShopMenu("Alternative Textures Debug", items);
         }
 
         private void DebugSetTexture(string command, string[] args)
@@ -1445,7 +1448,7 @@ namespace AlternativeTextures
                 variation = parsedVariation;
             }
 
-            var objectBelowPlayer = PatchTemplate.GetObjectAt(Game1.currentLocation, Game1.player.getTileX() * 64, (Game1.player.getTileY() + 1) * 64);
+            var objectBelowPlayer = PatchTemplate.GetObjectAt(Game1.currentLocation, (int)(Game1.player.Tile.X * 64), (int)(Game1.player.Tile.Y + 1) * 64);
             if (objectBelowPlayer is null)
             {
                 Monitor.Log($"No object detected below the player!", LogLevel.Warn);
@@ -1458,7 +1461,7 @@ namespace AlternativeTextures
 
         private void DebugClearTexture(string command, string[] args)
         {
-            var objectBelowPlayer = PatchTemplate.GetObjectAt(Game1.currentLocation, Game1.player.getTileX() * 64, (Game1.player.getTileY() + 1) * 64);
+            var objectBelowPlayer = PatchTemplate.GetObjectAt(Game1.currentLocation, (int)(Game1.player.Tile.X * 64), (int)(Game1.player.Tile.Y + 1) * 64);
             if (objectBelowPlayer is null)
             {
                 Monitor.Log($"No object detected below the player!", LogLevel.Warn);
@@ -1477,11 +1480,11 @@ namespace AlternativeTextures
         private void ConvertPaintBucketsToGenericTools(Farmer who)
         {
             // Check player's inventory first
-            for (int i = 0; i < (int)who.maxItems; i++)
+            for (int i = 0; i < who.MaxItems; i++)
             {
-                if (who.items[i] is MilkPail milkPail && milkPail.modData.ContainsKey(OLD_PAINT_BUCKET_FLAG))
+                if (who.Items[i] is MilkPail milkPail && milkPail.modData.ContainsKey(OLD_PAINT_BUCKET_FLAG))
                 {
-                    who.items[i] = PatchTemplate.GetPaintBucketTool();
+                    who.Items[i] = PatchTemplate.GetPaintBucketTool();
                 }
             }
 
@@ -1489,9 +1492,9 @@ namespace AlternativeTextures
             {
                 ConvertStoredPaintBucketsToGenericTools(who, location);
 
-                if (location is BuildableGameLocation)
+                if (location.buildings is not null)
                 {
-                    foreach (var building in (location as BuildableGameLocation).buildings)
+                    foreach (var building in location.buildings)
                     {
                         GameLocation indoorLocation = building.indoors.Value;
                         if (indoorLocation is null)
@@ -1516,7 +1519,7 @@ namespace AlternativeTextures
 
                 if (chest.SpecialChestType == Chest.SpecialChestTypes.JunimoChest)
                 {
-                    NetObjectList<Item> actual_items = chest.GetItemsForPlayer(who.UniqueMultiplayerID);
+                    var actual_items = chest.GetItemsForPlayer(who.UniqueMultiplayerID);
                     for (int j = actual_items.Count - 1; j >= 0; j--)
                     {
                         if (actual_items[j] is MilkPail milkPail && milkPail.modData.ContainsKey(OLD_PAINT_BUCKET_FLAG))
@@ -1527,11 +1530,11 @@ namespace AlternativeTextures
                 }
                 else
                 {
-                    for (int i = chest.items.Count - 1; i >= 0; i--)
+                    for (int i = chest.Items.Count - 1; i >= 0; i--)
                     {
-                        if (chest.items[i] is MilkPail milkPail && milkPail.modData.ContainsKey(OLD_PAINT_BUCKET_FLAG))
+                        if (chest.Items[i] is MilkPail milkPail && milkPail.modData.ContainsKey(OLD_PAINT_BUCKET_FLAG))
                         {
-                            chest.items[i] = PatchTemplate.GetPaintBucketTool();
+                            chest.Items[i] = PatchTemplate.GetPaintBucketTool();
                         }
                     }
                 }
@@ -1544,9 +1547,9 @@ namespace AlternativeTextures
             {
                 ConvertBadTypedObjectToNormalType(location);
 
-                if (location is BuildableGameLocation)
+                if (location.buildings is not null)
                 {
-                    foreach (var building in (location as BuildableGameLocation).buildings)
+                    foreach (var building in location.buildings)
                     {
                         GameLocation indoorLocation = building.indoors.Value;
                         if (indoorLocation is null)
@@ -1566,26 +1569,14 @@ namespace AlternativeTextures
             {
                 if (obj.Type == "Craftable" || obj.Type == "Unknown")
                 {
-                    if (obj.bigCraftable && Game1.bigCraftablesInformation.TryGetValue(obj.parentSheetIndex, out var bigObjectInfo))
+                    if (obj.bigCraftable.Value && Game1.bigCraftableData.TryGetValue(obj.ItemId, out var bigObjectInfo))
                     {
-                        string[] objectInfoArray = bigObjectInfo.Split('/');
-                        string[] typeAndCategory = objectInfoArray[3].Split(' ');
-                        obj.type.Value = typeAndCategory[0];
-
-                        if (typeAndCategory.Length > 1)
-                        {
-                            obj.Category = Convert.ToInt32(typeAndCategory[1]);
-                        }
+                        obj.Type = "Craftable";
                     }
-                    else if (!obj.bigCraftable && Game1.objectInformation.TryGetValue(obj.parentSheetIndex, out var objectInfo))
+                    else if (!obj.bigCraftable.Value && Game1.objectData.TryGetValue(obj.ItemId, out var objectInfo))
                     {
-                        string[] objectInfoArray = objectInfo.Split('/');
-                        string[] typeAndCategory = objectInfoArray[3].Split(' ');
-                        obj.type.Value = typeAndCategory[0];
-                        if (typeAndCategory.Length > 1)
-                        {
-                            obj.Category = Convert.ToInt32(typeAndCategory[1]);
-                        }
+                        obj.Type = objectInfo.Type;
+                        obj.Category = objectInfo.Category;
                     }
                 }
             }
