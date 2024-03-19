@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using AlternativeTextures.Framework.Enums;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using System;
@@ -12,12 +13,15 @@ namespace AlternativeTextures.Framework.Models
         public string Owner { get; set; }
         public string PackName { get; set; }
         public string Author { get; set; }
-        public string ItemName { get; set; }
+        public string ItemName { get { return string.IsNullOrEmpty(_itemName) ? ItemId : _itemName; } set { _itemName = value; } }
+        private string _itemName;
+        public string ItemId { get; set; }
         public List<string> CollectiveNames { get; set; } = new List<string>();
-        internal int ItemId { get; set; } = -1;
-        public string Type { get; set; }
+        public List<string> CollectiveIds { get; set; } = new List<string>();
+        public TextureType Type { get; set; }
         [Obsolete("No longer used due SMAPI 3.14.0 allowing for passive invalidation checks.")]
         public bool EnableContentPatcherCheck { get; set; }
+        public bool IgnoreBuildingColorMask { get; set; } // Only usable by Type == "Building"
         public List<string> Keywords { get; set; } = new List<string>();
         public List<string> Seasons { get; set; } = new List<string>(); // For use by mod user to determine which seasons the texture is valid for
         internal string Season { get; set; } // Used by framework to split the Seasons property into individual AlternativeTextureModel models
@@ -33,7 +37,7 @@ namespace AlternativeTextures.Framework.Models
         public List<AnimationModel> Animation { get; set; } = new List<AnimationModel>();
 
         public static int MAX_TEXTURE_HEIGHT { get { return 16384; } }
-        internal enum TextureType
+        public enum TextureType
         {
             Unknown,
             Craftable,
@@ -58,17 +62,17 @@ namespace AlternativeTextures.Framework.Models
 
         public string GetTextureType()
         {
-            if (!Enum.TryParse<TextureType>(Type.Trim(), true, out var textureType))
-            {
-                return TextureType.Unknown.ToString();
-            }
-
-            return textureType.ToString();
+            return Type.ToString();
         }
 
         public string GetId()
         {
             return TextureId;
+        }
+
+        public bool IsUsingItemId()
+        {
+            return string.IsNullOrEmpty(ItemId) is false;
         }
 
         public string GetTokenId(int? variation = null)
@@ -104,14 +108,32 @@ namespace AlternativeTextures.Framework.Models
             return GetAnimationData(variation).ElementAt(index);
         }
 
-        public Texture2D GetTexture(int variation)
+        public int GetNextValidFrameFromIndex(int variation, int index, bool isMachineActive)
         {
-            if (Textures.ContainsKey(variation))
+            var animationData = GetAnimationData(variation);
+
+            index += 1;
+            if (index >= GetAnimationData(variation).Count())
             {
-                return Textures[variation];
+                index = 0;
+                return index;
             }
 
-            return Textures[0];
+            return IsFrameValid(variation, index, isMachineActive) ? index : GetNextValidFrameFromIndex(variation, index, isMachineActive);
+        }
+
+        public Texture2D GetTexture(int variation)
+        {
+            var texture = Textures.ContainsKey(variation) ? Textures[variation] : Textures[0];
+            if (texture.IsDisposed)
+            {
+                // TODO: Look into why textures are disposed when patched via Content Patcher
+                AlternativeTextures.monitor.LogOnce($"Error drawing the texture {TextureId}: It was incorrectly disposed!", StardewModdingAPI.LogLevel.Warn);
+                AlternativeTextures.monitor.LogOnce(this.ToString(), StardewModdingAPI.LogLevel.Trace);
+                return AlternativeTextures.textureManager.ErrorTexture;
+            }
+
+            return texture;
         }
 
         public int GetTextureOffset(int variation)
@@ -164,6 +186,36 @@ namespace AlternativeTextures.Framework.Models
         public bool HasTint(int variation)
         {
             return ManualVariations.Any(v => v.Id == variation && v.HasTint());
+        }
+
+        internal bool IsFrameValid(int variation, int currentFrame, bool isMachineActive)
+        {
+            var animationData = GetAnimationDataAtIndex(variation, currentFrame);
+            if (animationData is null || (animationData.Type is FrameType.MachineActive && isMachineActive is false) || (animationData.Type is FrameType.MachineIdle && isMachineActive is true))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        internal bool HandleNameChanges()
+        {
+            if (ItemName is null)
+            {
+                return false;
+            }
+
+            if (Type is TextureType.Building)
+            {
+                if (ItemName.Equals("Log Cabin", StringComparison.OrdinalIgnoreCase) || ItemName.Equals("Plank Cabin", StringComparison.OrdinalIgnoreCase) || ItemName.Equals("Stone Cabin", StringComparison.OrdinalIgnoreCase))
+                {
+                    ItemName = "Cabin";
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public override string ToString()
