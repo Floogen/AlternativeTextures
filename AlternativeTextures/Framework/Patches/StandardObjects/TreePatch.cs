@@ -26,7 +26,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             harmony.Patch(AccessTools.Method(_object, nameof(Tree.draw), new[] { typeof(SpriteBatch) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Tree.seasonUpdate), new[] { typeof(bool) }), postfix: new HarmonyMethod(GetType(), nameof(SeasonUpdatePostfix)));
             harmony.Patch(AccessTools.Constructor(typeof(Tree), new[] { typeof(string) }), postfix: new HarmonyMethod(GetType(), nameof(TreePostfix)));
-            harmony.Patch(AccessTools.Constructor(typeof(Tree), new[] { typeof(string), typeof(int) }), postfix: new HarmonyMethod(GetType(), nameof(TreePostfix)));
+            harmony.Patch(AccessTools.Constructor(typeof(Tree), new[] { typeof(string), typeof(int), typeof(bool) }), postfix: new HarmonyMethod(GetType(), nameof(TreePostfix)));
         }
 
         private static bool DrawPrefix(Tree __instance, float ___shakeRotation, float ___shakeTimer, float ___alpha, List<Leaf> ___leaves, NetBool ___falling, SpriteBatch spriteBatch)
