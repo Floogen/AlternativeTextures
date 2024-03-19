@@ -144,7 +144,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                     {
                         spriteBatch.Draw(textureModel.GetTexture(textureVariation), __instance.getLocalPosition(Game1.viewport) + new Vector2(32f, 0f), new Rectangle(32, textureOffset, 16, 16), Color.White * alpha, __instance.scale.X, new Vector2(8f, 8f), 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64) / 10000f + 0.0001f + (float)x * 1E-05f));
                     }
-                    if ((bool)__instance.isLamp && Game1.isDarkOut())
+                    if ((bool)__instance.isLamp && Game1.isDarkOut(Game1.currentLocation))
                     {
                         spriteBatch.Draw(Game1.mouseCursors, position + new Vector2(-32f, -32f), new Rectangle(88, 1779, 32, 32), Color.White * 0.75f, 0f, Vector2.Zero, 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64 - 20) / 10000f) + (float)x / 1000000f);
                     }
