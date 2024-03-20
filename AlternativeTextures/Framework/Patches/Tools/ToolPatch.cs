@@ -609,7 +609,8 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 {
                     Name = character.Name,
                     displayName = character.displayName,
-                    TileLocation = character.Tile
+                    TileLocation = character.Tile,
+                    Location = location
                 };
                 obj.modData.SetFromSerialization(character.modData);
 

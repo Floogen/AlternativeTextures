@@ -127,7 +127,6 @@ namespace AlternativeTextures.Framework.Models
             var texture = Textures.ContainsKey(variation) ? Textures[variation] : Textures[0];
             if (texture.IsDisposed)
             {
-                // TODO: Look into why textures are disposed when patched via Content Patcher
                 AlternativeTextures.monitor.LogOnce($"Error drawing the texture {TextureId}: It was incorrectly disposed!", StardewModdingAPI.LogLevel.Warn);
                 AlternativeTextures.monitor.LogOnce(this.ToString(), StardewModdingAPI.LogLevel.Trace);
                 return AlternativeTextures.textureManager.ErrorTexture;

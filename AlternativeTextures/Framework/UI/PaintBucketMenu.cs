@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Buildings;
+using StardewValley.Characters;
 using StardewValley.GameData.GiantCrops;
 using StardewValley.Internal;
 using StardewValley.Locations;
@@ -60,6 +61,8 @@ namespace AlternativeTextures.Framework.UI
 
         private bool _isSprayCan;
         protected Dictionary<string, SelectedTextureModel> _selectedIdsToModels;
+        private Dictionary<string, Texture2D> _skinIdToTextures = new Dictionary<string, Texture2D>();
+        private Dictionary<string, Texture2D> _breedIdToTextures = new Dictionary<string, Texture2D>();
 
         public PaintBucketMenu(Object target, Vector2 position, TextureType textureType, string modelName, string uiTitle = "Paint Bucket", int textureTileWidth = -1, bool isSprayCan = false, string textureOwnerKey = ModDataKeys.ALTERNATIVE_TEXTURE_OWNER, string textureNameKey = ModDataKeys.ALTERNATIVE_TEXTURE_NAME, string textureVariationKey = ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION, string textureSeasonKey = ModDataKeys.ALTERNATIVE_TEXTURE_SEASON, string textureDisplayNameKey = ModDataKeys.ALTERNATIVE_TEXTURE_DISPLAY_NAME) : base(0, 0, 832, 576, showUpperRightCloseButton: true)
         {
@@ -173,6 +176,83 @@ namespace AlternativeTextures.Framework.UI
                     this.cachedTextureOptions.Insert(index, decoration);
 
                     index++;
+                }
+            }
+            else if (textureType is TextureType.Character && PatchTemplate.GetCharacterAt(target.Location, (int)position.X, (int)position.Y) is Character character)
+            {
+                // Handle vanilla / Content Patcher added skins
+                if (character is FarmAnimal animal && animal.GetAnimalData() is var animalData && animalData is not null && animalData.Skins is not null)
+                {
+                    // Iterate
+                    foreach (var skin in animalData.Skins.OrderByDescending(s => s.Id))
+                    {
+                        try
+                        {
+                            _skinIdToTextures[skin.Id] = AlternativeTextures.modHelper.GameContent.Load<Texture2D>(animal.isBaby() ? skin.BabyTexture : skin.Texture);
+
+                            var animalInstance = target.getOne();
+                            animalInstance.modData[textureOwnerKey] = AlternativeTextures.DEFAULT_OWNER;
+                            animalInstance.modData[textureNameKey] = $"{skin.Id}";
+                            animalInstance.modData[textureDisplayNameKey] = $"{skin.Id}";
+                            animalInstance.modData[textureVariationKey] = $"{-1}";
+                            animalInstance.modData[textureSeasonKey] = String.Empty;
+
+                            this.filteredTextureOptions.Insert(0, animalInstance);
+                            this.cachedTextureOptions.Insert(0, animalInstance);
+                        }
+                        catch (Exception ex)
+                        {
+                            AlternativeTextures.monitor.Log($"Failed to load animal skin for {skin.Id}: {ex}", StardewModdingAPI.LogLevel.Trace);
+                        }
+                    }
+
+                    // Add the vanilla skin (i.e. none)
+                    try
+                    {
+                        var tempSkinId = animal.skinID.Value;
+                        animal.skinID.Value = null;
+                        _skinIdToTextures[AlternativeTextures.DEFAULT_OWNER] = AlternativeTextures.modHelper.GameContent.Load<Texture2D>(animal.GetTexturePath());
+                        animal.skinID.Value = tempSkinId;
+
+                        var animalInstance = target.getOne();
+                        animalInstance.modData[textureOwnerKey] = AlternativeTextures.DEFAULT_OWNER;
+                        animalInstance.modData[textureNameKey] = $"{AlternativeTextures.DEFAULT_OWNER}";
+                        animalInstance.modData[textureDisplayNameKey] = $"{AlternativeTextures.DEFAULT_OWNER}";
+                        animalInstance.modData[textureVariationKey] = $"{-1}";
+                        animalInstance.modData[textureSeasonKey] = String.Empty;
+
+                        this.filteredTextureOptions.Insert(0, animalInstance);
+                        this.cachedTextureOptions.Insert(0, animalInstance);
+                    }
+                    catch (Exception ex)
+                    {
+                        AlternativeTextures.monitor.Log($"Failed to load default animal skin for {animal.Name}: {ex}", StardewModdingAPI.LogLevel.Trace);
+                    }
+
+                }
+                else if (character is Pet pet && pet.GetPetData() is var petData && petData is not null && petData.Breeds is not null)
+                {
+                    foreach (var breed in petData.Breeds.OrderByDescending(b => b.Id))
+                    {
+                        try
+                        {
+                            _breedIdToTextures[breed.Id] = AlternativeTextures.modHelper.GameContent.Load<Texture2D>(breed.Texture);
+
+                            var petInstance = target.getOne();
+                            petInstance.modData[textureOwnerKey] = AlternativeTextures.DEFAULT_OWNER;
+                            petInstance.modData[textureNameKey] = $"{breed.Id}";
+                            petInstance.modData[textureDisplayNameKey] = $"{breed.Id}";
+                            petInstance.modData[textureVariationKey] = $"{-1}";
+                            petInstance.modData[textureSeasonKey] = String.Empty;
+
+                            this.filteredTextureOptions.Insert(0, petInstance);
+                            this.cachedTextureOptions.Insert(0, petInstance);
+                        }
+                        catch (Exception ex)
+                        {
+                            AlternativeTextures.monitor.Log($"Failed to load pet breed for {breed.Id}: {ex}", StardewModdingAPI.LogLevel.Trace);
+                        }
+                    }
                 }
             }
             else
@@ -417,7 +497,9 @@ namespace AlternativeTextures.Framework.UI
                 }
                 else
                 {
-                    filteredTextureOptions = cachedTextureOptions.Where(i => !i.modData[_textureNameKey].Contains(AlternativeTextures.DEFAULT_OWNER) && AlternativeTextures.textureManager.GetSpecificTextureModel(i.modData[_textureNameKey]) is AlternativeTextureModel model && model.HasKeyword(i.modData[_textureVariationKey], _searchBox.Text)).ToList();
+                    var preFilteredTextureOptions = cachedTextureOptions.Where(i => !i.modData[_textureOwnerKey].Contains(AlternativeTextures.DEFAULT_OWNER) && AlternativeTextures.textureManager.GetSpecificTextureModel(i.modData[_textureNameKey]) is AlternativeTextureModel model && model.HasKeyword(i.modData[_textureVariationKey], _searchBox.Text));
+                    var vanillaFilteredTexureOptions = cachedTextureOptions.Where(i => i.modData[_textureOwnerKey].Contains(AlternativeTextures.DEFAULT_OWNER) && i.modData[_textureNameKey].Contains(_searchBox.Text, StringComparison.OrdinalIgnoreCase));
+                    filteredTextureOptions = preFilteredTextureOptions.Concat(vanillaFilteredTexureOptions).ToList();
                 }
             }
         }
@@ -439,6 +521,15 @@ namespace AlternativeTextures.Framework.UI
                         foreach (string key in c.item.modData.Keys)
                         {
                             character.modData[key] = c.item.modData[key];
+                        }
+
+                        if (character is FarmAnimal animal && _skinIdToTextures.ContainsKey(character.modData[_textureNameKey]))
+                        {
+                            animal.skinID.Value = animal.modData[_textureNameKey];
+                        }
+                        else if (character is Pet pet && _breedIdToTextures.ContainsKey(character.modData[_textureNameKey]))
+                        {
+                            pet.whichBreed.Value = pet.modData[_textureNameKey];
                         }
                     }
                     else if (PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) != null)
@@ -611,8 +702,22 @@ namespace AlternativeTextures.Framework.UI
                             else if (_textureType is TextureType.Character && PatchTemplate.GetCharacterAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Character character && character != null)
                             {
                                 character.Sprite.loadedTexture = String.Empty;
-                                this.availableTextures[i].texture = character.Sprite.Texture;
-                                this.availableTextures[i].sourceRect = character.Sprite.SourceRect;
+                                if (character is FarmAnimal animal && _skinIdToTextures.ContainsKey(target.modData[_textureNameKey]))
+                                {
+                                    this.availableTextures[i].texture = _skinIdToTextures[target.modData[_textureNameKey]];
+                                    this.availableTextures[i].sourceRect = character.Sprite.SourceRect;
+                                }
+                                else if (character is Pet pet && _breedIdToTextures.ContainsKey(target.modData[_textureNameKey]))
+                                {
+                                    this.availableTextures[i].texture = _breedIdToTextures[target.modData[_textureNameKey]];
+                                    this.availableTextures[i].sourceRect = character.Sprite.SourceRect;
+                                }
+                                else
+                                {
+                                    this.availableTextures[i].texture = character.Sprite.Texture;
+                                    this.availableTextures[i].sourceRect = character.Sprite.SourceRect;
+                                }
+
                                 this.availableTextures[i].draw(b, colorOverlay, 0.87f);
                             }
                             else if (_textureType is TextureType.Craftable && PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) != null)
