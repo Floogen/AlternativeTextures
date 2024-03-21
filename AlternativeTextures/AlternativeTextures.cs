@@ -68,6 +68,7 @@ namespace AlternativeTextures
 
         // Managers
         internal static TextureManager textureManager;
+        internal static MessageManager messageManager;
         internal static ApiManager apiManager;
         internal static AssetManager assetManager;
 
@@ -90,6 +91,7 @@ namespace AlternativeTextures
 
             // Setup our managers
             textureManager = new TextureManager(monitor, helper);
+            messageManager = new MessageManager(monitor, helper, ModManifest.UniqueID);
             apiManager = new ApiManager(monitor);
             assetManager = new AssetManager(helper);
 
@@ -178,6 +180,17 @@ namespace AlternativeTextures
             // Hook into the Content events
             helper.Events.Content.AssetRequested += OnContentAssetRequested;
             helper.Events.Content.AssetReady += OnContentAssetReady;
+
+            // Hook into Multiplayer events
+            helper.Events.Multiplayer.ModMessageReceived += OnModMessageReceived;
+        }
+
+        private void OnModMessageReceived(object sender, ModMessageReceivedEventArgs e)
+        {
+            if (e.FromModID == ModManifest.UniqueID)
+            {
+                messageManager.HandleIncomingMessage(e);
+            }
         }
 
         private void OnContentAssetReady(object sender, AssetReadyEventArgs e)

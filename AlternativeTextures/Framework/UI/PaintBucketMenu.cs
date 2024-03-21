@@ -570,6 +570,7 @@ namespace AlternativeTextures.Framework.UI
                         }
 
                         building.resetTexture();
+                        AlternativeTextures.messageManager.SendBuildingTextureUpdate(building);
 
                         if (building is ShippingBin shippingBin && shippingBin.modData[_textureOwnerKey] == AlternativeTextures.DEFAULT_OWNER)
                         {

@@ -46,6 +46,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
 
             var instanceName = String.Concat(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER], ".", $"{AlternativeTextureModel.TextureType.Building}_{GetBuildingName(__instance)}");
             var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
+
             if (!String.Equals(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME], instanceName, StringComparison.OrdinalIgnoreCase) && !String.Equals(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME], instanceSeasonName, StringComparison.OrdinalIgnoreCase))
             {
                 __instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = String.Concat(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER], ".", $"{AlternativeTextureModel.TextureType.Building}_{GetBuildingName(__instance)}");
@@ -168,6 +169,26 @@ namespace AlternativeTextures.Framework.Patches.Buildings
             }
 
             return true;
+        }
+
+        internal static void ForceResetTexture(Building __instance, string textureName, string variation)
+        {
+            var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(textureName);
+            if (textureModel is null)
+            {
+                return;
+            }
+
+            var textureVariation = Int32.Parse(variation);
+            if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
+            {
+                return;
+            }
+
+            __instance.texture = new Lazy<Texture2D>(delegate
+            {
+                return GetBuildingTextureWithPaint(__instance, textureModel, textureVariation);
+            });
         }
 
         private static void GetSourceRectPostfix(Building __instance, ref Rectangle __result)
