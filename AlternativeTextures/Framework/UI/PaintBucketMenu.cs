@@ -228,7 +228,7 @@ namespace AlternativeTextures.Framework.UI
                     {
                         AlternativeTextures.monitor.Log($"Failed to load default animal skin for {animal.Name}: {ex}", StardewModdingAPI.LogLevel.Trace);
                     }
-                    
+
                     if (availableModels.Count == 0)
                     {
                         availableModels.Add(new AlternativeTextureModel() { TextureHeight = animal.Sprite.Texture.Height, TextureWidth = animal.Sprite.Texture.Width, Textures = new Dictionary<int, Texture2D>() { { 0, animal.Sprite.Texture } } });

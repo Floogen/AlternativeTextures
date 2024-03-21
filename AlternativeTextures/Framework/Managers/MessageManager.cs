@@ -1,16 +1,11 @@
 ﻿using AlternativeTextures.Framework.Patches.Buildings;
 using AlternativeTextures.Framework.Utilities;
-using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Buildings;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AlternativeTextures.Framework.Managers
 {
@@ -73,8 +68,9 @@ namespace AlternativeTextures.Framework.Managers
                 return;
             }
 
-            var message = new BuildingTextureUpdateMessage() { 
-                LocationName = building.GetParentLocation().NameOrUniqueName, 
+            var message = new BuildingTextureUpdateMessage()
+            {
+                LocationName = building.GetParentLocation().NameOrUniqueName,
                 BuildingID = building.id.Value,
                 TextureName = building.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME],
                 TextureVariation = building.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION]
