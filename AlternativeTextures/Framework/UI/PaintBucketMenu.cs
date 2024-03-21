@@ -228,7 +228,11 @@ namespace AlternativeTextures.Framework.UI
                     {
                         AlternativeTextures.monitor.Log($"Failed to load default animal skin for {animal.Name}: {ex}", StardewModdingAPI.LogLevel.Trace);
                     }
-
+                    
+                    if (availableModels.Count == 0)
+                    {
+                        availableModels.Add(new AlternativeTextureModel() { TextureHeight = animal.Sprite.Texture.Height, TextureWidth = animal.Sprite.Texture.Width, Textures = new Dictionary<int, Texture2D>() { { 0, animal.Sprite.Texture } } });
+                    }
                 }
                 else if (character is Pet pet && pet.GetPetData() is var petData && petData is not null && petData.Breeds is not null)
                 {
@@ -252,6 +256,11 @@ namespace AlternativeTextures.Framework.UI
                         {
                             AlternativeTextures.monitor.Log($"Failed to load pet breed for {breed.Id}: {ex}", StardewModdingAPI.LogLevel.Trace);
                         }
+                    }
+
+                    if (availableModels.Count == 0)
+                    {
+                        availableModels.Add(new AlternativeTextureModel() { TextureHeight = pet.Sprite.Texture.Height, TextureWidth = pet.Sprite.Texture.Width, Textures = new Dictionary<int, Texture2D>() { { 0, pet.Sprite.Texture } } });
                     }
                 }
             }

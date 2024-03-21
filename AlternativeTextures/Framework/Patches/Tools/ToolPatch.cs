@@ -9,6 +9,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Buildings;
+using StardewValley.Characters;
 using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.TerrainFeatures;
@@ -600,8 +601,15 @@ namespace AlternativeTextures.Framework.Patches.Tools
 
                 if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
                 {
-                    Game1.addHUDMessage(new HUDMessage(_helper.Translation.Get("messages.warning.no_textures_for_season", new { itemName = modelName }), 3));
-                    return CancelUsing(who);
+                    if ((character is Pet pet && pet.GetPetData() is var petData && petData is not null && petData.Breeds is not null) || (character is FarmAnimal animal && animal.GetAnimalData() is var animalData && animalData is not null && animalData.Skins is not null))
+                    {
+                        // Skip no texture warning
+                    }
+                    else
+                    {
+                        Game1.addHUDMessage(new HUDMessage(_helper.Translation.Get("messages.warning.no_textures_for_season", new { itemName = modelName }), 3));
+                        return CancelUsing(who);
+                    }
                 }
 
                 // Display texture menu
