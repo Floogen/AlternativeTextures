@@ -161,7 +161,7 @@ namespace AlternativeTextures.Framework.Patches
 
             if (character is Pet pet)
             {
-                return pet is Cat ? "Cat" : "Dog";
+                return pet.petType.Value;
             }
 
             return character.name;
