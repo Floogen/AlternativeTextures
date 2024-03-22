@@ -178,7 +178,7 @@ namespace AlternativeTextures.Framework.UI
                     index++;
                 }
             }
-            else if (textureType is TextureType.Character && PatchTemplate.GetCharacterAt(target.Location, (int)position.X, (int)position.Y) is Character character)
+            else if (textureType is TextureType.Character && PatchTemplate.GetCharacterAt(target.Location, (int)position.X, (int)position.Y) is Character character && character is not Horse)
             {
                 // Handle vanilla / Content Patcher added skins
                 if (character is FarmAnimal animal && animal.GetAnimalData() is var animalData && animalData is not null && animalData.Skins is not null)
