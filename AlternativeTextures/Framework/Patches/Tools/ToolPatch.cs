@@ -224,7 +224,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
 
                 // Check for mailbox
                 var mailboxPosition = farmerHouse.getMailboxPosition();
-                if (mailboxPosition.X == (x / 64) && (mailboxPosition.Y == (y / 64) || mailboxPosition.Y == (y / 64) + 1))
+                if ((mailboxPosition.X - 1 == (x / 64)) && (mailboxPosition.Y == (y / 64) || mailboxPosition.Y == (y / 64) + 1))
                 {
                     var modelType = AlternativeTextureModel.TextureType.Building;
                     if (!location.modData.ContainsKey("AlternativeTextureName.Mailbox") || !location.modData["AlternativeTextureName.Mailbox"].Contains("Mailbox"))
