@@ -150,6 +150,7 @@ namespace AlternativeTextures.Framework.UI
             }
 
             // Add the vanilla version
+            bool hasHandledVanillaVersion = false;
             if (textureType is TextureType.Decoration)
             {
                 int index = 0;
@@ -177,6 +178,8 @@ namespace AlternativeTextures.Framework.UI
 
                     index++;
                 }
+
+                hasHandledVanillaVersion = true;
             }
             else if (textureType is TextureType.Building && PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)position.X, (int)position.Y) is Building building)
             {
@@ -203,16 +206,6 @@ namespace AlternativeTextures.Framework.UI
                             AlternativeTextures.monitor.Log($"Failed to load building skin for {skin.Id}: {ex}", StardewModdingAPI.LogLevel.Trace);
                         }
                     }
-
-                    // Add the vanilla skin (i.e. none)
-                    var vanillaObject = target.getOne();
-                    vanillaObject.modData[textureOwnerKey] = AlternativeTextures.DEFAULT_OWNER;
-                    vanillaObject.modData[textureNameKey] = $"{vanillaObject.modData[textureOwnerKey]}.{modelName}";
-                    vanillaObject.modData[textureVariationKey] = $"{-1}";
-                    vanillaObject.modData[textureSeasonKey] = String.Empty;
-
-                    this.filteredTextureOptions.Insert(0, vanillaObject);
-                    this.cachedTextureOptions.Insert(0, vanillaObject);
 
                     if (availableModels.Count == 0)
                     {
@@ -274,6 +267,8 @@ namespace AlternativeTextures.Framework.UI
                     {
                         availableModels.Add(new AlternativeTextureModel() { TextureHeight = animal.Sprite.Texture.Height, TextureWidth = animal.Sprite.Texture.Width, Textures = new Dictionary<int, Texture2D>() { { 0, animal.Sprite.Texture } } });
                     }
+
+                    hasHandledVanillaVersion = true;
                 }
                 else if (character is Pet pet && pet.GetPetData() is var petData && petData is not null && petData.Breeds is not null)
                 {
@@ -303,9 +298,12 @@ namespace AlternativeTextures.Framework.UI
                     {
                         availableModels.Add(new AlternativeTextureModel() { TextureHeight = pet.Sprite.Texture.Height, TextureWidth = pet.Sprite.Texture.Width, Textures = new Dictionary<int, Texture2D>() { { 0, pet.Sprite.Texture } } });
                     }
+
+                    hasHandledVanillaVersion = true;
                 }
             }
-            else
+
+            if (hasHandledVanillaVersion is false)
             {
                 var vanillaObject = target.getOne();
                 vanillaObject.modData[textureOwnerKey] = AlternativeTextures.DEFAULT_OWNER;
