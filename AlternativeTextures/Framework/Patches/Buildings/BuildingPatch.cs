@@ -210,8 +210,11 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                 return;
             }
 
-            var yOffset = textureModel.GetTextureOffset(textureVariation);
-            __result = new Rectangle(0, yOffset, __result.Width, __result.Height);
+            var buildingData = __instance.GetData();
+            var xOffset = buildingData is null ? 0 : buildingData.SourceRect.X;
+            var yOffset = textureModel.GetTextureOffset(textureVariation) + (buildingData is null ? 0 : buildingData.SourceRect.Y);
+
+            __result = new Rectangle(xOffset, yOffset, __result.Width, __result.Height);
         }
 
         internal static bool DrawPrefix(Building __instance, float ___alpha, SpriteBatch b)
