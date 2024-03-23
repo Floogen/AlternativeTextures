@@ -293,7 +293,16 @@ namespace AlternativeTextures.Framework.Patches.Buildings
 
             var baseTexture = textureModel.GetTexture(textureVariation);
 
+            // Handle instances where required paint masks are missing but textureModel.IgnoreBuildingColorMask is false
             bool canReallyBePainted = (building.CanBePainted() || canBePaintedOverride) && textureModel.IgnoreBuildingColorMask is false;
+            var originalTexture = AlternativeTextures.modHelper.GameContent.Load<Texture2D>(building.textureName());
+            if (originalTexture is not null)
+            {
+                if (canReallyBePainted && baseTexture.Width <= originalTexture.Width)
+                {
+                    canReallyBePainted = false;
+                }
+            }
 
             if (building.paintedTexture != null)
             {
