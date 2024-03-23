@@ -317,8 +317,15 @@ namespace AlternativeTextures.Framework.Patches.Tools
 
                     if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
                     {
-                        Game1.addHUDMessage(new HUDMessage(_helper.Translation.Get("messages.warning.no_textures_for_season", new { itemName = modelName }), 3));
-                        return CancelUsing(who);
+                        if (targetedBuilding.GetData() is var data && data is not null && data.Skins is not null && data.Skins.Count > 0)
+                        {
+                            // Skip no texture warning
+                        }
+                        else
+                        {
+                            Game1.addHUDMessage(new HUDMessage(_helper.Translation.Get("messages.warning.no_textures_for_season", new { itemName = modelName }), 3));
+                            return CancelUsing(who);
+                        }
                     }
 
                     // Verify this building has a texture we can target

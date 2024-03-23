@@ -178,12 +178,53 @@ namespace AlternativeTextures.Framework.UI
                     index++;
                 }
             }
+            else if (textureType is TextureType.Building && PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)position.X, (int)position.Y) is Building building)
+            {
+                if (building.GetData() is var buildingData && buildingData is not null && buildingData.Skins is not null && buildingData.Skins.Count > 0)
+                {
+                    foreach (var skin in buildingData.Skins.OrderByDescending(s => s.Id))
+                    {
+                        try
+                        {
+                            _skinIdToTextures[skin.Id] = AlternativeTextures.modHelper.GameContent.Load<Texture2D>(skin.Texture);
+
+                            var buildingInstance = target.getOne();
+                            buildingInstance.modData[textureOwnerKey] = AlternativeTextures.DEFAULT_OWNER;
+                            buildingInstance.modData[textureNameKey] = $"{skin.Id}";
+                            buildingInstance.modData[textureDisplayNameKey] = $"{skin.Id}";
+                            buildingInstance.modData[textureVariationKey] = $"{-1}";
+                            buildingInstance.modData[textureSeasonKey] = String.Empty;
+
+                            this.filteredTextureOptions.Insert(0, buildingInstance);
+                            this.cachedTextureOptions.Insert(0, buildingInstance);
+                        }
+                        catch (Exception ex)
+                        {
+                            AlternativeTextures.monitor.Log($"Failed to load building skin for {skin.Id}: {ex}", StardewModdingAPI.LogLevel.Trace);
+                        }
+                    }
+
+                    // Add the vanilla skin (i.e. none)
+                    var vanillaObject = target.getOne();
+                    vanillaObject.modData[textureOwnerKey] = AlternativeTextures.DEFAULT_OWNER;
+                    vanillaObject.modData[textureNameKey] = $"{vanillaObject.modData[textureOwnerKey]}.{modelName}";
+                    vanillaObject.modData[textureVariationKey] = $"{-1}";
+                    vanillaObject.modData[textureSeasonKey] = String.Empty;
+
+                    this.filteredTextureOptions.Insert(0, vanillaObject);
+                    this.cachedTextureOptions.Insert(0, vanillaObject);
+
+                    if (availableModels.Count == 0)
+                    {
+                        availableModels.Add(new AlternativeTextureModel() { TextureHeight = building.texture.Value.Height, TextureWidth = building.texture.Value.Width, Textures = new Dictionary<int, Texture2D>() { { 0, building.texture.Value } } });
+                    }
+                }
+            }
             else if (textureType is TextureType.Character && PatchTemplate.GetCharacterAt(target.Location, (int)position.X, (int)position.Y) is Character character && character is not Horse)
             {
                 // Handle vanilla / Content Patcher added skins
                 if (character is FarmAnimal animal && animal.GetAnimalData() is var animalData && animalData is not null && animalData.Skins is not null)
                 {
-                    // Iterate
                     foreach (var skin in animalData.Skins.OrderByDescending(s => s.Id))
                     {
                         try
@@ -569,6 +610,15 @@ namespace AlternativeTextures.Framework.UI
                             building.modData[key] = c.item.modData[key];
                         }
 
+                        if (_skinIdToTextures.ContainsKey(building.modData[_textureNameKey]))
+                        {
+                            building.skinId.Value = building.modData[_textureNameKey];
+                        }
+                        else
+                        {
+                            building.skinId.Value = null;
+                        }
+
                         building.resetTexture();
                         AlternativeTextures.messageManager.SendBuildingTextureUpdate(building);
 
@@ -813,6 +863,16 @@ namespace AlternativeTextures.Framework.UI
                             else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Building building)
                             {
                                 BuildingPatch.ResetTextureReversePatch(building);
+
+                                if (_skinIdToTextures.ContainsKey(target.modData[_textureNameKey]))
+                                {
+                                    this.availableTextures[i].texture = _skinIdToTextures[target.modData[_textureNameKey]];
+                                    building.skinId.Value = target.modData[_textureNameKey];
+                                }
+                                else
+                                {
+                                    building.skinId.Value = null;
+                                }
                                 BuildingPatch.CondensedDrawInMenu(building, building.texture.Value, b, this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y, _buildingScale);
 
                                 if (building is ShippingBin shippingBin)
