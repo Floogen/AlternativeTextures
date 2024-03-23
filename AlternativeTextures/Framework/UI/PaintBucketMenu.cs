@@ -625,7 +625,7 @@ namespace AlternativeTextures.Framework.UI
                             shippingBin.initLid();
                         }
                     }
-                    else if (Game1.currentLocation is Farm mailBoxFarm && mailBoxFarm.GetMainMailboxPosition() is Point mailboxPosition && mailboxPosition.X == (_position.X / 64) && (mailboxPosition.Y == (_position.Y / 64) || mailboxPosition.Y == (_position.Y / 64) + 1))
+                    else if (Game1.currentLocation is Farm mailBoxFarm && mailBoxFarm.GetMainMailboxPosition() is Point mailboxPosition && PatchTemplate.IsPositionNearMailbox(Game1.currentLocation, mailboxPosition, (int)(_position.X / 64), (int)(_position.Y / 64)))
                     {
                         foreach (string key in c.item.modData.Keys)
                         {
@@ -853,7 +853,7 @@ namespace AlternativeTextures.Framework.UI
 
                                 b.Draw(house_texture, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), BuildingPatch.GetSourceRectReversePatch(farmerHouse), farmerHouse.color, 0f, new Vector2(0f, 0f), _buildingScale, SpriteEffects.None, 0.89f);
                             }
-                            else if (Game1.currentLocation is Farm mailBoxFarm && mailBoxFarm.GetMainMailboxPosition() is Point mailboxPosition && mailboxPosition.X == (_position.X / 64) && (mailboxPosition.Y == (_position.Y / 64) || mailboxPosition.Y == (_position.Y / 64) + 1))
+                            else if (Game1.currentLocation is Farm mailBoxFarm && mailBoxFarm.GetMainMailboxPosition() is Point mailboxPosition && PatchTemplate.IsPositionNearMailbox(Game1.currentLocation, mailboxPosition, (int)(_position.X / 64), (int)(_position.Y / 64)))
                             {
                                 Texture2D mailboxTexture = Game1.content.Load<Texture2D>($"Maps\\{Game1.currentSeason.ToLower()}_outdoorsTileSheet");
                                 b.Draw(mailboxTexture, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), new Rectangle(80, 1232, 16, 32), Color.White, 0f, new Vector2(0f, 0f), 4f, SpriteEffects.None, 0.89f);
@@ -960,7 +960,7 @@ namespace AlternativeTextures.Framework.UI
 
                             b.Draw(BuildingPatch.GetBuildingTextureWithPaint(farmerHouse, textureModel, variation, true), new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), new Rectangle(0, 0, sourceRectangle.Width, sourceRectangle.Height), farmerHouse.color, 0f, new Vector2(0f, 0f), _buildingScale, SpriteEffects.None, 0.89f);
                         }
-                        else if (Game1.currentLocation is Farm mailBoxFarm && mailBoxFarm.GetMainMailboxPosition() is Point mailboxPosition && mailboxPosition.X == (_position.X / 64) && (mailboxPosition.Y == (_position.Y / 64) || mailboxPosition.Y == (_position.Y / 64) + 1))
+                        else if (Game1.currentLocation is Farm mailBoxFarm && mailBoxFarm.GetMainMailboxPosition() is Point mailboxPosition && PatchTemplate.IsPositionNearMailbox(Game1.currentLocation, mailboxPosition, (int)(_position.X / 64), (int)(_position.Y / 64)))
                         {
                             b.Draw(textureModel.GetTexture(variation), new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), new Rectangle(0, textureModel.GetTextureOffset(variation), 16, 32), Color.White, 0f, new Vector2(0f, 0f), 4f, SpriteEffects.None, 0.89f);
                         }

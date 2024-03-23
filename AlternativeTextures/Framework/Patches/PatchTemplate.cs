@@ -387,6 +387,12 @@ namespace AlternativeTextures.Framework.Patches
             return false;
         }
 
+        internal static bool IsPositionNearMailbox(GameLocation location, Point mailboxPosition, int x, int y)
+        {
+            bool isNearMailbox = (mailboxPosition.X == x) && (mailboxPosition.Y == y || mailboxPosition.Y == y + 1);
+            return isNearMailbox;
+        }
+
         internal static bool IsDGAUsed()
         {
             return _helper.ModRegistry.IsLoaded("spacechase0.DynamicGameAssets");
