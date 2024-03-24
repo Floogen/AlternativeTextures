@@ -8,6 +8,7 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.GameData.Buildings;
+using StardewValley.GameData.HomeRenovations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -213,6 +214,16 @@ namespace AlternativeTextures.Framework.Patches.Buildings
             var buildingData = __instance.GetData();
             var xOffset = buildingData is null ? 0 : buildingData.SourceRect.X;
             var yOffset = textureModel.GetTextureOffset(textureVariation) + (buildingData is null ? 0 : buildingData.SourceRect.Y);
+
+            // Handle Greenhouse logic
+            if (__instance.buildingType.Value == "Greenhouse")
+            {
+                Farm farm = __instance.GetParentLocation() as Farm;
+                if (farm is not null && farm.greenhouseUnlocked.Value is false)
+                {
+                    yOffset -= buildingData.SourceRect.Height;
+                }
+            }
 
             __result = new Rectangle(xOffset, yOffset, __result.Width, __result.Height);
         }
