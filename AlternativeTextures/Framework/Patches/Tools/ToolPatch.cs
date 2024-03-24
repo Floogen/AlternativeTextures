@@ -223,7 +223,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 var farmerHouse = farm.GetMainFarmHouse();
 
                 // Check for mailbox
-                var mailboxPosition = farmerHouse.getMailboxPosition();
+                var mailboxPosition = farm.GetMainMailboxPosition();
                 if (PatchTemplate.IsPositionNearMailbox(location, mailboxPosition, x / 64, y / 64))
                 {
                     var modelType = AlternativeTextureModel.TextureType.Building;
