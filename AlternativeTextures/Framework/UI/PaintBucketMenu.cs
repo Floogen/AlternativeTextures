@@ -631,6 +631,13 @@ namespace AlternativeTextures.Framework.UI
                         {
                             Game1.currentLocation.modData[key] = c.item.modData[key];
                         }
+
+                        var farmerHouse = mailBoxFarm.GetMainFarmHouse();
+                        if (farmerHouse.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) is false)
+                        {
+                            var instanceSeasonName = $"{TextureType.Building}_{$"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}"}_{Game1.currentSeason}";
+                            PatchTemplate.AssignDefaultModData(farmerHouse, instanceSeasonName, true);
+                        }
                     }
                     else if (Game1.currentLocation is DecoratableLocation decoratableLocation && (string.IsNullOrEmpty(decoratableLocation.GetFloorID((int)_position.X, (int)_position.Y)) is false || string.IsNullOrEmpty(decoratableLocation.GetWallpaperID((int)_position.X, (int)_position.Y)) is false))
                     {
