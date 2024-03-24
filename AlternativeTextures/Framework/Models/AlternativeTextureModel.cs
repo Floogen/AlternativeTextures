@@ -92,6 +92,16 @@ namespace AlternativeTextures.Framework.Models
             return ManualVariations.Where(v => v.Id >= 0).Count() > 0 ? ManualVariations.Where(v => v.Id >= 0).Count() : Variations;
         }
 
+        public bool IsManualVariationsValid()
+        {
+            if (ManualVariations.Any(v => v.Id == 1) is true && ManualVariations.Any(v => v.Id == 0) is false)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public List<AnimationModel> GetAnimationData(int variation)
         {
             var manualVariation = ManualVariations.FirstOrDefault(v => v.Id == variation && v.HasAnimation());

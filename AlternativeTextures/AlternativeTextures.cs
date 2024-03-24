@@ -1134,10 +1134,17 @@ namespace AlternativeTextures
                                         Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: Split textures (texture_1.png, texture_2.png, etc.) are not allowed for Decoration types (wallpapers / floors). Located in the following path: {textureFolder.FullName}", LogLevel.Trace);
                                         continue;
                                     }
+
                                     if (textureModel.GetVariations() < textureFilePaths.Count())
                                     {
                                         Monitor.Log($"Warning for alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: There are less variations specified in texture.json than split textures files. See the log for additional details.", LogLevel.Warn);
                                         Monitor.Log($"Warning for alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: There are less variations specified in texture.json than split textures files found in the following path: {textureFolder.FullName}", LogLevel.Trace);
+                                    }
+                                    else if (textureModel.IsManualVariationsValid() is false)
+                                    {
+                                        Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: ManualVariations is used but does not start with ID == 0 (the propery should be zero-indexed). See the log for additional details.", LogLevel.Warn);
+                                        Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: ManualVariations is used but does not start with ID == 0 (the propery should be zero-indexed). Adjust the ID order so that it starts with ID = 0. Located in the following path: {textureFolder.FullName}", LogLevel.Trace);
+                                        continue;
                                     }
 
                                     // Load in the first texture_#.png to get its dimensions for creating stitchedTexture
