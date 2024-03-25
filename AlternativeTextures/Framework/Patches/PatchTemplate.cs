@@ -141,7 +141,7 @@ namespace AlternativeTextures.Framework.Patches
                 {
                     animalName = "Baby" + (animal.type.Value.Equals("Duck") ? "White Chicken" : animal.type.Value);
                 }
-                else if (string.IsNullOrEmpty(animal.GetAnimalData().HarvestedTexture) is false && string.IsNullOrEmpty(animal.currentProduce.Value) is true)
+                else if (animal.GetAnimalData() is not null && string.IsNullOrEmpty(animal.GetAnimalData().HarvestedTexture) is false && string.IsNullOrEmpty(animal.currentProduce.Value) is true)
                 {
                     animalName = "Sheared" + animalName;
                 }
