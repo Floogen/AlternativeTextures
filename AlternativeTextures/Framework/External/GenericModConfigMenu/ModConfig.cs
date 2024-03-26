@@ -8,6 +8,7 @@ namespace AlternativeTextures.Framework.External.GenericModConfigMenu
     public class ModConfig
     {
         public bool OutputTextureDataToLog { get; set; }
+        public bool UseRandomTexturesWhenSpawningArtifactSpots { get; set; } = true;
         public bool UseRandomTexturesWhenPlacingFlooring { get; set; } = false;
         public bool UseRandomTexturesWhenPlacingFruitTree { get; set; } = true;
         public bool UseRandomTexturesWhenPlacingTree { get; set; } = true;

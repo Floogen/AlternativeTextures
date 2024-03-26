@@ -854,6 +854,7 @@ namespace AlternativeTextures
 
                 // Register the standard settings
                 configApi.RegisterLabel(ModManifest, $"Use Random Textures When Placing...", String.Empty);
+                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenSpawningArtifactSpots, value => modConfig.UseRandomTexturesWhenSpawningArtifactSpots = value, () => "Artifact Spots");
                 configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingFlooring, value => modConfig.UseRandomTexturesWhenPlacingFlooring = value, () => "Flooring");
                 configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingFruitTree, value => modConfig.UseRandomTexturesWhenPlacingFruitTree = value, () => "Fruit Tree");
                 configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingTree, value => modConfig.UseRandomTexturesWhenPlacingTree = value, () => "Tree");
@@ -880,7 +881,7 @@ namespace AlternativeTextures
                     configApi.OverridePageDisplayName(ModManifest, contentPack.Manifest.UniqueID, CleanContentPackNameForConfig(contentPack.Manifest.Name));
 
                     // Create a page label for each TextureType under this content pack
-                    configApi.RegisterLabel(ModManifest, $"Catagories", String.Empty);
+                    configApi.RegisterLabel(ModManifest, $"Categories", String.Empty);
                     foreach (var textureType in textureManager.GetAllTextures().Where(t => t.Owner == contentPack.Manifest.UniqueID).Select(t => t.GetTextureType()).Distinct().OrderBy(t => t))
                     {
                         configApi.RegisterPageLabel(ModManifest, String.Concat("> ", textureType), String.Empty, String.Concat(contentPack.Manifest.UniqueID, ".", textureType));
