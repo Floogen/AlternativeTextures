@@ -337,7 +337,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 return;
             }
 
-            var instanceName = $"{AlternativeTextureModel.TextureType.Craftable}_{GetObjectName(__instance)}";
+            var instanceName = $"{AlternativeTextureModel.TextureType.ArtifactSpot}_{GetObjectName(__instance)}";
             var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
 
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))

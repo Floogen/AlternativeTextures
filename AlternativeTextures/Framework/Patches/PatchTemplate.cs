@@ -433,7 +433,11 @@ namespace AlternativeTextures.Framework.Patches
                     return AlternativeTextures.modConfig.UseRandomTexturesWhenPlacingGrass;
                 case Furniture:
                     return AlternativeTextures.modConfig.UseRandomTexturesWhenPlacingFurniture;
-                case Object:
+                case Object obj:
+                    if (obj is not null && obj.Name == "Artifact Spot")
+                    {
+                        return AlternativeTextures.modConfig.UseRandomTexturesWhenSpawningArtifactSpots;
+                    }
                     return AlternativeTextures.modConfig.UseRandomTexturesWhenPlacingObject;
                 case FarmAnimal:
                     return AlternativeTextures.modConfig.UseRandomTexturesWhenPlacingFarmAnimal;
