@@ -29,7 +29,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             harmony.Patch(AccessTools.Method(_object, nameof(Object.rot), null), postfix: new HarmonyMethod(GetType(), nameof(RotPostfix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Object.placementAction), new[] { typeof(GameLocation), typeof(int), typeof(int), typeof(Farmer) }), postfix: new HarmonyMethod(GetType(), nameof(PlacementActionPostfix)));
 
-            harmony.Patch(AccessTools.Constructor(_object, new[] { typeof(Vector2), typeof(string), typeof(bool) }), postfix: new HarmonyMethod(GetType(), nameof(ObjectPostfix)));
+            harmony.Patch(AccessTools.Constructor(_object, new[] { typeof(string), typeof(int), typeof(bool), typeof(int), typeof(int) }), postfix: new HarmonyMethod(GetType(), nameof(ObjectPostfix)));
 
             if (PatchTemplate.IsDGAUsed())
             {
@@ -329,10 +329,10 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             AssignDefaultModData(placedObject, instanceSeasonName, true, placedObject.bigCraftable);
         }
 
-        private static void ObjectPostfix(Object __instance, Vector2 tileLocation, string itemId, bool isRecipe = false)
+        private static void ObjectPostfix(Object __instance, string itemId, int initialStack, bool isRecipe = false, int price = -1, int quality = 0)
         {
             // Handle only artifact spots
-            if (__instance.parentSheetIndex != 590)
+            if (itemId.Equals("590") is false)
             {
                 return;
             }
