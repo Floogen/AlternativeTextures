@@ -9,6 +9,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Buildings;
+using StardewValley.Characters;
 using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.TerrainFeatures;
@@ -222,8 +223,8 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 var farmerHouse = farm.GetMainFarmHouse();
 
                 // Check for mailbox
-                var mailboxPosition = farmerHouse.getMailboxPosition();
-                if (mailboxPosition.X == (x / 64) && (mailboxPosition.Y == (y / 64) || mailboxPosition.Y == (y / 64) + 1))
+                var mailboxPosition = farm.GetMainMailboxPosition();
+                if (PatchTemplate.IsPositionNearMailbox(location, mailboxPosition, x / 64, y / 64))
                 {
                     var modelType = AlternativeTextureModel.TextureType.Building;
                     if (!location.modData.ContainsKey("AlternativeTextureName.Mailbox") || !location.modData["AlternativeTextureName.Mailbox"].Contains("Mailbox"))
@@ -288,7 +289,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     var modelType = AlternativeTextureModel.TextureType.Building;
                     if (!farm.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !farm.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME].Contains(targetedBuilding.buildingType.Value))
                     {
-                        var instanceSeasonName = $"{modelType}_{targetedBuilding.buildingType}_{Game1.currentSeason}";
+                        var instanceSeasonName = $"{modelType}_{targetedBuilding.buildingType.Value}_{Game1.currentSeason}";
                         AssignDefaultModData(farm, instanceSeasonName, true);
                     }
 
@@ -304,7 +305,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     if (!targetedBuilding.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
                     {
                         var modelType = AlternativeTextureModel.TextureType.Building;
-                        var instanceSeasonName = $"{modelType}_{targetedBuilding.buildingType}_{Game1.currentSeason}";
+                        var instanceSeasonName = $"{modelType}_{targetedBuilding.buildingType.Value}_{Game1.currentSeason}";
                         AssignDefaultModData(targetedBuilding, instanceSeasonName, true);
                     }
 
@@ -316,8 +317,15 @@ namespace AlternativeTextures.Framework.Patches.Tools
 
                     if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
                     {
-                        Game1.addHUDMessage(new HUDMessage(_helper.Translation.Get("messages.warning.no_textures_for_season", new { itemName = modelName }), 3));
-                        return CancelUsing(who);
+                        if (targetedBuilding.GetData() is var data && data is not null && data.Skins is not null && data.Skins.Count > 0)
+                        {
+                            // Skip no texture warning
+                        }
+                        else
+                        {
+                            Game1.addHUDMessage(new HUDMessage(_helper.Translation.Get("messages.warning.no_textures_for_season", new { itemName = modelName }), 3));
+                            return CancelUsing(who);
+                        }
                     }
 
                     // Verify this building has a texture we can target
@@ -600,8 +608,15 @@ namespace AlternativeTextures.Framework.Patches.Tools
 
                 if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
                 {
-                    Game1.addHUDMessage(new HUDMessage(_helper.Translation.Get("messages.warning.no_textures_for_season", new { itemName = modelName }), 3));
-                    return CancelUsing(who);
+                    if ((character is Pet pet && pet.GetPetData() is var petData && petData is not null && petData.Breeds is not null) || (character is FarmAnimal animal && animal.GetAnimalData() is var animalData && animalData is not null && animalData.Skins is not null))
+                    {
+                        // Skip no texture warning
+                    }
+                    else
+                    {
+                        Game1.addHUDMessage(new HUDMessage(_helper.Translation.Get("messages.warning.no_textures_for_season", new { itemName = modelName }), 3));
+                        return CancelUsing(who);
+                    }
                 }
 
                 // Display texture menu
@@ -609,7 +624,8 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 {
                     Name = character.Name,
                     displayName = character.displayName,
-                    TileLocation = character.Tile
+                    TileLocation = character.Tile,
+                    Location = location
                 };
                 obj.modData.SetFromSerialization(character.modData);
 

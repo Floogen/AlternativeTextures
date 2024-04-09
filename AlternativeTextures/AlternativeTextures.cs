@@ -68,6 +68,7 @@ namespace AlternativeTextures
 
         // Managers
         internal static TextureManager textureManager;
+        internal static MessageManager messageManager;
         internal static ApiManager apiManager;
         internal static AssetManager assetManager;
 
@@ -90,6 +91,7 @@ namespace AlternativeTextures
 
             // Setup our managers
             textureManager = new TextureManager(monitor, helper);
+            messageManager = new MessageManager(monitor, helper, ModManifest.UniqueID);
             apiManager = new ApiManager(monitor);
             assetManager = new AssetManager(helper);
 
@@ -178,6 +180,17 @@ namespace AlternativeTextures
             // Hook into the Content events
             helper.Events.Content.AssetRequested += OnContentAssetRequested;
             helper.Events.Content.AssetReady += OnContentAssetReady;
+
+            // Hook into Multiplayer events
+            helper.Events.Multiplayer.ModMessageReceived += OnModMessageReceived;
+        }
+
+        private void OnModMessageReceived(object sender, ModMessageReceivedEventArgs e)
+        {
+            if (e.FromModID == ModManifest.UniqueID)
+            {
+                messageManager.HandleIncomingMessage(e);
+            }
         }
 
         private void OnContentAssetReady(object sender, AssetReadyEventArgs e)
@@ -841,6 +854,7 @@ namespace AlternativeTextures
 
                 // Register the standard settings
                 configApi.RegisterLabel(ModManifest, $"Use Random Textures When Placing...", String.Empty);
+                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenSpawningArtifactSpots, value => modConfig.UseRandomTexturesWhenSpawningArtifactSpots = value, () => "Artifact Spots");
                 configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingFlooring, value => modConfig.UseRandomTexturesWhenPlacingFlooring = value, () => "Flooring");
                 configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingFruitTree, value => modConfig.UseRandomTexturesWhenPlacingFruitTree = value, () => "Fruit Tree");
                 configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingTree, value => modConfig.UseRandomTexturesWhenPlacingTree = value, () => "Tree");
@@ -867,7 +881,7 @@ namespace AlternativeTextures
                     configApi.OverridePageDisplayName(ModManifest, contentPack.Manifest.UniqueID, CleanContentPackNameForConfig(contentPack.Manifest.Name));
 
                     // Create a page label for each TextureType under this content pack
-                    configApi.RegisterLabel(ModManifest, $"Catagories", String.Empty);
+                    configApi.RegisterLabel(ModManifest, $"Categories", String.Empty);
                     foreach (var textureType in textureManager.GetAllTextures().Where(t => t.Owner == contentPack.Manifest.UniqueID).Select(t => t.GetTextureType()).Distinct().OrderBy(t => t))
                     {
                         configApi.RegisterPageLabel(ModManifest, String.Concat("> ", textureType), String.Empty, String.Concat(contentPack.Manifest.UniqueID, ".", textureType));
@@ -1022,13 +1036,6 @@ namespace AlternativeTextures
                         baseModel.PackName = contentPack.Manifest.Name;
                         baseModel.Author = contentPack.Manifest.Author;
 
-                        // Handle SDV-related ItemName changes
-                        string originalItemName = baseModel.ItemName;
-                        if (baseModel.HandleNameChanges())
-                        {
-                            Monitor.Log($"The texture {baseModel.ItemName} from {contentPack.Manifest.Name} has an outdated ItemName that was handled automatically: {originalItemName} -> {baseModel.ItemName}", LogLevel.Trace);
-                        }
-
                         // Add to ItemId to CollectiveIds if ItemName is given or add to ItemName to CollectiveNames if ItemName is given
                         if (String.IsNullOrEmpty(baseModel.ItemId) is false)
                         {
@@ -1037,6 +1044,22 @@ namespace AlternativeTextures
                         else if (String.IsNullOrEmpty(baseModel.ItemName) is false)
                         {
                             baseModel.CollectiveNames.Add(baseModel.ItemName);
+                        }
+
+                        // Handle SDV and framework related changes
+                        string originalItemName = baseModel.ItemName;
+                        if (baseModel.HandleNameChanges() is List<string> changedNames && changedNames.Count > 0)
+                        {
+                            foreach (var changedName in changedNames)
+                            {
+                                Monitor.Log($"The texture {baseModel.ItemName} from {contentPack.Manifest.Name} has an outdated ItemName that was handled automatically: {originalItemName} -> {changedName}", LogLevel.Trace);
+                            }
+                        }
+
+                        var originalType = baseModel.Type;
+                        if (baseModel.HandleTypeChanges())
+                        {
+                            Monitor.Log($"The texture {baseModel.ItemName} from {contentPack.Manifest.Name} has an outdated Type that was handled automatically: {originalType} -> {baseModel.Type}", LogLevel.Trace);
                         }
 
                         // Combine the two collective lists
@@ -1121,10 +1144,17 @@ namespace AlternativeTextures
                                         Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: Split textures (texture_1.png, texture_2.png, etc.) are not allowed for Decoration types (wallpapers / floors). Located in the following path: {textureFolder.FullName}", LogLevel.Trace);
                                         continue;
                                     }
+
                                     if (textureModel.GetVariations() < textureFilePaths.Count())
                                     {
                                         Monitor.Log($"Warning for alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: There are less variations specified in texture.json than split textures files. See the log for additional details.", LogLevel.Warn);
                                         Monitor.Log($"Warning for alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: There are less variations specified in texture.json than split textures files found in the following path: {textureFolder.FullName}", LogLevel.Trace);
+                                    }
+                                    else if (textureModel.IsManualVariationsValid() is false)
+                                    {
+                                        Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: ManualVariations is used but does not start with ID == 0 (the propery should be zero-indexed). See the log for additional details.", LogLevel.Warn);
+                                        Monitor.Log($"Unable to add alternative texture for item {textureModel.ItemName} from {contentPack.Manifest.Name}: ManualVariations is used but does not start with ID == 0 (the propery should be zero-indexed). Adjust the ID order so that it starts with ID = 0. Located in the following path: {textureFolder.FullName}", LogLevel.Trace);
+                                        continue;
                                     }
 
                                     // Load in the first texture_#.png to get its dimensions for creating stitchedTexture

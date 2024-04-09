@@ -52,7 +52,8 @@ namespace AlternativeTextures.Framework.Models
             Furniture,
             Character,
             Building,
-            Decoration
+            Decoration,
+            ArtifactSpot
         }
 
         public AlternativeTextureModel ShallowCopy()
@@ -92,6 +93,16 @@ namespace AlternativeTextures.Framework.Models
             return ManualVariations.Where(v => v.Id >= 0).Count() > 0 ? ManualVariations.Where(v => v.Id >= 0).Count() : Variations;
         }
 
+        public bool IsManualVariationsValid()
+        {
+            if (ManualVariations.Any(v => v.Id == 1) is true && ManualVariations.Any(v => v.Id == 0) is false)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public List<AnimationModel> GetAnimationData(int variation)
         {
             var manualVariation = ManualVariations.FirstOrDefault(v => v.Id == variation && v.HasAnimation());
@@ -127,7 +138,6 @@ namespace AlternativeTextures.Framework.Models
             var texture = Textures.ContainsKey(variation) ? Textures[variation] : Textures[0];
             if (texture.IsDisposed)
             {
-                // TODO: Look into why textures are disposed when patched via Content Patcher
                 AlternativeTextures.monitor.LogOnce($"Error drawing the texture {TextureId}: It was incorrectly disposed!", StardewModdingAPI.LogLevel.Warn);
                 AlternativeTextures.monitor.LogOnce(this.ToString(), StardewModdingAPI.LogLevel.Trace);
                 return AlternativeTextures.textureManager.ErrorTexture;
@@ -199,20 +209,50 @@ namespace AlternativeTextures.Framework.Models
             return true;
         }
 
-        internal bool HandleNameChanges()
+        internal List<string> HandleNameChanges()
         {
-            if (ItemName is null)
+            List<string> changedNames = new List<string>();
+            if (CollectiveNames is not null)
+            {
+                for (int x = 0; x < CollectiveNames.Count; x++)
+                {
+                    var changedName = AlternativeTextureModel.GetNameChange(Type, CollectiveNames[x]);
+
+                    if (CollectiveNames[x] != changedName)
+                    {
+                        changedNames.Add(changedName);
+                        CollectiveNames[x] = changedName;
+                    }
+                }
+            }
+
+            return changedNames;
+        }
+
+        private static string GetNameChange(TextureType type, string name)
+        {
+            if (type is TextureType.Building)
+            {
+                if (name.Equals("Log Cabin", StringComparison.OrdinalIgnoreCase) || name.Equals("Plank Cabin", StringComparison.OrdinalIgnoreCase) || name.Equals("Stone Cabin", StringComparison.OrdinalIgnoreCase))
+                {
+                    return "Cabin";
+                }
+            }
+
+            return name;
+        }        
+
+        internal bool HandleTypeChanges()
+        {
+            if (CollectiveNames is null)
             {
                 return false;
             }
 
-            if (Type is TextureType.Building)
+            if (Type is TextureType.Craftable && CollectiveNames.Any(n => n.Equals("Artifact Spot", StringComparison.OrdinalIgnoreCase)))
             {
-                if (ItemName.Equals("Log Cabin", StringComparison.OrdinalIgnoreCase) || ItemName.Equals("Plank Cabin", StringComparison.OrdinalIgnoreCase) || ItemName.Equals("Stone Cabin", StringComparison.OrdinalIgnoreCase))
-                {
-                    ItemName = "Cabin";
-                    return true;
-                }
+                Type = TextureType.ArtifactSpot;
+                return true;
             }
 
             return false;

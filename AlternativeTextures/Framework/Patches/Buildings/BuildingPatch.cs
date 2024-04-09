@@ -8,6 +8,7 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.GameData.Buildings;
+using StardewValley.GameData.HomeRenovations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,6 +47,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
 
             var instanceName = String.Concat(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER], ".", $"{AlternativeTextureModel.TextureType.Building}_{GetBuildingName(__instance)}");
             var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
+
             if (!String.Equals(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME], instanceName, StringComparison.OrdinalIgnoreCase) && !String.Equals(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME], instanceSeasonName, StringComparison.OrdinalIgnoreCase))
             {
                 __instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = String.Concat(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER], ".", $"{AlternativeTextureModel.TextureType.Building}_{GetBuildingName(__instance)}");
@@ -132,7 +134,7 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                             sortY /= 10000f;
                             Rectangle sourceRect = drawLayer.GetSourceRect((int)Game1.currentGameTime.TotalGameTime.TotalMilliseconds);
                             sourceRect = building.ApplySourceRectOffsets(sourceRect);
-                            Texture2D layerTexture = building.texture.Value;
+                            Texture2D layerTexture = texture;
                             if (drawLayer.Texture != null)
                             {
                                 layerTexture = Game1.content.Load<Texture2D>(drawLayer.Texture);
@@ -170,6 +172,26 @@ namespace AlternativeTextures.Framework.Patches.Buildings
             return true;
         }
 
+        internal static void ForceResetTexture(Building __instance, string textureName, string variation)
+        {
+            var textureModel = AlternativeTextures.textureManager.GetSpecificTextureModel(textureName);
+            if (textureModel is null)
+            {
+                return;
+            }
+
+            var textureVariation = Int32.Parse(variation);
+            if (textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
+            {
+                return;
+            }
+
+            __instance.texture = new Lazy<Texture2D>(delegate
+            {
+                return GetBuildingTextureWithPaint(__instance, textureModel, textureVariation);
+            });
+        }
+
         private static void GetSourceRectPostfix(Building __instance, ref Rectangle __result)
         {
             if (__instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) is false)
@@ -189,8 +211,21 @@ namespace AlternativeTextures.Framework.Patches.Buildings
                 return;
             }
 
-            var yOffset = textureModel.GetTextureOffset(textureVariation);
-            __result = new Rectangle(0, yOffset, __result.Width, __result.Height);
+            var buildingData = __instance.GetData();
+            var xOffset = buildingData is null ? 0 : buildingData.SourceRect.X;
+            var yOffset = textureModel.GetTextureOffset(textureVariation) + (buildingData is null ? 0 : buildingData.SourceRect.Y);
+
+            // Handle Greenhouse logic
+            if (__instance.buildingType.Value == "Greenhouse")
+            {
+                Farm farm = __instance.GetParentLocation() as Farm;
+                if (farm is not null && farm.greenhouseUnlocked.Value is false)
+                {
+                    yOffset -= buildingData.SourceRect.Height;
+                }
+            }
+
+            __result = new Rectangle(xOffset, yOffset, __result.Width, __result.Height);
         }
 
         internal static bool DrawPrefix(Building __instance, float ___alpha, SpriteBatch b)
@@ -272,7 +307,16 @@ namespace AlternativeTextures.Framework.Patches.Buildings
 
             var baseTexture = textureModel.GetTexture(textureVariation);
 
+            // Handle instances where required paint masks are missing but textureModel.IgnoreBuildingColorMask is false
             bool canReallyBePainted = (building.CanBePainted() || canBePaintedOverride) && textureModel.IgnoreBuildingColorMask is false;
+            var originalTexture = AlternativeTextures.modHelper.GameContent.Load<Texture2D>(building.textureName());
+            if (originalTexture is not null)
+            {
+                if (canReallyBePainted && baseTexture.Width <= originalTexture.Width)
+                {
+                    canReallyBePainted = false;
+                }
+            }
 
             if (building.paintedTexture != null)
             {

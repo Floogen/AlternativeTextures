@@ -141,7 +141,7 @@ namespace AlternativeTextures.Framework.Patches
                 {
                     animalName = "Baby" + (animal.type.Value.Equals("Duck") ? "White Chicken" : animal.type.Value);
                 }
-                else if (string.IsNullOrEmpty(animal.GetAnimalData().HarvestedTexture) is false && string.IsNullOrEmpty(animal.currentProduce.Value) is true)
+                else if (animal.GetAnimalData() is not null && string.IsNullOrEmpty(animal.GetAnimalData().HarvestedTexture) is false && string.IsNullOrEmpty(animal.currentProduce.Value) is true)
                 {
                     animalName = "Sheared" + animalName;
                 }
@@ -161,7 +161,7 @@ namespace AlternativeTextures.Framework.Patches
 
             if (character is Pet pet)
             {
-                return pet is Cat ? "Cat" : "Dog";
+                return pet.petType.Value;
             }
 
             return character.name;
@@ -387,6 +387,12 @@ namespace AlternativeTextures.Framework.Patches
             return false;
         }
 
+        internal static bool IsPositionNearMailbox(GameLocation location, Point mailboxPosition, int x, int y)
+        {
+            bool isNearMailbox = (mailboxPosition.X == x) && (mailboxPosition.Y == y || mailboxPosition.Y == y + 1);
+            return isNearMailbox;
+        }
+
         internal static bool IsDGAUsed()
         {
             return _helper.ModRegistry.IsLoaded("spacechase0.DynamicGameAssets");
@@ -427,7 +433,11 @@ namespace AlternativeTextures.Framework.Patches
                     return AlternativeTextures.modConfig.UseRandomTexturesWhenPlacingGrass;
                 case Furniture:
                     return AlternativeTextures.modConfig.UseRandomTexturesWhenPlacingFurniture;
-                case Object:
+                case Object obj:
+                    if (obj is not null && obj.Name == "Artifact Spot")
+                    {
+                        return AlternativeTextures.modConfig.UseRandomTexturesWhenSpawningArtifactSpots;
+                    }
                     return AlternativeTextures.modConfig.UseRandomTexturesWhenPlacingObject;
                 case FarmAnimal:
                     return AlternativeTextures.modConfig.UseRandomTexturesWhenPlacingFarmAnimal;

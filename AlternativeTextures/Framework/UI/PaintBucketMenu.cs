@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Buildings;
+using StardewValley.Characters;
 using StardewValley.GameData.GiantCrops;
 using StardewValley.Internal;
 using StardewValley.Locations;
@@ -60,6 +61,8 @@ namespace AlternativeTextures.Framework.UI
 
         private bool _isSprayCan;
         protected Dictionary<string, SelectedTextureModel> _selectedIdsToModels;
+        private Dictionary<string, Texture2D> _skinIdToTextures = new Dictionary<string, Texture2D>();
+        private Dictionary<string, Texture2D> _breedIdToTextures = new Dictionary<string, Texture2D>();
 
         public PaintBucketMenu(Object target, Vector2 position, TextureType textureType, string modelName, string uiTitle = "Paint Bucket", int textureTileWidth = -1, bool isSprayCan = false, string textureOwnerKey = ModDataKeys.ALTERNATIVE_TEXTURE_OWNER, string textureNameKey = ModDataKeys.ALTERNATIVE_TEXTURE_NAME, string textureVariationKey = ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION, string textureSeasonKey = ModDataKeys.ALTERNATIVE_TEXTURE_SEASON, string textureDisplayNameKey = ModDataKeys.ALTERNATIVE_TEXTURE_DISPLAY_NAME) : base(0, 0, 832, 576, showUpperRightCloseButton: true)
         {
@@ -101,7 +104,7 @@ namespace AlternativeTextures.Framework.UI
                         objectWithVariation.modData[textureNameKey] = availableModels[m].GetId();
                         objectWithVariation.modData[textureVariationKey] = manualVariations[v].Id.ToString();
                         objectWithVariation.modData[textureSeasonKey] = availableModels[m].Season;
-                        objectWithVariation.modData[textureDisplayNameKey] = manualVariations[v].Name;
+                        objectWithVariation.modData[textureDisplayNameKey] = String.IsNullOrEmpty(manualVariations[v].Name) ? String.Empty : manualVariations[v].Name;
 
                         if (AlternativeTextures.modConfig.IsTextureVariationDisabled(objectWithVariation.modData[textureNameKey], manualVariations[v].Id))
                         {
@@ -147,6 +150,7 @@ namespace AlternativeTextures.Framework.UI
             }
 
             // Add the vanilla version
+            bool hasHandledVanillaVersion = false;
             if (textureType is TextureType.Decoration)
             {
                 int index = 0;
@@ -174,12 +178,137 @@ namespace AlternativeTextures.Framework.UI
 
                     index++;
                 }
+
+                hasHandledVanillaVersion = true;
             }
-            else
+            else if (textureType is TextureType.Building && PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)position.X, (int)position.Y) is Building building)
+            {
+                if (building.GetData() is var buildingData && buildingData is not null && buildingData.Skins is not null && buildingData.Skins.Count > 0)
+                {
+                    foreach (var skin in buildingData.Skins.OrderByDescending(s => s.Id))
+                    {
+                        try
+                        {
+                            _skinIdToTextures[skin.Id] = AlternativeTextures.modHelper.GameContent.Load<Texture2D>(skin.Texture);
+
+                            var buildingInstance = target.getOne();
+                            buildingInstance.modData[textureOwnerKey] = AlternativeTextures.DEFAULT_OWNER;
+                            buildingInstance.modData[textureNameKey] = $"{buildingInstance.modData[textureOwnerKey]}.{modelName}";
+                            buildingInstance.modData[textureDisplayNameKey] = $"{skin.Id}";
+                            buildingInstance.modData[textureVariationKey] = $"{-1}";
+                            buildingInstance.modData[textureSeasonKey] = String.Empty;
+
+                            this.filteredTextureOptions.Insert(0, buildingInstance);
+                            this.cachedTextureOptions.Insert(0, buildingInstance);
+                        }
+                        catch (Exception ex)
+                        {
+                            AlternativeTextures.monitor.Log($"Failed to load building skin for {skin.Id}: {ex}", StardewModdingAPI.LogLevel.Trace);
+                        }
+                    }
+
+                    if (availableModels.Count == 0)
+                    {
+                        availableModels.Add(new AlternativeTextureModel() { TextureHeight = building.texture.Value.Height, TextureWidth = building.texture.Value.Width, Textures = new Dictionary<int, Texture2D>() { { 0, building.texture.Value } } });
+                    }
+                }
+            }
+            else if (textureType is TextureType.Character && PatchTemplate.GetCharacterAt(target.Location, (int)position.X, (int)position.Y) is Character character && character is not Horse)
+            {
+                // Handle vanilla / Content Patcher added skins
+                if (character is FarmAnimal animal && animal.GetAnimalData() is var animalData && animalData is not null && animalData.Skins is not null)
+                {
+                    foreach (var skin in animalData.Skins.OrderByDescending(s => s.Id))
+                    {
+                        try
+                        {
+                            _skinIdToTextures[skin.Id] = AlternativeTextures.modHelper.GameContent.Load<Texture2D>(animal.isBaby() ? skin.BabyTexture : skin.Texture);
+
+                            var animalInstance = target.getOne();
+                            animalInstance.modData[textureOwnerKey] = AlternativeTextures.DEFAULT_OWNER;
+                            animalInstance.modData[textureNameKey] = $"{skin.Id}";
+                            animalInstance.modData[textureDisplayNameKey] = $"{skin.Id}";
+                            animalInstance.modData[textureVariationKey] = $"{-1}";
+                            animalInstance.modData[textureSeasonKey] = String.Empty;
+
+                            this.filteredTextureOptions.Insert(0, animalInstance);
+                            this.cachedTextureOptions.Insert(0, animalInstance);
+                        }
+                        catch (Exception ex)
+                        {
+                            AlternativeTextures.monitor.Log($"Failed to load animal skin for {skin.Id}: {ex}", StardewModdingAPI.LogLevel.Trace);
+                        }
+                    }
+
+                    // Add the vanilla skin (i.e. none)
+                    try
+                    {
+                        var tempSkinId = animal.skinID.Value;
+                        animal.skinID.Value = null;
+                        _skinIdToTextures[AlternativeTextures.DEFAULT_OWNER] = AlternativeTextures.modHelper.GameContent.Load<Texture2D>(animal.GetTexturePath());
+                        animal.skinID.Value = tempSkinId;
+
+                        var animalInstance = target.getOne();
+                        animalInstance.modData[textureOwnerKey] = AlternativeTextures.DEFAULT_OWNER;
+                        animalInstance.modData[textureNameKey] = $"{AlternativeTextures.DEFAULT_OWNER}";
+                        animalInstance.modData[textureDisplayNameKey] = $"{AlternativeTextures.DEFAULT_OWNER}";
+                        animalInstance.modData[textureVariationKey] = $"{-1}";
+                        animalInstance.modData[textureSeasonKey] = String.Empty;
+
+                        this.filteredTextureOptions.Insert(0, animalInstance);
+                        this.cachedTextureOptions.Insert(0, animalInstance);
+                    }
+                    catch (Exception ex)
+                    {
+                        AlternativeTextures.monitor.Log($"Failed to load default animal skin for {animal.Name}: {ex}", StardewModdingAPI.LogLevel.Trace);
+                    }
+
+                    if (availableModels.Count == 0)
+                    {
+                        availableModels.Add(new AlternativeTextureModel() { TextureHeight = animal.Sprite.Texture.Height, TextureWidth = animal.Sprite.Texture.Width, Textures = new Dictionary<int, Texture2D>() { { 0, animal.Sprite.Texture } } });
+                    }
+
+                    hasHandledVanillaVersion = true;
+                }
+                else if (character is Pet pet && pet.GetPetData() is var petData && petData is not null && petData.Breeds is not null)
+                {
+                    foreach (var breed in petData.Breeds.OrderByDescending(b => b.Id))
+                    {
+                        try
+                        {
+                            _breedIdToTextures[breed.Id] = AlternativeTextures.modHelper.GameContent.Load<Texture2D>(breed.Texture);
+
+                            var petInstance = target.getOne();
+                            petInstance.modData[textureOwnerKey] = AlternativeTextures.DEFAULT_OWNER;
+                            petInstance.modData[textureNameKey] = $"{breed.Id}";
+                            petInstance.modData[textureDisplayNameKey] = $"{breed.Id}";
+                            petInstance.modData[textureVariationKey] = $"{-1}";
+                            petInstance.modData[textureSeasonKey] = String.Empty;
+
+                            this.filteredTextureOptions.Insert(0, petInstance);
+                            this.cachedTextureOptions.Insert(0, petInstance);
+                        }
+                        catch (Exception ex)
+                        {
+                            AlternativeTextures.monitor.Log($"Failed to load pet breed for {breed.Id}: {ex}", StardewModdingAPI.LogLevel.Trace);
+                        }
+                    }
+
+                    if (availableModels.Count == 0)
+                    {
+                        availableModels.Add(new AlternativeTextureModel() { TextureHeight = pet.Sprite.Texture.Height, TextureWidth = pet.Sprite.Texture.Width, Textures = new Dictionary<int, Texture2D>() { { 0, pet.Sprite.Texture } } });
+                    }
+
+                    hasHandledVanillaVersion = true;
+                }
+            }
+
+            if (hasHandledVanillaVersion is false)
             {
                 var vanillaObject = target.getOne();
                 vanillaObject.modData[textureOwnerKey] = AlternativeTextures.DEFAULT_OWNER;
                 vanillaObject.modData[textureNameKey] = $"{vanillaObject.modData[textureOwnerKey]}.{modelName}";
+                vanillaObject.modData[textureDisplayNameKey] = AlternativeTextures.DEFAULT_OWNER;
                 vanillaObject.modData[textureVariationKey] = $"{-1}";
                 vanillaObject.modData[textureSeasonKey] = String.Empty;
 
@@ -417,7 +546,9 @@ namespace AlternativeTextures.Framework.UI
                 }
                 else
                 {
-                    filteredTextureOptions = cachedTextureOptions.Where(i => !i.modData[_textureNameKey].Contains(AlternativeTextures.DEFAULT_OWNER) && AlternativeTextures.textureManager.GetSpecificTextureModel(i.modData[_textureNameKey]) is AlternativeTextureModel model && model.HasKeyword(i.modData[_textureVariationKey], _searchBox.Text)).ToList();
+                    var preFilteredTextureOptions = cachedTextureOptions.Where(i => !i.modData[_textureOwnerKey].Contains(AlternativeTextures.DEFAULT_OWNER) && AlternativeTextures.textureManager.GetSpecificTextureModel(i.modData[_textureNameKey]) is AlternativeTextureModel model && model.HasKeyword(i.modData[_textureVariationKey], _searchBox.Text));
+                    var vanillaFilteredTexureOptions = cachedTextureOptions.Where(i => i.modData[_textureOwnerKey].Contains(AlternativeTextures.DEFAULT_OWNER) && i.modData[_textureNameKey].Contains(_searchBox.Text, StringComparison.OrdinalIgnoreCase));
+                    filteredTextureOptions = preFilteredTextureOptions.Concat(vanillaFilteredTexureOptions).ToList();
                 }
             }
         }
@@ -439,6 +570,15 @@ namespace AlternativeTextures.Framework.UI
                         foreach (string key in c.item.modData.Keys)
                         {
                             character.modData[key] = c.item.modData[key];
+                        }
+
+                        if (character is FarmAnimal animal && _skinIdToTextures.ContainsKey(character.modData[_textureDisplayNameKey]))
+                        {
+                            animal.skinID.Value = animal.modData[_textureDisplayNameKey];
+                        }
+                        else if (character is Pet pet && _breedIdToTextures.ContainsKey(character.modData[_textureDisplayNameKey]))
+                        {
+                            pet.whichBreed.Value = pet.modData[_textureDisplayNameKey];
                         }
                     }
                     else if (PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) != null)
@@ -469,18 +609,35 @@ namespace AlternativeTextures.Framework.UI
                             building.modData[key] = c.item.modData[key];
                         }
 
+                        if (_skinIdToTextures.ContainsKey(building.modData[_textureDisplayNameKey]))
+                        {
+                            building.skinId.Value = building.modData[_textureDisplayNameKey];
+                        }
+                        else
+                        {
+                            building.skinId.Value = null;
+                        }
+
                         building.resetTexture();
+                        AlternativeTextures.messageManager.SendBuildingTextureUpdate(building);
 
                         if (building is ShippingBin shippingBin && shippingBin.modData[_textureOwnerKey] == AlternativeTextures.DEFAULT_OWNER)
                         {
                             shippingBin.initLid();
                         }
                     }
-                    else if (Game1.currentLocation is Farm mailBoxFarm && mailBoxFarm.GetMainMailboxPosition() is Point mailboxPosition && mailboxPosition.X == (_position.X / 64) && (mailboxPosition.Y == (_position.Y / 64) || mailboxPosition.Y == (_position.Y / 64) + 1))
+                    else if (Game1.currentLocation is Farm mailBoxFarm && mailBoxFarm.GetMainMailboxPosition() is Point mailboxPosition && PatchTemplate.IsPositionNearMailbox(Game1.currentLocation, mailboxPosition, (int)(_position.X / 64), (int)(_position.Y / 64)))
                     {
                         foreach (string key in c.item.modData.Keys)
                         {
                             Game1.currentLocation.modData[key] = c.item.modData[key];
+                        }
+
+                        var farmerHouse = mailBoxFarm.GetMainFarmHouse();
+                        if (farmerHouse.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) is false)
+                        {
+                            var instanceSeasonName = $"{TextureType.Building}_{$"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}"}_{Game1.currentSeason}";
+                            PatchTemplate.AssignDefaultModData(farmerHouse, instanceSeasonName, true);
                         }
                     }
                     else if (Game1.currentLocation is DecoratableLocation decoratableLocation && (string.IsNullOrEmpty(decoratableLocation.GetFloorID((int)_position.X, (int)_position.Y)) is false || string.IsNullOrEmpty(decoratableLocation.GetWallpaperID((int)_position.X, (int)_position.Y)) is false))
@@ -611,8 +768,22 @@ namespace AlternativeTextures.Framework.UI
                             else if (_textureType is TextureType.Character && PatchTemplate.GetCharacterAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Character character && character != null)
                             {
                                 character.Sprite.loadedTexture = String.Empty;
-                                this.availableTextures[i].texture = character.Sprite.Texture;
-                                this.availableTextures[i].sourceRect = character.Sprite.SourceRect;
+                                if (character is FarmAnimal animal && _skinIdToTextures.ContainsKey(target.modData[_textureNameKey]))
+                                {
+                                    this.availableTextures[i].texture = _skinIdToTextures[target.modData[_textureNameKey]];
+                                    this.availableTextures[i].sourceRect = character.Sprite.SourceRect;
+                                }
+                                else if (character is Pet pet && _breedIdToTextures.ContainsKey(target.modData[_textureNameKey]))
+                                {
+                                    this.availableTextures[i].texture = _breedIdToTextures[target.modData[_textureNameKey]];
+                                    this.availableTextures[i].sourceRect = character.Sprite.SourceRect;
+                                }
+                                else
+                                {
+                                    this.availableTextures[i].texture = character.Sprite.Texture;
+                                    this.availableTextures[i].sourceRect = character.Sprite.SourceRect;
+                                }
+
                                 this.availableTextures[i].draw(b, colorOverlay, 0.87f);
                             }
                             else if (_textureType is TextureType.Craftable && PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) != null)
@@ -690,13 +861,22 @@ namespace AlternativeTextures.Framework.UI
 
                                 b.Draw(house_texture, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), BuildingPatch.GetSourceRectReversePatch(farmerHouse), farmerHouse.color, 0f, new Vector2(0f, 0f), _buildingScale, SpriteEffects.None, 0.89f);
                             }
-                            else if (Game1.currentLocation is Farm mailBoxFarm && mailBoxFarm.GetMainMailboxPosition() is Point mailboxPosition && mailboxPosition.X == (_position.X / 64) && (mailboxPosition.Y == (_position.Y / 64) || mailboxPosition.Y == (_position.Y / 64) + 1))
+                            else if (Game1.currentLocation is Farm mailBoxFarm && mailBoxFarm.GetMainMailboxPosition() is Point mailboxPosition && PatchTemplate.IsPositionNearMailbox(Game1.currentLocation, mailboxPosition, (int)(_position.X / 64), (int)(_position.Y / 64)))
                             {
                                 Texture2D mailboxTexture = Game1.content.Load<Texture2D>($"Maps\\{Game1.currentSeason.ToLower()}_outdoorsTileSheet");
                                 b.Draw(mailboxTexture, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), new Rectangle(80, 1232, 16, 32), Color.White, 0f, new Vector2(0f, 0f), 4f, SpriteEffects.None, 0.89f);
                             }
                             else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Building building)
                             {
+                                if (_skinIdToTextures.ContainsKey(target.modData[_textureDisplayNameKey]))
+                                {
+                                    this.availableTextures[i].texture = _skinIdToTextures[target.modData[_textureDisplayNameKey]];
+                                    building.skinId.Value = target.modData[_textureDisplayNameKey];
+                                }
+                                else
+                                {
+                                    building.skinId.Value = null;
+                                }
                                 BuildingPatch.ResetTextureReversePatch(building);
                                 BuildingPatch.CondensedDrawInMenu(building, building.texture.Value, b, this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y, _buildingScale);
 
@@ -787,7 +967,7 @@ namespace AlternativeTextures.Framework.UI
 
                             b.Draw(BuildingPatch.GetBuildingTextureWithPaint(farmerHouse, textureModel, variation, true), new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), new Rectangle(0, 0, sourceRectangle.Width, sourceRectangle.Height), farmerHouse.color, 0f, new Vector2(0f, 0f), _buildingScale, SpriteEffects.None, 0.89f);
                         }
-                        else if (Game1.currentLocation is Farm mailBoxFarm && mailBoxFarm.GetMainMailboxPosition() is Point mailboxPosition && mailboxPosition.X == (_position.X / 64) && (mailboxPosition.Y == (_position.Y / 64) || mailboxPosition.Y == (_position.Y / 64) + 1))
+                        else if (Game1.currentLocation is Farm mailBoxFarm && mailBoxFarm.GetMainMailboxPosition() is Point mailboxPosition && PatchTemplate.IsPositionNearMailbox(Game1.currentLocation, mailboxPosition, (int)(_position.X / 64), (int)(_position.Y / 64)))
                         {
                             b.Draw(textureModel.GetTexture(variation), new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), new Rectangle(0, textureModel.GetTextureOffset(variation), 16, 32), Color.White, 0f, new Vector2(0f, 0f), 4f, SpriteEffects.None, 0.89f);
                         }
