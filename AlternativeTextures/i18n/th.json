@@ -28,5 +28,5 @@
   // UI
   "ui.labels.catalogue": "แค็ตตาล็อก",
   "ui.labels.paint_brush.copied": "คัดลอกพื้นผิวไปยังแปรงทาสีของคุณแล้ว!",
-  "ui.labels.paint_brush.not_found": "ไม่สามารถคัดลอกพื้นผิวได้: ไม่พบแปรงทาสีในช่องเก็บของคุณ!"
+  "ui.labels.paint_brush.not_found": "ไม่สามารถคัดลอกพื้นผิวได้: ไม่พบแปรงทาสีในช่องเก็บของของคุณ!"
 }
