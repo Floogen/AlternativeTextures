@@ -1,0 +1,8 @@
+{
+  "ItemName": "Pine",
+  "Type": "Tree",
+  "Seasons": [ "Summer" ],
+  "TextureWidth": 144,
+  "TextureHeight": 160,
+  "Variations": 2
+}
