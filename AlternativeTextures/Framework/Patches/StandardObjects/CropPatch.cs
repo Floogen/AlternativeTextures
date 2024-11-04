@@ -56,7 +56,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 }
 
                 var textureVariation = Int32.Parse(hoeDirt.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION]);
-                if (__instance.dead || textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
+                if (__instance.dead.Value || textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
                 {
                     return true;
                 }
@@ -65,7 +65,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 Vector2 position = Game1.GlobalToLocal(Game1.viewport, ___drawPosition);
 
                 // Handle drawing forages
-                if ((bool)__instance.forageCrop)
+                if (__instance.forageCrop.Value)
                 {
                     if (__instance.whichForageCrop.Value == "2")
                     {
@@ -80,15 +80,15 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 }
 
                 // Handle the crops / flowers
-                SpriteEffects effect = (__instance.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
-                var layerDepth = (tileLocation.Y * 64f + 32f + ((!__instance.shouldDrawDarkWhenWatered() || (int)__instance.currentPhase >= __instance.phaseDays.Count - 1) ? 0f : ((tileLocation.Y * 11f + tileLocation.X * 7f) % 10f - 5f))) / 10000f / (((int)__instance.currentPhase == 0 && __instance.shouldDrawDarkWhenWatered()) ? 2f : 1f);
+                SpriteEffects effect = (__instance.flip.Value ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
+                var layerDepth = (tileLocation.Y * 64f + 32f + ((!__instance.shouldDrawDarkWhenWatered() || __instance.currentPhase.Value >= __instance.phaseDays.Count - 1) ? 0f : ((tileLocation.Y * 11f + tileLocation.X * 7f) % 10f - 5f))) / 10000f / ((__instance.currentPhase.Value == 0 && __instance.shouldDrawDarkWhenWatered()) ? 2f : 1f);
                 var sourceX = ___sourceRect.X >= 128 ? ___sourceRect.X - 128 : ___sourceRect.X;
 
                 b.Draw(textureModel.GetTexture(textureVariation), position, new Rectangle(sourceX, textureOffset, 16, 32), toTint, rotation, ___origin, 4f, effect, layerDepth);
 
                 // Handle the tinted colors for flowers
                 Color tintColor = __instance.tintColor.Value;
-                if ((!tintColor.Equals(Color.White) || textureModel.HasTint(textureVariation)) && (int)__instance.currentPhase == __instance.phaseDays.Count - 1 && !__instance.dead)
+                if ((!tintColor.Equals(Color.White) || textureModel.HasTint(textureVariation)) && __instance.currentPhase.Value == __instance.phaseDays.Count - 1 && !__instance.dead.Value)
                 {
                     if (textureModel.HasTint(textureVariation))
                     {
@@ -122,14 +122,14 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 }
 
                 var textureVariation = Int32.Parse(hoeDirt.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION]);
-                if (__instance.dead || textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
+                if (__instance.dead.Value || textureVariation == -1 || AlternativeTextures.modConfig.IsTextureVariationDisabled(textureModel.GetId(), textureVariation))
                 {
                     return true;
                 }
                 var textureOffset = textureModel.GetTextureOffset(textureVariation);
 
                 var sourceX = ___sourceRect.X >= 128 ? ___sourceRect.X - 128 : ___sourceRect.X;
-                if ((bool)__instance.forageCrop)
+                if (__instance.forageCrop.Value)
                 {
                     b.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, offset + new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f)), new Rectangle(sourceX, textureOffset, 16, 32), Color.White, 0f, new Vector2(8f, 8f), 4f, SpriteEffects.None, (tileLocation.Y + 0.66f) * 64f / 10000f + tileLocation.X * 1E-05f);
                     return false;
@@ -137,15 +137,15 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
 
                 Color tintColor = __instance.tintColor.Value;
-                b.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, offset + new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f)), new Rectangle(sourceX, textureOffset, 16, 32), toTint, rotation, new Vector2(8f, 24f), 4f, __instance.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (tileLocation.Y + 0.66f) * 64f / 10000f + tileLocation.X * 1E-05f);
-                if ((!tintColor.Equals(Color.White) || textureModel.HasTint(textureVariation)) && (int)__instance.currentPhase == __instance.phaseDays.Count - 1 && !__instance.dead)
+                b.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, offset + new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f)), new Rectangle(sourceX, textureOffset, 16, 32), toTint, rotation, new Vector2(8f, 24f), 4f, __instance.flip.Value ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (tileLocation.Y + 0.66f) * 64f / 10000f + tileLocation.X * 1E-05f);
+                if ((!tintColor.Equals(Color.White) || textureModel.HasTint(textureVariation)) && __instance.currentPhase.Value == __instance.phaseDays.Count - 1 && !__instance.dead.Value)
                 {
                     if (textureModel.HasTint(textureVariation))
                     {
                         tintColor = textureModel.GetRandomTint(textureVariation);
                     }
 
-                    b.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, offset + new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f)), new Rectangle(___coloredSourceRect.X >= 128 ? ___coloredSourceRect.X - 128 : ___coloredSourceRect.X, textureOffset, ___coloredSourceRect.Width, ___coloredSourceRect.Height), tintColor, rotation, new Vector2(8f, 24f), 4f, __instance.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (tileLocation.Y + 0.67f) * 64f / 10000f + tileLocation.X * 1E-05f);
+                    b.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, offset + new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f)), new Rectangle(___coloredSourceRect.X >= 128 ? ___coloredSourceRect.X - 128 : ___coloredSourceRect.X, textureOffset, ___coloredSourceRect.Width, ___coloredSourceRect.Height), tintColor, rotation, new Vector2(8f, 24f), 4f, __instance.flip.Value ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (tileLocation.Y + 0.67f) * 64f / 10000f + tileLocation.X * 1E-05f);
                 }
 
                 return false;

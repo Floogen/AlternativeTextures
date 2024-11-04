@@ -74,7 +74,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
                 // Get the current X index for the source tile
                 var xTileOffset = __instance.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_SHEET_ID) ? __instance.ParentSheetIndex - Int32.Parse(__instance.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SHEET_ID]) : 0;
-                if (__instance.showNextIndex)
+                if (__instance.showNextIndex.Value)
                 {
                     xTileOffset += 1;
                 }
@@ -117,7 +117,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 }
                 xTileOffset *= textureModel.TextureWidth;
 
-                if (__instance.bigCraftable)
+                if (__instance.bigCraftable.Value)
                 {
                     // Get required draw values
                     Vector2 scaleFactor = __instance.getScale() * 4f;
@@ -145,28 +145,28 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                     {
                         spriteBatch.Draw(textureModel.GetTexture(textureVariation), __instance.getLocalPosition(Game1.viewport) + new Vector2(32f, 0f), new Rectangle(32, textureOffset, 16, 16), Color.White * alpha, __instance.scale.X, new Vector2(8f, 8f), 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64) / 10000f + 0.0001f + (float)x * 1E-05f));
                     }
-                    if ((bool)__instance.isLamp && Game1.isDarkOut(Game1.currentLocation))
+                    if (__instance.isLamp.Value && Game1.isDarkOut(Game1.currentLocation))
                     {
                         spriteBatch.Draw(Game1.mouseCursors, position + new Vector2(-32f, -32f), new Rectangle(88, 1779, 32, 32), Color.White * 0.75f, 0f, Vector2.Zero, 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64 - 20) / 10000f) + (float)x / 1000000f);
                     }
-                    if ((int)__instance.parentSheetIndex == 126 && (int)__instance.quality != 0)
+                    if (__instance.ParentSheetIndex == 126 && __instance.quality.Value != 0)
                     {
-                        spriteBatch.Draw(FarmerRenderer.hatsTexture, position + new Vector2(-3f, -6f) * 4f, new Rectangle(((int)__instance.quality - 1) * 20 % FarmerRenderer.hatsTexture.Width, ((int)__instance.quality - 1) * 20 / FarmerRenderer.hatsTexture.Width * 20 * 4, 20, 20), Color.White * alpha, 0f, Vector2.Zero, 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64 - 20) / 10000f) + (float)x * 1E-05f);
+                        spriteBatch.Draw(FarmerRenderer.hatsTexture, position + new Vector2(-3f, -6f) * 4f, new Rectangle((__instance.quality.Value - 1) * 20 % FarmerRenderer.hatsTexture.Width, (__instance.quality.Value - 1) * 20 / FarmerRenderer.hatsTexture.Width * 20 * 4, 20, 20), Color.White * alpha, 0f, Vector2.Zero, 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64 - 20) / 10000f) + (float)x * 1E-05f);
                     }
                 }
                 else if (!Game1.eventUp || (Game1.CurrentEvent != null && !Game1.CurrentEvent.isTileWalkedOn(x, y)))
                 {
-                    if ((int)__instance.parentSheetIndex == 590)
+                    if (__instance.ParentSheetIndex == 590)
                     {
                         Vector2 position2 = Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64 + 32 + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), y * 64 + 32 + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0)));
                         Color color = Color.White * alpha;
                         Vector2 origin = new Vector2(8f, 8f);
 
                         int artifactOffset = ((Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 1200.0 <= 400.0) ? ((int)(Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 400.0 / 100.0) * 16) : 0);
-                        spriteBatch.Draw(textureModel.GetTexture(textureVariation), position2, new Rectangle(artifactOffset, textureOffset, 16, 16), color, 0f, origin, (__instance.scale.Y > 1f) ? __instance.getScale().Y : 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (float)(__instance.isPassable() ? __instance.GetBoundingBoxAt(x, y).Top : __instance.GetBoundingBoxAt(x, y).Bottom) / 10000f);
+                        spriteBatch.Draw(textureModel.GetTexture(textureVariation), position2, new Rectangle(artifactOffset, textureOffset, 16, 16), color, 0f, origin, (__instance.scale.Y > 1f) ? __instance.getScale().Y : 4f, __instance.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (float)(__instance.isPassable() ? __instance.GetBoundingBoxAt(x, y).Top : __instance.GetBoundingBoxAt(x, y).Bottom) / 10000f);
                         return false;
                     }
-                    if ((int)__instance.fragility != 2)
+                    if (__instance.fragility.Value != 2)
                     {
                         spriteBatch.Draw(Game1.shadowTexture, Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64 + 32, y * 64 + 51 + 4)), Game1.shadowTexture.Bounds, Color.White * alpha, 0f, new Vector2(Game1.shadowTexture.Bounds.Center.X, Game1.shadowTexture.Bounds.Center.Y), 4f, SpriteEffects.None, (float)__instance.GetBoundingBoxAt(x, y).Bottom / 15000f);
                     }
@@ -180,7 +180,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                         position3 = Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64, y * 64 - 64));
                     }
 
-                    spriteBatch.Draw(textureModel.GetTexture(textureVariation), position3, new Rectangle(xTileOffset, textureOffset, textureModel.TextureWidth, textureModel.TextureHeight), color2, 0f, origin2, (__instance.scale.Y > 1f) ? __instance.getScale().Y : 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (float)(__instance.isPassable() ? __instance.GetBoundingBoxAt(x, y).Top : __instance.GetBoundingBoxAt(x, y).Bottom) / 10000f);
+                    spriteBatch.Draw(textureModel.GetTexture(textureVariation), position3, new Rectangle(xTileOffset, textureOffset, textureModel.TextureWidth, textureModel.TextureHeight), color2, 0f, origin2, (__instance.scale.Y > 1f) ? __instance.getScale().Y : 4f, __instance.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (float)(__instance.isPassable() ? __instance.GetBoundingBoxAt(x, y).Top : __instance.GetBoundingBoxAt(x, y).Bottom) / 10000f);
                     if (__instance.heldObject.Value != null && __instance.IsSprinkler())
                     {
                         // Unhandled sprinkler attachments
@@ -189,7 +189,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 }
 
                 // Check if product is ready to display (if applicable)
-                if (!__instance.readyForHarvest)
+                if (!__instance.readyForHarvest.Value)
                 {
                     return false;
                 }
@@ -288,7 +288,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                     flooring.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SHEET_ID] = __instance.ParentSheetIndex.ToString();
 
                     var flooringName = $"{AlternativeTextureModel.TextureType.Flooring}_{GetFlooringName(flooring)}";
-                    var flooringSeasonName = $"{flooringName}_{Game1.currentSeason}";
+                    var flooringSeasonName = $"{flooringName}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
                     if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(flooringName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(flooringSeasonName))
                     {
                         var result = Game1.random.Next(2) > 0 ? AssignModData(flooring, flooringSeasonName, true) : AssignModData(flooring, flooringName, false);
@@ -316,7 +316,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
             var modelType = placedObject is Furniture ? AlternativeTextureModel.TextureType.Furniture : AlternativeTextureModel.TextureType.Craftable;
             var instanceName = $"{modelType}_{GetObjectName(placedObject)}";
-            var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
+            var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
 
             if (HasCachedTextureName(__instance) is true)
             {
@@ -324,25 +324,25 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             }
             else if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
             {
-                var result = Game1.random.Next(2) > 0 ? AssignModData(placedObject, instanceSeasonName, true, placedObject.bigCraftable) : AssignModData(placedObject, instanceName, false, placedObject.bigCraftable);
+                var result = Game1.random.Next(2) > 0 ? AssignModData(placedObject, instanceSeasonName, true, placedObject.bigCraftable.Value) : AssignModData(placedObject, instanceName, false, placedObject.bigCraftable.Value);
                 return;
             }
             else
             {
                 if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
                 {
-                    AssignModData(placedObject, instanceName, false, placedObject.bigCraftable);
+                    AssignModData(placedObject, instanceName, false, placedObject.bigCraftable.Value);
                     return;
                 }
 
                 if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
                 {
-                    AssignModData(placedObject, instanceSeasonName, true, placedObject.bigCraftable);
+                    AssignModData(placedObject, instanceSeasonName, true, placedObject.bigCraftable.Value);
                     return;
                 }
             }
 
-            AssignDefaultModData(placedObject, instanceSeasonName, true, placedObject.bigCraftable);
+            AssignDefaultModData(placedObject, instanceSeasonName, true, placedObject.bigCraftable.Value);
         }
 
         private static void ObjectPostfix(Object __instance, string itemId, int initialStack, bool isRecipe = false, int price = -1, int quality = 0)
@@ -354,29 +354,29 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             }
 
             var instanceName = $"{AlternativeTextureModel.TextureType.ArtifactSpot}_{GetObjectName(__instance)}";
-            var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
+            var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
 
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
             {
-                var result = Game1.random.Next(2) > 0 ? AssignModData(__instance, instanceSeasonName, true, __instance.bigCraftable) : AssignModData(__instance, instanceName, false, __instance.bigCraftable);
+                var result = Game1.random.Next(2) > 0 ? AssignModData(__instance, instanceSeasonName, true, __instance.bigCraftable.Value) : AssignModData(__instance, instanceName, false, __instance.bigCraftable.Value);
                 return;
             }
             else
             {
                 if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName))
                 {
-                    AssignModData(__instance, instanceName, false, __instance.bigCraftable);
+                    AssignModData(__instance, instanceName, false, __instance.bigCraftable.Value);
                     return;
                 }
 
                 if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
                 {
-                    AssignModData(__instance, instanceSeasonName, true, __instance.bigCraftable);
+                    AssignModData(__instance, instanceSeasonName, true, __instance.bigCraftable.Value);
                     return;
                 }
             }
 
-            AssignDefaultModData(__instance, instanceSeasonName, true, __instance.bigCraftable);
+            AssignDefaultModData(__instance, instanceSeasonName, true, __instance.bigCraftable.Value);
         }
     }
 }

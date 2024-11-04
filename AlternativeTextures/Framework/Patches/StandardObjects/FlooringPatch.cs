@@ -144,24 +144,24 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 byte drawSum = 0;
                 Vector2 surroundingLocations = tileLocation;
                 surroundingLocations.X += 1f;
-                GameLocation farm = Game1.getLocationFromName("Farm");
-                if (farm.terrainFeatures.ContainsKey(surroundingLocations) && farm.terrainFeatures[surroundingLocations] is Flooring)
+                GameLocation location = __instance.Location;
+                if (location.terrainFeatures.ContainsKey(surroundingLocations) && location.terrainFeatures[surroundingLocations] is Flooring)
                 {
                     drawSum = (byte)(drawSum + 2);
                 }
                 surroundingLocations.X -= 2f;
-                if (farm.terrainFeatures.ContainsKey(surroundingLocations) && Game1.currentLocation.terrainFeatures[surroundingLocations] is Flooring)
+                if (location.terrainFeatures.ContainsKey(surroundingLocations) && location.terrainFeatures[surroundingLocations] is Flooring)
                 {
                     drawSum = (byte)(drawSum + 8);
                 }
                 surroundingLocations.X += 1f;
                 surroundingLocations.Y += 1f;
-                if (Game1.currentLocation.terrainFeatures.ContainsKey(surroundingLocations) && farm.terrainFeatures[surroundingLocations] is Flooring)
+                if (location.terrainFeatures.ContainsKey(surroundingLocations) && location.terrainFeatures[surroundingLocations] is Flooring)
                 {
                     drawSum = (byte)(drawSum + 4);
                 }
                 surroundingLocations.Y -= 2f;
-                if (farm.terrainFeatures.ContainsKey(surroundingLocations) && farm.terrainFeatures[surroundingLocations] is Flooring)
+                if (location.terrainFeatures.ContainsKey(surroundingLocations) && location.terrainFeatures[surroundingLocations] is Flooring)
                 {
                     drawSum = (byte)(drawSum + 1);
                 }

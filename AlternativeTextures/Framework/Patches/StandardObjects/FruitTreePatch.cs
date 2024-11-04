@@ -65,17 +65,17 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 Vector2 tileLocation = __instance.Tile;
 
                 string season = Game1.GetSeasonForLocation(__instance.Location).ToString();
-                if ((bool)__instance.greenHouseTileTree)
+                if (__instance.greenHouseTileTree.Value)
                 {
                     spriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f)), new Rectangle(669, 1957, 16, 16), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1E-08f);
                 }
 
                 var textureOffset = textureModel.GetTextureOffset(textureVariation);
-                if ((int)__instance.growthStage < 4)
+                if (__instance.growthStage.Value < 4)
                 {
                     Vector2 positionOffset = new Vector2((float)Math.Max(-8.0, Math.Min(64.0, Math.Sin((double)(tileLocation.X * 200f) / (Math.PI * 2.0)) * -16.0)), (float)Math.Max(-8.0, Math.Min(64.0, Math.Sin((double)(tileLocation.X * 200f) / (Math.PI * 2.0)) * -16.0))) / 2f;
                     Rectangle sourceRect = Rectangle.Empty;
-                    switch ((int)__instance.growthStage)
+                    switch (__instance.growthStage.Value)
                     {
                         case 0:
                             sourceRect = new Rectangle(0, textureOffset * 5 * 16, 48, 80);
@@ -91,23 +91,23 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                             break;
                     }
 
-                    spriteBatch.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f + 32f + positionOffset.X, tileLocation.Y * 64f - (float)sourceRect.Height + 128f + positionOffset.Y)), sourceRect, Color.White, ___shakeRotation, new Vector2(24f, 80f), 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, __instance.getBoundingBox().Bottom / 10000f - tileLocation.X / 1000000f);
+                    spriteBatch.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f + 32f + positionOffset.X, tileLocation.Y * 64f - (float)sourceRect.Height + 128f + positionOffset.Y)), sourceRect, Color.White, ___shakeRotation, new Vector2(24f, 80f), 4f, __instance.flipped.Value ? SpriteEffects.FlipHorizontally : SpriteEffects.None, __instance.getBoundingBox().Bottom / 10000f - tileLocation.X / 1000000f);
                 }
                 else
                 {
                     Rectangle boundingBox = __instance.getBoundingBox();
-                    if (!__instance.stump || (bool)___falling)
+                    if (!__instance.stump.Value || ___falling.Value)
                     {
                         bool ignoreSeason = __instance.IgnoresSeasonsHere();
-                        if (!___falling)
+                        if (!___falling.Value)
                         {
-                            spriteBatch.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f + 32f, tileLocation.Y * 64f + 64f)), new Rectangle((12 + (ignoreSeason ? 1 : Utility.getSeasonNumber(season)) * 3) * 16, textureOffset * 5 * 16 + 64, 48, 16), ((int)__instance.struckByLightningCountdown > 0) ? (Color.Gray * ___alpha) : (Color.White * ___alpha), 0f, new Vector2(24f, 16f), 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 1E-07f);
+                            spriteBatch.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f + 32f, tileLocation.Y * 64f + 64f)), new Rectangle((12 + (ignoreSeason ? 1 : Utility.getSeasonNumber(season)) * 3) * 16, textureOffset * 5 * 16 + 64, 48, 16), (__instance.struckByLightningCountdown.Value > 0) ? (Color.Gray * ___alpha) : (Color.White * ___alpha), 0f, new Vector2(24f, 16f), 4f, __instance.flipped.Value ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 1E-07f);
                         }
-                        spriteBatch.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f + 32f, tileLocation.Y * 64f + 64f)), new Rectangle((12 + (ignoreSeason ? 1 : Utility.getSeasonNumber(season)) * 3) * 16, textureOffset * 5 * 16, 48, 64), ((int)__instance.struckByLightningCountdown > 0) ? (Color.Gray * ___alpha) : (Color.White * ___alpha), ___shakeRotation, new Vector2(24f, 80f), 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, boundingBox.Bottom / 10000f + 0.001f - tileLocation.X / 1000000f);
+                        spriteBatch.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f + 32f, tileLocation.Y * 64f + 64f)), new Rectangle((12 + (ignoreSeason ? 1 : Utility.getSeasonNumber(season)) * 3) * 16, textureOffset * 5 * 16, 48, 64), (__instance.struckByLightningCountdown.Value > 0) ? (Color.Gray * ___alpha) : (Color.White * ___alpha), ___shakeRotation, new Vector2(24f, 80f), 4f, __instance.flipped.Value ? SpriteEffects.FlipHorizontally : SpriteEffects.None, boundingBox.Bottom / 10000f + 0.001f - tileLocation.X / 1000000f);
                     }
-                    if (__instance.health.Value >= 1f || (!___falling && __instance.health.Value > -99f))
+                    if (__instance.health.Value >= 1f || (!___falling.Value && __instance.health.Value > -99f))
                     {
-                        spriteBatch.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f + 32f + ((___shakeTimer > 0f) ? ((float)Math.Sin(Math.PI * 2.0 / (double)___shakeTimer) * 2f) : 0f), tileLocation.Y * 64f + 64f)), new Rectangle(384, textureOffset * 5 * 16 + 48, 48, 32), ((int)__instance.struckByLightningCountdown > 0) ? (Color.Gray * ___alpha) : (Color.White * ___alpha), 0f, new Vector2(24f, 32f), 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, ((bool)__instance.stump && !___falling) ? (boundingBox.Bottom / 10000f) : (boundingBox.Bottom / 10000f - 0.001f - tileLocation.X / 1000000f));
+                        spriteBatch.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f + 32f + ((___shakeTimer > 0f) ? ((float)Math.Sin(Math.PI * 2.0 / (double)___shakeTimer) * 2f) : 0f), tileLocation.Y * 64f + 64f)), new Rectangle(384, textureOffset * 5 * 16 + 48, 48, 32), (__instance.struckByLightningCountdown.Value > 0) ? (Color.Gray * ___alpha) : (Color.White * ___alpha), 0f, new Vector2(24f, 32f), 4f, __instance.flipped.Value ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (__instance.stump.Value && !___falling.Value) ? (boundingBox.Bottom / 10000f) : (boundingBox.Bottom / 10000f - 0.001f - tileLocation.X / 1000000f));
                     }
                     for (int i = 0; i < __instance.fruit.Count; i++)
                     {

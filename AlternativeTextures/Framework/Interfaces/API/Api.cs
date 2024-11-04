@@ -192,7 +192,7 @@ namespace AlternativeTextures.Framework.Interfaces.API
 
             var modelType = PatchTemplate.GetTextureType(obj);
             var instanceName = $"{modelType}_{PatchTemplate.GetObjectName(obj)}";
-            var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
+            var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
             if (PatchTemplate.HasCachedTextureName(obj) is true)
             {
                 return;

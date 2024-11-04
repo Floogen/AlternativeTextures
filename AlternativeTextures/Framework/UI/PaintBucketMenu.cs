@@ -113,7 +113,7 @@ namespace AlternativeTextures.Framework.UI
 
                         if (target is Furniture furniture)
                         {
-                            (objectWithVariation as Furniture).currentRotation.Value = furniture.currentRotation;
+                            (objectWithVariation as Furniture).currentRotation.Value = furniture.currentRotation.Value;
                             (objectWithVariation as Furniture).updateRotation();
                         }
 
@@ -139,7 +139,7 @@ namespace AlternativeTextures.Framework.UI
 
                         if (target is Furniture furniture)
                         {
-                            (objectWithVariation as Furniture).currentRotation.Value = furniture.currentRotation;
+                            (objectWithVariation as Furniture).currentRotation.Value = furniture.currentRotation.Value;
                             (objectWithVariation as Furniture).updateRotation();
                         }
 
@@ -314,7 +314,7 @@ namespace AlternativeTextures.Framework.UI
 
                 if (target is Furniture)
                 {
-                    (vanillaObject as Furniture).currentRotation.Value = (target as Furniture).currentRotation;
+                    (vanillaObject as Furniture).currentRotation.Value = (target as Furniture).currentRotation.Value;
                     (vanillaObject as Furniture).updateRotation();
                 }
 
@@ -636,7 +636,7 @@ namespace AlternativeTextures.Framework.UI
                         var farmerHouse = mailBoxFarm.GetMainFarmHouse();
                         if (farmerHouse.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) is false)
                         {
-                            var instanceSeasonName = $"{TextureType.Building}_{$"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}"}_{Game1.currentSeason}";
+                            var instanceSeasonName = $"{TextureType.Building}_{$"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}"}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
                             PatchTemplate.AssignDefaultModData(farmerHouse, instanceSeasonName, true);
                         }
                     }
@@ -788,8 +788,8 @@ namespace AlternativeTextures.Framework.UI
                             }
                             else if (_textureType is TextureType.Craftable && PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) != null)
                             {
-                                this.availableTextures[i].texture = _textureTarget.bigCraftable ? Game1.bigCraftableSpriteSheet : Game1.objectSpriteSheet;
-                                this.availableTextures[i].sourceRect = _textureTarget.bigCraftable ? Object.getSourceRectForBigCraftable(_textureTarget.parentSheetIndex) : GameLocation.getSourceRectForObject(_textureTarget.ParentSheetIndex);
+                                this.availableTextures[i].texture = _textureTarget.bigCraftable.Value ? Game1.bigCraftableSpriteSheet : Game1.objectSpriteSheet;
+                                this.availableTextures[i].sourceRect = _textureTarget.bigCraftable.Value ? Object.getSourceRectForBigCraftable(_textureTarget.ParentSheetIndex) : GameLocation.getSourceRectForObject(_textureTarget.ParentSheetIndex);
                                 this.availableTextures[i].draw(b, colorOverlay, 0.87f);
                             }
                             else if (PatchTemplate.GetObjectAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) != null)
@@ -827,7 +827,7 @@ namespace AlternativeTextures.Framework.UI
                             }
                             else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Flooring flooring)
                             {
-                                this.availableTextures[i].texture = Game1.GetSeasonForLocation(flooring.Location) is Season.Winter && (flooring.Location == null || !flooring.Location.isGreenhouse) ? flooring.floorTextureWinter : flooring.floorTexture;
+                                this.availableTextures[i].texture = Game1.GetSeasonForLocation(flooring.Location) is Season.Winter && (flooring.Location == null || !flooring.Location.isGreenhouse.Value) ? flooring.floorTextureWinter : flooring.floorTexture;
                                 this.availableTextures[i].sourceRect = this.GetFlooringSourceRect(textureModel, flooring, this.availableTextures[i].sourceRect.Height, -1);
                                 this.availableTextures[i].draw(b, colorOverlay, 0.87f);
                             }
@@ -863,7 +863,7 @@ namespace AlternativeTextures.Framework.UI
                             }
                             else if (Game1.currentLocation is Farm mailBoxFarm && mailBoxFarm.GetMainMailboxPosition() is Point mailboxPosition && PatchTemplate.IsPositionNearMailbox(Game1.currentLocation, mailboxPosition, (int)(_position.X / 64), (int)(_position.Y / 64)))
                             {
-                                Texture2D mailboxTexture = Game1.content.Load<Texture2D>($"Maps\\{Game1.currentSeason.ToLower()}_outdoorsTileSheet");
+                                Texture2D mailboxTexture = Game1.content.Load<Texture2D>($"Maps\\{Game1.GetSeasonForLocation(Game1.currentLocation).ToString().ToLower()}_outdoorsTileSheet");
                                 b.Draw(mailboxTexture, new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), new Rectangle(80, 1232, 16, 32), Color.White, 0f, new Vector2(0f, 0f), 4f, SpriteEffects.None, 0.89f);
                             }
                             else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Building building)
@@ -1067,24 +1067,24 @@ namespace AlternativeTextures.Framework.UI
                 int drawSum = fence.getDrawSum();
                 sourceRectPosition = Fence.fenceDrawGuide[drawSum];
 
-                var gateOffset = fence.isGate && variation != -1 ? 128 : 0;
-                if ((bool)fence.isGate)
+                var gateOffset = fence.isGate.Value && variation != -1 ? 128 : 0;
+                if (fence.isGate.Value)
                 {
                     Vector2 offset = new Vector2(0f, 0f);
                     switch (drawSum)
                     {
                         case 10:
-                            return new Rectangle(((int)fence.gatePosition == 88) ? 24 : 0, textureOffset + (192 - gateOffset) + 16, 24, 32);
+                            return new Rectangle((fence.gatePosition.Value == 88) ? 24 : 0, textureOffset + (192 - gateOffset) + 16, 24, 32);
                         case 100:
-                            return new Rectangle(((int)fence.gatePosition == 88) ? 24 : 0, textureOffset + (240 - gateOffset) + 16, 24, 32);
+                            return new Rectangle((fence.gatePosition.Value == 88) ? 24 : 0, textureOffset + (240 - gateOffset) + 16, 24, 32);
                         case 1000:
-                            return new Rectangle(((int)fence.gatePosition == 88) ? 24 : 0, textureOffset + (288 - gateOffset), 24, 32);
+                            return new Rectangle((fence.gatePosition.Value == 88) ? 24 : 0, textureOffset + (288 - gateOffset), 24, 32);
                         case 500:
-                            return new Rectangle(((int)fence.gatePosition == 88) ? 24 : 0, textureOffset + (320 - gateOffset), 24, 32);
+                            return new Rectangle((fence.gatePosition.Value == 88) ? 24 : 0, textureOffset + (320 - gateOffset), 24, 32);
                         case 110:
-                            return new Rectangle(((int)fence.gatePosition == 88) ? 24 : 0, textureOffset + (128 - gateOffset), 24, 32);
+                            return new Rectangle((fence.gatePosition.Value == 88) ? 24 : 0, textureOffset + (128 - gateOffset), 24, 32);
                         case 1500:
-                            return new Rectangle(((int)fence.gatePosition == 88) ? 16 : 0, textureOffset + (160 - gateOffset), 16, 16);
+                            return new Rectangle((fence.gatePosition.Value == 88) ? 16 : 0, textureOffset + (160 - gateOffset), 16, 16);
                     }
                     sourceRectPosition = 5;
                 }

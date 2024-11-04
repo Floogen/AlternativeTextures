@@ -218,84 +218,86 @@ namespace AlternativeTextures.Framework.Patches.Tools
 
         internal static bool UsePaintBucket(GameLocation location, int x, int y, Farmer who, bool isSprayCan = false)
         {
-            if (location is Farm farm && isSprayCan is false)
+            if (location.IsBuildableLocation() && isSprayCan is false)
             {
-                var farmerHouse = farm.GetMainFarmHouse();
+                var targetedBuilding = location.getBuildingAt(new Vector2(x / 64, y / 64));
+                bool isFarmerHouse = false;
 
-                // Check for mailbox
-                var mailboxPosition = farm.GetMainMailboxPosition();
-                if (PatchTemplate.IsPositionNearMailbox(location, mailboxPosition, x / 64, y / 64))
+                if (location is Farm farm)
                 {
-                    var modelType = AlternativeTextureModel.TextureType.Building;
-                    if (!location.modData.ContainsKey("AlternativeTextureName.Mailbox") || !location.modData["AlternativeTextureName.Mailbox"].Contains("Mailbox"))
+                    var farmerHouse = farm.GetMainFarmHouse();
+
+                    // Check for mailbox
+                    var mailboxPosition = farm.GetMainMailboxPosition();
+                    if (PatchTemplate.IsPositionNearMailbox(location, mailboxPosition, x / 64, y / 64))
                     {
-                        var textureModel = new AlternativeTextureModel() { Owner = AlternativeTextures.DEFAULT_OWNER, Season = Game1.currentSeason };
-
-                        location.modData["AlternativeTextureOwner.Mailbox"] = textureModel.Owner;
-                        location.modData["AlternativeTextureName.Mailbox"] = String.Concat(textureModel.Owner, ".", $"{modelType}_{"Mailbox"}_{Game1.currentSeason}");
-
-                        if (!String.IsNullOrEmpty(textureModel.Season))
+                        var modelType = AlternativeTextureModel.TextureType.Building;
+                        if (!location.modData.ContainsKey("AlternativeTextureName.Mailbox") || !location.modData["AlternativeTextureName.Mailbox"].Contains("Mailbox"))
                         {
-                            location.modData["AlternativeTextureSeason.Mailbox"] = Game1.currentSeason;
+                            var textureModel = new AlternativeTextureModel() { Owner = AlternativeTextures.DEFAULT_OWNER, Season = Game1.GetSeasonForLocation(Game1.currentLocation).ToString() };
+
+                            location.modData["AlternativeTextureOwner.Mailbox"] = textureModel.Owner;
+                            location.modData["AlternativeTextureName.Mailbox"] = String.Concat(textureModel.Owner, ".", $"{modelType}_{"Mailbox"}_{Game1.GetSeasonForLocation(Game1.currentLocation)}");
+
+                            if (!String.IsNullOrEmpty(textureModel.Season))
+                            {
+                                location.modData["AlternativeTextureSeason.Mailbox"] = Game1.GetSeasonForLocation(Game1.currentLocation).ToString();
+                            }
+
+                            location.modData["AlternativeTextureVariation.Mailbox"] = "-1";
                         }
 
-                        location.modData["AlternativeTextureVariation.Mailbox"] = "-1";
-                    }
+                        bool usedSecondaryTile = string.IsNullOrEmpty(location.doesTileHaveProperty(x / 64, y / 64, "Action", "Buildings")) && location.doesTileHaveProperty(x / 64, (y + 64) / 64, "Action", "Buildings") == "Mailbox";
+                        var mailboxObj = new Object("100", 1, isRecipe: false, -1)
+                        {
+                            TileLocation = new Vector2(x / 64, (y + (usedSecondaryTile ? 64 : 0)) / 64)
+                        };
 
-                    bool usedSecondaryTile = string.IsNullOrEmpty(location.doesTileHaveProperty(x / 64, y / 64, "Action", "Buildings")) && location.doesTileHaveProperty(x / 64, (y + 64) / 64, "Action", "Buildings") == "Mailbox";
-                    var mailboxObj = new Object("100", 1, isRecipe: false, -1)
-                    {
-                        TileLocation = new Vector2(x / 64, (y + (usedSecondaryTile ? 64 : 0)) / 64)
-                    };
+                        foreach (string key in location.modData.Keys)
+                        {
+                            mailboxObj.modData[key] = location.modData[key];
+                        }
 
-                    foreach (string key in location.modData.Keys)
-                    {
-                        mailboxObj.modData[key] = location.modData[key];
-                    }
+                        var modelName = mailboxObj.modData["AlternativeTextureName.Mailbox"].Replace($"{mailboxObj.modData["AlternativeTextureOwner.Mailbox"]}.", String.Empty);
+                        if (mailboxObj.modData.ContainsKey("AlternativeTextureSeason.Mailbox") && !String.IsNullOrEmpty(mailboxObj.modData["AlternativeTextureSeason.Mailbox"]))
+                        {
+                            modelName = GetModelNameWithoutSeason(modelName, mailboxObj.modData["AlternativeTextureSeason.Mailbox"]);
+                        }
 
-                    var modelName = mailboxObj.modData["AlternativeTextureName.Mailbox"].Replace($"{mailboxObj.modData["AlternativeTextureOwner.Mailbox"]}.", String.Empty);
-                    if (mailboxObj.modData.ContainsKey("AlternativeTextureSeason.Mailbox") && !String.IsNullOrEmpty(mailboxObj.modData["AlternativeTextureSeason.Mailbox"]))
-                    {
-                        modelName = GetModelNameWithoutSeason(modelName, mailboxObj.modData["AlternativeTextureSeason.Mailbox"]);
-                    }
+                        if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
+                        {
+                            Game1.addHUDMessage(new HUDMessage(_helper.Translation.Get("messages.warning.no_textures_for_season", new { itemName = modelName }), 3));
+                            return CancelUsing(who);
+                        }
 
-                    if (AlternativeTextures.textureManager.GetAvailableTextureModels(modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
-                    {
-                        Game1.addHUDMessage(new HUDMessage(_helper.Translation.Get("messages.warning.no_textures_for_season", new { itemName = modelName }), 3));
+                        // Display texture menu
+                        Game1.activeClickableMenu = new PaintBucketMenu(mailboxObj, mailboxObj.TileLocation * 64f, TextureType.Craftable, modelName, _helper.Translation.Get("tools.name.paint_bucket"), isSprayCan: false, textureOwnerKey: "AlternativeTextureOwner.Mailbox", textureNameKey: "AlternativeTextureName.Mailbox", textureVariationKey: "AlternativeTextureVariation.Mailbox", textureSeasonKey: "AlternativeTextureSeason.Mailbox", textureDisplayNameKey: "AlternativeTextureDisplayName.Mailbox");
+
                         return CancelUsing(who);
                     }
 
-                    // Display texture menu
-                    Game1.activeClickableMenu = new PaintBucketMenu(mailboxObj, mailboxObj.TileLocation * 64f, TextureType.Craftable, modelName, _helper.Translation.Get("tools.name.paint_bucket"), isSprayCan: false, textureOwnerKey: "AlternativeTextureOwner.Mailbox", textureNameKey: "AlternativeTextureName.Mailbox", textureVariationKey: "AlternativeTextureVariation.Mailbox", textureSeasonKey: "AlternativeTextureSeason.Mailbox", textureDisplayNameKey: "AlternativeTextureDisplayName.Mailbox");
-
-                    return CancelUsing(who);
-                }
-
-
-                var targetedBuilding = farm.getBuildingAt(new Vector2(x / 64, y / 64));
-
-                bool isFarmerHouse = false;
-                if (farmerHouse == targetedBuilding)
-                {
-                    isFarmerHouse = true;
-
-                    targetedBuilding = new Building();
-                    targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}";
-                    targetedBuilding.tileX.Value = farmerHouse.tileX.Value;
-                    targetedBuilding.tileY.Value = farmerHouse.tileY.Value;
-                    targetedBuilding.tilesWide.Value = farmerHouse.tilesWide.Value;
-                    targetedBuilding.tilesHigh.Value = farmerHouse.tilesHigh.Value;
-
-                    var modelType = AlternativeTextureModel.TextureType.Building;
-                    if (!farm.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !farm.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME].Contains(targetedBuilding.buildingType.Value))
+                    if (farmerHouse == targetedBuilding)
                     {
-                        var instanceSeasonName = $"{modelType}_{targetedBuilding.buildingType.Value}_{Game1.currentSeason}";
-                        AssignDefaultModData(farm, instanceSeasonName, true);
-                    }
+                        isFarmerHouse = true;
 
-                    foreach (string key in farm.modData.Keys)
-                    {
-                        targetedBuilding.modData[key] = farm.modData[key];
+                        targetedBuilding = new Building();
+                        targetedBuilding.buildingType.Value = $"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}";
+                        targetedBuilding.tileX.Value = farmerHouse.tileX.Value;
+                        targetedBuilding.tileY.Value = farmerHouse.tileY.Value;
+                        targetedBuilding.tilesWide.Value = farmerHouse.tilesWide.Value;
+                        targetedBuilding.tilesHigh.Value = farmerHouse.tilesHigh.Value;
+
+                        var modelType = AlternativeTextureModel.TextureType.Building;
+                        if (!farm.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !farm.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME].Contains(targetedBuilding.buildingType.Value))
+                        {
+                            var instanceSeasonName = $"{modelType}_{targetedBuilding.buildingType.Value}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
+                            AssignDefaultModData(farm, instanceSeasonName, true);
+                        }
+
+                        foreach (string key in farm.modData.Keys)
+                        {
+                            targetedBuilding.modData[key] = farm.modData[key];
+                        }
                     }
                 }
 
@@ -305,7 +307,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     if (!targetedBuilding.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
                     {
                         var modelType = AlternativeTextureModel.TextureType.Building;
-                        var instanceSeasonName = $"{modelType}_{targetedBuilding.buildingType.Value}_{Game1.currentSeason}";
+                        var instanceSeasonName = $"{modelType}_{targetedBuilding.buildingType.Value}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
                         AssignDefaultModData(targetedBuilding, instanceSeasonName, true);
                     }
 
@@ -352,7 +354,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     };
                     buildingObj.modData.SetFromSerialization(targetedBuilding.modData);
 
-                    Game1.activeClickableMenu = GetMenu(buildingObj, buildingObj.TileLocation * 64f, GetTextureType(targetedBuilding), modelName, _helper.Translation.Get("tools.name.paint_bucket"), textureTileWidth: targetedBuilding.tilesWide, isSprayCan: isSprayCan);
+                    Game1.activeClickableMenu = GetMenu(buildingObj, buildingObj.TileLocation * 64f, GetTextureType(targetedBuilding), modelName, _helper.Translation.Get("tools.name.paint_bucket"), textureTileWidth: targetedBuilding.tilesWide.Value, isSprayCan: isSprayCan);
 
                     return CancelUsing(who);
                 }
@@ -364,11 +366,11 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 // Assign default data if none exists
                 if (!targetedObject.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
                 {
-                    var instanceSeasonName = $"{GetTextureType(targetedObject)}_{GetObjectName(targetedObject)}_{Game1.currentSeason}";
+                    var instanceSeasonName = $"{GetTextureType(targetedObject)}_{GetObjectName(targetedObject)}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
                     AssignDefaultModData(targetedObject, instanceSeasonName, true);
                 }
 
-                var itemId = $"{GetTextureType(targetedObject)}_{targetedObject.ItemId}_{Game1.currentSeason}";
+                var itemId = $"{GetTextureType(targetedObject)}_{targetedObject.ItemId}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
                 var modelName = targetedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME].Replace($"{targetedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER]}.", String.Empty);
                 if (targetedObject.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_SEASON) && !String.IsNullOrEmpty(targetedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON]))
                 {
@@ -378,7 +380,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
 
                 if (AlternativeTextures.textureManager.GetAvailableTextureModels(itemId, modelName, Game1.GetSeasonForLocation(Game1.currentLocation)).Count == 0)
                 {
-                    var instanceSeasonName = $"{GetTextureType(targetedObject)}_{GetObjectName(targetedObject)}_{Game1.currentSeason}";
+                    var instanceSeasonName = $"{GetTextureType(targetedObject)}_{GetObjectName(targetedObject)}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
                     AssignDefaultModData(targetedObject, instanceSeasonName, true);
 
                     modelName = targetedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME].Replace($"{targetedObject.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER]}.", String.Empty);
@@ -459,7 +461,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
                     else if (targetedTerrain is FruitTree fruitTree)
                     {
                         Dictionary<int, string> data = Game1.content.Load<Dictionary<int, string>>("Data\\fruitTrees");
-                        var saplingName = Game1.fruitTreeData.ContainsKey(fruitTree.treeId) ? Game1.objectData[fruitTree.treeId].Name : String.Empty;
+                        var saplingName = Game1.fruitTreeData.ContainsKey(fruitTree.treeId.Value) ? Game1.objectData[fruitTree.treeId.Value].Name : String.Empty;
 
                         var instanceSeasonName = $"{AlternativeTextureModel.TextureType.FruitTree}_{saplingName}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
                         AssignDefaultModData(targetedTerrain, instanceSeasonName, true);
@@ -591,14 +593,14 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 var modelType = AlternativeTextureModel.TextureType.Character;
                 if (!character.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
                 {
-                    var instanceSeasonName = $"{modelType}_{GetCharacterName(character)}_{Game1.currentSeason}";
+                    var instanceSeasonName = $"{modelType}_{GetCharacterName(character)}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
                     AssignDefaultModData(character, instanceSeasonName, true);
                 }
 
                 var modelName = character.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME].Replace($"{character.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER]}.", String.Empty);
                 if (modelName.Contains(GetCharacterName(character), StringComparison.OrdinalIgnoreCase) is false)
                 {
-                    modelName = $"{modelType}_{GetCharacterName(character)}_{Game1.currentSeason}";
+                    modelName = $"{modelType}_{GetCharacterName(character)}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
                 }
 
                 if (character.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_SEASON) && !String.IsNullOrEmpty(character.modData[ModDataKeys.ALTERNATIVE_TEXTURE_SEASON]))

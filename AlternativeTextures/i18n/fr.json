@@ -1,0 +1,32 @@
+{
+  // Tools
+  "tools.name.paint_bucket": "Seau de peinture",
+  "tools.name.paint_brush": "Pinceau",
+  "tools.name.scissors": "Ciseaux",
+  "tools.name.spray_can": "Aérosol",
+  "tools.name.catalogue": "Catalogue de textures",
+
+  "tools.description.paint_bucket": "Vous permet d'appliquer des textures alternatives aux objets.",
+  "tools.description.paint_brush": "Vous permet de copier une texture et de l'appliquer à d'autres objets du même type.",
+  "tools.description.scissors": "Vous permet d'appliquer des textures alternatives aux entités.",
+  "tools.description.spray_can": "Vous permet d'appliquer des textures aléatoires aux objets dans un certain rayon.",
+  "tools.description.catalogue": "Répertorie toutes les textures alternatives disponibles.",
+
+  // Messages
+  "messages.warning.no_textures_for_season": "{{itemName}} n'a pas de textures alternatives pour cette saison !",
+  "messages.warning.paint_not_placeable": "Vous ne pouvez pas mettre de peinture là-dessus !",
+  "messages.warning.brush_is_empty": "Le pinceau n'a pas de texture copiée ! Faites un clic droit sur un objet pour copier une texture.",
+  "messages.warning.spray_can_is_empty": "L'aérosol n'a pas de textures définies ! Faites un clic droit sur un objet pour sélectionner les textures à appliquer.",
+  "messages.warning.spray_can_not_supported": "L'aérosol ne prend pas en charge cet objet.",
+  "messages.warning.brush_not_supported": "Le pinceau ne prend pas en charge la copie de textures pour cet objet.",
+  "messages.warning.invalid_copied_texture": "La texture copiée {{textureName}} n'est pas valide pour cet objet !",
+  "messages.warning.custom_building_not_supported": "Ce bâtiment personnalisé ({{itemName}}) ne prend pas en charge les textures alternatives.",
+
+  "messages.info.texture_copied": "Texture copiée !",
+  "messages.info.cleared_brush": "Pinceau nettoyé !",
+
+  // UI
+  "ui.labels.catalogue": "Catalogue",
+  "ui.labels.paint_brush.copied": "Texture copiée dans votre pinceau !",
+  "ui.labels.paint_brush.not_found": "Impossible de copier la texture : Aucun pinceau trouvé dans votre inventaire !"
+}

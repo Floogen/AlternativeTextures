@@ -101,7 +101,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
         private static string GetResourceClumpName(ResourceClump clump)
         {
-            switch (clump.parentSheetIndex)
+            switch (clump.parentSheetIndex.Value)
             {
                 case 600:
                     return "Stump";

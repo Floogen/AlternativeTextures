@@ -49,7 +49,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 {
                     if (effectiveSize > 0)
                     {
-                        spriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(Game1.viewport, new Vector2((tileLocation.X + ((effectiveSize == 1) ? 0.5f : 1f)) * 64f - 51f, tileLocation.Y * 64f - 16f + ___yDrawOffset)), Bush.shadowSourceRect, Color.White, 0f, Vector2.Zero, 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 1E-06f);
+                        spriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(Game1.viewport, new Vector2((tileLocation.X + ((effectiveSize == 1) ? 0.5f : 1f)) * 64f - 51f, tileLocation.Y * 64f - 16f + ___yDrawOffset)), Bush.shadowSourceRect, Color.White, 0f, Vector2.Zero, 4f, __instance.flipped.Value ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 1E-06f);
                     }
                     else
                     {
@@ -63,7 +63,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 {
                     sourceRect = new Rectangle(Math.Min(2, __instance.getAge() / 10) * 16 + __instance.tileSheetOffset.Value * 16, textureOffset, 16, 32);
                 }
-                spriteBatch.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f + (float)((effectiveSize + 1) * 64 / 2), (tileLocation.Y + 1f) * 64f - (float)((effectiveSize > 0 && (!__instance.townBush || effectiveSize != 1) && (int)__instance.size != 4) ? 64 : 0) + ___yDrawOffset)), sourceRect, Color.White, ___shakeRotation, new Vector2((effectiveSize + 1) * 16 / 2, 32f), 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (float)(__instance.getBoundingBox().Center.Y + 48) / 10000f - tileLocation.X / 1000000f);
+                spriteBatch.Draw(textureModel.GetTexture(textureVariation), Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f + (float)((effectiveSize + 1) * 64 / 2), (tileLocation.Y + 1f) * 64f - (float)((effectiveSize > 0 && (!__instance.townBush.Value || effectiveSize != 1) && __instance.size.Value != 4) ? 64 : 0) + ___yDrawOffset)), sourceRect, Color.White, ___shakeRotation, new Vector2((effectiveSize + 1) * 16 / 2, 32f), 4f, __instance.flipped.Value ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (float)(__instance.getBoundingBox().Center.Y + 48) / 10000f - tileLocation.X / 1000000f);
 
                 return false;
             }

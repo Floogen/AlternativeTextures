@@ -44,7 +44,7 @@ namespace AlternativeTextures.Framework.Patches.SpecialObjects
                 scaleFactor *= 4f;
                 Vector2 position = Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64, y * 64 - 64));
                 Rectangle destination = new Rectangle((int)(position.X - scaleFactor.X / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(position.Y - scaleFactor.Y / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(64f + scaleFactor.X), (int)(128f + scaleFactor.Y / 2f));
-                spriteBatch.Draw(textureModel.GetTexture(textureVariation), destination, new Rectangle((__instance.showNextIndex ? 1 : 0) * textureModel.TextureWidth, textureOffset, 16, 32), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64 - 24) / 10000f) + (((int)__instance.parentSheetIndex == 105) ? 0.0035f : 0f) + (float)x * 1E-05f);
+                spriteBatch.Draw(textureModel.GetTexture(textureVariation), destination, new Rectangle((__instance.showNextIndex.Value ? 1 : 0) * textureModel.TextureWidth, textureOffset, 16, 32), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64 - 24) / 10000f) + ((__instance.ParentSheetIndex == 105) ? 0.0035f : 0f) + (float)x * 1E-05f);
 
                 if (__instance.hoeDirt.Value.fertilizer.Value != "0")
                 {
@@ -55,7 +55,7 @@ namespace AlternativeTextures.Framework.Patches.SpecialObjects
                 }
                 if (__instance.hoeDirt.Value.crop != null)
                 {
-                    __instance.hoeDirt.Value.crop.drawWithOffset(spriteBatch, __instance.TileLocation, ((int)__instance.hoeDirt.Value.state == 1 && (int)__instance.hoeDirt.Value.crop.currentPhase == 0 && !__instance.hoeDirt.Value.crop.raisedSeeds) ? (new Color(180, 100, 200) * 1f) : Color.White, __instance.hoeDirt.Value.getShakeRotation(), new Vector2(32f, 8f));
+                    __instance.hoeDirt.Value.crop.drawWithOffset(spriteBatch, __instance.TileLocation, (__instance.hoeDirt.Value.state.Value == 1 && __instance.hoeDirt.Value.crop.currentPhase.Value == 0 && !__instance.hoeDirt.Value.crop.raisedSeeds.Value) ? (new Color(180, 100, 200) * 1f) : Color.White, __instance.hoeDirt.Value.getShakeRotation(), new Vector2(32f, 8f));
                 }
                 if (__instance.heldObject.Value != null)
                 {

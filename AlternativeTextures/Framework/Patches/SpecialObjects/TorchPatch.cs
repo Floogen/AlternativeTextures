@@ -46,7 +46,7 @@ namespace AlternativeTextures.Framework.Patches.SpecialObjects
                     return false;
                 }
 
-                if (!__instance.bigCraftable)
+                if (!__instance.bigCraftable.Value)
                 {
                     Rectangle sourceRect = new Rectangle(0, textureOffset, textureModel.TextureWidth, textureModel.TextureHeight);
                     sourceRect.Y += 8;
@@ -74,18 +74,18 @@ namespace AlternativeTextures.Framework.Patches.SpecialObjects
                 ObjectPatch.DrawPrefix(__instance, spriteBatch, x, y, alpha);
                 float draw_layer = Math.Max(0f, (float)((y + 1) * 64 - 24) / 10000f) + (float)x * 1E-05f;
 
-                if (!__instance.isOn)
+                if (!__instance.isOn.Value)
                 {
                     return false;
                 }
 
-                if ((int)__instance.parentSheetIndex == 146 || (int)__instance.parentSheetIndex == 278)
+                if (__instance.ParentSheetIndex == 146 || __instance.ParentSheetIndex == 278)
                 {
                     spriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64 + 16 - 4, y * 64 - 8)), new Rectangle(276 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + (double)(x * 3047) + (double)(y * 88)) % 400.0 / 100.0) * 12, 1985, 12, 11), Color.White, 0f, Vector2.Zero, 3f, SpriteEffects.None, draw_layer + 0.0008f);
                     spriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64 + 32 - 12, y * 64)), new Rectangle(276 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + (double)(x * 2047) + (double)(y * 98)) % 400.0 / 100.0) * 12, 1985, 12, 11), Color.White, 0f, Vector2.Zero, 3f, SpriteEffects.None, draw_layer + 0.0009f);
                     spriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64 + 32 - 20, y * 64 + 12)), new Rectangle(276 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + (double)(x * 2077) + (double)(y * 98)) % 400.0 / 100.0) * 12, 1985, 12, 11), Color.White, 0f, Vector2.Zero, 3f, SpriteEffects.None, draw_layer + 0.001f);
 
-                    if ((int)__instance.parentSheetIndex == 278)
+                    if (__instance.ParentSheetIndex == 278)
                     {
                         ObjectPatch.DrawPrefix(__instance, spriteBatch, x, y, alpha);
                     }

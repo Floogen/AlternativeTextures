@@ -23,6 +23,7 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Characters;
 using StardewValley.GameData;
+using StardewValley.GameData.GiantCrops;
 using StardewValley.Menus;
 using StardewValley.Monsters;
 using StardewValley.Objects;
@@ -417,7 +418,7 @@ namespace AlternativeTextures
                 var modelType = placedObject is Furniture ? AlternativeTextureModel.TextureType.Furniture : AlternativeTextureModel.TextureType.Craftable;
                 if (!placedObject.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !placedObject.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                 {
-                    var instanceSeasonName = $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}_{Game1.currentSeason}";
+                    var instanceSeasonName = $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
                     PatchTemplate.AssignDefaultModData(placedObject, instanceSeasonName, true);
                 }
 
@@ -617,7 +618,7 @@ namespace AlternativeTextures
                 else if (terrainFeature is FruitTree fruitTree)
                 {
                     var modelType = AlternativeTextureModel.TextureType.FruitTree;
-                    var saplingName = Game1.objectData.ContainsKey(fruitTree.treeId) ? Game1.objectData[fruitTree.treeId].Name : String.Empty;
+                    var saplingName = Game1.objectData.ContainsKey(fruitTree.treeId.Value) ? Game1.objectData[fruitTree.treeId.Value].Name : String.Empty;
                     if (!fruitTree.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !fruitTree.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                     {
                         // Assign default modData
@@ -629,9 +630,9 @@ namespace AlternativeTextures
                 }
                 else
                 {
-                    if (Game1.currentLocation is Farm farm)
+                    if (Game1.currentLocation.IsBuildableLocation())
                     {
-                        var targetedBuilding = farm.getBuildingAt(new Vector2(xTile / 64, yTile / 64));
+                        var targetedBuilding = Game1.currentLocation.getBuildingAt(new Vector2(xTile / 64, yTile / 64));
                         if (targetedBuilding != null)
                         {
                             Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.warning.spray_can_not_supported"), 3) { timeLeft = 2000 });
@@ -650,7 +651,7 @@ namespace AlternativeTextures
                 var modelType = placedObject is Furniture ? AlternativeTextureModel.TextureType.Furniture : AlternativeTextureModel.TextureType.Craftable;
                 if (!placedObject.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !placedObject.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                 {
-                    var instanceSeasonName = $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}_{Game1.currentSeason}";
+                    var instanceSeasonName = $"{modelType}_{PatchTemplate.GetObjectName(placedObject)}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
                     PatchTemplate.AssignDefaultModData(placedObject, instanceSeasonName, true);
                 }
 
@@ -778,7 +779,7 @@ namespace AlternativeTextures
                         if (terrainFeature is FruitTree fruitTree)
                         {
                             var modelType = AlternativeTextureModel.TextureType.FruitTree;
-                            var saplingName = Game1.fruitTreeData.ContainsKey(fruitTree.treeId) ? Game1.objectData[fruitTree.treeId].Name : String.Empty;
+                            var saplingName = Game1.fruitTreeData.ContainsKey(fruitTree.treeId.Value) ? Game1.objectData[fruitTree.treeId.Value].Name : String.Empty;
                             if (tool.modData[SPRAY_CAN_FLAG] == $"{modelType}_{saplingName}")
                             {
                                 fruitTree.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = actualSelectedModel.Owner;
@@ -1326,44 +1327,67 @@ namespace AlternativeTextures
                 return;
             }
 
-            if (!(Game1.currentLocation is Farm))
+            if (!(Game1.currentLocation.GetData()?.CanPlantHere ?? Game1.currentLocation.IsFarm) || (Game1.currentLocation is not Farm && !Game1.currentLocation.HasMapPropertyWithValue("AllowGiantCrops")))
             {
-                Monitor.Log($"Command can only be used on player's farm.", LogLevel.Warn);
+                Monitor.Log($"Command can only be used on a plantable location allowing giant crops.", LogLevel.Warn);
                 return;
             }
 
-            var environment = Game1.currentLocation;
-            foreach (var tile in environment.terrainFeatures.Pairs.Where(t => t.Value is HoeDirt))
-            {
-                int xTile = 0;
-                int yTile = 0;
-                var hoeDirt = tile.Value as HoeDirt;
+            GameLocation gameLocation = Game1.currentLocation;
 
-                if (hoeDirt.crop is null || hoeDirt.crop.indexOfHarvest.Value != args[0])
+            foreach (var tile in gameLocation.terrainFeatures.Pairs.Where(t => t.Value is HoeDirt))
+            {
+                Crop crop = (tile.Value as HoeDirt).crop;
+
+                if (crop is null || crop.indexOfHarvest.Value != args[0])
                 {
                     continue;
                 }
 
-                xTile = (int)tile.Key.X;
-                yTile = (int)tile.Key.Y;
-
-                if (xTile != 0 && yTile != 0)
+                if (crop.TryGetGiantCrops(out var giantCrops))
                 {
-                    for (int x = xTile - 1; x <= xTile + 1; x++)
+                    Vector2 vector = crop.tilePosition;
+                    Point point = Utility.Vector2ToPoint(vector);
+
+                    foreach (KeyValuePair<string, GiantCropData> item in giantCrops)
                     {
-                        for (int y2 = yTile - 1; y2 <= yTile + 1; y2++)
+                        string key = item.Key;
+                        GiantCropData value = item.Value;
+                        bool flag = true;
+
+                        for (int i = point.Y; i < point.Y + value.TileSize.Y; i++)
                         {
-                            Vector2 v3 = new Vector2(x, y2);
-                            if (!environment.terrainFeatures.ContainsKey(v3) || !(environment.terrainFeatures[v3] is HoeDirt) || (environment.terrainFeatures[v3] as HoeDirt).crop == null)
+                            for (int j = point.X; j < point.X + value.TileSize.X; j++)
                             {
-                                continue;
+                                Vector2 key2 = new(j, i);
+
+                                if (!gameLocation.terrainFeatures.TryGetValue(key2, out TerrainFeature terrainFeature) || terrainFeature is not HoeDirt hoeDirt2 || hoeDirt2.crop?.indexOfHarvest.Value != crop.indexOfHarvest.Value)
+                                {
+                                    flag = false;
+                                    break;
+                                }
                             }
-
-                            (environment.terrainFeatures[v3] as HoeDirt).crop = null;
+                            if (!flag)
+                            {
+                                break;
+                            }
                         }
-                    }
+                        if (!flag)
+                        {
+                            continue;
+                        }
+                        for (int k = point.Y; k < point.Y + value.TileSize.Y; k++)
+                        {
+                            for (int l = point.X; l < point.X + value.TileSize.X; l++)
+                            {
+                                Vector2 key3 = new(l, k);
 
-                    (environment as Farm).resourceClumps.Add(new GiantCrop(args[0], new Vector2(xTile - 1, yTile - 1)));
+                                ((HoeDirt)gameLocation.terrainFeatures[key3]).crop = null;
+                            }
+                        }
+                        gameLocation.resourceClumps.Add(new GiantCrop(key, vector));
+                        break;
+                    }
                 }
             }
         }
@@ -1376,9 +1400,9 @@ namespace AlternativeTextures
                 return;
             }
 
-            if (!(Game1.currentLocation is Farm))
+            if (!Game1.currentLocation.IsOutdoors)
             {
-                Monitor.Log($"Command can only be used on player's farm.", LogLevel.Warn);
+                Monitor.Log($"Command can only be used outdoors.", LogLevel.Warn);
                 return;
             }
 
@@ -1388,7 +1412,7 @@ namespace AlternativeTextures
                 return;
             }
 
-            (Game1.currentLocation as Farm).resourceClumps.Add(new ResourceClump(600, 2, 2, Game1.player.Tile + new Vector2(1, 1)));
+            Game1.currentLocation.resourceClumps.Add(new ResourceClump(600, 2, 2, Game1.player.Tile + new Vector2(1, 1)));
         }
 
         private void DebugSpawnChild(string command, string[] args)
