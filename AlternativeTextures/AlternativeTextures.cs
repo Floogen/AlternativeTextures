@@ -78,7 +78,7 @@ namespace AlternativeTextures
         private static Api _api;
 
         // Tool related variables
-        private Point _lastSprayCanTile = new Point();
+        private Point _lastSprayCanTile = new();
 
         // Debugging flags
         private bool _displayFPS = false;
@@ -850,77 +850,76 @@ namespace AlternativeTextures
             // Hook into GMCM, if applicable
             if (Helper.ModRegistry.IsLoaded("spacechase0.GenericModConfigMenu") && apiManager.HookIntoGenericModConfigMenu(Helper))
             {
-                var configApi = apiManager.GetGenericModConfigMenuApi();
+                Framework.Interfaces.IGenericModConfigMenuApi configApi = apiManager.GetGenericModConfigMenuApi();
                 configApi.Register(ModManifest, () => modConfig = new ModConfig(), () => Helper.WriteConfig(modConfig));
 
                 // Register the standard settings
-                configApi.RegisterLabel(ModManifest, $"Use Random Textures When Placing...", String.Empty);
-                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenSpawningArtifactSpots, value => modConfig.UseRandomTexturesWhenSpawningArtifactSpots = value, () => "Artifact Spots");
-                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingFlooring, value => modConfig.UseRandomTexturesWhenPlacingFlooring = value, () => "Flooring");
-                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingFruitTree, value => modConfig.UseRandomTexturesWhenPlacingFruitTree = value, () => "Fruit Tree");
-                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingTree, value => modConfig.UseRandomTexturesWhenPlacingTree = value, () => "Tree");
-                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingHoeDirt, value => modConfig.UseRandomTexturesWhenPlacingHoeDirt = value, () => "Hoe Dirt");
-                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingGrass, value => modConfig.UseRandomTexturesWhenPlacingGrass = value, () => "Grass");
-                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingFurniture, value => modConfig.UseRandomTexturesWhenPlacingFurniture = value, () => "Furniture");
-                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingObject, value => modConfig.UseRandomTexturesWhenPlacingObject = value, () => "Object");
-                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingFarmAnimal, value => modConfig.UseRandomTexturesWhenPlacingFarmAnimal = value, () => "Farm Animal");
-                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingMonster, value => modConfig.UseRandomTexturesWhenPlacingMonster = value, () => "Monster");
-                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingBuilding, value => modConfig.UseRandomTexturesWhenPlacingBuilding = value, () => "Building");
+                configApi.AddSectionTitle(ModManifest, () => Helper.Translation.Get("gmcm.random_textures"));
+                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenSpawningArtifactSpots, value => modConfig.UseRandomTexturesWhenSpawningArtifactSpots = value, () => Helper.Translation.Get("gmcm.artifact_spots"));
+                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingFlooring, value => modConfig.UseRandomTexturesWhenPlacingFlooring = value, () => Helper.Translation.Get("gmcm.flooring"));
+                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingFruitTree, value => modConfig.UseRandomTexturesWhenPlacingFruitTree = value, () => Helper.Translation.Get("gmcm.fruit_trees"));
+                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingTree, value => modConfig.UseRandomTexturesWhenPlacingTree = value, () => Helper.Translation.Get("gmcm.trees"));
+                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingHoeDirt, value => modConfig.UseRandomTexturesWhenPlacingHoeDirt = value, () => Helper.Translation.Get("gmcm.hoe_dirt"));
+                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingGrass, value => modConfig.UseRandomTexturesWhenPlacingGrass = value, () => Helper.Translation.Get("gmcm.grass"));
+                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingFurniture, value => modConfig.UseRandomTexturesWhenPlacingFurniture = value, () => Helper.Translation.Get("gmcm.furniture"));
+                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingObject, value => modConfig.UseRandomTexturesWhenPlacingObject = value, () => Helper.Translation.Get("gmcm.objects"));
+                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingFarmAnimal, value => modConfig.UseRandomTexturesWhenPlacingFarmAnimal = value, () => Helper.Translation.Get("gmcm.farm_animals"));
+                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingMonster, value => modConfig.UseRandomTexturesWhenPlacingMonster = value, () => Helper.Translation.Get("gmcm.monsters"));
+                configApi.AddBoolOption(ModManifest, () => modConfig.UseRandomTexturesWhenPlacingBuilding, value => modConfig.UseRandomTexturesWhenPlacingBuilding = value, () => Helper.Translation.Get("gmcm.buildings"));
 
-                var contentPacks = Helper.ContentPacks.GetOwned();
+                IEnumerable<IContentPack> contentPacks = Helper.ContentPacks.GetOwned();
                 // Create the page labels for each content pack's page
-                configApi.RegisterLabel(ModManifest, $"Content Packs", String.Empty);
-                foreach (var contentPack in contentPacks)
+                configApi.AddSectionTitle(ModManifest, () => Helper.Translation.Get("gmcm.content_packs"));
+                foreach (IContentPack contentPack in contentPacks)
                 {
-                    configApi.RegisterPageLabel(ModManifest, String.Concat("> ", CleanContentPackNameForConfig(contentPack.Manifest.Name)), contentPack.Manifest.Description, contentPack.Manifest.UniqueID);
+                    configApi.AddPageLink(ModManifest, string.Concat("> ", CleanContentPackNameForConfig(contentPack.Manifest.Name)), () => contentPack.Manifest.Description, () => contentPack.Manifest.UniqueID);
                 }
 
                 // Add the content pack owner pages
-                foreach (var contentPack in contentPacks)
+                foreach (IContentPack contentPack in contentPacks)
                 {
-                    configApi.StartNewPage(ModManifest, contentPack.Manifest.UniqueID);
-                    configApi.OverridePageDisplayName(ModManifest, contentPack.Manifest.UniqueID, CleanContentPackNameForConfig(contentPack.Manifest.Name));
+                    configApi.AddPage(ModManifest, contentPack.Manifest.UniqueID, () => CleanContentPackNameForConfig(contentPack.Manifest.Name));
 
                     // Create a page label for each TextureType under this content pack
-                    configApi.RegisterLabel(ModManifest, $"Categories", String.Empty);
-                    foreach (var textureType in textureManager.GetAllTextures().Where(t => t.Owner == contentPack.Manifest.UniqueID).Select(t => t.GetTextureType()).Distinct().OrderBy(t => t))
+                    configApi.AddSectionTitle(ModManifest, () => Helper.Translation.Get("gmcm.categories"));
+                    foreach (string textureType in textureManager.GetAllTextures().Where(t => t.Owner == contentPack.Manifest.UniqueID).Select(t => t.GetTextureType()).Distinct().OrderBy(t => t))
                     {
-                        configApi.RegisterPageLabel(ModManifest, String.Concat("> ", textureType), String.Empty, String.Concat(contentPack.Manifest.UniqueID, ".", textureType));
+                        configApi.AddPageLink(ModManifest, string.Concat("> ", textureType), () => string.Empty, () => string.Concat(contentPack.Manifest.UniqueID, ".", textureType));
                     }
 
                     // Create a page label for each model under this content pack
-                    foreach (var model in textureManager.GetAllTextures().Where(t => t.Owner == contentPack.Manifest.UniqueID).OrderBy(t => t.GetTextureType()).ThenBy(t => t.ItemName))
+                    foreach (AlternativeTextureModel model in textureManager.GetAllTextures().Where(t => t.Owner == contentPack.Manifest.UniqueID).OrderBy(t => t.GetTextureType()).ThenBy(t => t.ItemName))
                     {
-                        configApi.StartNewPage(ModManifest, String.Concat(model.Owner, ".", model.GetTextureType()));
+                        configApi.AddPage(ModManifest, string.Concat(model.Owner, ".", model.GetTextureType()));
 
                         // Create page label for each model
-                        var description = $"Type: {model.GetTextureType()}\nSeason(s): {(String.IsNullOrEmpty(model.Season) ? "All" : model.Season)}\nVariations: {model.GetVariations()}";
-                        configApi.RegisterPageLabel(ModManifest, String.Concat("> ", model.ItemName), description, model.GetId());
+                        string description = string.Concat(Helper.Translation.Get("gmcm.type") + model.GetTextureType() + "\n" + Helper.Translation.Get("gmcm.seasons") + (string.IsNullOrEmpty(model.Season) ? Helper.Translation.Get("gmcm.all") : model.Season) + "\n" + Helper.Translation.Get("gmcm.variations") + model.GetVariations());
+                        configApi.AddPageLink(ModManifest, string.Concat("> ", model.ItemName), () => description, model.GetId);
                     }
 
                     // Add the AlternativeTextureModel pages
-                    foreach (var model in textureManager.GetAllTextures().Where(t => t.Owner == contentPack.Manifest.UniqueID))
+                    foreach (AlternativeTextureModel model in textureManager.GetAllTextures().Where(t => t.Owner == contentPack.Manifest.UniqueID))
                     {
-                        configApi.StartNewPage(ModManifest, model.GetId());
+                        configApi.AddPage(ModManifest, model.GetId());
 
                         for (int variation = 0; variation < model.GetVariations(); variation++)
                         {
                             // Add general description label
-                            var description = $"Type: {model.GetTextureType()}\nSeason(s): {(String.IsNullOrEmpty(model.Season) ? "All" : model.Season)}";
-                            configApi.RegisterLabel(ModManifest, $"Variation: {variation}", description);
+                            string description = string.Concat(Helper.Translation.Get("gmcm.type") + model.GetTextureType() + "\n" + Helper.Translation.Get("gmcm.seasons") + (string.IsNullOrEmpty(model.Season) ? Helper.Translation.Get("gmcm.all") : model.Season));
+                            configApi.AddSectionTitle(ModManifest, () => Helper.Translation.Get("gmcm.variations"), () => description);
 
                             // Add the reference image for the alternative texture
                             var sourceRect = new Rectangle(0, model.GetTextureOffset(variation), model.TextureWidth, model.TextureHeight);
                             switch (model.GetTextureType())
                             {
                                 case "Decoration":
-                                    var isFloor = model.ItemName.Equals("Floor", StringComparison.OrdinalIgnoreCase);
-                                    var decorationOffset = isFloor ? 8 : 16;
-                                    sourceRect = new Rectangle((variation % decorationOffset) * model.TextureWidth, (variation / decorationOffset) * model.TextureHeight, model.TextureWidth, model.TextureHeight);
+                                    bool isFloor = model.ItemName.Equals("Floor", StringComparison.OrdinalIgnoreCase);
+                                    int decorationOffset = isFloor ? 8 : 16;
+                                    sourceRect = new Rectangle(variation % decorationOffset * model.TextureWidth, variation / decorationOffset * model.TextureHeight, model.TextureWidth, model.TextureHeight);
                                     break;
                             }
 
-                            var scale = 4;
+                            int scale = 4;
                             if (model.TextureHeight >= 64)
                             {
                                 scale = 2;
@@ -929,20 +928,16 @@ namespace AlternativeTextures
                             {
                                 scale = 1;
                             }
-                            configApi.RegisterImage(ModManifest, $"{AlternativeTextures.TEXTURE_TOKEN_HEADER}{model.GetTokenId(variation)}", sourceRect, scale);
+                            configApi.AddImage(ModManifest, () => Game1.content.Load<Texture2D>("{AlternativeTextures.TEXTURE_TOKEN_HEADER}{model.GetTokenId(variation)}"), sourceRect, scale);
 
                             // Add our custom widget, which passes over the required data needed to flag the TextureId with the appropriate Variation 
                             bool wasClicking = false;
-                            var textureWidget = new TextureWidget() { TextureId = model.GetId(), Variation = variation, Enabled = !modConfig.IsTextureVariationDisabled(model.GetId(), variation) };
-                            Func<Vector2, object, object> widgetUpdate = (Vector2 pos, object state) =>
+                            TextureWidget textureWidget = new() { TextureId = model.GetId(), Variation = variation, Enabled = !modConfig.IsTextureVariationDisabled(model.GetId(), variation) };
+                            void widgetUpdate()
                             {
-                                var widget = state as TextureWidget;
-                                if (widget is null)
-                                {
-                                    widget = textureWidget;
-                                }
+                                TextureWidget widget = textureWidget;
 
-                                var bounds = new Rectangle((int)pos.X, (int)pos.Y, OptionsCheckbox.sourceRectChecked.Width * 4, OptionsCheckbox.sourceRectChecked.Width * 4);
+                                Rectangle bounds = new(OptionsCheckbox.sourceRectChecked.X, OptionsCheckbox.sourceRectChecked.Y, OptionsCheckbox.sourceRectChecked.Width * 4, OptionsCheckbox.sourceRectChecked.Width * 4);
                                 bool isHovering = bounds.Contains(Game1.getOldMouseX(), Game1.getOldMouseY());
 
                                 bool isClicking = Game1.input.GetMouseState().LeftButton == ButtonState.Pressed;
@@ -951,29 +946,22 @@ namespace AlternativeTextures
                                     widget.Enabled = !widget.Enabled;
                                 }
                                 wasClicking = isClicking;
-
-                                return widget;
                             };
-                            Func<SpriteBatch, Vector2, object, object> widgetDraw = (SpriteBatch b, Vector2 pos, object state) =>
+                            void widgetDraw(SpriteBatch b, Vector2 pos)
                             {
-                                var widget = state as TextureWidget;
+                                TextureWidget widget = textureWidget;
                                 b.Draw(Game1.mouseCursors, pos, widget.Enabled ? OptionsCheckbox.sourceRectChecked : OptionsCheckbox.sourceRectUnchecked, Color.White, 0, Vector2.Zero, 4, SpriteEffects.None, 0);
-
-                                return widget;
                             };
-                            Action<object> widgetSave = (object state) =>
+                            void widgetSave()
                             {
-                                if (state is null || !(state is TextureWidget widget))
-                                {
-                                    return;
-                                }
+                                TextureWidget widget = textureWidget;
 
                                 modConfig.SetTextureStatus(widget.TextureId, widget.Variation, widget.Enabled);
                             };
-                            configApi.RegisterLabel(ModManifest, String.Empty, String.Empty);
-                            configApi.RegisterComplexOption(ModManifest, $"Enabled", $"If checked, this alternative texture will be available.", widgetUpdate, widgetDraw, widgetSave);
+                            configApi.AddSectionTitle(ModManifest, () => string.Empty, () => string.Empty);
+                            configApi.AddComplexOption(ModManifest, () => Helper.Translation.Get("gmcm.enabled"), widgetDraw, () => Helper.Translation.Get("gmcm.show_alt_texture"), widgetUpdate, widgetSave);
 
-                            configApi.RegisterLabel(ModManifest, String.Empty, String.Empty);
+                            configApi.AddSectionTitle(ModManifest, () => string.Empty, () => string.Empty);
                         }
                     }
                 }

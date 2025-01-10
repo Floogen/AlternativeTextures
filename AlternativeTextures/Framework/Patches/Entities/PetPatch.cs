@@ -24,8 +24,10 @@ namespace AlternativeTextures.Framework.Patches.Entities
             harmony.Patch(AccessTools.Method(_entity, nameof(Pet.draw), new[] { typeof(SpriteBatch) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
             harmony.Patch(AccessTools.Method(_entity, nameof(Pet.update), new[] { typeof(GameTime), typeof(GameLocation) }), postfix: new HarmonyMethod(GetType(), nameof(UpdatePostfix)));
 
+#pragma warning disable CS0618 // Type or member is obsolete
             harmony.Patch(AccessTools.Constructor(typeof(Cat), new[] { typeof(int), typeof(int), typeof(string), typeof(string) }), postfix: new HarmonyMethod(GetType(), nameof(PetPostfix)));
             harmony.Patch(AccessTools.Constructor(typeof(Dog), new[] { typeof(int), typeof(int), typeof(string), typeof(string) }), postfix: new HarmonyMethod(GetType(), nameof(PetPostfix)));
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         private static void ReloadBreedSpritePostfix(Pet __instance)
@@ -79,7 +81,9 @@ namespace AlternativeTextures.Framework.Patches.Entities
                 {
                     Vector2 emotePosition = __instance.getLocalPosition(Game1.viewport);
                     emotePosition.X += 32f;
+#pragma warning disable CS0618 // Type or member is obsolete
                     emotePosition.Y -= 96 + ((__instance is Dog) ? 16 : 0);
+#pragma warning restore CS0618 // Type or member is obsolete
                     b.Draw(Game1.emoteSpriteSheet, emotePosition, new Rectangle(__instance.CurrentEmoteIndex * 16 % Game1.emoteSpriteSheet.Width, __instance.CurrentEmoteIndex * 16 / Game1.emoteSpriteSheet.Width * 16, 16, 16), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, (float)__instance.StandingPixel.Y / 10000f + 0.0001f);
                 }
             }

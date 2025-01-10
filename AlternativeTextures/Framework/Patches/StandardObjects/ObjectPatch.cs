@@ -149,9 +149,9 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                     {
                         spriteBatch.Draw(Game1.mouseCursors, position + new Vector2(-32f, -32f), new Rectangle(88, 1779, 32, 32), Color.White * 0.75f, 0f, Vector2.Zero, 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64 - 20) / 10000f) + (float)x / 1000000f);
                     }
-                    if (__instance.ParentSheetIndex == 126 && __instance.quality.Value != 0)
+                    if (__instance.ParentSheetIndex == 126 && __instance.Quality != 0)
                     {
-                        spriteBatch.Draw(FarmerRenderer.hatsTexture, position + new Vector2(-3f, -6f) * 4f, new Rectangle((__instance.quality.Value - 1) * 20 % FarmerRenderer.hatsTexture.Width, (__instance.quality.Value - 1) * 20 / FarmerRenderer.hatsTexture.Width * 20 * 4, 20, 20), Color.White * alpha, 0f, Vector2.Zero, 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64 - 20) / 10000f) + (float)x * 1E-05f);
+                        spriteBatch.Draw(FarmerRenderer.hatsTexture, position + new Vector2(-3f, -6f) * 4f, new Rectangle((__instance.Quality - 1) * 20 % FarmerRenderer.hatsTexture.Width, (__instance.Quality - 1) * 20 / FarmerRenderer.hatsTexture.Width * 20 * 4, 20, 20), Color.White * alpha, 0f, Vector2.Zero, 4f, SpriteEffects.None, Math.Max(0f, (float)((y + 1) * 64 - 20) / 10000f) + (float)x * 1E-05f);
                     }
                 }
                 else if (!Game1.eventUp || (Game1.CurrentEvent != null && !Game1.CurrentEvent.isTileWalkedOn(x, y)))
@@ -166,7 +166,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                         spriteBatch.Draw(textureModel.GetTexture(textureVariation), position2, new Rectangle(artifactOffset, textureOffset, 16, 16), color, 0f, origin, (__instance.scale.Y > 1f) ? __instance.getScale().Y : 4f, __instance.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (float)(__instance.isPassable() ? __instance.GetBoundingBoxAt(x, y).Top : __instance.GetBoundingBoxAt(x, y).Bottom) / 10000f);
                         return false;
                     }
-                    if (__instance.fragility.Value != 2)
+                    if (__instance.Fragility != 2)
                     {
                         spriteBatch.Draw(Game1.shadowTexture, Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64 + 32, y * 64 + 51 + 4)), Game1.shadowTexture.Bounds, Color.White * alpha, 0f, new Vector2(Game1.shadowTexture.Bounds.Center.X, Game1.shadowTexture.Bounds.Center.Y), 4f, SpriteEffects.None, (float)__instance.GetBoundingBoxAt(x, y).Bottom / 15000f);
                     }
@@ -194,7 +194,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                     return false;
                 }
 
-                float base_sort = (float)((y + 1) * 64) / 10000f + __instance.tileLocation.X / 50000f;
+                float base_sort = (float)((y + 1) * 64) / 10000f + __instance.TileLocation.X / 50000f;
                 if (__instance.IsTapper() || __instance.QualifiedItemId.Equals("(BC)MushroomLog"))
                 {
                     base_sort += 0.02f;

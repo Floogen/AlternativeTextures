@@ -51,7 +51,7 @@ namespace AlternativeTextures.Framework.Patches.SpecialObjects
                     Rectangle fertilizer_rect = __instance.hoeDirt.Value.GetFertilizerSourceRect();
                     fertilizer_rect.Width = 13;
                     fertilizer_rect.Height = 13;
-                    spriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(__instance.tileLocation.X * 64f + 4f, __instance.tileLocation.Y * 64f - 12f)), fertilizer_rect, Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, (__instance.tileLocation.Y + 0.65f) * 64f / 10000f + (float)x * 1E-05f);
+                    spriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(__instance.TileLocation.X * 64f + 4f, __instance.TileLocation.Y * 64f - 12f)), fertilizer_rect, Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, (__instance.TileLocation.Y + 0.65f) * 64f / 10000f + (float)x * 1E-05f);
                 }
                 if (__instance.hoeDirt.Value.crop != null)
                 {
@@ -59,7 +59,7 @@ namespace AlternativeTextures.Framework.Patches.SpecialObjects
                 }
                 if (__instance.heldObject.Value != null)
                 {
-                    __instance.heldObject.Value.draw(spriteBatch, x * 64, y * 64 - 48, (__instance.tileLocation.Y + 0.66f) * 64f / 10000f + (float)x * 1E-05f, 1f);
+                    __instance.heldObject.Value.draw(spriteBatch, x * 64, y * 64 - 48, (__instance.TileLocation.Y + 0.66f) * 64f / 10000f + (float)x * 1E-05f, 1f);
                 }
                 if (__instance.bush.Value != null)
                 {
