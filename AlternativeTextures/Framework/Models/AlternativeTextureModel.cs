@@ -117,7 +117,17 @@ namespace AlternativeTextures.Framework.Models
 
         public AnimationModel GetAnimationDataAtIndex(int variation, int index)
         {
-            return GetAnimationData(variation).ElementAt(index);
+            var animationData = GetAnimationData(variation);
+            if (animationData is null || animationData.Count == 0)
+            {
+                return null;
+            }
+            else if (animationData.Count <= index)
+            {
+                index = 0;
+            }
+
+            return animationData.ElementAt(index);
         }
 
         public int GetNextValidFrameFromIndex(int variation, int index, bool isMachineActive)
