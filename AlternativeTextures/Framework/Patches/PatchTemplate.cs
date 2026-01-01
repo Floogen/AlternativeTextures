@@ -316,7 +316,7 @@ namespace AlternativeTextures.Framework.Patches
                 case Tree.palmTree2:
                     return "Palm_2";
                 default:
-                    return String.Empty;
+                    return tree.treeType.Value;
             }
         }
 
