@@ -9,9 +9,9 @@ namespace AlternativeTextures.Framework.External.ContentPatcher
     internal class TextureToken
     {
         private TextureManager _textureManager;
-        private AssetManager _assetManager;
+        private ToolManager _assetManager;
 
-        public TextureToken(TextureManager textureManager, AssetManager assetManager)
+        public TextureToken(TextureManager textureManager, ToolManager assetManager)
         {
             _textureManager = textureManager;
             _assetManager = assetManager;

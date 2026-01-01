@@ -1,4 +1,5 @@
 ﻿using AlternativeTextures.Framework.Interfaces;
+using AlternativeTextures.Framework.Managers;
 using AlternativeTextures.Framework.Models;
 using AlternativeTextures.Framework.Patches.Entities;
 using AlternativeTextures.Framework.Utilities;
@@ -34,47 +35,32 @@ namespace AlternativeTextures.Framework.Patches
 
         internal static GenericTool GetPaintBucketTool()
         {
-            var paintBucket = new GenericTool();
-            paintBucket.modData[AlternativeTextures.PAINT_BUCKET_FLAG] = true.ToString();
-
-            return paintBucket;
+            return ItemRegistry.Create<GenericTool>(ToolManager.TOOL_ID_PAINT_BUCKET);
         }
 
         internal static GenericTool GetScissorsTool()
         {
-            var scissors = new GenericTool();
-            scissors.modData[AlternativeTextures.SCISSORS_FLAG] = true.ToString();
-
-            return scissors;
+            return ItemRegistry.Create<GenericTool>(ToolManager.TOOL_ID_SCISSORS);
         }
 
         internal static GenericTool GetPaintBrushTool()
         {
-            var paintBrush = new GenericTool();
-            paintBrush.modData[AlternativeTextures.PAINT_BRUSH_FLAG] = null;
-
-            return paintBrush;
+            return ItemRegistry.Create<GenericTool>(ToolManager.TOOL_ID_PAINT_BRUSH);
         }
 
         internal static GenericTool GetSprayCanTool(bool isRare = false)
         {
-            var sprayCan = new GenericTool();
-            sprayCan.modData[AlternativeTextures.SPRAY_CAN_FLAG] = null;
-
             if (isRare || Game1.random.Next(100) <= 10)
             {
-                sprayCan.modData[AlternativeTextures.SPRAY_CAN_RARE] = null;
+                return ItemRegistry.Create<GenericTool>(ToolManager.TOOL_ID_SPRAY_CAN_RARE);
             }
 
-            return sprayCan;
+            return ItemRegistry.Create<GenericTool>(ToolManager.TOOL_ID_SPRAY_CAN);
         }
 
         internal static GenericTool GetCatalogueTool()
         {
-            var catalogue = new GenericTool();
-            catalogue.modData[AlternativeTextures.CATALOGUE_FLAG] = null;
-
-            return catalogue;
+            return ItemRegistry.Create<GenericTool>(ToolManager.TOOL_ID_CATALOGUE);
         }
 
         internal static string GetModelNameWithoutSeason(string modelName, string season)
