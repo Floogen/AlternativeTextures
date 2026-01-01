@@ -65,7 +65,7 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
                 Vector2 tileLocation = __instance.Tile;
 
                 string season = Game1.GetSeasonForLocation(__instance.Location).ToString();
-                if (__instance.greenHouseTileTree.Value)
+                if (__instance.GreenHouseTileTree)
                 {
                     spriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f)), new Rectangle(669, 1957, 16, 16), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1E-08f);
                 }
