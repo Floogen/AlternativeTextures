@@ -904,11 +904,12 @@ namespace AlternativeTextures
 
                         for (int variation = 0; variation < model.GetVariations(); variation++)
                         {
+                            string variationText = Helper.Translation.Get("config.model_single.name", new { variation });
                             // Add general description label
                             var description = $"Type: {model.GetTextureType()}\nSeason(s): {(String.IsNullOrEmpty(model.Season) ? "All" : model.Season)}";
                             configApi.AddSectionTitle(
                                 ModManifest,
-                                () => Helper.Translation.Get("config.model_single.name", new { variation }),
+                                () => variationText,
                                 () => Helper.Translation.Get("config.model_single.description",
                                     new
                                     {
@@ -938,7 +939,9 @@ namespace AlternativeTextures
                             {
                                 scale = 1;
                             }
-                            configApi.AddImage(ModManifest, () => model.GetTexture(variation), sourceRect, scale);
+
+                            var modelTexture = model.GetTexture(variation);
+                            configApi.AddImage(ModManifest, () => modelTexture, sourceRect, scale);
 
                             // Add our custom widget, which passes over the required data needed to flag the TextureId with the appropriate Variation 
                             var textureWidget = new TextureWidget() { TextureId = model.GetId(), Variation = variation, Enabled = !modConfig.IsTextureVariationDisabled(model.GetId(), variation) };
