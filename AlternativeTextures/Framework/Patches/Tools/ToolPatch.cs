@@ -32,10 +32,6 @@ namespace AlternativeTextures.Framework.Patches.Tools
 
         internal void Apply(Harmony harmony)
         {
-            harmony.Patch(AccessTools.Method(_object, "get_DisplayName", null), postfix: new HarmonyMethod(GetType(), nameof(GetNamePostfix)));
-            harmony.Patch(AccessTools.Method(_object, "get_description", null), postfix: new HarmonyMethod(GetType(), nameof(GetDescriptionPostfix)));
-
-
             harmony.Patch(AccessTools.Method(typeof(Item), nameof(Item.canBeTrashed), null), postfix: new HarmonyMethod(GetType(), nameof(CanBeTrashedPostfix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Tool.drawInMenu), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(StackDrawType), typeof(Color), typeof(bool) }), prefix: new HarmonyMethod(GetType(), nameof(DrawInMenuPrefix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Tool.beginUsing), new[] { typeof(GameLocation), typeof(int), typeof(int), typeof(Farmer) }), prefix: new HarmonyMethod(GetType(), nameof(BeginUsingPrefix)));
@@ -116,36 +112,16 @@ namespace AlternativeTextures.Framework.Patches.Tools
             }
         }
 
-        private static bool DrawInMenuPrefix(Tool __instance, SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber, Color color, bool drawShadow)
+        private static bool DrawInMenuPrefix(Tool __instance, SpriteBatch spriteBatch, Vector2 location, ref float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber, Color color, bool drawShadow)
         {
-            if (__instance.modData.ContainsKey(AlternativeTextures.PAINT_BUCKET_FLAG))
-            {
-                spriteBatch.Draw(AlternativeTextures.assetManager.GetPaintBucketTexture(), location + new Vector2(32f, 32f), new Rectangle(0, 0, 16, 16), color * transparency, 0f, new Vector2(8f, 8f), 4f * scaleSize, SpriteEffects.None, layerDepth);
-
-                return false;
-            }
-
-            if (__instance.modData.ContainsKey(AlternativeTextures.SCISSORS_FLAG))
-            {
-                spriteBatch.Draw(AlternativeTextures.assetManager.GetScissorsTexture(), location + new Vector2(32f, 32f), new Rectangle(0, 0, 16, 16), color * transparency, 0f, new Vector2(8f, 8f), 4f * scaleSize, SpriteEffects.None, layerDepth);
-
-                return false;
-            }
-
-            if (__instance.modData.ContainsKey(AlternativeTextures.SPRAY_CAN_FLAG))
-            {
-                spriteBatch.Draw(AlternativeTextures.assetManager.GetSprayCanTexture(__instance.modData.ContainsKey(AlternativeTextures.SPRAY_CAN_RARE)), location + new Vector2(32f, 32f), new Rectangle(0, 0, 16, 16), color * transparency, 0f, new Vector2(8f, 8f), 4f * scaleSize, SpriteEffects.None, layerDepth);
-
-                return false;
-            }
-
+            // Paint brush requires special draw prefix for
             if (__instance.modData.ContainsKey(AlternativeTextures.PAINT_BRUSH_FLAG))
             {
                 var scale = __instance.modData.ContainsKey(AlternativeTextures.PAINT_BRUSH_SCALE) ? float.Parse(__instance.modData[AlternativeTextures.PAINT_BRUSH_SCALE]) : 0f;
-                var texture = AlternativeTextures.assetManager.GetPaintBrushEmptyTexture();
+                var texture = Managers.ToolManager.GetPaintBrushEmptyTexture();
                 if (!String.IsNullOrEmpty(__instance.modData[AlternativeTextures.PAINT_BRUSH_FLAG]))
                 {
-                    texture = AlternativeTextures.assetManager.GetPaintBrushFilledTexture();
+                    texture = Managers.ToolManager.GetPaintBrushFilledTexture();
                 }
                 spriteBatch.Draw(texture, location + new Vector2(32f, 32f), new Rectangle(0, 0, 16, 16), color * transparency, 0f, new Vector2(8f, 8f), 4f * (scaleSize + scale), SpriteEffects.None, layerDepth);
 
@@ -153,13 +129,6 @@ namespace AlternativeTextures.Framework.Patches.Tools
                 {
                     __instance.modData[AlternativeTextures.PAINT_BRUSH_SCALE] = (scale -= 0.01f).ToString();
                 }
-                return false;
-            }
-
-            if (__instance.modData.ContainsKey(AlternativeTextures.CATALOGUE_FLAG))
-            {
-                spriteBatch.Draw(AlternativeTextures.assetManager.GetCatalogueTexture(), location + new Vector2(32f, 32f), new Rectangle(0, 0, 16, 16), color * transparency, 0f, new Vector2(8f, 8f), 4f * scaleSize, SpriteEffects.None, layerDepth);
-
                 return false;
             }
 

@@ -7,7 +7,6 @@ using AlternativeTextures.Framework.Patches;
 using AlternativeTextures.Framework.Patches.Buildings;
 using AlternativeTextures.Framework.Patches.Entities;
 using AlternativeTextures.Framework.Patches.GameLocations;
-using AlternativeTextures.Framework.Patches.ShopLocations;
 using AlternativeTextures.Framework.Patches.SpecialObjects;
 using AlternativeTextures.Framework.Patches.StandardObjects;
 using AlternativeTextures.Framework.Patches.Tools;
@@ -47,8 +46,9 @@ namespace AlternativeTextures
         internal const string ENABLED_SPRAY_CAN_TEXTURES = "Stardew.Default";
 
         // Compatibility keys
-        internal const string TOOL_CONVERSION_COMPATIBILITY = "AlternativeTextures.HasConvertedMilkPails";
+        internal const string TOOL_CONVERSION_COMPATIBILITY_OLD_PAINT_BUCKET = "AlternativeTextures.HasConvertedMilkPails";
         internal const string TYPE_FIX_COMPATIBILITY = "AlternativeTextures.HasFixedBadObjectTyping";
+        internal const string TOOL_CONVERSION_COMPATIBILITY_DATA_TOOLS = "AlternativeTextures.HasConvertedToDataTools";
 
         // Tool related keys
         internal const string PAINT_BUCKET_FLAG = "AlternativeTextures.PaintBucketFlag";
@@ -61,6 +61,9 @@ namespace AlternativeTextures
         internal const string SPRAY_CAN_RADIUS = "AlternativeTextures.SprayCanRadius";
         internal const string CATALOGUE_FLAG = "AlternativeTextures.CatalogueFlag";
 
+        // Mod ID const
+        internal const string MOD_ID = "PeacefulEnd.AlternativeTextures";
+
         // Shared static helpers
         internal static IMonitor monitor;
         internal static IModHelper modHelper;
@@ -71,7 +74,7 @@ namespace AlternativeTextures
         internal static TextureManager textureManager;
         internal static MessageManager messageManager;
         internal static ApiManager apiManager;
-        internal static AssetManager assetManager;
+        internal static ToolManager toolManager;
 
         // Utilities
         internal static FpsCounter fpsCounter;
@@ -94,7 +97,7 @@ namespace AlternativeTextures
             textureManager = new TextureManager(monitor, helper);
             messageManager = new MessageManager(monitor, helper, ModManifest.UniqueID);
             apiManager = new ApiManager(monitor);
-            assetManager = new AssetManager(helper);
+            toolManager = new ToolManager(helper);
 
             // Setup our utilities
             fpsCounter = new FpsCounter();
@@ -144,7 +147,6 @@ namespace AlternativeTextures
 
                 // Start of location patches
                 new GameLocationPatch(monitor, helper).Apply(harmony);
-                new ShopBuilderPatch(monitor, helper).Apply(harmony);
 
                 // Paint tool related patches
                 new ToolPatch(monitor, helper).Apply(harmony);
@@ -169,7 +171,7 @@ namespace AlternativeTextures
 
             // Hook into GameLoop events
             helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
-            helper.Events.GameLoop.DayStarted += this.OnDayStarted;
+            helper.Events.GameLoop.SaveLoaded += this.OnSaveLoaded;
 
             // Hook into Input events
             helper.Events.Input.ButtonsChanged += OnButtonChanged;
@@ -197,11 +199,7 @@ namespace AlternativeTextures
         private void OnContentAssetReady(object sender, AssetReadyEventArgs e)
         {
             var asset = e.Name;
-            if (assetManager.toolKeyToData.ContainsKey(asset.Name))
-            {
-                assetManager.toolKeyToData[asset.Name].Texture = Helper.GameContent.Load<Texture2D>(asset);
-            }
-            else if (textureManager.GetTextureByToken(asset.Name) is Texture2D texture && texture is not null)
+            if (textureManager.GetTextureByToken(asset.Name) is Texture2D texture && texture is not null)
             {
                 var loadedTexture = Helper.GameContent.Load<Texture2D>(asset.Name);
 
@@ -220,9 +218,9 @@ namespace AlternativeTextures
                     var clonedTexture = originalTexture.CreateSelectiveCopy(Game1.graphics.GraphicsDevice, new Rectangle(0, 0, originalTexture.Width, originalTexture.Height));
                     e.LoadFrom(() => clonedTexture, AssetLoadPriority.Exclusive);
                 }
-                else if (assetManager.toolKeyToData.ContainsKey(asset.Name))
+                else if (toolManager.toolKeyToData.ContainsKey(asset.Name))
                 {
-                    e.LoadFromModFile<Texture2D>(assetManager.toolKeyToData[asset.Name].FilePath, AssetLoadPriority.Exclusive);
+                    e.LoadFromModFile<Texture2D>(toolManager.toolKeyToData[asset.Name], AssetLoadPriority.Exclusive);
                 }
             }
             else if (e.NameWithoutLocale.IsEquivalentTo("Data/AdditionalWallpaperFlooring") && textureManager.GetValidTextureNamesWithSeason().Count > 0)
@@ -244,6 +242,14 @@ namespace AlternativeTextures
                         moddedDecorations.Add(decoration);
                     }
                 });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/Tools"))
+            {
+                e.Edit(toolManager.Edit_DataTools, AssetEditPriority.Early);
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/Shops"))
+            {
+                e.Edit(toolManager.Edit_DataShops, AssetEditPriority.Early);
             }
         }
 
@@ -832,20 +838,14 @@ namespace AlternativeTextures
 
             if (Helper.ModRegistry.IsLoaded("Pathoschild.ContentPatcher") && apiManager.HookIntoContentPatcher(Helper))
             {
-                apiManager.GetContentPatcherApi().RegisterToken(ModManifest, "Textures", new TextureToken(textureManager, assetManager));
-                apiManager.GetContentPatcherApi().RegisterToken(ModManifest, "Tools", new ToolToken(textureManager, assetManager));
+                apiManager.GetContentPatcherApi().RegisterToken(ModManifest, "Textures", new TextureToken(textureManager, toolManager));
+                apiManager.GetContentPatcherApi().RegisterToken(ModManifest, "Tools", new ToolToken(textureManager, toolManager));
             }
 
             // Load any owned content packs
             this.LoadContentPacks();
 
             Monitor.Log($"Finished loading Alternative Textures content packs", LogLevel.Debug);
-
-            // Register tools
-            foreach (var tool in assetManager.toolKeyToData.ToList())
-            {
-                assetManager.toolKeyToData[tool.Key].Texture = Helper.GameContent.Load<Texture2D>(tool.Key);
-            }
 
             // Hook into GMCM, if applicable
             if (Helper.ModRegistry.IsLoaded("spacechase0.GenericModConfigMenu") && apiManager.HookIntoGenericModConfigMenu(Helper))
@@ -980,20 +980,26 @@ namespace AlternativeTextures
             }
         }
 
-        private void OnDayStarted(object sender, DayStartedEventArgs e)
+        private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
         {
             // Backwards compatibility logic
-            if (!Game1.player.modData.ContainsKey(TOOL_CONVERSION_COMPATIBILITY))
+            if (!Game1.player.modData.ContainsKey(TOOL_CONVERSION_COMPATIBILITY_OLD_PAINT_BUCKET))
             {
-                Monitor.Log($"Converting old Paint Buckets into generic tools...", LogLevel.Debug);
-                Game1.player.modData[TOOL_CONVERSION_COMPATIBILITY] = true.ToString();
-                ConvertPaintBucketsToGenericTools(Game1.player);
+                Monitor.Log("Converting old Paint Buckets into data tools...", LogLevel.Debug);
+                Game1.player.modData[TOOL_CONVERSION_COMPATIBILITY_OLD_PAINT_BUCKET] = true.ToString();
+                ConvertPaintBucketsToDataTools(Game1.player);
             }
             if (!Game1.player.modData.ContainsKey(TYPE_FIX_COMPATIBILITY))
             {
-                Monitor.Log($"Fixing bad object and bigcraftable typings...", LogLevel.Debug);
+                Monitor.Log("Fixing bad object and bigcraftable typings...", LogLevel.Debug);
                 Game1.player.modData[TYPE_FIX_COMPATIBILITY] = true.ToString();
                 FixBadObjectTyping();
+            }
+            if (!Game1.player.modData.ContainsKey(TOOL_CONVERSION_COMPATIBILITY_DATA_TOOLS))
+            {
+                Monitor.Log("Converting created tools to data tools...", LogLevel.Debug);
+                Game1.player.modData[TOOL_CONVERSION_COMPATIBILITY_DATA_TOOLS] = true.ToString();
+                ConvertGenericToolsToDataTools();
             }
         }
 
@@ -1531,68 +1537,52 @@ namespace AlternativeTextures
             return contentPackName.Replace("[", String.Empty).Replace("]", String.Empty);
         }
 
-        private void ConvertPaintBucketsToGenericTools(Farmer who)
+        private void ConvertPaintBucketsToDataTools(Farmer who)
         {
-            // Check player's inventory first
-            for (int i = 0; i < who.MaxItems; i++)
+            Utility.ForEachItemContext((in context) =>
             {
-                if (who.Items[i] is MilkPail milkPail && milkPail.modData.ContainsKey(OLD_PAINT_BUCKET_FLAG))
+                if (context.Item is MilkPail milkPail && milkPail.modData.ContainsKey(OLD_PAINT_BUCKET_FLAG))
                 {
-                    who.Items[i] = PatchTemplate.GetPaintBucketTool();
+                    context.ReplaceItemWith(PatchTemplate.GetPaintBucketTool());
                 }
-            }
-
-            foreach (var location in Game1.locations)
-            {
-                ConvertStoredPaintBucketsToGenericTools(who, location);
-
-                if (location.buildings is not null)
-                {
-                    foreach (var building in location.buildings)
-                    {
-                        GameLocation indoorLocation = building.indoors.Value;
-                        if (indoorLocation is null)
-                        {
-                            continue;
-                        }
-
-                        ConvertStoredPaintBucketsToGenericTools(who, indoorLocation);
-                    }
-                }
-            }
+                return true;
+            });
         }
 
-        private void ConvertStoredPaintBucketsToGenericTools(Farmer who, GameLocation location)
+        private void ConvertGenericToolsToDataTools()
         {
-            foreach (var chest in location.Objects.Pairs.Where(p => p.Value is Chest).Select(p => p.Value as Chest).ToList())
+            Utility.ForEachItemContext((in context) =>
             {
-                if (chest.isEmpty())
+                if (context.Item is not GenericTool genericTool || Game1.toolData.ContainsKey(genericTool.ItemId))
                 {
-                    continue;
+                    return true;
                 }
-
-                if (chest.SpecialChestType == Chest.SpecialChestTypes.JunimoChest)
+                if (genericTool.modData.ContainsKey(PAINT_BUCKET_FLAG))
                 {
-                    var actual_items = chest.GetItemsForPlayer(who.UniqueMultiplayerID);
-                    for (int j = actual_items.Count - 1; j >= 0; j--)
-                    {
-                        if (actual_items[j] is MilkPail milkPail && milkPail.modData.ContainsKey(OLD_PAINT_BUCKET_FLAG))
-                        {
-                            actual_items[j] = PatchTemplate.GetPaintBucketTool();
-                        }
-                    }
+                    context.ReplaceItemWith(PatchTemplate.GetPaintBucketTool());
                 }
-                else
+                else if (genericTool.modData.ContainsKey(SCISSORS_FLAG))
                 {
-                    for (int i = chest.Items.Count - 1; i >= 0; i--)
-                    {
-                        if (chest.Items[i] is MilkPail milkPail && milkPail.modData.ContainsKey(OLD_PAINT_BUCKET_FLAG))
-                        {
-                            chest.Items[i] = PatchTemplate.GetPaintBucketTool();
-                        }
-                    }
+                    context.ReplaceItemWith(PatchTemplate.GetScissorsTool());
                 }
-            }
+                else if (genericTool.modData.ContainsKey(PAINT_BRUSH_FLAG))
+                {
+                    context.ReplaceItemWith(PatchTemplate.GetPaintBrushTool());
+                }
+                else if (genericTool.modData.ContainsKey(SPRAY_CAN_RARE))
+                {
+                    context.ReplaceItemWith(PatchTemplate.GetSprayCanTool(isRare: true));
+                }
+                else if (genericTool.modData.ContainsKey(SPRAY_CAN_FLAG))
+                {
+                    context.ReplaceItemWith(PatchTemplate.GetSprayCanTool(isRare: false));
+                }
+                else if (genericTool.modData.ContainsKey(CATALOGUE_FLAG))
+                {
+                    context.ReplaceItemWith(PatchTemplate.GetCatalogueTool());
+                }
+                return true;
+            });
         }
 
         private void FixBadObjectTyping()

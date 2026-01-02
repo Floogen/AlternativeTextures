@@ -7,9 +7,9 @@ namespace AlternativeTextures.Framework.External.ContentPatcher
     internal class ToolToken
     {
         private TextureManager _textureManager;
-        private AssetManager _assetManager;
+        private ToolManager _assetManager;
 
-        public ToolToken(TextureManager textureManager, AssetManager assetManager)
+        public ToolToken(TextureManager textureManager, ToolManager assetManager)
         {
             _textureManager = textureManager;
             _assetManager = assetManager;
