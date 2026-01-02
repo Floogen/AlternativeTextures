@@ -11,6 +11,7 @@ using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Buildings;
 using StardewValley.Characters;
+using StardewValley.GameData.FloorsAndPaths;
 using StardewValley.GameData.GiantCrops;
 using StardewValley.Internal;
 using StardewValley.Locations;
@@ -1095,7 +1096,6 @@ namespace AlternativeTextures.Framework.UI
 
         private Rectangle GetFlooringSourceRect(AlternativeTextureModel textureModel, Flooring flooring, int textureHeight, int variation)
         {
-            int sourceRectOffset = variation == -1 ? int.Parse(flooring.whichFloor.Value) * 4 * 64 : textureModel.GetTextureOffset(variation);
             byte drawSum = 0;
             Vector2 surroundingLocations = flooring.Tile;
             surroundingLocations.X += 1f;
@@ -1124,9 +1124,11 @@ namespace AlternativeTextures.Framework.UI
 
             if (variation == -1)
             {
-                return new Rectangle(int.Parse(flooring.whichFloor.Value) % 4 * 64 + sourceRectPosition * 16 % 256, sourceRectPosition / 16 * 16 + int.Parse(flooring.whichFloor.Value) / 4 * 64, 16, 16);
+                Point textureCorner = flooring.GetTextureCorner();
+                return new Rectangle(textureCorner.X + sourceRectPosition % 16 * 16, textureCorner.Y + sourceRectPosition / 16 * 16, 16, 16);
             }
 
+            int sourceRectOffset = textureModel?.GetTextureOffset(variation) ?? 0;
             return new Rectangle(sourceRectPosition % 16 * 16, sourceRectPosition / 16 * 16 + sourceRectOffset, 16, 16);
         }
 
