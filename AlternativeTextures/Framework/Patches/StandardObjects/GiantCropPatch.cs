@@ -72,10 +72,10 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
         private static void GiantCropPostfix(GiantCrop __instance)
         {
-            if (__instance.GetData() is not GiantCropData data)
+            if (!TryGetGiantCropName(__instance, out string instanceName))
+            {
                 return;
-            var instanceName = Game1.objectData.ContainsKey(data.FromItemId) ? Game1.objectData[data.FromItemId].Name : String.Empty;
-            instanceName = $"{AlternativeTextureModel.TextureType.GiantCrop}_{instanceName}";
+            }
             var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(__instance.Location)}";
 
             if (AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceName) && AlternativeTextures.textureManager.DoesObjectHaveAlternativeTexture(instanceSeasonName))
@@ -99,6 +99,16 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
             }
 
             AssignDefaultModData(__instance, instanceSeasonName, true);
+        }
+
+        internal static bool TryGetGiantCropName(GiantCrop giantCrop, out string instanceName)
+        {
+            instanceName = String.Empty;
+            if (giantCrop.GetData() is not GiantCropData giantCropData)
+                return false;
+            instanceName = ItemRegistry.GetData(giantCropData.FromItemId)?.InternalName ?? String.Empty;
+            instanceName = $"{AlternativeTextureModel.TextureType.GiantCrop}_{instanceName}";
+            return true;
         }
     }
 }

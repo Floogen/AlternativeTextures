@@ -593,7 +593,7 @@ namespace AlternativeTextures.Framework.UI
                     {
                         foreach (string key in c.item.modData.Keys)
                         {
-                            _textureTarget.modData[key] = c.item.modData[key];
+                            giantCrop.modData[key] = c.item.modData[key];
                         }
                     }
                     else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Building building)

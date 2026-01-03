@@ -280,7 +280,7 @@ namespace AlternativeTextures.Framework.Patches
 
         internal static string GetFlooringName(Flooring floor)
         {
-            return Game1.objectData.ContainsKey(floor.GetData().ItemId) ? Game1.objectData[floor.GetData().ItemId].Name : string.Empty;
+            return ItemRegistry.GetData(floor.GetData()?.ItemId)?.InternalName ?? string.Empty;
         }
 
         internal static string GetTreeTypeString(Tree tree)
