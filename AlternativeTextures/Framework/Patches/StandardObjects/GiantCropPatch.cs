@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.GameData.GiantCrops;
 using StardewValley.TerrainFeatures;
 using System;
 
@@ -71,7 +72,9 @@ namespace AlternativeTextures.Framework.Patches.StandardObjects
 
         private static void GiantCropPostfix(GiantCrop __instance)
         {
-            var instanceName = Game1.objectData.ContainsKey(__instance.Id) ? Game1.objectData[__instance.Id].Name : String.Empty;
+            if (__instance.GetData() is not GiantCropData data)
+                return;
+            var instanceName = Game1.objectData.ContainsKey(data.FromItemId) ? Game1.objectData[data.FromItemId].Name : String.Empty;
             instanceName = $"{AlternativeTextureModel.TextureType.GiantCrop}_{instanceName}";
             var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(__instance.Location)}";
 

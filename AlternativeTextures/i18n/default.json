@@ -28,5 +28,35 @@
   // UI
   "ui.labels.catalogue": "Catalogue",
   "ui.labels.paint_brush.copied": "Copied texture to your Paint Brush!",
-  "ui.labels.paint_brush.not_found": "Unable to copy texture: No Paint Brush found within your inventory!"
+  "ui.labels.paint_brush.not_found": "Unable to copy texture: No Paint Brush found within your inventory!",
+
+  // Config
+  "config.section.use_random_textures_when": "Use Random Textures When Placing...",
+  "config.section.content_pack": "Content Packs",
+  "config.section.categories": "Categories",
+  "config.type_label.ArtifactSpot": "Artifact Spots",
+  "config.type_label.Flooring": "Flooring",
+  "config.type_label.FruitTree": "Fruit Tree",
+  "config.type_label.Tree": "Tree",
+  "config.type_label.HoeDirt": "Hoe Dirt",
+  "config.type_label.Grass": "Grass",
+  "config.type_label.Furniture": "Furniture",
+  "config.type_label.Object": "Object",
+  "config.type_label.FarmAnimal": "Farm Animal",
+  "config.type_label.Monster": "Monster",
+  "config.type_label.Building": "Building",
+  "config.type_label.Unknown": "Unknown",
+  "config.type_label.Craftable": "Craftable",
+  "config.type_label.Crop": "Crop",
+  "config.type_label.GiantCrop": "GiantCrop",
+  "config.type_label.ResourceClump": "ResourceClump",
+  "config.type_label.Bush": "Bush",
+  "config.type_label.Character": "Character",
+  "config.type_label.Decoration": "Decoration",
+  "config.special.caret": "> ",
+  "config.model_group.description": "Type: {{textureType}}\nSeason(s): {{season}}\nVariations: {{variations}}",
+  "config.model_single.name": "Variation: {{variation}}",
+  "config.model_single.description": "Type: {{textureType}}\nSeason(s): {{season}}",
+  "config.widget.enabled.name": "Enabled",
+  "config.widget.enabled.description": "If checked, this alternative texture will be available"
 }

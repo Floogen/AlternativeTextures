@@ -91,7 +91,7 @@ namespace AlternativeTextures.Framework.UI
                 var instanceName = $"{AlternativeTextureModel.TextureType.Furniture}_{item.Name}";
                 int texturesAvailable = AlternativeTextures.textureManager.GetAvailableTextureModels(itemId, instanceName, Game1.player.currentLocation.GetSeason()).Sum(t => t.Variations);
 
-                item.stack.Value = texturesAvailable;
+                item.Stack = texturesAvailable;
                 if (texturesAvailable == 0)
                 {
                     continue;

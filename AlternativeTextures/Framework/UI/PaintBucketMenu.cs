@@ -11,6 +11,7 @@ using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Buildings;
 using StardewValley.Characters;
+using StardewValley.GameData.FloorsAndPaths;
 using StardewValley.GameData.GiantCrops;
 using StardewValley.Internal;
 using StardewValley.Locations;
@@ -595,13 +596,6 @@ namespace AlternativeTextures.Framework.UI
                             _textureTarget.modData[key] = c.item.modData[key];
                         }
                     }
-                    else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is TerrainFeature feature)
-                    {
-                        foreach (string key in c.item.modData.Keys)
-                        {
-                            feature.modData[key] = c.item.modData[key];
-                        }
-                    }
                     else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Building building)
                     {
                         foreach (string key in c.item.modData.Keys)
@@ -638,6 +632,13 @@ namespace AlternativeTextures.Framework.UI
                         {
                             var instanceSeasonName = $"{TextureType.Building}_{$"Farmhouse_{Game1.MasterPlayer.HouseUpgradeLevel}"}_{Game1.GetSeasonForLocation(Game1.currentLocation)}";
                             PatchTemplate.AssignDefaultModData(farmerHouse, instanceSeasonName, true);
+                        }
+                    }
+                    else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is TerrainFeature feature)
+                    {
+                        foreach (string key in c.item.modData.Keys)
+                        {
+                            feature.modData[key] = c.item.modData[key];
                         }
                     }
                     else if (Game1.currentLocation is DecoratableLocation decoratableLocation && (string.IsNullOrEmpty(decoratableLocation.GetFloorID((int)_position.X, (int)_position.Y)) is false || string.IsNullOrEmpty(decoratableLocation.GetWallpaperID((int)_position.X, (int)_position.Y)) is false))
@@ -680,13 +681,13 @@ namespace AlternativeTextures.Framework.UI
                     for (int j = 0; j < 12; j++)
                     {
                         var randomColor = new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
-                        AlternativeTextures.multiplayer.broadcastSprites(Game1.currentLocation, new TemporaryAnimatedSprite(6, _textureTarget.tileLocation.Value * 64f, randomColor, 8, flipped: false, 50f)
+                        AlternativeTextures.multiplayer.broadcastSprites(Game1.currentLocation, new TemporaryAnimatedSprite(6, _textureTarget.TileLocation * 64f, randomColor, 8, flipped: false, 50f)
                         {
                             motion = new Vector2((float)Game1.random.Next(-10, 11) / 10f, -Game1.random.Next(1, 3)),
                             acceleration = new Vector2(0f, (float)Game1.random.Next(1, 3) / 100f),
                             accelerationChange = new Vector2(0f, -0.001f),
                             scale = 0.8f,
-                            layerDepth = (_textureTarget.tileLocation.Y + 1f) * 64f / 10000f,
+                            layerDepth = (_textureTarget.TileLocation.Y + 1f) * 64f / 10000f,
                             interval = Game1.random.Next(20, 90)
                         });
                     }
@@ -813,42 +814,6 @@ namespace AlternativeTextures.Framework.UI
                                 }
                                 this.availableTextures[i].draw(b, colorOverlay, 0.87f);
                             }
-                            else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Tree tree)
-                            {
-                                this.availableTextures[i].texture = tree.texture.Value;
-                                this.availableTextures[i].sourceRect = GetTreeSourceRect(textureModel, tree, 0, -1);
-                                this.availableTextures[i].draw(b, colorOverlay, 0.87f);
-                            }
-                            else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is FruitTree fruitTree)
-                            {
-                                this.availableTextures[i].texture = fruitTree.texture;
-                                this.availableTextures[i].sourceRect = GetFruitTreeSourceRect(textureModel, fruitTree, 0, -1);
-                                this.availableTextures[i].draw(b, colorOverlay, 0.87f);
-                            }
-                            else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Flooring flooring)
-                            {
-                                this.availableTextures[i].texture = Game1.GetSeasonForLocation(flooring.Location) is Season.Winter && (flooring.Location == null || !flooring.Location.isGreenhouse.Value) ? flooring.floorTextureWinter : flooring.floorTexture;
-                                this.availableTextures[i].sourceRect = this.GetFlooringSourceRect(textureModel, flooring, this.availableTextures[i].sourceRect.Height, -1);
-                                this.availableTextures[i].draw(b, colorOverlay, 0.87f);
-                            }
-                            else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is HoeDirt hoeDirt)
-                            {
-                                this.availableTextures[i].texture = Game1.cropSpriteSheet;
-                                this.availableTextures[i].sourceRect = this.GetCropSourceRect(textureModel, hoeDirt.crop, 0, -1);
-                                this.availableTextures[i].draw(b, colorOverlay, 0.87f);
-                            }
-                            else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Grass grass)
-                            {
-                                this.availableTextures[i].texture = grass.texture.Value;
-                                this.availableTextures[i].sourceRect = this.GetGrassSourceRect(textureModel, grass, 0, -1);
-                                this.availableTextures[i].draw(b, colorOverlay, 0.87f);
-                            }
-                            else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Bush bush)
-                            {
-                                this.availableTextures[i].texture = Bush.texture.Value;
-                                this.availableTextures[i].sourceRect = this.GetBushSourceRect(textureModel, bush, 0, -1);
-                                this.availableTextures[i].draw(b, colorOverlay, 0.87f);
-                            }
                             else if (Game1.currentLocation is Farm farm && farm.GetMainFarmHouse().occupiesTile(new Vector2(_position.X, _position.Y) / 64))
                             {
                                 var farmerHouse = farm.GetMainFarmHouse();
@@ -884,6 +849,42 @@ namespace AlternativeTextures.Framework.UI
                                 {
                                     b.Draw(Game1.mouseCursors, new Vector2(this.availableTextures[i].bounds.X + 4, this.availableTextures[i].bounds.Y - 20), new Rectangle(134, 226, 30, 25), colorOverlay, 0f, Vector2.Zero, _buildingScale, SpriteEffects.None, 1f);
                                 }
+                            }
+                            else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Tree tree)
+                            {
+                                this.availableTextures[i].texture = tree.texture.Value;
+                                this.availableTextures[i].sourceRect = GetTreeSourceRect(textureModel, tree, 0, -1);
+                                this.availableTextures[i].draw(b, colorOverlay, 0.87f);
+                            }
+                            else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is FruitTree fruitTree)
+                            {
+                                this.availableTextures[i].texture = fruitTree.texture;
+                                this.availableTextures[i].sourceRect = GetFruitTreeSourceRect(textureModel, fruitTree, 0, -1);
+                                this.availableTextures[i].draw(b, colorOverlay, 0.87f);
+                            }
+                            else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Flooring flooring)
+                            {
+                                this.availableTextures[i].texture = Game1.GetSeasonForLocation(flooring.Location) is Season.Winter && (flooring.Location == null || !flooring.Location.isGreenhouse.Value) ? flooring.floorTextureWinter : flooring.floorTexture;
+                                this.availableTextures[i].sourceRect = this.GetFlooringSourceRect(textureModel, flooring, this.availableTextures[i].sourceRect.Height, -1);
+                                this.availableTextures[i].draw(b, colorOverlay, 0.87f);
+                            }
+                            else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is HoeDirt hoeDirt)
+                            {
+                                this.availableTextures[i].texture = Game1.cropSpriteSheet;
+                                this.availableTextures[i].sourceRect = this.GetCropSourceRect(textureModel, hoeDirt.crop, 0, -1);
+                                this.availableTextures[i].draw(b, colorOverlay, 0.87f);
+                            }
+                            else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Grass grass)
+                            {
+                                this.availableTextures[i].texture = grass.texture.Value;
+                                this.availableTextures[i].sourceRect = this.GetGrassSourceRect(textureModel, grass, 0, -1);
+                                this.availableTextures[i].draw(b, colorOverlay, 0.87f);
+                            }
+                            else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Bush bush)
+                            {
+                                this.availableTextures[i].texture = Bush.texture.Value;
+                                this.availableTextures[i].sourceRect = this.GetBushSourceRect(textureModel, bush, 0, -1);
+                                this.availableTextures[i].draw(b, colorOverlay, 0.87f);
                             }
                             else if (Game1.currentLocation is DecoratableLocation decoratableLocation && (string.IsNullOrEmpty(decoratableLocation.GetFloorID((int)_position.X, (int)_position.Y)) is false || string.IsNullOrEmpty(decoratableLocation.GetWallpaperID((int)_position.X, (int)_position.Y)) is false))
                             {
@@ -924,6 +925,26 @@ namespace AlternativeTextures.Framework.UI
                             this.availableTextures[i].sourceRect = new Rectangle(0, textureModel.GetTextureOffset(variation), 48, 63);
                             this.availableTextures[i].draw(b, colorOverlay, 0.87f);
                         }
+                        else if (Game1.currentLocation is Farm farm && farm.GetMainFarmHouse().occupiesTile(new Vector2(_position.X, _position.Y) / 64))
+                        {
+                            var farmerHouse = farm.GetMainFarmHouse();
+                            var sourceRectangle = BuildingPatch.GetSourceRectReversePatch(farmerHouse);
+
+                            b.Draw(BuildingPatch.GetBuildingTextureWithPaint(farmerHouse, textureModel, variation, true), new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), new Rectangle(0, 0, sourceRectangle.Width, sourceRectangle.Height), farmerHouse.color, 0f, new Vector2(0f, 0f), _buildingScale, SpriteEffects.None, 0.89f);
+                        }
+                        else if (Game1.currentLocation is Farm mailBoxFarm && mailBoxFarm.GetMainMailboxPosition() is Point mailboxPosition && PatchTemplate.IsPositionNearMailbox(Game1.currentLocation, mailboxPosition, (int)(_position.X / 64), (int)(_position.Y / 64)))
+                        {
+                            b.Draw(textureModel.GetTexture(variation), new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), new Rectangle(0, textureModel.GetTextureOffset(variation), 16, 32), Color.White, 0f, new Vector2(0f, 0f), 4f, SpriteEffects.None, 0.89f);
+                        }
+                        else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Building building)
+                        {
+                            BuildingPatch.CondensedDrawInMenu(building, BuildingPatch.GetBuildingTextureWithPaint(building, textureModel, variation), b, this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y, _buildingScale);
+
+                            if (building is ShippingBin shippingBin)
+                            {
+                                b.Draw(textureModel.GetTexture(variation), new Vector2(this.availableTextures[i].bounds.X + 4, this.availableTextures[i].bounds.Y - 20), new Rectangle(32, textureModel.GetTextureOffset(variation), 30, 25), colorOverlay, 0f, Vector2.Zero, _buildingScale, SpriteEffects.None, 1f);
+                            }
+                        }
                         else if (PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Tree tree)
                         {
                             this.availableTextures[i].texture = textureModel.GetTexture(variation);
@@ -959,26 +980,6 @@ namespace AlternativeTextures.Framework.UI
                             this.availableTextures[i].texture = textureModel.GetTexture(variation);
                             this.availableTextures[i].sourceRect = this.GetBushSourceRect(textureModel, bush, textureModel.TextureHeight, variation);
                             this.availableTextures[i].draw(b, colorOverlay, 0.87f);
-                        }
-                        else if (Game1.currentLocation is Farm farm && farm.GetMainFarmHouse().occupiesTile(new Vector2(_position.X, _position.Y) / 64))
-                        {
-                            var farmerHouse = farm.GetMainFarmHouse();
-                            var sourceRectangle = BuildingPatch.GetSourceRectReversePatch(farmerHouse);
-
-                            b.Draw(BuildingPatch.GetBuildingTextureWithPaint(farmerHouse, textureModel, variation, true), new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), new Rectangle(0, 0, sourceRectangle.Width, sourceRectangle.Height), farmerHouse.color, 0f, new Vector2(0f, 0f), _buildingScale, SpriteEffects.None, 0.89f);
-                        }
-                        else if (Game1.currentLocation is Farm mailBoxFarm && mailBoxFarm.GetMainMailboxPosition() is Point mailboxPosition && PatchTemplate.IsPositionNearMailbox(Game1.currentLocation, mailboxPosition, (int)(_position.X / 64), (int)(_position.Y / 64)))
-                        {
-                            b.Draw(textureModel.GetTexture(variation), new Vector2(this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y), new Rectangle(0, textureModel.GetTextureOffset(variation), 16, 32), Color.White, 0f, new Vector2(0f, 0f), 4f, SpriteEffects.None, 0.89f);
-                        }
-                        else if (PatchTemplate.GetBuildingAt(Game1.currentLocation, (int)_position.X, (int)_position.Y) is Building building)
-                        {
-                            BuildingPatch.CondensedDrawInMenu(building, BuildingPatch.GetBuildingTextureWithPaint(building, textureModel, variation), b, this.availableTextures[i].bounds.X, this.availableTextures[i].bounds.Y, _buildingScale);
-
-                            if (building is ShippingBin shippingBin)
-                            {
-                                b.Draw(textureModel.GetTexture(variation), new Vector2(this.availableTextures[i].bounds.X + 4, this.availableTextures[i].bounds.Y - 20), new Rectangle(32, textureModel.GetTextureOffset(variation), 30, 25), colorOverlay, 0f, Vector2.Zero, _buildingScale, SpriteEffects.None, 1f);
-                            }
                         }
                         else if (Game1.currentLocation is DecoratableLocation decoratableLocation && (string.IsNullOrEmpty(decoratableLocation.GetFloorID((int)_position.X, (int)_position.Y)) is false || string.IsNullOrEmpty(decoratableLocation.GetWallpaperID((int)_position.X, (int)_position.Y)) is false))
                         {
@@ -1095,7 +1096,6 @@ namespace AlternativeTextures.Framework.UI
 
         private Rectangle GetFlooringSourceRect(AlternativeTextureModel textureModel, Flooring flooring, int textureHeight, int variation)
         {
-            int sourceRectOffset = variation == -1 ? int.Parse(flooring.whichFloor.Value) * 4 * 64 : textureModel.GetTextureOffset(variation);
             byte drawSum = 0;
             Vector2 surroundingLocations = flooring.Tile;
             surroundingLocations.X += 1f;
@@ -1124,9 +1124,11 @@ namespace AlternativeTextures.Framework.UI
 
             if (variation == -1)
             {
-                return new Rectangle(int.Parse(flooring.whichFloor.Value) % 4 * 64 + sourceRectPosition * 16 % 256, sourceRectPosition / 16 * 16 + int.Parse(flooring.whichFloor.Value) / 4 * 64, 16, 16);
+                Point textureCorner = flooring.GetTextureCorner();
+                return new Rectangle(textureCorner.X + sourceRectPosition % 16 * 16, textureCorner.Y + sourceRectPosition / 16 * 16, 16, 16);
             }
 
+            int sourceRectOffset = textureModel?.GetTextureOffset(variation) ?? 0;
             return new Rectangle(sourceRectPosition % 16 * 16, sourceRectPosition / 16 * 16 + sourceRectOffset, 16, 16);
         }
 
