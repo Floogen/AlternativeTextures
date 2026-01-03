@@ -1,4 +1,5 @@
 ﻿using AlternativeTextures.Framework.Models;
+using AlternativeTextures.Framework.Patches.StandardObjects;
 using AlternativeTextures.Framework.UI;
 using AlternativeTextures.Framework.Utilities;
 using HarmonyLib;
@@ -377,8 +378,7 @@ namespace AlternativeTextures.Framework.Patches.Tools
             {
                 if (!giantCrop.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME))
                 {
-                    var instanceName = Game1.objectData.ContainsKey(giantCrop.Id) ? Game1.objectData[giantCrop.Id].Name : String.Empty;
-                    instanceName = $"{AlternativeTextureModel.TextureType.GiantCrop}_{instanceName}";
+                    GiantCropPatch.TryGetGiantCropName(giantCrop, out string instanceName);
                     var instanceSeasonName = $"{instanceName}_{Game1.GetSeasonForLocation(giantCrop.Location)}";
                     AssignDefaultModData(targetedResouceClump, instanceSeasonName, true);
                 }

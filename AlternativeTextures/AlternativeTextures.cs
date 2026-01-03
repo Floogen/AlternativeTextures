@@ -320,8 +320,7 @@ namespace AlternativeTextures
                 var terrainFeature = PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, xTile, yTile);
                 if (resourceClump is GiantCrop giantCrop)
                 {
-                    var modelType = AlternativeTextureModel.TextureType.GiantCrop;
-                    var instanceName = Game1.objectData.ContainsKey(giantCrop.Id) ? Game1.objectData[giantCrop.Id].Name : String.Empty;
+                    GiantCropPatch.TryGetGiantCropName(giantCrop, out string instanceName);
                     if (!giantCrop.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !giantCrop.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                     {
                         // Assign default modData
@@ -330,7 +329,7 @@ namespace AlternativeTextures
                     }
 
                     Game1.addHUDMessage(new HUDMessage(modHelper.Translation.Get("messages.info.texture_copied"), 2) { timeLeft = 1000 });
-                    tool.modData[PAINT_BRUSH_FLAG] = $"{modelType}_{instanceName}";
+                    tool.modData[PAINT_BRUSH_FLAG] = instanceName;
                     tool.modData[PAINT_BRUSH_SCALE] = 0.5f.ToString();
                     tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = giantCrop.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER];
                     tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = giantCrop.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME];
@@ -453,9 +452,8 @@ namespace AlternativeTextures
                     var terrainFeature = PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, xTile, yTile);
                     if (resourceClump is GiantCrop giantCrop)
                     {
-                        var modelType = AlternativeTextureModel.TextureType.GiantCrop;
-                        var instanceName = Game1.objectData.ContainsKey(giantCrop.Id) ? Game1.objectData[giantCrop.Id].Name : String.Empty;
-                        if (tool.modData[PAINT_BRUSH_FLAG] == $"{modelType}_{instanceName}")
+                        GiantCropPatch.TryGetGiantCropName(giantCrop, out string instanceName);
+                        if (tool.modData[PAINT_BRUSH_FLAG] == instanceName)
                         {
                             giantCrop.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER];
                             giantCrop.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = tool.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME];
@@ -561,8 +559,7 @@ namespace AlternativeTextures
                 var terrainFeature = PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, xTile, yTile);
                 if (resourceClump is GiantCrop giantCrop)
                 {
-                    var modelType = AlternativeTextureModel.TextureType.GiantCrop;
-                    var instanceName = Game1.objectData.ContainsKey(giantCrop.Id) ? Game1.objectData[giantCrop.Id].Name : String.Empty;
+                    GiantCropPatch.TryGetGiantCropName(giantCrop, out string instanceName);
                     if (!giantCrop.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_NAME) || !giantCrop.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION))
                     {
                         // Assign default modData
@@ -570,7 +567,7 @@ namespace AlternativeTextures
                         PatchTemplate.AssignDefaultModData(giantCrop, instanceSeasonName, true);
                     }
 
-                    tool.modData[SPRAY_CAN_FLAG] = $"{modelType}_{instanceName}";
+                    tool.modData[SPRAY_CAN_FLAG] = instanceName;
                 }
                 else if (terrainFeature is Flooring flooring)
                 {
@@ -723,9 +720,8 @@ namespace AlternativeTextures
                         var terrainFeature = PatchTemplate.GetTerrainFeatureAt(Game1.currentLocation, actualX, actualY);
                         if (resourceClump is GiantCrop giantCrop)
                         {
-                            var modelType = AlternativeTextureModel.TextureType.GiantCrop;
-                            var instanceName = Game1.objectData.ContainsKey(giantCrop.Id) ? Game1.objectData[giantCrop.Id].Name : String.Empty;
-                            if (tool.modData[SPRAY_CAN_FLAG] == $"{modelType}_{instanceName}")
+                            GiantCropPatch.TryGetGiantCropName(giantCrop, out string instanceName);
+                            if (tool.modData[SPRAY_CAN_FLAG] == instanceName)
                             {
                                 giantCrop.modData[ModDataKeys.ALTERNATIVE_TEXTURE_OWNER] = actualSelectedModel.Owner;
                                 giantCrop.modData[ModDataKeys.ALTERNATIVE_TEXTURE_NAME] = actualSelectedModel.TextureName;
