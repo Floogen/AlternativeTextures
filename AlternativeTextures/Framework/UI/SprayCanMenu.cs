@@ -182,22 +182,22 @@ namespace AlternativeTextures.Framework.UI
             base.draw(b);
 
             IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), (int)_sideBarPosition.X, (int)_sideBarPosition.Y, 150, 450, Color.White, 4f, drawShadow: false);
-            Utility.drawTextWithShadow(b, "Radius", Game1.smallFont, new Vector2(_sideBarPosition.X + 35, _sideBarPosition.Y + 32), Game1.textColor);
+            Utility.drawTextWithShadow(b, AlternativeTextures.modHelper.Translation.Get("ui.labels.spray_can.radius"), Game1.smallFont, new Vector2(_sideBarPosition.X + 35, _sideBarPosition.Y + 32), Game1.textColor);
 
             radiusSubtractButton.draw(b);
             Utility.drawTextWithShadow(b, _tileRadius.ToString(), Game1.smallFont, new Vector2(radiusSubtractButton.bounds.X + 48, radiusSubtractButton.bounds.Y), Game1.textColor);
             radiusAddButton.draw(b);
 
-            Utility.drawTextWithShadow(b, "  ---\nQuick\nSelect", Game1.smallFont, new Vector2(_sideBarPosition.X + 38, (int)radiusAddButton.bounds.Y + 30), Game1.textColor);
+            Utility.drawTextWithShadow(b, AlternativeTextures.modHelper.Translation.Get("ui.labels.spray_can.quick_select"), Game1.smallFont, new Vector2(_sideBarPosition.X + 38, (int)radiusAddButton.bounds.Y + 30), Game1.textColor);
             IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(432, 439, 9, 9), allButton.bounds.X, allButton.bounds.Y, allButton.bounds.Width, allButton.bounds.Height, Color.White, 4f, drawShadow: false);
-            Utility.drawTextWithShadow(b, "All", Game1.smallFont, new Vector2(allButton.bounds.X + 35, allButton.bounds.Y + 5), Game1.textColor);
+            Utility.drawTextWithShadow(b, AlternativeTextures.modHelper.Translation.Get("ui.labels.spray_can.all"), Game1.smallFont, new Vector2(allButton.bounds.X + 35, allButton.bounds.Y + 5), Game1.textColor);
             IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(432, 439, 9, 9), noneButton.bounds.X, noneButton.bounds.Y, noneButton.bounds.Width, noneButton.bounds.Height, Color.White, 4f, drawShadow: false);
-            Utility.drawTextWithShadow(b, "None", Game1.smallFont, new Vector2(noneButton.bounds.X + 25, noneButton.bounds.Y + 7), Game1.textColor);
+            Utility.drawTextWithShadow(b, AlternativeTextures.modHelper.Translation.Get("ui.labels.spray_can.none"), Game1.smallFont, new Vector2(noneButton.bounds.X + 25, noneButton.bounds.Y + 7), Game1.textColor);
 
             var enabledTextureSum = _selectedIdsToModels.Sum(t => t.Value.Variations.Count).ToString();
             var numberOfDigitsInSum = enabledTextureSum.Length;
             Utility.drawTextWithShadow(b, "  ---", Game1.smallFont, new Vector2(_sideBarPosition.X + 38, (int)noneButton.bounds.Y + 60), Game1.textColor);
-            Utility.drawTextWithShadow(b, "Selected\nTextures", Game1.smallFont, new Vector2(_sideBarPosition.X + 25, (int)noneButton.bounds.Y + 85), Game1.textColor);
+            Utility.drawTextWithShadow(b, AlternativeTextures.modHelper.Translation.Get("ui.labels.spray_can.selected_textures"), Game1.smallFont, new Vector2(_sideBarPosition.X + 25, (int)noneButton.bounds.Y + 85), Game1.textColor);
             Utility.drawTextWithShadow(b, enabledTextureSum, Game1.smallFont, new Vector2(_sideBarPosition.X + 65 - (enabledTextureSum.Length >= 2 ? 5 * (enabledTextureSum.Length - 1) : 0), (int)noneButton.bounds.Y + 145), Game1.textColor);
 
             Game1.mouseCursorTransparency = 1f;

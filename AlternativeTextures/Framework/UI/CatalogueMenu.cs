@@ -183,7 +183,14 @@ namespace AlternativeTextures.Framework.UI
 
             // Establish the search options
             List<string> options = new List<string>() { "None", "Author", "Pack Name", "Tags" };
-            _searchFilterOptions = new FilterDropDown("Filter", 0) { dropDownDisplayOptions = options, dropDownOptions = options };
+            List<string> displayOptions = new List<string>()
+            {
+                AlternativeTextures.modHelper.Translation.Get("ui.labels.catalogue.filter.none"),
+                AlternativeTextures.modHelper.Translation.Get("ui.labels.catalogue.filter.author"),
+                AlternativeTextures.modHelper.Translation.Get("ui.labels.catalogue.filter.pack_name"),
+                AlternativeTextures.modHelper.Translation.Get("ui.labels.catalogue.filter.tags")
+            };
+            _searchFilterOptions = new FilterDropDown(AlternativeTextures.modHelper.Translation.Get("ui.labels.catalogue.filter"), 0) { dropDownDisplayOptions = displayOptions, dropDownOptions = options };
             _searchFilterOptions.bounds = new Rectangle(_searchBox.X + _searchBox.Width + 16, _searchBox.Y - 1, 256, 48);
             _searchFilterOptions.RecalculateBounds();
 
@@ -616,7 +623,7 @@ namespace AlternativeTextures.Framework.UI
                         string optionalDisplayName = string.Empty;
                         if (c.item.modData.ContainsKey(ModDataKeys.ALTERNATIVE_TEXTURE_DISPLAY_NAME) && !String.IsNullOrEmpty(c.item.modData[ModDataKeys.ALTERNATIVE_TEXTURE_DISPLAY_NAME]))
                         {
-                            optionalDisplayName = $"Display Name: {c.item.modData[ModDataKeys.ALTERNATIVE_TEXTURE_DISPLAY_NAME]}";
+                            optionalDisplayName = AlternativeTextures.modHelper.Translation.Get("ui.labels.catalogue.display_name", new { name = c.item.modData[ModDataKeys.ALTERNATIVE_TEXTURE_DISPLAY_NAME] });
                         }
 
                         List<string> keywords = alternativeTextureModel.Keywords;
@@ -639,7 +646,14 @@ namespace AlternativeTextures.Framework.UI
                             }
                         }
 
-                        _hoverText = $"Pack: {alternativeTextureModel.PackName}\nAuthor: {alternativeTextureModel.Author}{optionalDisplayName}\nVariation: {c.item.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION]}\nKeywords: {keywordsText}";
+                        _hoverText = AlternativeTextures.modHelper.Translation.Get("ui.labels.catalogue.texture_info", new
+                        {
+                            packName = alternativeTextureModel.PackName,
+                            author = alternativeTextureModel.Author,
+                            displayName = optionalDisplayName,
+                            variation = c.item.modData[ModDataKeys.ALTERNATIVE_TEXTURE_VARIATION],
+                            keywords = keywordsText
+                        });
                     }
                 }
                 else

@@ -58,5 +58,18 @@
   "config.model_single.name": "Variation: {{variation}}",
   "config.model_single.description": "Type: {{textureType}}\nSeason(s): {{season}}",
   "config.widget.enabled.name": "Enabled",
-  "config.widget.enabled.description": "If checked, this alternative texture will be available"
+  "config.widget.enabled.description": "If checked, this alternative texture will be available",
+  "ui.labels.catalogue.filter.none": "None",
+  "ui.labels.catalogue.filter.author": "Author",
+  "ui.labels.catalogue.filter.pack_name": "Pack Name",
+  "ui.labels.catalogue.filter.tags": "Tags",
+  "ui.labels.catalogue.filter": "Filter",
+  "ui.labels.catalogue.display_name": "Display Name: {{name}}",
+  "ui.labels.catalogue.texture_info": "Pack: {{packName}}\nAuthor: {{author}}{{displayName}}\nVariation: {{variation}}\nKeywords: {{keywords}}",
+  "ui.labels.texture_name_hint": "Hover over an item to see its texture name!",
+  "ui.labels.spray_can.radius": "Radius",
+  "ui.labels.spray_can.quick_select": "  ---\nQuick\nSelect",
+  "ui.labels.spray_can.all": "All",
+  "ui.labels.spray_can.none": "None",
+  "ui.labels.spray_can.selected_textures": "Selected\nTextures"
 }

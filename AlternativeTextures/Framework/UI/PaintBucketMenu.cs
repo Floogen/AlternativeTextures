@@ -998,7 +998,7 @@ namespace AlternativeTextures.Framework.UI
             }
 
             var hoverInfoText = String.Empty;
-            var hoverDisplayName = "Hover over an item to see its texture name!";
+            string hoverDisplayName = AlternativeTextures.modHelper.Translation.Get("ui.labels.texture_name_hint");
             if (this.hovered != null && this.hovered.item != null)
             {
                 if (this.hovered.item.modData.ContainsKey(_textureOwnerKey) && this.hovered.item.modData.ContainsKey(_textureVariationKey))
@@ -1014,7 +1014,7 @@ namespace AlternativeTextures.Framework.UI
                     }
                 }
             }
-            SpriteText.drawStringWithScrollCenteredAt(b, hoverDisplayName, Game1.uiViewport.Width / 2, base.yPositionOnScreen + base.height + 16, "Hover over an item to see its texture name!");
+            SpriteText.drawStringWithScrollCenteredAt(b, hoverDisplayName, Game1.uiViewport.Width / 2, base.yPositionOnScreen + base.height + 16, AlternativeTextures.modHelper.Translation.Get("ui.labels.texture_name_hint"));
 
             if (_startingRow > 0)
             {
